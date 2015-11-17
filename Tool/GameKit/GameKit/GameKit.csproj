@@ -1,0 +1,168 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{92584547-D548-40F9-A0B2-93B6A875B7C7}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>GameKit</RootNamespace>
+    <AssemblyName>GameKit</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="protobuf-net">
+      <HintPath>..\..\ProjectGenerator\packages\protobuf-net.2.0.0.668\lib\net40\protobuf-net.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Design" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Analyzer\AudioAnalyzer.cs" />
+    <Compile Include="Analyzer\ConfigAnalyzer.cs" />
+    <Compile Include="Analyzer\FuckyStringConfigAnalyzer.cs" />
+    <Compile Include="Analyzer\RandomNameConfigAnalyzer.cs" />
+    <Compile Include="Analyzer\IAnalyzer.cs" />
+    <Compile Include="Analyzer\ImageAnalyzer.cs" />
+    <Compile Include="Analyzer\OtherAnalyzer.cs" />
+    <Compile Include="Analyzer\ScriptAnalyzer.cs" />
+    <Compile Include="Analyzer\ServerConfigAnalyzer.cs" />
+    <Compile Include="Analyzer\ServerListAnalyzer.cs" />
+    <Compile Include="Analyzer\StringTableConfigAnalyzer.cs" />
+    <Compile Include="Coder\7zip\Common\CommandLineParser.cs" />
+    <Compile Include="Coder\7zip\Common\CRC.cs" />
+    <Compile Include="Coder\7zip\Common\InBuffer.cs" />
+    <Compile Include="Coder\7zip\Common\OutBuffer.cs" />
+    <Compile Include="Coder\7zip\Compress\LZMA\LzmaBase.cs" />
+    <Compile Include="Coder\7zip\Compress\LZMA\LzmaDecoder.cs" />
+    <Compile Include="Coder\7zip\Compress\LZMA\LzmaEncoder.cs" />
+    <Compile Include="Coder\7zip\Compress\LZ\IMatchFinder.cs" />
+    <Compile Include="Coder\7zip\Compress\LZ\LzBinTree.cs" />
+    <Compile Include="Coder\7zip\Compress\LZ\LzInWindow.cs" />
+    <Compile Include="Coder\7zip\Compress\LZ\LzOutWindow.cs" />
+    <Compile Include="Coder\7zip\Compress\RangeCoder\RangeCoder.cs" />
+    <Compile Include="Coder\7zip\Compress\RangeCoder\RangeCoderBit.cs" />
+    <Compile Include="Coder\7zip\Compress\RangeCoder\RangeCoderBitTree.cs" />
+    <Compile Include="Coder\7zip\ICoder.cs" />
+    <Compile Include="Coder\BaseCoder.cs" />
+    <Compile Include="Coder\LZMA\LZMADecoder.cs" />
+    <Compile Include="Coder\LZMA\LZMACoder.cs" />
+    <Compile Include="Coder\LZMA\LZMAEncoder.cs" />
+    <Compile Include="Coder\XOR\XORCoder.cs" />
+    <Compile Include="Coder\XOR\XORDecoder.cs" />
+    <Compile Include="DllImporter.cs" />
+    <Compile Include="ExcelHelper.cs" />
+    <Compile Include="Coder\ICoder.cs" />
+    <Compile Include="FileCacheCenter.cs" />
+    <Compile Include="IniSection.cs" />
+    <Compile Include="Log\Logger.cs" />
+    <Compile Include="Proto\AppCompatibility.cs" />
+    <Compile Include="Proto\CoreDefines.cs" />
+    <Compile Include="Proto\EnvironmentTag.cs" />
+    <Compile Include="Proto\FileCache.cs" />
+    <Compile Include="Proto\FileList.cs" />
+    <Compile Include="Proto\FileSystem.cs" />
+    <Compile Include="Proto\FileUpdateList.cs" />
+    <Compile Include="Proto\FuckyString.cs" />
+    <Compile Include="Proto\Geometry.cs" />
+    <Compile Include="Proto\RandomName.cs" />
+    <Compile Include="Proto\ServerConfig.cs" />
+    <Compile Include="Proto\ServerList.cs" />
+    <Compile Include="Proto\StringTable.cs" />
+    <Compile Include="Proto\UpdateServer.cs" />
+    <Compile Include="Resource\AndroidAssetGenerator.cs" />
+    <Compile Include="Resource\GameServerGenerator.cs" />
+    <Compile Include="Resource\ImageFile.cs" />
+    <Compile Include="Packing\ImagePacker.cs" />
+    <Compile Include="Packing\ImageMerger.cs" />
+    <Compile Include="Packing\ImageLayouter.cs" />
+    <Compile Include="Common\MySortedList.cs" />
+    <Compile Include="Publish\FileId.cs" />
+    <Compile Include="Publish\PublishTarget.cs" />
+    <Compile Include="Publish\PublishTag.cs" />
+    <Compile Include="PathManager.cs" />
+    <Compile Include="DataCenter.cs" />
+    <Compile Include="Resource\FileListGenerator.cs" />
+    <Compile Include="Resource\FileListFile.cs" />
+    <Compile Include="Resource\FileSystemGenerator.cs" />
+    <Compile Include="Resource\MedusaAndroidProjectGenerator.cs" />
+    <Compile Include="Resource\MedusaCoreAndroidProjectGenerator.cs" />
+    <Compile Include="Resource\MedusaExtensionAndroidProjectGenerator.cs" />
+    <Compile Include="Resource\ProjectCopier.cs" />
+    <Compile Include="Resource\UpdateServerGenerator.cs" />
+    <Compile Include="SharedTool.cs" />
+    <Compile Include="SystemTool.cs" />
+    <Compile Include="UI\FlagsEnumConverter.cs" />
+    <Compile Include="Publish\PublishInfo.cs" />
+    <Compile Include="Publish\PublishGroup.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Coder\XOR\XOREncoder.cs" />
+    <Compile Include="Coder\XXTEA.cs" />
+    <Compile Include="UI\VersionConverter.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

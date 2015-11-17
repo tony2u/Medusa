@@ -1,0 +1,106 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{77B0C925-8893-4BE4-A4FA-91AAD34C542C}</ItemsProjectGuid>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Game\BaseCaseLayer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Game\BaseFeatureLayer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Game\Layer\Action\ActionFeatureLayer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Game\Layer\Action\BaseActionLayer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Game\Layer\Action\MoveToActionLayer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Game\Layer\Animation\AnimationFeatureLayer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Game\Layer\Animation\SingleTextureFrameAnimationLayer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Game\Layer\Animation\SpineAnimationLayer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Game\Layer\Animation\TextureAtlasFrameAnimationLayer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Game\Layer\Animation\TexturesAnimationLayer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Game\Layer\Audio\AudioFeatureLayer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Game\Layer\Component\ComponentFeatureLayer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Game\Layer\Component\ParallaxComponentLayer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Game\Layer\Component\ParallaxScrollComponentLayer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Game\Layer\Component\ScrollComponentLayer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Game\Layer\Control\ControlFeatureLayer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Game\Layer\Control\EditBoxLayer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Game\Layer\Control\ListBoxLayer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Game\Layer\Control\NodeButtonLayer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Game\Layer\Control\ProgressBarLayer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Game\Layer\Control\TextureButtonLayer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Game\Layer\Font\FontFeatureLayer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Game\Layer\Graphics\BlendTestLayer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Game\Layer\Graphics\GraphicsFeatureLayer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Game\Layer\Graphics\MaskLayer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Game\Layer\Particle\ParticleFeatureLayer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Game\Layer\Performance\PerformanceFeatureLayer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Game\Layer\Shader\ShaderFeatureLayer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Game\Layer\Shape\RectangleShapeLayer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Game\Layer\Shape\ShapeFeatureLayer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Game\Layer\Sprite\AtlasSpriteLayer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Game\Layer\Sprite\NineGridSpriteLayer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Game\Layer\Sprite\SpriteFeatureLayer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Game\Layer\Sprite\SpriteLayer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Game\Player\TestPlayer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Game\TestGame.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Game\TestLayer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Game\TestScene.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Game\TestScript.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Game\TestSettings.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)TestPreCompiled.cpp">
+      <PrecompiledHeader>Create</PrecompiledHeader>
+      <PrecompiledHeaderFile>TestPreCompiled.h</PrecompiledHeaderFile>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Game\BaseCaseLayer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Game\BaseFeatureLayer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Game\Layer\Action\ActionFeatureLayer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Game\Layer\Action\BaseActionLayer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Game\Layer\Action\MoveToActionLayer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Game\Layer\Animation\AnimationFeatureLayer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Game\Layer\Animation\SingleTextureFrameAnimationLayer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Game\Layer\Animation\SpineAnimationLayer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Game\Layer\Animation\TextureAtlasFrameAnimationLayer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Game\Layer\Animation\TexturesAnimationLayer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Game\Layer\Audio\AudioFeatureLayer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Game\Layer\Component\ComponentFeatureLayer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Game\Layer\Component\ParallaxComponentLayer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Game\Layer\Component\ParallaxScrollComponentLayer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Game\Layer\Component\ScrollComponentLayer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Game\Layer\Control\ControlFeatureLayer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Game\Layer\Control\EditBoxLayer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Game\Layer\Control\ListBoxLayer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Game\Layer\Control\NodeButtonLayer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Game\Layer\Control\ProgressBarLayer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Game\Layer\Control\TextureButtonLayer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Game\Layer\Font\FontFeatureLayer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Game\Layer\Graphics\BlendTestLayer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Game\Layer\Graphics\GraphicsFeatureLayer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Game\Layer\Graphics\MaskLayer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Game\Layer\Particle\ParticleFeatureLayer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Game\Layer\Performance\PerformanceFeatureLayer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Game\Layer\Shader\ShaderFeatureLayer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Game\Layer\Shape\RectangleShapeLayer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Game\Layer\Shape\ShapeFeatureLayer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Game\Layer\Sprite\AtlasSpriteLayer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Game\Layer\Sprite\NineGridSpriteLayer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Game\Layer\Sprite\SpriteFeatureLayer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Game\Layer\Sprite\SpriteLayer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Game\Player\TestPlayer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Game\TestGame.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Game\TestLayer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Game\TestScene.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Game\TestScript.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Game\TestSettings.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)TestPreCompiled.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)TestPreDeclares.h" />
+  </ItemGroup>
+</Project>

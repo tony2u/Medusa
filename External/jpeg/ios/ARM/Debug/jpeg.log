@@ -1,0 +1,10 @@
+﻿Build started 8/7/2015 2:56:35 AM.
+     1>Project "D:\Home\Engine\External\jpeg\ios\jpeg.vcxproj" on node 3 (Build target(s)).
+     1>GenerateXCodeProj:
+         project.pbxproj: ARM\Debug\jpeg.IOS.xcodeproj\project.pbxproj
+     1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\Application Type\iOS\1.0\iOS.Common.targets(244,5): error : Build agent request has failed, URI not set, please see the inner exception for details.
+     1>Done Building Project "D:\Home\Engine\External\jpeg\ios\jpeg.vcxproj" (Build target(s)) -- FAILED.
+
+Build FAILED.
+
+Time Elapsed 00:00:00.19

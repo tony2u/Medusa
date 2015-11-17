@@ -1,0 +1,420 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 47;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		40E9B5A01BA7F6000039CBFC /* Analytics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 40E9B55F1BA7F6000039CBFC /* Analytics.cpp */; };
+		40E9B5A11BA7F6000039CBFC /* TalkingDataAnalyzer_android.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 40E9B5661BA7F6000039CBFC /* TalkingDataAnalyzer_android.cpp */; };
+		40E9B5A21BA7F6000039CBFC /* UmengAnalyzer_android.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 40E9B5671BA7F6000039CBFC /* UmengAnalyzer_android.cpp */; };
+		40E9B5A31BA7F6000039CBFC /* TalkingDataAnalyzer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 40E9B56A1BA7F6000039CBFC /* TalkingDataAnalyzer.mm */; };
+		40E9B5A41BA7F6000039CBFC /* UmengAnalyzer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 40E9B56B1BA7F6000039CBFC /* UmengAnalyzer.mm */; };
+		40E9B5A51BA7F6000039CBFC /* TalkingDataAnalyzer_win.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 40E9B56F1BA7F6000039CBFC /* TalkingDataAnalyzer_win.cpp */; };
+		40E9B5A61BA7F6000039CBFC /* UmengAnalyzer_win.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 40E9B5701BA7F6000039CBFC /* UmengAnalyzer_win.cpp */; };
+		40E9B5AE1BA7F6000039CBFC /* MedusaExtensionPreCompiled.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 40E9B59B1BA7F6000039CBFC /* MedusaExtensionPreCompiled.cpp */; };
+		40E9B5AF1BA7F6000039CBFC /* MedusaExtensionScript.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 40E9B59E1BA7F6000039CBFC /* MedusaExtensionScript.cpp */; };
+		40E9B5E51BA80F300039CBFC /* libMedusa.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 40E9B5E41BA80F300039CBFC /* libMedusa.a */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		40E9B5501BA7F5CE0039CBFC /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		40E9B5521BA7F5CE0039CBFC /* libMedusaExtension.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libMedusaExtension.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		40E9B55F1BA7F6000039CBFC /* Analytics.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Analytics.cpp; sourceTree = "<group>"; };
+		40E9B5601BA7F6000039CBFC /* Analytics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Analytics.h; sourceTree = "<group>"; };
+		40E9B5611BA7F6000039CBFC /* AnalyticsCurrencyType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnalyticsCurrencyType.h; sourceTree = "<group>"; };
+		40E9B5621BA7F6000039CBFC /* AnalyticsPaymentType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnalyticsPaymentType.h; sourceTree = "<group>"; };
+		40E9B5631BA7F6000039CBFC /* AnalyticsRewardType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnalyticsRewardType.h; sourceTree = "<group>"; };
+		40E9B5641BA7F6000039CBFC /* AnalyticsTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnalyticsTypes.h; sourceTree = "<group>"; };
+		40E9B5661BA7F6000039CBFC /* TalkingDataAnalyzer_android.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TalkingDataAnalyzer_android.cpp; sourceTree = "<group>"; };
+		40E9B5671BA7F6000039CBFC /* UmengAnalyzer_android.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UmengAnalyzer_android.cpp; sourceTree = "<group>"; };
+		40E9B5681BA7F6000039CBFC /* IAnalyzer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAnalyzer.h; sourceTree = "<group>"; };
+		40E9B56A1BA7F6000039CBFC /* TalkingDataAnalyzer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = TalkingDataAnalyzer.mm; sourceTree = "<group>"; };
+		40E9B56B1BA7F6000039CBFC /* UmengAnalyzer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = UmengAnalyzer.mm; sourceTree = "<group>"; };
+		40E9B56C1BA7F6000039CBFC /* TalkingDataAnalyzer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TalkingDataAnalyzer.h; sourceTree = "<group>"; };
+		40E9B56D1BA7F6000039CBFC /* UmengAnalyzer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UmengAnalyzer.h; sourceTree = "<group>"; };
+		40E9B56F1BA7F6000039CBFC /* TalkingDataAnalyzer_win.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TalkingDataAnalyzer_win.cpp; sourceTree = "<group>"; };
+		40E9B5701BA7F6000039CBFC /* UmengAnalyzer_win.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UmengAnalyzer_win.cpp; sourceTree = "<group>"; };
+		40E9B58D1BA7F6000039CBFC /* ExtensionLib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExtensionLib.h; sourceTree = "<group>"; };
+		40E9B58F1BA7F6000039CBFC /* ExtensionLib_ios.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExtensionLib_ios.h; sourceTree = "<group>"; };
+		40E9B5911BA7F6000039CBFC /* TalkingDataGA.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TalkingDataGA.h; sourceTree = "<group>"; };
+		40E9B5931BA7F6000039CBFC /* MobClick.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MobClick.h; sourceTree = "<group>"; };
+		40E9B5941BA7F6000039CBFC /* MobClickGameAnalytics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MobClickGameAnalytics.h; sourceTree = "<group>"; };
+		40E9B5981BA7F6000039CBFC /* ExtensionPlatform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExtensionPlatform.h; sourceTree = "<group>"; };
+		40E9B5991BA7F6000039CBFC /* ExtensionPlatformDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExtensionPlatformDefines.h; sourceTree = "<group>"; };
+		40E9B59A1BA7F6000039CBFC /* MedusaExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MedusaExtension.h; path = ../../MedusaExtension.h; sourceTree = "<group>"; };
+		40E9B59B1BA7F6000039CBFC /* MedusaExtensionPreCompiled.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MedusaExtensionPreCompiled.cpp; path = ../../MedusaExtensionPreCompiled.cpp; sourceTree = "<group>"; };
+		40E9B59C1BA7F6000039CBFC /* MedusaExtensionPreCompiled.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MedusaExtensionPreCompiled.h; path = ../../MedusaExtensionPreCompiled.h; sourceTree = "<group>"; };
+		40E9B59D1BA7F6000039CBFC /* MedusaExtensionPreDeclares.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MedusaExtensionPreDeclares.h; path = ../../MedusaExtensionPreDeclares.h; sourceTree = "<group>"; };
+		40E9B59E1BA7F6000039CBFC /* MedusaExtensionScript.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MedusaExtensionScript.cpp; path = ../../MedusaExtensionScript.cpp; sourceTree = "<group>"; };
+		40E9B59F1BA7F6000039CBFC /* MedusaExtensionScript.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MedusaExtensionScript.h; path = ../../MedusaExtensionScript.h; sourceTree = "<group>"; };
+		40E9B5E41BA80F300039CBFC /* libMedusa.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libMedusa.a; path = "../../../Medusa/ios/DerivedData/Medusa/Build/Products/Debug-iphoneos/libMedusa.a"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		40E9B54F1BA7F5CE0039CBFC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				40E9B5E51BA80F300039CBFC /* libMedusa.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		40E9B5491BA7F5CE0039CBFC = {
+			isa = PBXGroup;
+			children = (
+				40E9B5E41BA80F300039CBFC /* libMedusa.a */,
+				40E9B55E1BA7F6000039CBFC /* Analytics */,
+				40E9B5831BA7F6000039CBFC /* ExtensionLib */,
+				40E9B5971BA7F6000039CBFC /* ExtensionPlatform */,
+				40E9B59A1BA7F6000039CBFC /* MedusaExtension.h */,
+				40E9B59B1BA7F6000039CBFC /* MedusaExtensionPreCompiled.cpp */,
+				40E9B59C1BA7F6000039CBFC /* MedusaExtensionPreCompiled.h */,
+				40E9B59D1BA7F6000039CBFC /* MedusaExtensionPreDeclares.h */,
+				40E9B59E1BA7F6000039CBFC /* MedusaExtensionScript.cpp */,
+				40E9B59F1BA7F6000039CBFC /* MedusaExtensionScript.h */,
+				40E9B5531BA7F5CE0039CBFC /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		40E9B5531BA7F5CE0039CBFC /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				40E9B5521BA7F5CE0039CBFC /* libMedusaExtension.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		40E9B55E1BA7F6000039CBFC /* Analytics */ = {
+			isa = PBXGroup;
+			children = (
+				40E9B55F1BA7F6000039CBFC /* Analytics.cpp */,
+				40E9B5601BA7F6000039CBFC /* Analytics.h */,
+				40E9B5611BA7F6000039CBFC /* AnalyticsCurrencyType.h */,
+				40E9B5621BA7F6000039CBFC /* AnalyticsPaymentType.h */,
+				40E9B5631BA7F6000039CBFC /* AnalyticsRewardType.h */,
+				40E9B5641BA7F6000039CBFC /* AnalyticsTypes.h */,
+				40E9B5651BA7F6000039CBFC /* android */,
+				40E9B5681BA7F6000039CBFC /* IAnalyzer.h */,
+				40E9B5691BA7F6000039CBFC /* ios */,
+				40E9B56C1BA7F6000039CBFC /* TalkingDataAnalyzer.h */,
+				40E9B56D1BA7F6000039CBFC /* UmengAnalyzer.h */,
+				40E9B56E1BA7F6000039CBFC /* win */,
+			);
+			name = Analytics;
+			path = ../../Analytics;
+			sourceTree = "<group>";
+		};
+		40E9B5651BA7F6000039CBFC /* android */ = {
+			isa = PBXGroup;
+			children = (
+				40E9B5661BA7F6000039CBFC /* TalkingDataAnalyzer_android.cpp */,
+				40E9B5671BA7F6000039CBFC /* UmengAnalyzer_android.cpp */,
+			);
+			path = android;
+			sourceTree = "<group>";
+		};
+		40E9B5691BA7F6000039CBFC /* ios */ = {
+			isa = PBXGroup;
+			children = (
+				40E9B56A1BA7F6000039CBFC /* TalkingDataAnalyzer.mm */,
+				40E9B56B1BA7F6000039CBFC /* UmengAnalyzer.mm */,
+			);
+			path = ios;
+			sourceTree = "<group>";
+		};
+		40E9B56E1BA7F6000039CBFC /* win */ = {
+			isa = PBXGroup;
+			children = (
+				40E9B56F1BA7F6000039CBFC /* TalkingDataAnalyzer_win.cpp */,
+				40E9B5701BA7F6000039CBFC /* UmengAnalyzer_win.cpp */,
+			);
+			path = win;
+			sourceTree = "<group>";
+		};
+		40E9B5831BA7F6000039CBFC /* ExtensionLib */ = {
+			isa = PBXGroup;
+			children = (
+				40E9B58C1BA7F6000039CBFC /* Common */,
+				40E9B58D1BA7F6000039CBFC /* ExtensionLib.h */,
+				40E9B58E1BA7F6000039CBFC /* ios */,
+			);
+			name = ExtensionLib;
+			path = ../../ExtensionLib;
+			sourceTree = "<group>";
+		};
+		40E9B58C1BA7F6000039CBFC /* Common */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Common;
+			sourceTree = "<group>";
+		};
+		40E9B58E1BA7F6000039CBFC /* ios */ = {
+			isa = PBXGroup;
+			children = (
+				40E9B58F1BA7F6000039CBFC /* ExtensionLib_ios.h */,
+				40E9B5901BA7F6000039CBFC /* TalkingData */,
+				40E9B5921BA7F6000039CBFC /* Umeng */,
+			);
+			path = ios;
+			sourceTree = "<group>";
+		};
+		40E9B5901BA7F6000039CBFC /* TalkingData */ = {
+			isa = PBXGroup;
+			children = (
+				40E9B5911BA7F6000039CBFC /* TalkingDataGA.h */,
+			);
+			path = TalkingData;
+			sourceTree = "<group>";
+		};
+		40E9B5921BA7F6000039CBFC /* Umeng */ = {
+			isa = PBXGroup;
+			children = (
+				40E9B5931BA7F6000039CBFC /* MobClick.h */,
+				40E9B5941BA7F6000039CBFC /* MobClickGameAnalytics.h */,
+			);
+			path = Umeng;
+			sourceTree = "<group>";
+		};
+		40E9B5971BA7F6000039CBFC /* ExtensionPlatform */ = {
+			isa = PBXGroup;
+			children = (
+				40E9B5981BA7F6000039CBFC /* ExtensionPlatform.h */,
+				40E9B5991BA7F6000039CBFC /* ExtensionPlatformDefines.h */,
+			);
+			name = ExtensionPlatform;
+			path = ../../ExtensionPlatform;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		40E9B5511BA7F5CE0039CBFC /* MedusaExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 40E9B55B1BA7F5CE0039CBFC /* Build configuration list for PBXNativeTarget "MedusaExtension" */;
+			buildPhases = (
+				40E9B54E1BA7F5CE0039CBFC /* Sources */,
+				40E9B54F1BA7F5CE0039CBFC /* Frameworks */,
+				40E9B5501BA7F5CE0039CBFC /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MedusaExtension;
+			productName = MedusaExtension;
+			productReference = 40E9B5521BA7F5CE0039CBFC /* libMedusaExtension.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		40E9B54A1BA7F5CE0039CBFC /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0710;
+				ORGANIZATIONNAME = Medusa;
+				TargetAttributes = {
+					40E9B5511BA7F5CE0039CBFC = {
+						CreatedOnToolsVersion = 7.1;
+						DevelopmentTeam = BVW8CQY58B;
+					};
+				};
+			};
+			buildConfigurationList = 40E9B54D1BA7F5CE0039CBFC /* Build configuration list for PBXProject "MedusaExtension" */;
+			compatibilityVersion = "Xcode 6.3";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 40E9B5491BA7F5CE0039CBFC;
+			productRefGroup = 40E9B5531BA7F5CE0039CBFC /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				40E9B5511BA7F5CE0039CBFC /* MedusaExtension */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		40E9B54E1BA7F5CE0039CBFC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				40E9B5A31BA7F6000039CBFC /* TalkingDataAnalyzer.mm in Sources */,
+				40E9B5A61BA7F6000039CBFC /* UmengAnalyzer_win.cpp in Sources */,
+				40E9B5A51BA7F6000039CBFC /* TalkingDataAnalyzer_win.cpp in Sources */,
+				40E9B5A11BA7F6000039CBFC /* TalkingDataAnalyzer_android.cpp in Sources */,
+				40E9B5A01BA7F6000039CBFC /* Analytics.cpp in Sources */,
+				40E9B5A41BA7F6000039CBFC /* UmengAnalyzer.mm in Sources */,
+				40E9B5A21BA7F6000039CBFC /* UmengAnalyzer_android.cpp in Sources */,
+				40E9B5AF1BA7F6000039CBFC /* MedusaExtensionScript.cpp in Sources */,
+				40E9B5AE1BA7F6000039CBFC /* MedusaExtensionPreCompiled.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		40E9B5591BA7F5CE0039CBFC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.1;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		40E9B55A1BA7F5CE0039CBFC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.1;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		40E9B55C1BA7F5CE0039CBFC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
+				HEADER_SEARCH_PATHS = (
+					../../,
+					../../../Medusa,
+					../../../MedusaCore,
+					../../../Medusa/Lib/Common/freetype,
+					../../../Medusa/Lib/Common,
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				WARNING_CFLAGS = "-Wno-unused-function";
+			};
+			name = Debug;
+		};
+		40E9B55D1BA7F5CE0039CBFC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
+				HEADER_SEARCH_PATHS = (
+					../../,
+					../../../Medusa,
+					../../../MedusaCore,
+					../../../Medusa/Lib/Common/freetype,
+					../../../Medusa/Lib/Common,
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				WARNING_CFLAGS = "-Wno-unused-function";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		40E9B54D1BA7F5CE0039CBFC /* Build configuration list for PBXProject "MedusaExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				40E9B5591BA7F5CE0039CBFC /* Debug */,
+				40E9B55A1BA7F5CE0039CBFC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		40E9B55B1BA7F5CE0039CBFC /* Build configuration list for PBXNativeTarget "MedusaExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				40E9B55C1BA7F5CE0039CBFC /* Debug */,
+				40E9B55D1BA7F5CE0039CBFC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 40E9B54A1BA7F5CE0039CBFC /* Project object */;
+}

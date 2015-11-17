@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{45d41acc-2c3c-43d2-bc10-02aa73ffc7c7}</ItemsProjectGuid>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)lz4.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)lz4frame.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)lz4hc.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)xxhash.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)lz4.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)lz4frame.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)lz4frame_static.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)lz4hc.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)xxhash.h" />
+  </ItemGroup>
+</Project>

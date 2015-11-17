@@ -1,0 +1,9 @@
+// Copyright (c) 2015 fjz13. All rights reserved.
+// Use of this source code is governed by a MIT-style
+// license that can be found in the LICENSE file.
+#include "MedusaPreCompiled.h"
+#include "Node/Input/EventArg/KeyboardEventArg.h"
+MEDUSA_BEGIN;
+MEDUSA_IMPLEMENT_RTTI(KeyboardEventArg,IEventArg);
+
+MEDUSA_END;

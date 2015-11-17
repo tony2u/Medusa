@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+  <!-- 
+	Letter	Description					Sample		   Display
+	
+	d,i		Signed decimal integer		0xF000F065,d   -268373915
+	u		Unsigned decimal integer	0x0065,u	   101
+	o		Unsigned octal integer		0xF065,o	   0170145
+	x,X		Hexadecimal integer			61541,X		   0X0000F065
+	l,h		long or short prefix for	00406042,hx    0x0c22
+			  d, i, u, o, x, X
+	f		Signed floating-point		3./2.,f		   1.500000
+	e		Signed scientific-notation	3./2.,e		   1.500000e+000
+	g		Shorter of e and f			3./2.,g		   1.5
+	c		Single character			0x0065,c	   'e'
+	s		Zero-terminated string		pVar,s		   "Hello world"
+	su		Unicode string				pVar,su		   "Hello world"
+More:	http://msdn.microsoft.com/en-us/library/vstudio/75w45ekt.aspx	
+-->
+
+  <Type Name="Medusa::StringRef">
+    <DisplayString Condition="mLength==0xFFFFFFFF">{mBuffer}</DisplayString>
+    <DisplayString Condition="mLength==0">Empty</DisplayString>
+    <DisplayString>{mBuffer}[{mLength}]</DisplayString>
+    <StringView>mBuffer</StringView>
+    <Expand>
+      <Item Name="[Buffer]">mBuffer</Item>
+      <Item Name="[Length]" Condition="mLength!=0xFFFFFFFF">mLength</Item>
+    </Expand>
+  </Type>
+
+</AutoVisualizer>

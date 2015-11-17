@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <Group
+      location = "container:Medusa/Medusa.xcodeproj"
+      name = "Medusa">
+      <Group
+         location = "container:"
+         name = "External">
+         <FileRef
+            location = "group:../../../External/lz4/ios/lz4/lz4.xcodeproj">
+         </FileRef>
+         <FileRef
+            location = "group:../../../External/zlib/ios/zlib/zlib.xcodeproj">
+         </FileRef>
+         <FileRef
+            location = "group:../../../External/unzip/ios/unzip/unzip.xcodeproj">
+         </FileRef>
+         <FileRef
+            location = "group:../../../External/png/ios/png/png.xcodeproj">
+         </FileRef>
+         <FileRef
+            location = "group:../../../External/ogg/ios/ogg/ogg.xcodeproj">
+         </FileRef>
+         <FileRef
+            location = "group:../../../External/Lzma/ios/Lzma/Lzma.xcodeproj">
+         </FileRef>
+         <FileRef
+            location = "group:../../../External/jpeg/ios/jpeg/jpeg.xcodeproj">
+         </FileRef>
+         <FileRef
+            location = "group:../../../External/freetype/ios/freetype/freetype.xcodeproj">
+         </FileRef>
+         <FileRef
+            location = "group:../../../External/curl/ios/curl/curl.xcodeproj">
+         </FileRef>
+         <FileRef
+            location = "group:../../../External/AngelScript/ios/AngelScript/AngelScript.xcodeproj">
+         </FileRef>
+      </Group>
+      <FileRef
+         location = "group:../../../../../Test/Test/ios/Test/Test.xcodeproj">
+      </FileRef>
+      <FileRef
+         location = "group:../../../../MedusaExtension/ios/MedusaExtension/MedusaExtension.xcodeproj">
+      </FileRef>
+      <FileRef
+         location = "group:../../../../MedusaCore/ios/MedusaCore/MedusaCore.xcodeproj">
+      </FileRef>
+      <FileRef
+         location = "container:Medusa/Medusa.xcodeproj">
+      </FileRef>
+   </Group>
+</Workspace>

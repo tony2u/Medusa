@@ -1,0 +1,91 @@
+
+                    .----------.   .----------. .----------.                            
+   struct		    |  fields  |...|  fields  |.|  end     |                            
+                    '----------'   '----------' '----------'                            
+
+                     .----------.----------.   .----------.                                           
+   fields            |  field   |  field   |...|  field   |                                           
+                     '----------'----------'   '----------'                                           
+                                                                                                      
+                     .----------.----------..----------.
+   field             | id       |  length   ||  value   |                                                            
+                     '----------'----------''----------'                                                            
+                                                                                                      
+                                           
+                                            .---.---.---.---.---.---.---.---.                       i - id bits 
+   id+type           0 <= id <= 5           | i | i | i | t | t | t | t | t |                       t - type bits     
+                                            '---'---'---'---'---'---'---'---'                       v - value bits
+                                              2       0   4               0                           
+
+                                            .---.---.---.---.---.---.---.---.---.   .---.
+                     5 < id <= 0xff         | 1 | 1 | 0 | t | t | t | t | t | i |...| i |             
+                                            '---'---'---'---'---'---'---'---'---'   '---'             
+                                                          4               0   7       0               
+                                                                                                      
+                                            .---.---.---.---.---.---.---.---.---.   .---.---.   .---.
+                     0xff < id <= 0xffff    | 1 | 1 | 1 | t | t | t | t | t | i |...| i | i |...| i |             
+                                            '---'---'---'---'---'---'---'---'---'   '---'---'   '---'             
+                                                          4               0   7       0   15      8               
+
+                                            
+                                            .---.---.---.---.---.---.---.---.                       
+   value             bool                   |   |   |   |   |   |   |   | v |                         
+                                            '---'---'---'---'---'---'---'---'                         
+                                                                          0
+
+                                            .---.---.---.---.---.---.---.---.
+                     int8, uint8            | v | v | v | v | v | v | v | v |
+                                            '---'---'---'---'---'---'---'---'
+                                              7                           0 
+                                                                                                      
+                                            .---.---.   .---.---.---.   .---.
+                     uint16, uint32,        | 1 | v |...| v | 0 | v |...| v |  [...]                       
+                     uint64                 '---'---'   '---'---'---'   '---'
+                                                  6       0       13      7                           
+                                                                                                      
+                                            variable encoding, high bit of every byte                 
+                                            indicates if there is another byte        
+                                                                                                      
+                                                                                                      
+                     int16, int32,          zig zag encoded to unsigned integer:                       
+                     int64                                                                                 
+                                             0 -> 0                                             
+                                            -1 -> 1                                                   
+                                             1 -> 2                                             
+                                            -2 -> 3                                                   
+                                            ...                                                 
+                                                                                                
+                                            and then encoded as unsigned integer                
+
+                                            
+                     float, double          little endian
+                                            
+
+                                            .-------.------------.
+                     string, wstring        | count | characters |
+                                            '-------'------------'
+
+                           count            variable encoded uint32 count of 1-byte or 2-byte characters
+
+                           characters       1-byte or 2-byte characters
+
+
+                                            .-------.-------.-------.
+                     blob, list, set,       | type  | count | items |
+                     vector, nullable       '-------'-------'-------'
+
+                           count            variable encoded uint32 count of items
+                                           
+
+                           items            each item encoded according to its type
+
+
+                                            .----------.------------.-------.-----.-------.
+                     map                    | key type | value type | count | key | value |
+                                            '----------'------------'-------'-----'-------'
+
+                            count           variable encoded uint32 count of {key,mapped} pairs
+
+                            key, mapped     each item encoded according to its type
+
+

@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{45d41acc-2c3c-43d2-bc10-02aa73ffc7c7}</ItemsProjectGuid>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Source\7zConfig.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Source\7zTypes.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Source\Aes.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Source\Alloc.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Source\Compiler.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Source\CpuArch.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Source\LzFind.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Source\LzHash.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Source\Lzma2Dec.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Source\Lzma2Enc.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Source\LzmaDec.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Source\LzmaEnc.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Source\LzmaLib.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Source\Precomp.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Source\RotateDefs.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Source\Sha256.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Source\Aes.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Source\AesOpt.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Source\Alloc.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Source\CpuArch.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Source\LzFind.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Source\Lzma2Dec.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Source\Lzma2Enc.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Source\LzmaDec.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Source\LzmaEnc.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Source\LzmaLib.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Source\Sha256.c" />
+  </ItemGroup>
+</Project>

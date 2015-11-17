@@ -1,0 +1,94 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<layerModel xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" xmlns:dm1="http://schemas.microsoft.com/dsltools/SimpleShapesModel" dslVersion="1.0.0.0" Id="8bf5e519-f2e9-4bbe-ba78-5174c4256405" xmlns="http://schemas.microsoft.com/VisualStudio/TeamArchitect/LayerDesigner">
+  <comments>
+    <comment Id="729cdd26-b390-4593-a6f9-3ff554dcfd1b" name="Comment1">
+      <body>每个格子为一个线程
+左上为每一帧的前置线程
+Main为更新线程
+SceneGraph为每一帧的后置线程,如果有多个Scene同时展现,可以有多个SceneGraph来平行进行裁剪
+SceneGraph完成裁剪之后,根据状态的改变发送命令给RenderQueue线程来更新渲染队列,需要用到的数据有Mesh数据,Node的矩阵(有可能需要复制),渲染状态。所以这时的命令中的数据是以复制来进行的
+
+其他的底部3个线程为独立线程,是一直在运行的,靠事件去触发激活运行
+
+前置,后置,都得同步一下
+每一帧的线程数据共享是独立的,所以不需要复制数据
+SceneGraph和RenderEngine也是互相同步的(只当需要时),所以也不需要复制数据</body>
+    </comment>
+  </comments>
+  <layers>
+    <layer Id="64d25158-c803-40fa-9d5b-e9a3ce56f49a" name="ResourceManager(IOThread)" />
+    <layer Id="16b719c7-cd41-4deb-a9fb-7f50eb628841" name="ThreadCommandProcessor" />
+    <layer Id="00c54aea-3437-4526-ae8e-91c99e66eee5" name="Frame">
+      <comments>
+        <comment Id="598800f6-3dc4-445b-b795-150967a82efc" name="Comment1">
+          <body>管理的每一个SceneGraph都可以是一个单独的线程,并行启动进行裁剪。</body>
+          <layerElements>
+            <linkFromCommentToLayerElement>
+              <layerMoniker Id="d35fe697-53be-4779-90bf-76dce1d67970" />
+            </linkFromCommentToLayerElement>
+          </layerElements>
+        </comment>
+        <comment Id="740ea19d-18b9-4592-a667-626149d5e2cd" name="Comment2">
+          <body>搜集排序RenderQueue产生的FrameCommand,然后发给RenderContext</body>
+          <layerElements>
+            <linkFromCommentToLayerElement>
+              <layerMoniker Id="1552de2a-6e51-4e96-b294-4c451d457967" />
+            </linkFromCommentToLayerElement>
+          </layerElements>
+        </comment>
+      </comments>
+      <dependencyToLayers>
+        <dependencyFromLayerToLayer Id="5ced9d34-c3f6-4e42-8a72-e4749cbbbcbd" direction="Forward">
+          <layerMoniker Id="64d25158-c803-40fa-9d5b-e9a3ce56f49a" />
+        </dependencyFromLayerToLayer>
+        <dependencyFromLayerToLayer Id="9052a15d-f562-4652-b2de-fa0c10e5247e" direction="Forward">
+          <layerMoniker Id="16b719c7-cd41-4deb-a9fb-7f50eb628841" />
+        </dependencyFromLayerToLayer>
+      </dependencyToLayers>
+      <childLayers>
+        <layer Id="2b883b55-ee34-45c5-9e8d-a44428250d65" name="MainUpdate">
+          <dependencyToLayers>
+            <dependencyFromLayerToLayer Id="610c9a6d-5599-4f68-bec0-4ce106390f7c" direction="Forward">
+              <layerMoniker Id="7f4eae17-35d2-4846-8695-793f08ba61bd" />
+            </dependencyFromLayerToLayer>
+          </dependencyToLayers>
+        </layer>
+        <layer Id="d35fe697-53be-4779-90bf-76dce1d67970" name="SceneGraphStage">
+          <dependencyToLayers>
+            <dependencyFromLayerToLayer Id="f86a1839-6738-4835-9073-274823fffc1e" direction="Forward">
+              <layerMoniker Id="2b883b55-ee34-45c5-9e8d-a44428250d65" />
+            </dependencyFromLayerToLayer>
+          </dependencyToLayers>
+          <childLayers>
+            <layer Id="b07bfbb0-9c35-4132-b7fb-d7de7fb35835" name="SceneGraph1(RenderQueue)" />
+            <layer Id="d371ee9a-f40d-40bb-8dde-56fb9e00b19f" name="SceneGraph2(RenderQueue)" />
+          </childLayers>
+        </layer>
+        <layer Id="1552de2a-6e51-4e96-b294-4c451d457967" name="RenderEngine">
+          <dependencyToLayers>
+            <dependencyFromLayerToLayer Id="1e41eff4-a438-4bc6-aa75-bd61a0d25cfb" direction="Forward">
+              <layerMoniker Id="d35fe697-53be-4779-90bf-76dce1d67970" />
+            </dependencyFromLayerToLayer>
+          </dependencyToLayers>
+        </layer>
+        <layer Id="7f4eae17-35d2-4846-8695-793f08ba61bd" name="UpdateSystemStage">
+          <childLayers>
+            <layer Id="e386401e-aa5f-4301-8928-ee9bed6089f9" name="AnimationManager" />
+            <layer Id="10eea6b2-f9c3-4282-8e4a-348c9df42d39" name="ParticleSystem" />
+            <layer Id="d39f36b1-3cad-4312-af89-82e66ac90bc0" name="Physics" />
+            <layer Id="2b7b12d9-4df9-4262-9178-0eb28a12af38" name="ResourceManager" />
+            <layer Id="190b1353-e214-4bcb-88b4-5a3fa50c5a5d" name="AudioEngine" />
+            <layer Id="5ef11cb7-b0f0-43cd-ac23-eb39438fc551" name="InputManager" />
+          </childLayers>
+        </layer>
+      </childLayers>
+    </layer>
+    <layer Id="755206d4-4002-4ce4-a0fc-5ac0abacc81e" name="RenderDevice">
+      <dependencyToLayers>
+        <dependencyFromLayerToLayer Id="fe9a4c07-0a83-4f0f-bd12-f40d004a3db3" direction="Forward">
+          <layerMoniker Id="1552de2a-6e51-4e96-b294-4c451d457967" />
+        </dependencyFromLayerToLayer>
+      </dependencyToLayers>
+    </layer>
+  </layers>
+</layerModel>

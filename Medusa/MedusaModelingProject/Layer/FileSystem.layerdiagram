@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<layerModel xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" xmlns:dm1="http://schemas.microsoft.com/dsltools/SimpleShapesModel" dslVersion="1.0.0.0" Id="11a3e0d8-7f2c-4e5a-8ad0-5ac76e7fd2eb" xmlns="http://schemas.microsoft.com/VisualStudio/TeamArchitect/LayerDesigner">
+  <comments>
+    <comment Id="9c90e3a9-9315-4900-b559-f2fe4b5f57da" name="Comment1">
+      <body>ReadOnly</body>
+    </comment>
+    <comment Id="ce93a1bd-181d-4ff4-902e-ce73bc4ee403" name="Comment11">
+      <body>Writeable</body>
+    </comment>
+    <comment Id="480da0ea-142e-4427-8e88-7c6ec4b4f9a0" name="Comment2">
+      <body>拥有多个package,根据当前的PublishTarget选择适用的，然后用ContentVersion排序，从最匹配的开始查询，查询到多个结果后，用MatchScore排序，选出最匹配的一个</body>
+      <layerElements>
+        <linkFromCommentToLayerElement>
+          <layerMoniker Id="651862e2-e1e1-4d64-a83e-fff8de3b028d" />
+        </linkFromCommentToLayerElement>
+      </layerElements>
+    </comment>
+  </comments>
+  <layers>
+    <layer Id="bad13411-f4e3-4f33-afef-4dc474a5e124" name="FileSystem">
+      <dependencyToLayers>
+        <dependencyFromLayerToLayer Id="6d02540a-efcb-4d83-928a-3a2a41eb4bf3" direction="Forward">
+          <layerMoniker Id="4b78f416-315f-477f-a038-ccdcb39d8f9d" />
+        </dependencyFromLayerToLayer>
+        <dependencyFromLayerToLayer Id="5cbb9731-340c-4c19-ad34-0694b2d2d476" direction="Forward">
+          <layerMoniker Id="004a4681-8252-432b-8470-0299c0d1a550" />
+        </dependencyFromLayerToLayer>
+        <dependencyFromLayerToLayer Id="90c4f72e-b0b3-460c-a0f9-fdef5141f9bd" direction="Forward">
+          <layerMoniker Id="aa06fd38-5c15-4ccb-8095-f904c1f610f9" />
+        </dependencyFromLayerToLayer>
+        <dependencyFromLayerToLayer Id="83aeb71f-34b2-4332-91c0-8a5e5267ddf7" direction="Forward">
+          <layerMoniker Id="1f9a658a-4fe0-45e7-84ca-c159cc9aa159" />
+        </dependencyFromLayerToLayer>
+      </dependencyToLayers>
+    </layer>
+    <layer Id="4b78f416-315f-477f-a038-ccdcb39d8f9d" name="SystemPackage" />
+    <layer Id="004a4681-8252-432b-8470-0299c0d1a550" name="FilePackage" />
+    <layer Id="aa06fd38-5c15-4ccb-8095-f904c1f610f9" name="SystemPackage1" />
+    <layer Id="1f9a658a-4fe0-45e7-84ca-c159cc9aa159" name="FilePackage1" />
+    <layer Id="651862e2-e1e1-4d64-a83e-fff8de3b028d" name="FileSystem1">
+      <dependencyToLayers>
+        <dependencyFromLayerToLayer Id="77614fe0-3f24-46e2-b218-1f4535a46aa3" direction="Forward">
+          <layerMoniker Id="45452db1-bb4f-4229-aa4a-11c67fb479a8" />
+        </dependencyFromLayerToLayer>
+        <dependencyFromLayerToLayer Id="9687a2ad-c6e8-465d-b4d3-f6f73b19d58d" direction="Forward">
+          <layerMoniker Id="0a110454-a2cb-4abe-b1f4-a66795d7143f" />
+        </dependencyFromLayerToLayer>
+      </dependencyToLayers>
+    </layer>
+    <layer Id="0a110454-a2cb-4abe-b1f4-a66795d7143f" name="FilePackage2" />
+    <layer Id="45452db1-bb4f-4229-aa4a-11c67fb479a8" name="SystemPackage2" />
+    <layer Id="e0403721-d50a-4aad-a671-6664a09551ca" name="FileMap" />
+    <layer Id="cd6ad7ba-6209-4891-810b-49fa90f6d0f6" name="FileList" />
+    <layer Id="3d0712e6-0c2b-4878-a280-af85062daf4d" name="FileContent" />
+  </layers>
+</layerModel>

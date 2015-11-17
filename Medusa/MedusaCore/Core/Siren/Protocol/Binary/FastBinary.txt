@@ -1,0 +1,68 @@
+                    .----------.   .----------. .----------.                            
+   struct		    |  fields  |...|  fields  |.|  end     |                            
+                    '----------'   '----------' '----------'    
+
+                     .------.----.----------.
+   field             | type | id |  value   |
+                     '------'----'----------'
+
+                     .---.---.---.---.---.---.---.---.                           i - id bits
+   type              | 0 | 0 | 0 | t | t | t | t | t |                           t - type bits
+                     '---'---'---'---'---'---'---'---'                           v - value bits
+                                   4               0 
+
+   id                .---.   .---.---.   .---.
+                     | i |...| i | i |...| i |
+                     '---'   '---'---'   '---'
+                       7       0   15      8  
+
+                                            .---.---.---.---.---.---.---.---.
+   value             bool                   |   |   |   |   |   |   |   | v |
+                                            '---'---'---'---'---'---'---'---'
+                                                                          0
+
+                     integer,               little endian
+                     float, double
+
+                                            .-------.------------.
+                     string, wstring        | count | characters |
+                                            '-------'------------'
+
+                           count            variable uint32 count of 1-byte or 2-byte characters
+
+                           characters       1-byte or 2-byte characters
+
+
+											.-------.-------.-------.
+                     blob, list, set,       | type  | count | items |
+                     vector, nullable       '-------'-------'-------'
+
+                                            .---.---.---.---.---.---.---.---.
+                           type             |   |   |   | t | t | t | t | t |
+                                            '---'---'---'---'---'---'---'---'
+                                                          4               0 
+
+                           count            variable uint32 count of items 
+
+                           items            each item encoded according to its type
+
+
+                                            .----------.------------.-------.-----.-------.
+                     map                    | key type | value type | count | key | value |
+                                            '----------'------------'-------'-----'-------'
+
+                           count            variable uint32 count of items 
+
+                           items            each item encoded according to its type
+
+
+
+
+   variable uint32
+                     .---.---.   .---..---.---.   .---..---.---.   .---..---.---.   .---..---.---.---.---.   .---.
+                     | 1 | v |...| v || 1 | v |...| v || 1 | v |...| v || 1 | v |...| v || 0 | 0 | 0 | v |...| v |
+                     '---'---'   '---''---'---'   '---''---'---'   '---''---'---'   '---''---'---'---'---'   '---'
+                           6       0        13      7        20      14       27      21               31      28 
+
+                     1 to 5 bytes, high bit of every byte indicates if there is another byte
+

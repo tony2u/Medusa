@@ -1,0 +1,61 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "jpeg", "jpeg.vcxitems", "{45D41ACC-2C3C-43D2-BC10-02AA73FFC7C7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "win", "win", "{EAC460BF-9B7F-49F0-9ABB-852DDB76662A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "android", "android", "{50A1E1B9-60F6-461D-8F0F-D74615B42AA6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ios", "ios", "{51CE13A5-0420-49F5-982C-45151CE74CB8}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "jpeg.Android", "android\jpeg.vcxproj", "{6C5AA792-610D-42F6-A1F8-21EA87B7F446}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "jpeg", "win\jpeg.vcxproj", "{A569B5A2-F368-470D-9709-FDD0F2CF0FAF}"
+EndProject
+Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		jpeg.vcxitems*{a569b5a2-f368-470d-9709-fdd0f2cf0faf}*SharedItemsImports = 4
+		jpeg.vcxitems*{6c5aa792-610d-42f6-a1f8-21ea87b7f446}*SharedItemsImports = 4
+		jpeg.vcxitems*{45d41acc-2c3c-43d2-bc10-02aa73ffc7c7}*SharedItemsImports = 9
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|ARM = Debug|ARM
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|ARM = Release|ARM
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6C5AA792-610D-42F6-A1F8-21EA87B7F446}.Debug|ARM.ActiveCfg = Debug|ARM
+		{6C5AA792-610D-42F6-A1F8-21EA87B7F446}.Debug|ARM.Build.0 = Debug|ARM
+		{6C5AA792-610D-42F6-A1F8-21EA87B7F446}.Debug|x64.ActiveCfg = Debug|x86
+		{6C5AA792-610D-42F6-A1F8-21EA87B7F446}.Debug|x86.ActiveCfg = Debug|x86
+		{6C5AA792-610D-42F6-A1F8-21EA87B7F446}.Debug|x86.Build.0 = Debug|x86
+		{6C5AA792-610D-42F6-A1F8-21EA87B7F446}.Release|ARM.ActiveCfg = Release|ARM
+		{6C5AA792-610D-42F6-A1F8-21EA87B7F446}.Release|ARM.Build.0 = Release|ARM
+		{6C5AA792-610D-42F6-A1F8-21EA87B7F446}.Release|x64.ActiveCfg = Release|x86
+		{6C5AA792-610D-42F6-A1F8-21EA87B7F446}.Release|x86.ActiveCfg = Release|x86
+		{6C5AA792-610D-42F6-A1F8-21EA87B7F446}.Release|x86.Build.0 = Release|x86
+		{A569B5A2-F368-470D-9709-FDD0F2CF0FAF}.Debug|ARM.ActiveCfg = Debug|Win32
+		{A569B5A2-F368-470D-9709-FDD0F2CF0FAF}.Debug|x64.ActiveCfg = Debug|x64
+		{A569B5A2-F368-470D-9709-FDD0F2CF0FAF}.Debug|x64.Build.0 = Debug|x64
+		{A569B5A2-F368-470D-9709-FDD0F2CF0FAF}.Debug|x86.ActiveCfg = Debug|Win32
+		{A569B5A2-F368-470D-9709-FDD0F2CF0FAF}.Debug|x86.Build.0 = Debug|Win32
+		{A569B5A2-F368-470D-9709-FDD0F2CF0FAF}.Release|ARM.ActiveCfg = Release|Win32
+		{A569B5A2-F368-470D-9709-FDD0F2CF0FAF}.Release|x64.ActiveCfg = Release|x64
+		{A569B5A2-F368-470D-9709-FDD0F2CF0FAF}.Release|x64.Build.0 = Release|x64
+		{A569B5A2-F368-470D-9709-FDD0F2CF0FAF}.Release|x86.ActiveCfg = Release|Win32
+		{A569B5A2-F368-470D-9709-FDD0F2CF0FAF}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{6C5AA792-610D-42F6-A1F8-21EA87B7F446} = {50A1E1B9-60F6-461D-8F0F-D74615B42AA6}
+		{A569B5A2-F368-470D-9709-FDD0F2CF0FAF} = {EAC460BF-9B7F-49F0-9ABB-852DDB76662A}
+	EndGlobalSection
+EndGlobal

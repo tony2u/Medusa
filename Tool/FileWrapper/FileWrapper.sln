@@ -1,0 +1,24 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileWrapper", "FileWrapper\FileWrapper.csproj", "{DFA1FEA0-B6F1-43F1-9CEF-F2A033843916}"
+EndProject
+Global
+	GlobalSection(SubversionScc) = preSolution
+		Svn-Managed = True
+		Manager = AnkhSVN - Subversion Support for Visual Studio
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DFA1FEA0-B6F1-43F1-9CEF-F2A033843916}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DFA1FEA0-B6F1-43F1-9CEF-F2A033843916}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DFA1FEA0-B6F1-43F1-9CEF-F2A033843916}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DFA1FEA0-B6F1-43F1-9CEF-F2A033843916}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

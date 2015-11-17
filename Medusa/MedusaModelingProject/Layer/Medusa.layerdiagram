@@ -1,0 +1,225 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<layerModel xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" xmlns:dm1="http://schemas.microsoft.com/dsltools/SimpleShapesModel" dslVersion="1.0.0.0" Id="bcebcb52-9a60-47e0-9785-460215c35039" xmlns="http://schemas.microsoft.com/VisualStudio/TeamArchitect/LayerDesigner">
+  <layers>
+    <layer Id="377aade7-9795-4635-ad75-b35d541c6c10" name="Core">
+      <dependencyToLayers>
+        <dependencyFromLayerToLayer Id="29d3de8a-ee91-4bf0-9ccf-8db7b9dc377b" direction="Forward">
+          <layerMoniker Id="8e81f02c-e875-40b1-a515-c3d3befee9f2" />
+        </dependencyFromLayerToLayer>
+      </dependencyToLayers>
+      <childLayers>
+        <layer Id="5f5bd038-8043-46b2-a645-26d780514d48" name="Collection" />
+        <layer Id="c70f5766-1f82-4af0-905d-81204e985cc4" name="Dynamic" />
+        <layer Id="0e739782-3533-4133-bb96-5494e65cf0bd" name="Encrypt" />
+        <layer Id="a90b593f-7703-4c99-bc88-34c1f996b7c3" name="Math">
+          <childLayers>
+            <layer Id="34421551-3292-4dff-abb5-2254e0fc68b6" name="Expression" />
+            <layer Id="8b7bb589-ac7c-4722-ab31-012a8ad821ab" name="Matrix" />
+          </childLayers>
+        </layer>
+        <layer Id="1f4e098e-6ed7-4709-8d88-6c36e6950dad" name="Memory" />
+        <layer Id="13fd5e3c-ae6b-42c2-9a7a-3c9a37d98dcc" name="Parser" />
+        <layer Id="ad9239d6-8544-48c3-9350-bbff7fc79d1f" name="Performance" />
+        <layer Id="7f0fe142-85b5-48eb-9788-40f6fc74646e" name="String" />
+        <layer Id="6eda72cc-3abe-413a-af0e-746cffe94875" name="Compress" />
+        <layer Id="1fdc06f6-7d18-49a9-923b-16418b4d886f" name="Assertion" />
+        <layer Id="7d9a4cdd-c5d7-428f-bedc-7e88a8969eb2" name="Unit Test" />
+        <layer Id="b96a3ebd-27c3-4b97-ba79-02667b917f3f" name="Random Number Generator" />
+        <layer Id="838fd272-2de4-4da1-be90-c9ac625b88cc" name="Log" />
+        <layer Id="9ae34843-05da-4a85-8de6-a5faa73acce2" name="Database" />
+        <layer Id="3d982f79-dfdf-4f7d-8b64-0996c81ce5b6" name="Geometry" />
+        <layer Id="e5279624-39c3-4bba-8d0c-7a2ed60c2bab" name="File System" />
+      </childLayers>
+    </layer>
+    <layer Id="c1d8ddd3-bec4-4a71-b3e8-093dfe70cdfa" name="Graphics">
+      <dependencyToLayers>
+        <dependencyFromLayerToLayer Id="2e8e905a-c08b-497c-8f7c-4d6470a5ed99" direction="Forward">
+          <layerMoniker Id="60e1a663-7c47-48b2-a009-dc00e24c50d9" />
+        </dependencyFromLayerToLayer>
+        <dependencyFromLayerToLayer Id="525af95b-1c7d-4b03-bde9-21a064e7369a" direction="Forward">
+          <layerMoniker Id="fc5703f6-fcf7-42ec-9197-6dfd054167b9" />
+        </dependencyFromLayerToLayer>
+      </dependencyToLayers>
+      <childLayers>
+        <layer Id="a31a4519-c001-4638-94df-e3b8a6aee694" name="Scene Graph/Culling Optimizations">
+          <childLayers>
+            <layer Id="01f90fb6-dd18-42d6-bc32-2c1de10d2c89" name="Spatical Subdivision(BSP Tree,kd-Tree...)" />
+            <layer Id="73a3a4f8-2899-4efb-8454-37f4e8629e68" name="Occlusion &amp; PVS" />
+            <layer Id="27211475-42f3-4ad6-9b1b-9280c2b9ad87" name="LOD System" />
+          </childLayers>
+        </layer>
+        <layer Id="4a0dffb0-7817-413d-86dc-4efb444c3d2b" name="Node">
+          <childLayers>
+            <layer Id="a0d9ccae-2af5-4ce3-85b4-be35c7b52884" name="Sprite" />
+            <layer Id="b490635d-35d0-4cc3-ae4e-36e323246b08" name="Window" />
+            <layer Id="02d0cffd-6c18-4bd3-bed4-667663a7cd92" name="View" />
+            <layer Id="d5384e93-3e56-4af7-8441-34cd1ab88cce" name="Scene" />
+            <layer Id="61756ac1-4d83-4af3-bbfc-389a8e57461e" name="UI" />
+            <layer Id="198ad600-dc2e-4701-a7ab-3583f7d2c8a9" name="Layer" />
+          </childLayers>
+        </layer>
+        <layer Id="fd238781-a204-4497-a098-5cb969d3f71b" name="Effect">
+          <childLayers>
+            <layer Id="5e260495-334f-42ca-b709-0383d4dc6d32" name="Light" />
+            <layer Id="7ed319f8-e929-4b78-863b-1bd23a8819f2" name="Particle System" />
+            <layer Id="58d8b908-ba9f-4389-8a70-05e3d3489af5" name="Action">
+              <childLayers>
+                <layer Id="1644a733-be90-47cf-92a2-7a242e78ac52" name="Animation" />
+                <layer Id="ac6a45d8-0eeb-4d5d-8d99-1f3d0296fff9" name="Effect" />
+              </childLayers>
+            </layer>
+          </childLayers>
+        </layer>
+      </childLayers>
+    </layer>
+    <layer Id="8129207d-0909-40d5-953c-a8963f49f5e7" name="Physics">
+      <dependencyToLayers>
+        <dependencyFromLayerToLayer Id="5e06b1d6-3103-4d43-9255-b4595efcc778" direction="Forward">
+          <layerMoniker Id="60e1a663-7c47-48b2-a009-dc00e24c50d9" />
+        </dependencyFromLayerToLayer>
+      </dependencyToLayers>
+    </layer>
+    <layer Id="f2b5f29d-8876-4633-9320-e0d1802203b1" name="Audio">
+      <dependencyToLayers>
+        <dependencyFromLayerToLayer Id="6c4fb1b8-1d0a-4b06-b949-04c4033c9821" direction="Forward">
+          <layerMoniker Id="60e1a663-7c47-48b2-a009-dc00e24c50d9" />
+        </dependencyFromLayerToLayer>
+      </dependencyToLayers>
+    </layer>
+    <layer Id="c60b144b-f044-4299-ae3a-e1af3a613d17" name="Game">
+      <dependencyToLayers>
+        <dependencyFromLayerToLayer Id="0cf6208d-00ff-4cde-afc4-10e1f2614fb2" direction="Forward">
+          <layerMoniker Id="f2b5f29d-8876-4633-9320-e0d1802203b1" />
+        </dependencyFromLayerToLayer>
+        <dependencyFromLayerToLayer Id="07be311d-47b5-4d3d-9f53-cb76848d43d5" direction="Forward">
+          <layerMoniker Id="8129207d-0909-40d5-953c-a8963f49f5e7" />
+        </dependencyFromLayerToLayer>
+        <dependencyFromLayerToLayer Id="1ba67650-f19f-482b-b5e2-a98a61804a1d" direction="Forward">
+          <layerMoniker Id="c1d8ddd3-bec4-4a71-b3e8-093dfe70cdfa" />
+        </dependencyFromLayerToLayer>
+      </dependencyToLayers>
+      <childLayers>
+        <layer Id="a276b8a2-c2a5-4834-b7cc-cdc99bef7b20" name="AI" />
+        <layer Id="a2f66baf-7916-4b9b-8dbc-16804e782584" name="Configuration" />
+        <layer Id="2c64d1d6-48c2-4a2f-b5b3-353cc460d570" name="Script" />
+      </childLayers>
+    </layer>
+    <layer Id="5e319fad-d42f-4888-a6c5-02c06534eb67" name="Application">
+      <dependencyToLayers>
+        <dependencyFromLayerToLayer Id="682b33c5-cf4b-44d8-aaf5-067100857936" direction="Forward">
+          <layerMoniker Id="c60b144b-f044-4299-ae3a-e1af3a613d17" />
+        </dependencyFromLayerToLayer>
+      </dependencyToLayers>
+      <childLayers>
+        <layer Id="63134cff-81ff-4dc5-ba45-7f0b270434b1" name="Console" />
+        <layer Id="ee481d65-c99e-49ab-8d18-6bc718288799" name="Export" />
+      </childLayers>
+    </layer>
+    <layer Id="747dcc34-122d-4e20-8202-481e6497a834" name="Windows Simulator">
+      <dependencyToLayers>
+        <dependencyFromLayerToLayer Id="ea823382-1aa6-4957-9e8f-8b18382175d2" direction="Forward">
+          <layerMoniker Id="5e319fad-d42f-4888-a6c5-02c06534eb67" />
+        </dependencyFromLayerToLayer>
+      </dependencyToLayers>
+    </layer>
+    <layer Id="4c374d0f-2db0-4f78-8530-321b1c184ea7" name="IOS">
+      <dependencyToLayers>
+        <dependencyFromLayerToLayer Id="f90ce448-13c3-4446-93fb-a18ef3ab18b5" direction="Forward">
+          <layerMoniker Id="5e319fad-d42f-4888-a6c5-02c06534eb67" />
+        </dependencyFromLayerToLayer>
+      </dependencyToLayers>
+    </layer>
+    <layer Id="9412e36c-ddd5-4fbb-b747-8deabb3653cf" name="HelloWorldGame">
+      <dependencyToLayers>
+        <dependencyFromLayerToLayer Id="83c36af4-2691-494b-9dd9-5317aaf70eb2" direction="Forward">
+          <layerMoniker Id="c60b144b-f044-4299-ae3a-e1af3a613d17" />
+        </dependencyFromLayerToLayer>
+        <dependencyFromLayerToLayer Id="360a120f-6397-4c0f-aa60-ef4dad7a7da7" direction="Forward">
+          <layerMoniker Id="5e319fad-d42f-4888-a6c5-02c06534eb67" />
+        </dependencyFromLayerToLayer>
+      </dependencyToLayers>
+    </layer>
+    <layer Id="44aa2b4c-01e6-4e5f-8c46-b74117dca728" name="Extern">
+      <childLayers>
+        <layer Id="3734790b-43e8-4098-bd35-290010047eeb" name="EGL">
+          <dependencyToLayers>
+            <dependencyFromLayerToLayer Id="521e6fd1-8fe7-4ab2-813a-c4a4de3aebfc" direction="Forward">
+              <layerMoniker Id="cb007c98-8cd1-4cbe-9a73-087d686608c7" />
+            </dependencyFromLayerToLayer>
+            <dependencyFromLayerToLayer Id="7b5937ff-e3b4-46c6-bf69-0ec4cc3c6895" direction="Forward">
+              <layerMoniker Id="00130c84-e9e9-4c18-b635-2821e48c3187" />
+            </dependencyFromLayerToLayer>
+          </dependencyToLayers>
+        </layer>
+        <layer Id="cb007c98-8cd1-4cbe-9a73-087d686608c7" name="OpenGL ES 1.x" />
+        <layer Id="00130c84-e9e9-4c18-b635-2821e48c3187" name="OpenGL ES 2.0" />
+      </childLayers>
+    </layer>
+    <layer Id="8e81f02c-e875-40b1-a515-c3d3befee9f2" name="Platform">
+      <comments>
+        <comment Id="76496770-441a-4e19-9b48-a561e61a04e9" name="Comment1">
+          <body>Mouse Vs Touch
+Window model</body>
+          <layerElements>
+            <linkFromCommentToLayerElement>
+              <layerMoniker Id="c2fb1f01-fff5-4a16-8726-0909641b6014" />
+            </linkFromCommentToLayerElement>
+          </layerElements>
+        </comment>
+      </comments>
+      <dependencyToLayers>
+        <dependencyFromLayerToLayer Id="adc25d05-ef94-4c9a-bd56-0e48370794a4" direction="Forward">
+          <layerMoniker Id="4b92f330-5bf3-425a-9e76-893ccad93d79" />
+        </dependencyFromLayerToLayer>
+      </dependencyToLayers>
+      <childLayers>
+        <layer Id="250fc7bd-b58b-455c-bd88-d3dc927bceaa" name="Platform Detection" />
+        <layer Id="7cf0251d-834e-49a8-98d5-14bfcaf5424b" name="Network" />
+        <layer Id="fd05082e-90fb-4193-bede-6efc52788231" name="Threading" />
+        <layer Id="c2fb1f01-fff5-4a16-8726-0909641b6014" name="User Interaction" />
+        <layer Id="a0e7548a-0015-4b99-8d5a-d2d0ddcd6b78" name="Common" />
+      </childLayers>
+    </layer>
+    <layer Id="4b92f330-5bf3-425a-9e76-893ccad93d79" name="Lib">
+      <childLayers>
+        <layer Id="72c2009d-a072-4450-b881-d40b7520bde2" name="STL" />
+      </childLayers>
+    </layer>
+    <layer Id="60e1a663-7c47-48b2-a009-dc00e24c50d9" name="Resource">
+      <dependencyToLayers>
+        <dependencyFromLayerToLayer Id="0226cf6e-d126-4fce-990d-a2a9432d7c80" direction="Forward">
+          <layerMoniker Id="fc5703f6-fcf7-42ec-9197-6dfd054167b9" />
+        </dependencyFromLayerToLayer>
+      </dependencyToLayers>
+      <childLayers>
+        <layer Id="bff8954f-20ad-46ce-ac2c-dbf1e6add0e1" name="Image" />
+        <layer Id="8659340b-8d3f-4616-997c-977b089d3b75" name="Font" />
+        <layer Id="a0de0c92-b3ec-432b-b03d-fdc4a1bfa60f" name="3D Model" />
+        <layer Id="b153a9ff-0115-450c-a0d3-43c5f7f52829" name="Map" />
+        <layer Id="d2b320ac-915d-44c9-adf1-fe89bdeeb0bc" name="etc." />
+        <layer Id="a0f39f60-c36a-4c64-9dfa-6f32414daa9c" name="Media" />
+      </childLayers>
+    </layer>
+    <layer Id="fda2e667-1b68-4454-9608-d3a190164dc3" name="Android">
+      <dependencyToLayers>
+        <dependencyFromLayerToLayer Id="07527022-231e-4c86-88c0-8c21eec1bc47" direction="Forward">
+          <layerMoniker Id="5e319fad-d42f-4888-a6c5-02c06534eb67" />
+        </dependencyFromLayerToLayer>
+      </dependencyToLayers>
+    </layer>
+    <layer Id="cc14818f-5f6a-447f-b5fa-1763ab2e585c" name="WP">
+      <dependencyToLayers>
+        <dependencyFromLayerToLayer Id="16f4c4e5-a3ab-442e-8e8e-c5be5981cc45" direction="Forward">
+          <layerMoniker Id="5e319fad-d42f-4888-a6c5-02c06534eb67" />
+        </dependencyFromLayerToLayer>
+      </dependencyToLayers>
+    </layer>
+    <layer Id="fc5703f6-fcf7-42ec-9197-6dfd054167b9" name="Render">
+      <dependencyToLayers>
+        <dependencyFromLayerToLayer Id="25bd1bbe-f862-47c1-8345-920306229d1a" direction="Forward">
+          <layerMoniker Id="377aade7-9795-4635-ad75-b35d541c6c10" />
+        </dependencyFromLayerToLayer>
+      </dependencyToLayers>
+    </layer>
+  </layers>
+</layerModel>

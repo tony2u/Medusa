@@ -1,0 +1,154 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|ARM">
+      <Configuration>Debug</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x86">
+      <Configuration>Debug</Configuration>
+      <Platform>x86</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|ARM">
+      <Configuration>Release</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x86">
+      <Configuration>Release</Configuration>
+      <Platform>x86</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{78df800b-61ae-459d-b104-29ee97f18d9d}</ProjectGuid>
+    <Keyword>Android</Keyword>
+    <RootNamespace>Test</RootNamespace>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
+    <ApplicationType>Android</ApplicationType>
+    <ApplicationTypeRevision>1.0</ApplicationTypeRevision>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>Clang_3_6</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>Clang_3_6</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>Clang_3_6</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>Clang_3_6</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+    <Import Project="..\..\Test.vcxitems" Label="Shared" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'" />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>$(ProjectDir)..\..\TestPreCompiled.h</PrecompiledHeaderFile>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\;$(ProjectDir)..\..\..\..\Medusa\Medusa;$(ProjectDir)..\..\..\..\Medusa\Medusa\Lib\Common;$(ProjectDir)..\..\..\..\Medusa\Medusa\Lib\Common\OGLES;$(ProjectDir)..\..\..\..\Medusa\Medusa\Lib\Common\freetype;$(ProjectDir)..\..\..\..\Medusa\MedusaCore;$(ProjectDir)..\..\..\..\Medusa\MedusaCore\CoreLib\Common;$(ProjectDir)..\..\..\..\Medusa\MedusaCore\CoreLib\win\zlib;$(ProjectDir)..\..\..\..\Medusa\MedusaCore\CoreLib\Common\zip;$(ProjectDir)..\..\..\..\Medusa\MedusaCore\CoreLib\Common\angelscript\nclude;$(ProjectDir)..\..\..\..\Medusa\MedusaExtension;%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+      <CppLanguageStandard>c++11</CppLanguageStandard>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <AdditionalOptions>-Wno-unknown-pragmas -Wno-unused-function -Wno-char-subscripts %(AdditionalOptions)</AdditionalOptions>
+      <ObjectFileName>$(IntDir)%(Directory)%(filename).o</ObjectFileName>
+    </ClCompile>
+    <Link>
+      <LibraryDependencies>%(LibraryDependencies);Medusa;MedusaExtension;</LibraryDependencies>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>$(ProjectDir)..\..\TestPreCompiled.h</PrecompiledHeaderFile>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\;$(ProjectDir)..\..\..\..\Medusa\Medusa;$(ProjectDir)..\..\..\..\Medusa\Medusa\Lib\Common;$(ProjectDir)..\..\..\..\Medusa\Medusa\Lib\Common\OGLES;$(ProjectDir)..\..\..\..\Medusa\Medusa\Lib\Common\freetype;$(ProjectDir)..\..\..\..\Medusa\MedusaCore;$(ProjectDir)..\..\..\..\Medusa\MedusaCore\CoreLib\Common;$(ProjectDir)..\..\..\..\Medusa\MedusaCore\CoreLib\win\zlib;$(ProjectDir)..\..\..\..\Medusa\MedusaCore\CoreLib\Common\zip;$(ProjectDir)..\..\..\..\Medusa\MedusaCore\CoreLib\Common\angelscript\nclude;$(ProjectDir)..\..\..\..\Medusa\MedusaExtension;%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+      <CppLanguageStandard>c++11</CppLanguageStandard>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <AdditionalOptions>-Wno-unknown-pragmas -Wno-unused-function -Wno-char-subscripts %(AdditionalOptions)</AdditionalOptions>
+      <ObjectFileName>$(IntDir)%(Directory)%(filename).o</ObjectFileName>
+    </ClCompile>
+    <Link>
+      <LibraryDependencies>%(LibraryDependencies);Medusa;MedusaExtension;</LibraryDependencies>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>$(ProjectDir)..\..\TestPreCompiled.h</PrecompiledHeaderFile>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\;$(ProjectDir)..\..\..\..\Medusa\Medusa;$(ProjectDir)..\..\..\..\Medusa\Medusa\Lib\Common;$(ProjectDir)..\..\..\..\Medusa\Medusa\Lib\Common\OGLES;$(ProjectDir)..\..\..\..\Medusa\Medusa\Lib\Common\freetype;$(ProjectDir)..\..\..\..\Medusa\MedusaCore;$(ProjectDir)..\..\..\..\Medusa\MedusaCore\CoreLib\Common;$(ProjectDir)..\..\..\..\Medusa\MedusaCore\CoreLib\win\zlib;$(ProjectDir)..\..\..\..\Medusa\MedusaCore\CoreLib\Common\zip;$(ProjectDir)..\..\..\..\Medusa\MedusaCore\CoreLib\Common\angelscript\nclude;$(ProjectDir)..\..\..\..\Medusa\MedusaExtension;%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+      <CppLanguageStandard>c++11</CppLanguageStandard>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <AdditionalOptions>-Wno-unknown-pragmas -Wno-unused-function -Wno-char-subscripts %(AdditionalOptions)</AdditionalOptions>
+      <ObjectFileName>$(IntDir)%(Directory)%(filename).o</ObjectFileName>
+    </ClCompile>
+    <Link>
+      <LibraryDependencies>%(LibraryDependencies);</LibraryDependencies>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>$(ProjectDir)..\..\TestPreCompiled.h</PrecompiledHeaderFile>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\;$(ProjectDir)..\..\..\..\Medusa\Medusa;$(ProjectDir)..\..\..\..\Medusa\Medusa\Lib\Common;$(ProjectDir)..\..\..\..\Medusa\Medusa\Lib\Common\OGLES;$(ProjectDir)..\..\..\..\Medusa\Medusa\Lib\Common\freetype;$(ProjectDir)..\..\..\..\Medusa\MedusaCore;$(ProjectDir)..\..\..\..\Medusa\MedusaCore\CoreLib\Common;$(ProjectDir)..\..\..\..\Medusa\MedusaCore\CoreLib\win\zlib;$(ProjectDir)..\..\..\..\Medusa\MedusaCore\CoreLib\Common\zip;$(ProjectDir)..\..\..\..\Medusa\MedusaCore\CoreLib\Common\angelscript\nclude;$(ProjectDir)..\..\..\..\Medusa\MedusaExtension;%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+      <CppLanguageStandard>c++11</CppLanguageStandard>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <AdditionalOptions>-Wno-unknown-pragmas -Wno-unused-function -Wno-char-subscripts %(AdditionalOptions)</AdditionalOptions>
+      <ObjectFileName>$(IntDir)%(Directory)%(filename).o</ObjectFileName>
+    </ClCompile>
+    <Link>
+      <LibraryDependencies>%(LibraryDependencies);Medusa;MedusaExtension;</LibraryDependencies>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="android_native_app_glue.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="android_native_app_glue.c" />
+    <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

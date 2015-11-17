@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{FD4F0CEB-AAB7-4162-BBE3-218507A99FB0}</ItemsProjectGuid>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Analytics\Analytics.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Analytics\AnalyticsCurrencyType.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Analytics\AnalyticsPaymentType.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Analytics\AnalyticsRewardType.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Analytics\AnalyticsTypes.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Analytics\IAnalyzer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Analytics\TalkingDataAnalyzer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Analytics\UmengAnalyzer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ExtensionLib\android\ExtensionLib_android.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ExtensionLib\ExtensionLib.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ExtensionLib\ios\ExtensionLib_ios.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ExtensionLib\win\ExtensionLib_win.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ExtensionPlatform\ExtensionPlatform.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ExtensionPlatform\ExtensionPlatformDefines.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MedusaExtension.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MedusaExtensionPreCompiled.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MedusaExtensionPreDeclares.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MedusaExtensionScript.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Analytics\Analytics.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Analytics\android\TalkingDataAnalyzer_android.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Analytics\android\UmengAnalyzer_android.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Analytics\win\TalkingDataAnalyzer_win.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Analytics\win\UmengAnalyzer_win.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MedusaExtensionPreCompiled.cpp">
+      <PrecompiledHeader>Create</PrecompiledHeader>
+      <PrecompiledHeaderFile>MedusaExtensionPreCompiled.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)MedusaExtensionScript.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)Analytics\ios\TalkingDataAnalyzer.mm" />
+    <None Include="$(MSBuildThisFileDirectory)Analytics\ios\UmengAnalyzer.mm" />
+  </ItemGroup>
+</Project>

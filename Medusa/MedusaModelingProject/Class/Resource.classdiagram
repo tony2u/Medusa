@@ -1,0 +1,242 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<logicalClassDesignerModel xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" xmlns:dm1="http://schemas.microsoft.com/dsltools/Kernel" xmlns:dm2="http://schemas.microsoft.com/dsltools/Component" xmlns:dm3="http://schemas.microsoft.com/dsltools/Activity" xmlns:dm4="http://schemas.microsoft.com/dsltools/Interaction" xmlns:dm5="http://schemas.microsoft.com/dsltools/UseCase" xmlns:dm6="http://schemas.microsoft.com/dsltools/UmlModelLibrary" xmlns:dm7="http://schemas.microsoft.com/dsltools/UmlDiagrams" xmlns:dm8="http://schemas.microsoft.com/dsltools/ModelStore" dslVersion="1.0.0.0" Id="1effb443-139d-4a9e-9fdf-a88f8568696f" name="Resource" linkedPackageId="6a106aa8-3d25-4705-9be4-8c7c20a0c90e" xmlns="http://schemas.microsoft.com/dsltools/LogicalClassDesigner">
+  <profileInstances>
+    <packageHasProfileInstances Id="82aa2d39-989b-4c62-bd3f-dc2d06dadf6c">
+      <profileInstance Id="9f02b042-2285-471f-873b-31ee64f97aa8" name="StandardProfileL2">
+        <elementDefinition Id="e34d544e-0fea-4ed6-ac5e-1b74119ac791" />
+      </profileInstance>
+      <elementDefinition Id="0caec977-1f8c-4ba3-a7db-8cc9ad9cc73b" />
+    </packageHasProfileInstances>
+    <packageHasProfileInstances Id="d548dc4a-9ff9-47dc-acfd-5b07db5761da">
+      <profileInstance Id="bb223597-300e-4ec8-bc14-a1e24fc326a0" name="StandardProfileL3">
+        <elementDefinition Id="532ea607-fb19-44b8-8502-3351b05452be" />
+      </profileInstance>
+      <elementDefinition Id="29349502-908c-4fda-9054-c48619c59ed0" />
+    </packageHasProfileInstances>
+  </profileInstances>
+  <packagedElements>
+    <logicalClassDesignerModelHasTypes>
+      <class Id="56950456-8b14-4c29-a80d-5f5cacfcb073" name="ResourceManager" isAbstract="false" isLeaf="false" isActiveClass="false">
+        <elementDefinition Id="2bdfa4cd-0fb3-4c3d-87c2-d78c10179c0a" />
+      </class>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <Interface Id="d24043c5-6281-4bce-8b60-5906ac376768" name="ITexture" isAbstract="false" isLeaf="false">
+        <elementDefinition Id="7fbd88fb-bfd4-437d-b334-f2ca864e9db0" />
+        <targetEnds>
+          <association Id="5d62deb7-2d00-48cd-89e7-a66058492279" isDerived="false" sourceEndRoleName="ITexture" targetEndRoleName="ResourceManager" isLeaf="false" isAbstract="false">
+            <classMoniker Id="56950456-8b14-4c29-a80d-5f5cacfcb073" LastKnownName="ResourceManager" />
+            <relationshipOwnedElementsInternal>
+              <associationHasOwnedEnds>
+                <memberEnd Id="4327adb5-8129-41ac-ae40-346a2bc06b2d" name="ITexture" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="Composite" isComposite="false" isNavigableOwned="false">
+                  <elementDefinition Id="6a4f5bf0-b02a-48a5-ad26-544bf2017595" />
+                </memberEnd>
+              </associationHasOwnedEnds>
+              <associationHasOwnedEnds>
+                <memberEnd Id="026b9ed4-5d53-4fa7-bb0c-9a34ccabe2a3" name="ResourceManager" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="true">
+                  <elementDefinition Id="caccf135-39c6-408b-bd30-667a43803c6a" />
+                </memberEnd>
+              </associationHasOwnedEnds>
+            </relationshipOwnedElementsInternal>
+            <elementDefinition Id="42d4eede-9b4c-4c75-ab78-43b08ddbae70" />
+          </association>
+        </targetEnds>
+      </Interface>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <Interface Id="360047f2-4c7d-4912-bf44-9dc26210a08e" name="IFont" isAbstract="false" isLeaf="false">
+        <elementDefinition Id="3de5682f-558c-4a12-8980-0b4507866b56" />
+        <targetEnds>
+          <association Id="d8bed7fe-2c82-497f-9194-7c9826906ef8" isDerived="false" sourceEndRoleName="IFont" targetEndRoleName="ResourceManager" isLeaf="false" isAbstract="false">
+            <classMoniker Id="56950456-8b14-4c29-a80d-5f5cacfcb073" LastKnownName="ResourceManager" />
+            <relationshipOwnedElementsInternal>
+              <associationHasOwnedEnds>
+                <memberEnd Id="b96253ba-6c39-4475-8d6a-5ff4c729998f" name="IFont" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="Composite" isComposite="false" isNavigableOwned="false">
+                  <elementDefinition Id="370bba53-4d1b-4387-8522-a385bb563401" />
+                </memberEnd>
+              </associationHasOwnedEnds>
+              <associationHasOwnedEnds>
+                <memberEnd Id="3e5d7d7b-b125-40d8-a11c-a6d5e61cd430" name="ResourceManager" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="true">
+                  <elementDefinition Id="8e1f5c27-3672-4e09-afdd-fca0467ad64a" />
+                </memberEnd>
+              </associationHasOwnedEnds>
+            </relationshipOwnedElementsInternal>
+            <elementDefinition Id="da65f30f-5305-48b8-a71b-dc51fb4a6aae" />
+          </association>
+        </targetEnds>
+      </Interface>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <Interface Id="c529a000-6d25-4bcc-a69c-cf6da9330ad6" name="ILocalization" isAbstract="false" isLeaf="false">
+        <elementDefinition Id="04b9810f-27fc-420d-8d85-382c07b0ea78" />
+        <targetEnds>
+          <association Id="f31d4418-27e2-498e-ba5d-20f2c9181783" isDerived="false" sourceEndRoleName="ILocalization" targetEndRoleName="ResourceManager" isLeaf="false" isAbstract="false">
+            <classMoniker Id="56950456-8b14-4c29-a80d-5f5cacfcb073" LastKnownName="ResourceManager" />
+            <relationshipOwnedElementsInternal>
+              <associationHasOwnedEnds>
+                <memberEnd Id="58ad204f-93b7-49b5-b5d1-a4a007664b39" name="ILocalization" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="Composite" isComposite="false" isNavigableOwned="false">
+                  <elementDefinition Id="c097f85f-41d5-4095-9d3d-9688bc3ec809" />
+                </memberEnd>
+              </associationHasOwnedEnds>
+              <associationHasOwnedEnds>
+                <memberEnd Id="48157ce3-5475-498b-aa06-80fadf57f6c1" name="ResourceManager" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="true">
+                  <elementDefinition Id="9eeb22da-81e3-4efc-bc64-3507be30e306" />
+                </memberEnd>
+              </associationHasOwnedEnds>
+            </relationshipOwnedElementsInternal>
+            <elementDefinition Id="b8175760-bfd2-49b9-8dd6-ad45c19666d7" />
+          </association>
+        </targetEnds>
+      </Interface>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <class Id="2130d875-5849-48e8-91e8-554f2080fd87" name="PngTexture" isAbstract="false" isLeaf="false" isActiveClass="false">
+        <elementDefinition Id="affbb848-e48c-4428-a4a4-3bcfdf67c44b" />
+        <suppliersInternal>
+          <interfaceRealization Id="0a91e9ef-7052-430e-80c4-794baf142901">
+            <interfaceMoniker Id="d24043c5-6281-4bce-8b60-5906ac376768" LastKnownName="ITexture" />
+            <elementDefinition Id="33287aa0-9d9f-44b8-aba4-707178dc26b7" />
+          </interfaceRealization>
+        </suppliersInternal>
+      </class>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <class Id="2e469b69-a368-4278-b9ac-cc18589dc94c" name="JPGTexture" isAbstract="false" isLeaf="false" isActiveClass="false">
+        <elementDefinition Id="f0d05b24-0067-4316-a777-1caa1ba284a6" />
+        <suppliersInternal>
+          <interfaceRealization Id="ee06d6ad-432e-4aed-9133-9884487ff9da">
+            <interfaceMoniker Id="d24043c5-6281-4bce-8b60-5906ac376768" LastKnownName="ITexture" />
+            <elementDefinition Id="47727c38-1408-4894-899f-c70b021bddac" />
+          </interfaceRealization>
+        </suppliersInternal>
+      </class>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <class Id="3883c7d6-2f18-44e6-a75a-ff19c1ed76f4" name="GIFTexture" isAbstract="false" isLeaf="false" isActiveClass="false">
+        <elementDefinition Id="bb33f914-574a-4abf-9a02-930de1cafa6c" />
+        <suppliersInternal>
+          <interfaceRealization Id="61547cd3-493d-46df-8103-40cb79a8b1d7">
+            <interfaceMoniker Id="d24043c5-6281-4bce-8b60-5906ac376768" LastKnownName="ITexture" />
+            <elementDefinition Id="ef4354d1-b1b7-4009-ab57-d2776ddcc31a" />
+          </interfaceRealization>
+        </suppliersInternal>
+      </class>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <class Id="5c3894e1-7fac-4d99-b637-ec78d99c20a6" name="PVRTexture" isAbstract="false" isLeaf="false" isActiveClass="false">
+        <elementDefinition Id="b88e6626-00df-43c9-8c57-107202274309" />
+        <suppliersInternal>
+          <interfaceRealization Id="60f56420-71fd-4f90-9de6-185ccdf77ee0">
+            <interfaceMoniker Id="d24043c5-6281-4bce-8b60-5906ac376768" LastKnownName="ITexture" />
+            <elementDefinition Id="1fe7d26f-9cd0-41da-aec2-af5ba52353b2" />
+          </interfaceRealization>
+        </suppliersInternal>
+      </class>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <Interface Id="e285a582-9a7d-4742-a4d2-8247892c750e" name="IAudio" isAbstract="false" isLeaf="false">
+        <elementDefinition Id="2bac049b-d2b0-45c6-8d70-d267640d299c" />
+        <targetEnds>
+          <association Id="14528af0-78e9-4efd-980c-859ec1e4dd41" isDerived="false" sourceEndRoleName="IAudio" targetEndRoleName="ResourceManager" isLeaf="false" isAbstract="false">
+            <classMoniker Id="56950456-8b14-4c29-a80d-5f5cacfcb073" LastKnownName="ResourceManager" />
+            <relationshipOwnedElementsInternal>
+              <associationHasOwnedEnds>
+                <memberEnd Id="d7cd07e9-fafc-44ac-95cd-41e1cb5d563b" name="IAudio" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="Composite" isComposite="false" isNavigableOwned="false">
+                  <elementDefinition Id="9b59dcb9-982a-4a0e-acaa-c05ebdf9d759" />
+                </memberEnd>
+              </associationHasOwnedEnds>
+              <associationHasOwnedEnds>
+                <memberEnd Id="ce6296fe-c58e-4c06-b781-c45ad0fe8a27" name="ResourceManager" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="true">
+                  <elementDefinition Id="8ffc437c-406a-4df8-91a7-73541c83ea9b" />
+                </memberEnd>
+              </associationHasOwnedEnds>
+            </relationshipOwnedElementsInternal>
+            <elementDefinition Id="86a9cfae-1550-4545-a948-5afe622bfc3e" />
+          </association>
+        </targetEnds>
+      </Interface>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <class Id="c722f88a-152b-4a5a-84a1-361c81929ffc" name="WAVAudio" isAbstract="false" isLeaf="false" isActiveClass="false">
+        <elementDefinition Id="3b32573d-ab6f-40c9-8fe2-1ce7dd86b9de" />
+        <suppliersInternal>
+          <interfaceRealization Id="01bc6830-c948-4e54-a664-235b8a3f45ef">
+            <interfaceMoniker Id="e285a582-9a7d-4742-a4d2-8247892c750e" LastKnownName="IAudio" />
+            <elementDefinition Id="0885c4c6-03d9-4f5e-8b21-92f6d09b65e6" />
+          </interfaceRealization>
+        </suppliersInternal>
+      </class>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <class Id="d112cd8e-bafd-44ee-82da-f360ac993f30" name="MP3Audio" isAbstract="false" isLeaf="false" isActiveClass="false">
+        <elementDefinition Id="d940ff94-67e3-410b-8178-04cc377822b4" />
+        <suppliersInternal>
+          <interfaceRealization Id="94305da7-d5a8-48f9-b1dd-9427d607ad3b">
+            <interfaceMoniker Id="e285a582-9a7d-4742-a4d2-8247892c750e" LastKnownName="IAudio" />
+            <elementDefinition Id="849aaef5-3f77-4dba-ac45-bebb7a4d83db" />
+          </interfaceRealization>
+        </suppliersInternal>
+      </class>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <Interface Id="2f0f642f-970d-4f19-a1e0-4c4391ff6b73" name="IVideo" isAbstract="false" isLeaf="false">
+        <elementDefinition Id="1920e25c-8a78-45f4-b755-ed7e71313be9" />
+        <targetEnds>
+          <association Id="3ca02eef-c89c-4371-a827-e82b0ff5ae30" isDerived="false" sourceEndRoleName="IVideo" targetEndRoleName="ResourceManager" isLeaf="false" isAbstract="false">
+            <classMoniker Id="56950456-8b14-4c29-a80d-5f5cacfcb073" LastKnownName="ResourceManager" />
+            <relationshipOwnedElementsInternal>
+              <associationHasOwnedEnds>
+                <memberEnd Id="049402cd-8176-4aaa-a56d-bf1d787f065e" name="IVideo" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="Composite" isComposite="false" isNavigableOwned="false">
+                  <elementDefinition Id="9c56c475-a3f0-4b81-bef4-2477c1c3b532" />
+                </memberEnd>
+              </associationHasOwnedEnds>
+              <associationHasOwnedEnds>
+                <memberEnd Id="34aa304b-3234-4206-b22c-c902174bb7a2" name="ResourceManager" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="true">
+                  <elementDefinition Id="524c394a-660b-4c5f-92d0-ae40fe5ec3c0" />
+                </memberEnd>
+              </associationHasOwnedEnds>
+            </relationshipOwnedElementsInternal>
+            <elementDefinition Id="6afa2859-49eb-4112-a8a7-45f688296ad1" />
+          </association>
+        </targetEnds>
+      </Interface>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <class Id="50f21b7d-0b77-4335-93d2-514c2fcd5114" name="MP4Video" isAbstract="false" isLeaf="false" isActiveClass="false">
+        <elementDefinition Id="cba11fe3-1c44-4fbe-813b-f85952deb47b" />
+        <suppliersInternal>
+          <interfaceRealization Id="24369a95-16e3-4071-9c14-f7100975f29d">
+            <interfaceMoniker Id="2f0f642f-970d-4f19-a1e0-4c4391ff6b73" LastKnownName="IVideo" />
+            <elementDefinition Id="3bfa9209-359c-4d70-982d-3c4e17fe1adc" />
+          </interfaceRealization>
+        </suppliersInternal>
+      </class>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <Interface Id="0c9c95ec-06a4-4a7c-87ea-750eebc3d9e4" name="IAnimationData" isAbstract="false" isLeaf="false">
+        <elementDefinition Id="93337673-1dfb-4176-b814-47399211c736" />
+        <targetEnds>
+          <association Id="93894913-9e63-49c0-a930-8c964165718e" isDerived="false" sourceEndRoleName="IAnimationData" targetEndRoleName="ResourceManager" isLeaf="false" isAbstract="false">
+            <classMoniker Id="56950456-8b14-4c29-a80d-5f5cacfcb073" LastKnownName="ResourceManager" />
+            <relationshipOwnedElementsInternal>
+              <associationHasOwnedEnds>
+                <memberEnd Id="501cbc72-4e1e-4503-8e33-3d1cd7d62a91" name="IAnimationData" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="Composite" isComposite="false" isNavigableOwned="false">
+                  <elementDefinition Id="8cd2c795-755d-4799-b6c6-01683a9476a4" />
+                </memberEnd>
+              </associationHasOwnedEnds>
+              <associationHasOwnedEnds>
+                <memberEnd Id="1d022633-2c4b-4338-b8b3-c11b0df65d22" name="ResourceManager" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="true">
+                  <elementDefinition Id="7f97b73e-f851-424e-8c19-8317bd1e1f16" />
+                </memberEnd>
+              </associationHasOwnedEnds>
+            </relationshipOwnedElementsInternal>
+            <elementDefinition Id="cfc4c06b-02ff-432d-81fd-818198d83c04" />
+          </association>
+        </targetEnds>
+      </Interface>
+    </logicalClassDesignerModelHasTypes>
+  </packagedElements>
+  <package Id="6a106aa8-3d25-4705-9be4-8c7c20a0c90e" name="MedusaModelingProject">
+    <elementDefinition Id="c000e658-8f24-4656-bc92-8c16c30c104b" />
+  </package>
+</logicalClassDesignerModel>

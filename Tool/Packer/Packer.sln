@@ -1,0 +1,143 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Packer", "Packer.vcxproj", "{E49F15F5-626C-4851-AA6A-FAC043412077}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D3EEDD4F-019E-4A8A-9AAB-2B28E858AD04} = {D3EEDD4F-019E-4A8A-9AAB-2B28E858AD04}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MedusaCore.Win", "..\..\Medusa\MedusaCore\win\MedusaCore.Win.vcxproj", "{D3EEDD4F-019E-4A8A-9AAB-2B28E858AD04}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MedusaProto", "..\..\Medusa\MedusaProto\MedusaProto.csproj", "{DA64A783-B7D5-49C9-8299-C9D0ABAC2944}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Siren", "..\..\Medusa\Siren\Siren.csproj", "{44E3D588-83DD-40FC-B92B-D68987E14154}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MedusaCore", "..\..\Medusa\MedusaCore\MedusaCore.vcxitems", "{45D41ACC-2C3C-43D2-BC10-02AA73FFC7C7}"
+EndProject
+Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		..\..\Medusa\MedusaCore\MedusaCore.vcxitems*{d3eedd4f-019e-4a8a-9aab-2b28e858ad04}*SharedItemsImports = 4
+		..\..\Medusa\MedusaCore\MedusaCore.vcxitems*{45d41acc-2c3c-43d2-bc10-02aa73ffc7c7}*SharedItemsImports = 9
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		DebugAndroid|Any CPU = DebugAndroid|Any CPU
+		DebugAndroid|x64 = DebugAndroid|x64
+		DebugAndroid|x86 = DebugAndroid|x86
+		DebugWin|Any CPU = DebugWin|Any CPU
+		DebugWin|x64 = DebugWin|x64
+		DebugWin|x86 = DebugWin|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E49F15F5-626C-4851-AA6A-FAC043412077}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{E49F15F5-626C-4851-AA6A-FAC043412077}.Debug|x64.ActiveCfg = Debug|x64
+		{E49F15F5-626C-4851-AA6A-FAC043412077}.Debug|x64.Build.0 = Debug|x64
+		{E49F15F5-626C-4851-AA6A-FAC043412077}.Debug|x86.ActiveCfg = Debug|Win32
+		{E49F15F5-626C-4851-AA6A-FAC043412077}.Debug|x86.Build.0 = Debug|Win32
+		{E49F15F5-626C-4851-AA6A-FAC043412077}.DebugAndroid|Any CPU.ActiveCfg = DebugAndroid|Win32
+		{E49F15F5-626C-4851-AA6A-FAC043412077}.DebugAndroid|x64.ActiveCfg = DebugAndroid|x64
+		{E49F15F5-626C-4851-AA6A-FAC043412077}.DebugAndroid|x64.Build.0 = DebugAndroid|x64
+		{E49F15F5-626C-4851-AA6A-FAC043412077}.DebugAndroid|x86.ActiveCfg = DebugAndroid|Win32
+		{E49F15F5-626C-4851-AA6A-FAC043412077}.DebugAndroid|x86.Build.0 = DebugAndroid|Win32
+		{E49F15F5-626C-4851-AA6A-FAC043412077}.DebugWin|Any CPU.ActiveCfg = DebugWin|Win32
+		{E49F15F5-626C-4851-AA6A-FAC043412077}.DebugWin|x64.ActiveCfg = DebugWin|x64
+		{E49F15F5-626C-4851-AA6A-FAC043412077}.DebugWin|x64.Build.0 = DebugWin|x64
+		{E49F15F5-626C-4851-AA6A-FAC043412077}.DebugWin|x86.ActiveCfg = DebugWin|Win32
+		{E49F15F5-626C-4851-AA6A-FAC043412077}.DebugWin|x86.Build.0 = DebugWin|Win32
+		{E49F15F5-626C-4851-AA6A-FAC043412077}.Release|Any CPU.ActiveCfg = Release|Win32
+		{E49F15F5-626C-4851-AA6A-FAC043412077}.Release|x64.ActiveCfg = Release|x64
+		{E49F15F5-626C-4851-AA6A-FAC043412077}.Release|x64.Build.0 = Release|x64
+		{E49F15F5-626C-4851-AA6A-FAC043412077}.Release|x86.ActiveCfg = Release|Win32
+		{E49F15F5-626C-4851-AA6A-FAC043412077}.Release|x86.Build.0 = Release|Win32
+		{D3EEDD4F-019E-4A8A-9AAB-2B28E858AD04}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{D3EEDD4F-019E-4A8A-9AAB-2B28E858AD04}.Debug|x64.ActiveCfg = Debug|x64
+		{D3EEDD4F-019E-4A8A-9AAB-2B28E858AD04}.Debug|x64.Build.0 = Debug|x64
+		{D3EEDD4F-019E-4A8A-9AAB-2B28E858AD04}.Debug|x86.ActiveCfg = Debug|Win32
+		{D3EEDD4F-019E-4A8A-9AAB-2B28E858AD04}.Debug|x86.Build.0 = Debug|Win32
+		{D3EEDD4F-019E-4A8A-9AAB-2B28E858AD04}.DebugAndroid|Any CPU.ActiveCfg = Release|Win32
+		{D3EEDD4F-019E-4A8A-9AAB-2B28E858AD04}.DebugAndroid|Any CPU.Build.0 = Release|Win32
+		{D3EEDD4F-019E-4A8A-9AAB-2B28E858AD04}.DebugAndroid|x64.ActiveCfg = Debug|x64
+		{D3EEDD4F-019E-4A8A-9AAB-2B28E858AD04}.DebugAndroid|x64.Build.0 = Debug|x64
+		{D3EEDD4F-019E-4A8A-9AAB-2B28E858AD04}.DebugAndroid|x86.ActiveCfg = Debug|Win32
+		{D3EEDD4F-019E-4A8A-9AAB-2B28E858AD04}.DebugAndroid|x86.Build.0 = Debug|Win32
+		{D3EEDD4F-019E-4A8A-9AAB-2B28E858AD04}.DebugWin|Any CPU.ActiveCfg = Release|Win32
+		{D3EEDD4F-019E-4A8A-9AAB-2B28E858AD04}.DebugWin|Any CPU.Build.0 = Release|Win32
+		{D3EEDD4F-019E-4A8A-9AAB-2B28E858AD04}.DebugWin|x64.ActiveCfg = Debug|x64
+		{D3EEDD4F-019E-4A8A-9AAB-2B28E858AD04}.DebugWin|x64.Build.0 = Debug|x64
+		{D3EEDD4F-019E-4A8A-9AAB-2B28E858AD04}.DebugWin|x86.ActiveCfg = Debug|Win32
+		{D3EEDD4F-019E-4A8A-9AAB-2B28E858AD04}.DebugWin|x86.Build.0 = Debug|Win32
+		{D3EEDD4F-019E-4A8A-9AAB-2B28E858AD04}.Release|Any CPU.ActiveCfg = Release|Win32
+		{D3EEDD4F-019E-4A8A-9AAB-2B28E858AD04}.Release|x64.ActiveCfg = Release|x64
+		{D3EEDD4F-019E-4A8A-9AAB-2B28E858AD04}.Release|x64.Build.0 = Release|x64
+		{D3EEDD4F-019E-4A8A-9AAB-2B28E858AD04}.Release|x86.ActiveCfg = Release|Win32
+		{D3EEDD4F-019E-4A8A-9AAB-2B28E858AD04}.Release|x86.Build.0 = Release|Win32
+		{DA64A783-B7D5-49C9-8299-C9D0ABAC2944}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA64A783-B7D5-49C9-8299-C9D0ABAC2944}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA64A783-B7D5-49C9-8299-C9D0ABAC2944}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{DA64A783-B7D5-49C9-8299-C9D0ABAC2944}.Debug|x64.Build.0 = Debug|Any CPU
+		{DA64A783-B7D5-49C9-8299-C9D0ABAC2944}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DA64A783-B7D5-49C9-8299-C9D0ABAC2944}.Debug|x86.Build.0 = Debug|Any CPU
+		{DA64A783-B7D5-49C9-8299-C9D0ABAC2944}.DebugAndroid|Any CPU.ActiveCfg = DebugAndroid|Any CPU
+		{DA64A783-B7D5-49C9-8299-C9D0ABAC2944}.DebugAndroid|Any CPU.Build.0 = DebugAndroid|Any CPU
+		{DA64A783-B7D5-49C9-8299-C9D0ABAC2944}.DebugAndroid|x64.ActiveCfg = DebugAndroid|Any CPU
+		{DA64A783-B7D5-49C9-8299-C9D0ABAC2944}.DebugAndroid|x64.Build.0 = DebugAndroid|Any CPU
+		{DA64A783-B7D5-49C9-8299-C9D0ABAC2944}.DebugAndroid|x86.ActiveCfg = DebugAndroid|Any CPU
+		{DA64A783-B7D5-49C9-8299-C9D0ABAC2944}.DebugAndroid|x86.Build.0 = DebugAndroid|Any CPU
+		{DA64A783-B7D5-49C9-8299-C9D0ABAC2944}.DebugWin|Any CPU.ActiveCfg = DebugWin|Any CPU
+		{DA64A783-B7D5-49C9-8299-C9D0ABAC2944}.DebugWin|Any CPU.Build.0 = DebugWin|Any CPU
+		{DA64A783-B7D5-49C9-8299-C9D0ABAC2944}.DebugWin|x64.ActiveCfg = DebugWin|Any CPU
+		{DA64A783-B7D5-49C9-8299-C9D0ABAC2944}.DebugWin|x64.Build.0 = DebugWin|Any CPU
+		{DA64A783-B7D5-49C9-8299-C9D0ABAC2944}.DebugWin|x86.ActiveCfg = DebugWin|Any CPU
+		{DA64A783-B7D5-49C9-8299-C9D0ABAC2944}.DebugWin|x86.Build.0 = DebugWin|Any CPU
+		{DA64A783-B7D5-49C9-8299-C9D0ABAC2944}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA64A783-B7D5-49C9-8299-C9D0ABAC2944}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DA64A783-B7D5-49C9-8299-C9D0ABAC2944}.Release|x64.ActiveCfg = Release|Any CPU
+		{DA64A783-B7D5-49C9-8299-C9D0ABAC2944}.Release|x64.Build.0 = Release|Any CPU
+		{DA64A783-B7D5-49C9-8299-C9D0ABAC2944}.Release|x86.ActiveCfg = Release|Any CPU
+		{DA64A783-B7D5-49C9-8299-C9D0ABAC2944}.Release|x86.Build.0 = Release|Any CPU
+		{44E3D588-83DD-40FC-B92B-D68987E14154}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{44E3D588-83DD-40FC-B92B-D68987E14154}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{44E3D588-83DD-40FC-B92B-D68987E14154}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{44E3D588-83DD-40FC-B92B-D68987E14154}.Debug|x64.Build.0 = Debug|Any CPU
+		{44E3D588-83DD-40FC-B92B-D68987E14154}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{44E3D588-83DD-40FC-B92B-D68987E14154}.Debug|x86.Build.0 = Debug|Any CPU
+		{44E3D588-83DD-40FC-B92B-D68987E14154}.DebugAndroid|Any CPU.ActiveCfg = DebugAndroid|Any CPU
+		{44E3D588-83DD-40FC-B92B-D68987E14154}.DebugAndroid|Any CPU.Build.0 = DebugAndroid|Any CPU
+		{44E3D588-83DD-40FC-B92B-D68987E14154}.DebugAndroid|x64.ActiveCfg = DebugAndroid|Any CPU
+		{44E3D588-83DD-40FC-B92B-D68987E14154}.DebugAndroid|x64.Build.0 = DebugAndroid|Any CPU
+		{44E3D588-83DD-40FC-B92B-D68987E14154}.DebugAndroid|x86.ActiveCfg = DebugAndroid|Any CPU
+		{44E3D588-83DD-40FC-B92B-D68987E14154}.DebugAndroid|x86.Build.0 = DebugAndroid|Any CPU
+		{44E3D588-83DD-40FC-B92B-D68987E14154}.DebugWin|Any CPU.ActiveCfg = DebugWin|Any CPU
+		{44E3D588-83DD-40FC-B92B-D68987E14154}.DebugWin|Any CPU.Build.0 = DebugWin|Any CPU
+		{44E3D588-83DD-40FC-B92B-D68987E14154}.DebugWin|x64.ActiveCfg = DebugWin|Any CPU
+		{44E3D588-83DD-40FC-B92B-D68987E14154}.DebugWin|x64.Build.0 = DebugWin|Any CPU
+		{44E3D588-83DD-40FC-B92B-D68987E14154}.DebugWin|x86.ActiveCfg = DebugWin|Any CPU
+		{44E3D588-83DD-40FC-B92B-D68987E14154}.DebugWin|x86.Build.0 = DebugWin|Any CPU
+		{44E3D588-83DD-40FC-B92B-D68987E14154}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{44E3D588-83DD-40FC-B92B-D68987E14154}.Release|Any CPU.Build.0 = Release|Any CPU
+		{44E3D588-83DD-40FC-B92B-D68987E14154}.Release|x64.ActiveCfg = Release|Any CPU
+		{44E3D588-83DD-40FC-B92B-D68987E14154}.Release|x64.Build.0 = Release|Any CPU
+		{44E3D588-83DD-40FC-B92B-D68987E14154}.Release|x86.ActiveCfg = Release|Any CPU
+		{44E3D588-83DD-40FC-B92B-D68987E14154}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 1
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = https://fjz.visualstudio.com/defaultcollection
+		SccProjectUniqueName0 = Packer.vcxproj
+		SccProjectName0 = .
+		SccAuxPath0 = https://fjz.visualstudio.com/defaultcollection
+		SccLocalPath0 = .
+		SccProvider0 = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+	EndGlobalSection
+EndGlobal
