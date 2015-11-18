@@ -291,7 +291,7 @@ bool IGame::OnBuildExternalScripts()
 
 bool IGame::OnPrepareFileSystem()
 {
-	System::Instance().Initialize("Res", "Save", "Temp");
+	System::Instance().Initialize("Resource", "Save", "Temp");
 	Content::RegisterToFileSystem();
 	if (mSettings!=nullptr)
 	{
