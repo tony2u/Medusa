@@ -121,3 +121,8 @@
 *.DS_Store
 *.xcuserstate
 *.user
+/Medusa/Debug
+/Medusa/Medusa/win/Debug
+/Medusa/MedusaCore/win/Debug
+/Medusa/ipch
+*.opensdf
