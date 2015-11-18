@@ -79,6 +79,11 @@
 /Tool/Packer/ipch/
 /Tool/Packer/packages/
 
+/Template/StaticLibary/android/ARM/
+/Template/StaticLibary/ios/ARM/
+
+.tfignore
+
 # Compiled Object files
 *.slo
 *.lo
