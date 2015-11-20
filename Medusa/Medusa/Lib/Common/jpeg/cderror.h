@@ -56,11 +56,11 @@ JMESSAGE(JTRC_BMP_OS2_MAPPED, "%ux%u 8-bit colormapped OS2 BMP image")
 
 #ifdef GIF_SUPPORTED
 JMESSAGE(JERR_GIF_BUG, "GIF output got confused")
-JMESSAGE(JERR_GIF_CODESIZE, "Bogus GIF codesize {}")
+JMESSAGE(JERR_GIF_CODESIZE, "Bogus GIF codesize %d")
 JMESSAGE(JERR_GIF_COLORSPACE, "GIF output must be grayscale or RGB")
 JMESSAGE(JERR_GIF_IMAGENOTFOUND, "Too few images in GIF file")
 JMESSAGE(JERR_GIF_NOT, "Not a GIF file")
-JMESSAGE(JTRC_GIF, "%ux%ux{} GIF image")
+JMESSAGE(JTRC_GIF, "%ux%ux%d GIF image")
 JMESSAGE(JTRC_GIF_BADVERSION,
 	 "Warning: unexpected GIF version number '%c%c%c'")
 JMESSAGE(JTRC_GIF_EXTENSION, "Ignoring GIF extension block of type 0x%02x")
@@ -89,13 +89,13 @@ JMESSAGE(JERR_RLE_EMPTY, "Empty RLE file")
 JMESSAGE(JERR_RLE_EOF, "Premature EOF in RLE header")
 JMESSAGE(JERR_RLE_MEM, "Insufficient memory for RLE header")
 JMESSAGE(JERR_RLE_NOT, "Not an RLE file")
-JMESSAGE(JERR_RLE_TOOMANYCHANNELS, "Cannot handle {} output channels for RLE")
+JMESSAGE(JERR_RLE_TOOMANYCHANNELS, "Cannot handle %d output channels for RLE")
 JMESSAGE(JERR_RLE_UNSUPPORTED, "Cannot handle this RLE setup")
 JMESSAGE(JTRC_RLE, "%ux%u full-color RLE file")
-JMESSAGE(JTRC_RLE_FULLMAP, "%ux%u full-color RLE file with map of length {}")
+JMESSAGE(JTRC_RLE_FULLMAP, "%ux%u full-color RLE file with map of length %d")
 JMESSAGE(JTRC_RLE_GRAY, "%ux%u grayscale RLE file")
-JMESSAGE(JTRC_RLE_MAPGRAY, "%ux%u grayscale RLE file with map of length {}")
-JMESSAGE(JTRC_RLE_MAPPED, "%ux%u colormapped RLE file with map of length {}")
+JMESSAGE(JTRC_RLE_MAPGRAY, "%ux%u grayscale RLE file with map of length %d")
+JMESSAGE(JTRC_RLE_MAPPED, "%ux%u colormapped RLE file with map of length %d")
 #endif /* RLE_SUPPORTED */
 
 #ifdef TARGA_SUPPORTED
@@ -112,7 +112,7 @@ JMESSAGE(JERR_TGA_NOTCOMP, "Targa support was not compiled")
 JMESSAGE(JERR_BAD_CMAP_FILE,
 	 "Color map file is invalid or of unsupported format")
 JMESSAGE(JERR_TOO_MANY_COLORS,
-	 "Output file format cannot handle {} colormap entries")
+	 "Output file format cannot handle %d colormap entries")
 JMESSAGE(JERR_UNGETC_FAILED, "ungetc failed")
 #ifdef TARGA_SUPPORTED
 JMESSAGE(JERR_UNKNOWN_FORMAT,

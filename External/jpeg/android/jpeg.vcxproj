@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{BC4D1885-07D1-4F59-876D-B38DFC571332}</ProjectGuid>
+    <ProjectGuid>{6C5AA792-610D-42F6-A1F8-21EA87B7F446}</ProjectGuid>
     <Keyword>Android</Keyword>
     <RootNamespace>jpeg</RootNamespace>
     <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>

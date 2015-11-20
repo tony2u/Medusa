@@ -133,7 +133,7 @@
       <Profile>true</Profile>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /Y /Q  /E /I "$(ProjectDir)..\Res" "$(OutDir)Res"</Command>
+      <Command>xcopy /Y /Q  /E /I "$(ProjectDir)..\Resource" "$(OutDir)Resource"</Command>
     </PostBuildEvent>
     <Bscmake>
       <PreserveSbr>true</PreserveSbr>

@@ -61,6 +61,7 @@ JpegImage* JpegImage::CreateFromFile( const FileIdRef& fileId )
 
 JpegImage* JpegImage::CreateFromMemory(const FileIdRef& fileId, MemoryByteData data ) 
 {
+	RETURN_NULL_IF_EMPTY(data);
 	jpeg_decompress_struct cinfo;
 	jpeg_error_mgr jerr;
 

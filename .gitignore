@@ -95,18 +95,18 @@
 *.pch
 
 # Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
+#*.so
+#*.dylib
+#*.dll
 
 # Fortran module files
 *.mod
 
 # Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
+#*.lai
+#*.la
+#*.a
+#*.lib
 
 # Executables
 *.exe
@@ -126,3 +126,7 @@
 /Medusa/MedusaCore/win/Debug
 /Medusa/ipch
 *.opensdf
+/External/jpeg/Debug
+/External/jpeg/win/Debug
+/External/jpeg/win/x64/Debug
+/External/png/x86/Release

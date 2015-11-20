@@ -77,6 +77,7 @@ rmdir /s /q lz4\x64
 "C:\Program Files (x86)\MSBuild\14.0\Bin\msbuild" jpeg\win\jpeg.vcxproj /p:Configuration=Release;Platform=Win32;OutDir=..\..\..\Medusa\Medusa\Lib\Bin\win\x86\
 "C:\Program Files (x86)\MSBuild\14.0\Bin\msbuild" jpeg\win\jpeg.vcxproj /p:Configuration=Debug;Platform=x64;OutDir=..\..\..\Medusa\Medusa\Lib\Bin\win\x64\
 "C:\Program Files (x86)\MSBuild\14.0\Bin\msbuild" jpeg\win\jpeg.vcxproj /p:Configuration=Release;Platform=x64;OutDir=..\..\..\Medusa\Medusa\Lib\Bin\win\x64\
+xcopy /Q /E /Y jpeg\*.h ..\..\..\Medusa\Medusa\Lib\Common\jpeg\*.h
 rmdir /s /q jpeg\win\Debug
 rmdir /s /q jpeg\win\Release
 rmdir /s /q jpeg\win\x64
