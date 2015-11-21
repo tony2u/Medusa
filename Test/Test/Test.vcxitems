@@ -42,6 +42,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Game\Layer\Particle\ParticleFeatureLayer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Game\Layer\Performance\PerformanceFeatureLayer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Game\Layer\Shader\ShaderFeatureLayer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Game\Layer\Shape\CircleShapeLayer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Game\Layer\Shape\RectangleShapeLayer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Game\Layer\Shape\ShapeFeatureLayer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Game\Layer\Sprite\AtlasSpriteLayer.cpp" />
@@ -88,6 +89,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Game\Layer\Particle\ParticleFeatureLayer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Game\Layer\Performance\PerformanceFeatureLayer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Game\Layer\Shader\ShaderFeatureLayer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Game\Layer\Shape\CircleShapeLayer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Game\Layer\Shape\RectangleShapeLayer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Game\Layer\Shape\ShapeFeatureLayer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Game\Layer\Sprite\AtlasSpriteLayer.h" />

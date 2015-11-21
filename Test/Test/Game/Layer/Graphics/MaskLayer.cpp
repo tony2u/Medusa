@@ -16,7 +16,7 @@ bool MaskLayer::Initialize()
 {
 	RETURN_FALSE_IF_FALSE(BaseCaseLayer::Initialize());
 
-	mBackSrite = NodeFactory::Instance().CreateQuadSprite("Background.png");
+	mBackSrite = NodeFactory::Instance().CreateQuadSprite("Background.jpg");
 	mBackSrite->SetDock(DockPoint::MiddleCenter);
 	mBackSrite->SetAnchor(0.5f, 0.5f);
 	AddChild(mBackSrite);

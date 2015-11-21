@@ -66,6 +66,7 @@ IShape* NodeFactory::CreateRect(const Size2F& rectSize, const Color4F& color)
 	RETURN_NULL_IF_NULL(mesh);
 	IShape* sprite = new IShape();
 	sprite->Initialize();
+	sprite->SetSizeToContent(SizeToContent::Mesh);
 
 	sprite->SetMesh(mesh);
 	sprite->SetSize(rectSize);
@@ -78,6 +79,7 @@ IShape* NodeFactory::CreateRect( const Rect2F& rect, const Color4F& color)
 	RETURN_NULL_IF_NULL(mesh);
 	IShape* sprite = new IShape();
 	sprite->Initialize();
+	sprite->SetSizeToContent(SizeToContent::Mesh);
 
 	sprite->SetMesh(mesh);
 	sprite->SetSize(rect.Size);
@@ -91,6 +93,7 @@ IShape* NodeFactory::CreateRectBorder(const Size2F& rectSize, const Color4F& col
 	RETURN_NULL_IF_NULL(mesh);
 	IShape* sprite = new IShape();
 	sprite->Initialize();
+	sprite->SetSizeToContent(SizeToContent::Mesh);
 
 	sprite->SetMesh(mesh);
 	sprite->SetSize(rectSize);
@@ -103,6 +106,7 @@ IShape* NodeFactory::CreateRectBorder(const Rect2F& rect, const Color4F& color)
 	RETURN_NULL_IF_NULL(mesh);
 	IShape* sprite = new IShape();
 	sprite->Initialize();
+	sprite->SetSizeToContent(SizeToContent::Mesh);
 
 	sprite->SetMesh(mesh);
 	sprite->SetSize(rect.Size);
@@ -116,6 +120,7 @@ IShape* NodeFactory::CreateTriangle(const Point3F& p1, const Point3F& p2, const 
 	RETURN_NULL_IF_NULL(mesh);
 	IShape* sprite = new IShape();
 	sprite->Initialize();
+	sprite->SetSizeToContent(SizeToContent::Mesh);
 
 	sprite->SetMesh(mesh);
 	return sprite;
@@ -128,8 +133,34 @@ IShape* NodeFactory::CreateTriangle(float width, float height, const Color4F& co
 	RETURN_NULL_IF_NULL(mesh);
 	IShape* sprite = new IShape();
 	sprite->Initialize();
+	sprite->SetSizeToContent(SizeToContent::Mesh);
+
 	sprite->SetMesh(mesh);
 	return sprite;
+}
+
+IShape* NodeFactory::CreateCircle(float radius, float precision, const Color4F& color)
+{
+	ShapeGeneralMesh* mesh = MeshFactory::Instance().CreateShapeCircleMesh(radius, precision, color);
+	RETURN_NULL_IF_NULL(mesh);
+	IShape* sprite = new IShape();
+	sprite->Initialize();
+	sprite->SetSizeToContent(SizeToContent::Mesh);
+	sprite->SetMesh(mesh);
+	return sprite;
+	
+}
+
+IShape* NodeFactory::CreateCircleBorder(float radius, float precision, const Color4F& color)
+{
+	ShapeGeneralMesh* mesh = MeshFactory::Instance().CreateShapeCircleBorderMesh(radius, precision, color);
+	RETURN_NULL_IF_NULL(mesh);
+	IShape* sprite = new IShape();
+	sprite->Initialize();
+	sprite->SetSizeToContent(SizeToContent::Mesh);
+	sprite->SetMesh(mesh);
+	return sprite;
+
 }
 
 IShape* NodeFactory::CreateTriangleBorder(const Point3F& p1, const Point3F& p2, const Point3F& p3, const Color4F& color)
@@ -138,6 +169,7 @@ IShape* NodeFactory::CreateTriangleBorder(const Point3F& p1, const Point3F& p2, 
 	RETURN_NULL_IF_NULL(mesh);
 	IShape* sprite = new IShape();
 	sprite->Initialize();
+	sprite->SetSizeToContent(SizeToContent::Mesh);
 
 	sprite->SetMesh(mesh);
 	return sprite;
@@ -150,6 +182,8 @@ IShape* NodeFactory::CreateTriangleBorder(float width, float height, const Color
 	RETURN_NULL_IF_NULL(mesh);
 	IShape* sprite = new IShape();
 	sprite->Initialize();
+	sprite->SetSizeToContent(SizeToContent::Mesh);
+
 	sprite->SetMesh(mesh);
 	return sprite;
 }

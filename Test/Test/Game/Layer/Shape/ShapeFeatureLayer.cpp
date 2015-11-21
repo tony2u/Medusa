@@ -4,10 +4,14 @@
 #include "TestPreCompiled.h"
 #include "ShapeFeatureLayer.h"
 #include "RectangleShapeLayer.h"
+#include "CircleShapeLayer.h"
+
 
 ShapeFeatureLayer::ShapeFeatureLayer(StringRef name/*=StringRef::Empty*/, const IEventArg& e/*=IEventArg::Empty*/) :BaseFeatureLayer(name, e)
 {
 	Register<RectangleShapeLayer>();
+	Register<CircleShapeLayer>();
+
 
 
 }

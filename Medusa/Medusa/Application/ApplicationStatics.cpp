@@ -245,7 +245,7 @@ void ApplicationStatics::Update(float dt)
 		mPerformanceString.Format(
 			L"{:f3}K - {:f3}K - {:f3}K - {}/{}/{} - {}/{}\n"
 			L"Q:{} - P:{} - M:{} - T:{} - D:{} - B:{}\n"
-			L"?{} - ?{} | {{{}}} -> [{}]\n"
+			L"V:{} - T:{} | {{{}}} -> [{}]\n"
 			L"{:f3} + {:f3} + {:f3} + {:f3} = {:f3}\n"
 			L"{:f3} + {:f3} + {:f3} = {:f3}\n"
 			L"{:f3} - {:f3} | {:f3} - {:f3}",

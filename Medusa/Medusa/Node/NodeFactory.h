@@ -33,6 +33,10 @@ public:
 	IShape* CreateTriangle(const Point3F& p1, const Point3F& p2, const Point3F& p3, const Color4F& color);
 	IShape* CreateTriangle(float width, float height, const Color4F& color);
 
+	IShape* CreateCircle(float radius, float precision,const Color4F& color);
+	IShape* CreateCircleBorder(float radius, float precision, const Color4F& color);
+
+
 	Sprite* CreateEmptySprite();
 
 	Sprite* CreateQuadSprite(const FileIdRef& textureName, const Rect2F& textureRect = Rect2F::Zero);

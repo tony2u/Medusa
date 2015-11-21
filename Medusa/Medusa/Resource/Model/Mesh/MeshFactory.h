@@ -35,6 +35,10 @@ public:
 	ShapeGeneralMesh* CreateShapeTriangleBorderMesh(const Point3F& p1, const Point3F& p2, const Point3F& p3, const Color4F& color);
 	ShapeGeneralMesh* CreateShapeTriangleBorderMesh(float width, float height, const Color4F& color);
 
+	ShapeGeneralMesh* CreateShapeCircleMesh(float radius,float precision, const Color4F& color);
+	ShapeGeneralMesh* CreateShapeCircleBorderMesh(float radius, float precision, const Color4F& color);
+
+
 
 	TextureQuadMesh* CreateTextureQuadMesh(const FileIdRef& textureName, const Rect2F& textureRect = Rect2F::Zero, const Color4F& color = Color4F::White);
 	TextureQuadMesh* CreateTextureQuadMesh(const FileIdRef& textureName, const FileMapOrderItem& orderItem, const Rect2F& textureRect = Rect2F::Zero, const Color4F& color = Color4F::White);

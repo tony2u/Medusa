@@ -135,6 +135,57 @@ ShapeGeneralMesh* MeshFactory::CreateShapeTriangleBorderMesh(float width, float 
 	return mesh;
 }
 
+ShapeGeneralMesh* MeshFactory::CreateShapeCircleMesh(float radius, float precision, const Color4F& color)
+{
+	IMaterial* material = MaterialFactory::Instance().CreateEmpty(MEDUSA_PREFIX(Shape));
+	RETURN_NULL_IF_NULL(material);
+	IEffect* effect = EffectFactory::Instance().CreateSinglePassDefault(RenderPassNames::Shape);
+	RETURN_NULL_IF_NULL(effect);
+	ShapeGeneralMesh* mesh = new ShapeGeneralMesh(effect, material);
+	uint count = Math::Ceil(Math::PI2 / precision);
+	mesh->SetDrawMode(GraphicsDrawMode::TriangleFan);
+	Point3F center(radius, radius);
+	mesh->AppendVertex(center);
+	mesh->AppendIndex(0);
+	mesh->SetSize(msize3(2 * radius, 2 * radius, 0.f));
+	
+	FOR_EACH_SIZE(i, count)
+	{
+		float a = i*precision;
+		Point3F pos(radius+radius*Math::Cos(a), radius+radius*Math::Sin(a));
+		mesh->AppendVertex(pos);
+		mesh->AppendIndex(i+1);
+	}
+	mesh->AppendIndex(1);
+
+	mesh->SetColorAll(color);
+	
+	return mesh;
+}
+
+ShapeGeneralMesh* MeshFactory::CreateShapeCircleBorderMesh(float radius, float precision, const Color4F& color)
+{
+	IMaterial* material = MaterialFactory::Instance().CreateEmpty(MEDUSA_PREFIX(Shape));
+	RETURN_NULL_IF_NULL(material);
+	IEffect* effect = EffectFactory::Instance().CreateSinglePassDefault(RenderPassNames::Shape);
+	RETURN_NULL_IF_NULL(effect);
+	ShapeGeneralMesh* mesh = new ShapeGeneralMesh(effect, material);
+	uint count = Math::Ceil(Math::PI2 / precision);
+	mesh->SetDrawMode(GraphicsDrawMode::LineLoop);
+	mesh->SetSize(msize3(2 * radius, 2 * radius, 0.f));
+
+	FOR_EACH_SIZE(i, count)
+	{
+		float a = i*precision;
+		Point3F pos(radius + radius*Math::Cos(a), radius + radius*Math::Sin(a));
+		mesh->AppendVertex(pos);
+		mesh->AppendIndex(i);
+	}
+	mesh->SetColorAll(color);
+
+	return mesh;
+}
+
 TextureQuadMesh* MeshFactory::CreateTextureQuadMesh(const FileIdRef& textureName, const Rect2F& textureRect/*=Rect2F::Zero*/, const Color4F& color/*=Color4F::White*/)
 {
 	IMaterial* material = MaterialFactory::Instance().Create(textureName, ShaderSamplerNames::Texture);
