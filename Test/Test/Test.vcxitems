@@ -16,6 +16,8 @@
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)Game\BaseCaseLayer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Game\BaseFeatureLayer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Game\Layer\3D\POD3DLayer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Game\Layer\3D\ThreeDFeatureLayer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Game\Layer\Action\ActionFeatureLayer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Game\Layer\Action\BaseActionLayer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Game\Layer\Action\MoveToActionLayer.cpp" />
@@ -63,6 +65,8 @@
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)Game\BaseCaseLayer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Game\BaseFeatureLayer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Game\Layer\3D\POD3DLayer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Game\Layer\3D\ThreeDFeatureLayer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Game\Layer\Action\ActionFeatureLayer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Game\Layer\Action\BaseActionLayer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Game\Layer\Action\MoveToActionLayer.h" />

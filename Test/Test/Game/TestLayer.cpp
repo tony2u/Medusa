@@ -16,6 +16,8 @@
 #include "Game/Layer/Audio/AudioFeatureLayer.h"
 #include "Game/Layer/Component/ComponentFeatureLayer.h"
 #include "Game/Layer/Graphics/GraphicsFeatureLayer.h"
+#include "Game/Layer/3D/ThreeDFeatureLayer.h"
+
 
 enum class TestItem
 {
@@ -31,6 +33,7 @@ enum class TestItem
 	Audio,
 	Component,
 	Graphics,
+	ThreeD,
 
 };
 
@@ -48,6 +51,8 @@ TestLayer::TestLayer(StringRef name/*=StringRef::Empty*/,const IEventArg& e/*=IE
 	mItems.Emplace(L"Audio");
 	mItems.Emplace(L"Component");
 	mItems.Emplace(L"Graphics");
+	mItems.Emplace(L"3D");
+
 
 
 }
@@ -115,6 +120,9 @@ void TestLayer::OnItemClicked(ListBox& sender,const ListBoxItem& item)
 		break;
 	case TestItem::Graphics:
 		SceneManager::Instance().RunningScene()->PushLayer<GraphicsFeatureLayer>();
+		break;
+	case TestItem::ThreeD:
+		SceneManager::Instance().RunningScene()->PushLayer<ThreeDFeatureLayer>();
 		break;
 	default:
 		break;

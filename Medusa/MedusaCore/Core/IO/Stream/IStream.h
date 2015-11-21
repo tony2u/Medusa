@@ -45,7 +45,7 @@ public:
 		outItems.ReserveSize(count);
 		byte* buffer = (byte*)outItems.MutableItems();
 
-		MemoryByteData data = MemoryByteData::FromStatic(buffer, count);
+		MemoryByteData data = MemoryByteData::FromStatic(buffer, size);
 		size_t readSize = ReadDataTo(data);
 		outItems.ForceSetCount(readSize / sizeof(T));
 		return readSize;
