@@ -18,7 +18,7 @@ bool SingleTextureFrameAnimationLayer::Initialize()
 {
 	RETURN_FALSE_IF_FALSE(BaseCaseLayer::Initialize());
 
-	ITimeline* timeline= TimelineFactory::Instance().CreateMeshTimelineFromSingleTexture("Walking", "StudentWalking.png", 4, 4, 4.f, true);
+	ITimeline* timeline= TimelineFactory::Instance().CreateRenderingObjectTimelineFromSingleTexture("Walking", "StudentWalking.png", 4, 4, 4.f, true);
 	Sprite* sprite = new Sprite("Walking");
 	sprite->SetSizeToContent(SizeToContent::Mesh);
 

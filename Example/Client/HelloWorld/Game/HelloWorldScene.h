@@ -13,5 +13,7 @@ public:
 	HelloWorldScene(StringRef name=StringRef::Empty, const IEventArg& e = IEventArg::Empty);
 	virtual ~HelloWorldScene(void);
 	virtual bool Initialize();
+	virtual bool Enter();
+
 };
 

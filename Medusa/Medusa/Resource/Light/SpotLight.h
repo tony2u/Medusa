@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 #pragma once
 #include "Resource/Light/ILight.h"
-#include "Core/Geometry/Matrix.h"
+#include "Core/Geometry/Matrix4.h"
 
 MEDUSA_BEGIN;
 
@@ -30,8 +30,8 @@ public:
 	float QuadraticAttenuation() const { return mQuadraticAttenuation; }
 	void SetQuadraticAttenuation(float val);
 
-	const Matrix& ViewProjectMatrix() const { return mViewProjectMatrix; }
-	void SetViewProjectMatrix(const Matrix& val) { mViewProjectMatrix = val; }
+	const Matrix4& ViewProjectMatrix() const { return mViewProjectMatrix; }
+	void SetViewProjectMatrix(const Matrix4& val) { mViewProjectMatrix = val; }
 private:
 	float mCutoff;	//GL_SPOT_CUTOFF (0<90)
 
@@ -41,7 +41,7 @@ private:
 	float mLinearAttenuation;	
 	float mQuadraticAttenuation;	
 
-	Matrix mViewProjectMatrix;
+	Matrix4 mViewProjectMatrix;
 	
 };
 

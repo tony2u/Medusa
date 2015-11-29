@@ -61,12 +61,16 @@ IRenderTarget* IScene::RenderTarget() const
 
 void IScene::SetRenderTarget(IRenderTarget* val)
 {
+	RETURN_IF_EQUAL(mRenderTarget, val);
 	SAFE_ASSIGN_REF(mRenderTarget, val);
+	OnRenderQueueChanged();
 }
 
 void IScene::SetCamera(Camera* val)
 {
+	RETURN_IF_EQUAL(mCamera, val);
 	SAFE_ASSIGN_REF(mCamera, val);
+	OnRenderQueueChanged();
 }
 
 Camera* IScene::GetCamera() const

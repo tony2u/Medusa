@@ -363,6 +363,11 @@ namespace Math
 	
 	float Hypot(float x, float y);
 
+	uint32_t CountLeadingZero(uint32_t val);
+	uint32_t CountLeadingZero(uint64_t val);
+	uint32_t CountTrailingZero(uint32_t val);
+	uint32_t CountTrailingZero(uint64_t val);
+
 #pragma endregion Rounding and remainder functions
 
 	template<typename T>

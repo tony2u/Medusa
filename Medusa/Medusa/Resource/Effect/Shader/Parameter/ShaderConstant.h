@@ -47,7 +47,7 @@ public:
 	void SetMatrix3(uint count,const float* data,bool isTransposed=false);
 	void SetMatrix4(uint count,const float* data,bool isTransposed=false);
 
-	void SetMatrix(const Matrix& matrix);
+	void SetMatrix(const Matrix4& matrix);
 	void SetMatrix3(const Matrix3& matrix);
 
 	void GetArray(float* outData);

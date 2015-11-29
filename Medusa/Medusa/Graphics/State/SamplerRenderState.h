@@ -18,6 +18,8 @@ public:
 	virtual void Apply()const override;
 
 	virtual SamplerRenderState* Clone()const override;
+	virtual void CopyFrom(const IRenderState& other)override;
+
 	virtual bool Equals(const IRenderState& state)const override;
 
 	virtual RenderStateType Type()const override {return RenderStateType::Sampler;}
@@ -25,39 +27,25 @@ public:
 
 
 	GraphicsTextureType TextureType() const { return mTextureType; }
-	void SetTextureType(GraphicsTextureType val) {
-		RETURN_IF_EQUAL(mTextureType, val); mTextureType = val; OnStateChanged();
-	}
+	void SetTextureType(GraphicsTextureType val) {RETURN_IF_EQUAL(mTextureType, val); mTextureType = val; OnStateChanged();}
 
 	GraphicsTextureUnits TextureUnit() const { return mTextureUnit; }
-	void SetTextureUnit(GraphicsTextureUnits val) {
-		RETURN_IF_EQUAL(mTextureUnit, val); mTextureUnit = val; OnStateChanged();
-	}
+	void SetTextureUnit(GraphicsTextureUnits val) {RETURN_IF_EQUAL(mTextureUnit, val); mTextureUnit = val; OnStateChanged();}
 
 	uint Texture() const { return mTexture; }
-	void SetTexture(uint val) {
-		RETURN_IF_EQUAL(mTexture, val); mTexture = val; OnStateChanged();
-	}
+	void SetTexture(uint val) {RETURN_IF_EQUAL(mTexture, val); mTexture = val; OnStateChanged();}
 
 	GraphicsTextureMinFilter MinFilter() const { return mMinFilter; }
-	void SetMinFilter(GraphicsTextureMinFilter val) {
-		RETURN_IF_EQUAL(mMinFilter, val); mMinFilter = val; OnStateChanged();
-	}
+	void SetMinFilter(GraphicsTextureMinFilter val) {RETURN_IF_EQUAL(mMinFilter, val); mMinFilter = val; OnStateChanged();}
 
 	GraphicsTextureMagFilter MagFilter() const { return mMagFilter; }
-	void SetMagFilter(GraphicsTextureMagFilter val) {
-		RETURN_IF_EQUAL(mMagFilter, val); mMagFilter = val; OnStateChanged();
-	}
+	void SetMagFilter(GraphicsTextureMagFilter val) {RETURN_IF_EQUAL(mMagFilter, val); mMagFilter = val; OnStateChanged();}
 
 	GraphicsTextureWrapMode WrapS() const { return mWrapS; }
-	void SetWrapS(GraphicsTextureWrapMode val) {
-		RETURN_IF_EQUAL(mWrapS, val); mWrapS = val; OnStateChanged();
-	}
+	void SetWrapS(GraphicsTextureWrapMode val) {RETURN_IF_EQUAL(mWrapS, val); mWrapS = val; OnStateChanged();}
 
 	GraphicsTextureWrapMode WrapT() const { return mWrapT; }
-	void SetWrapT(GraphicsTextureWrapMode val) {
-		RETURN_IF_EQUAL(mWrapT, val); mWrapT = val; OnStateChanged();
-	}
+	void SetWrapT(GraphicsTextureWrapMode val) {RETURN_IF_EQUAL(mWrapT, val); mWrapT = val; OnStateChanged();}
 	
 	static SamplerRenderState* Current();
 protected:

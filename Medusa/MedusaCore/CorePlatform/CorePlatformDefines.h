@@ -242,6 +242,12 @@
 #endif 
 
 
+#ifdef __has_builtin
+# define MEDUSA_HAS_BUILTIN(x) __has_builtin(x)
+#else
+# define MEDUSA_HAS_BUILTIN(x) 0
+#endif
+
 // Check if exceptions are disabled.
 #if __GNUC__ && !__EXCEPTIONS
 #define MEDUSA_HAS_EXCEPTIONS 0

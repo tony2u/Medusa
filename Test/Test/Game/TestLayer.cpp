@@ -70,7 +70,7 @@ bool TestLayer::Initialize()
 	StringListDataSource* dataSource=(StringListDataSource*)listBox->DataSource();
 	LabelItemTemplate* labelItemTemplate=(LabelItemTemplate*)dataSource->ItemTemplate();
 	labelItemTemplate->SetAlignment(Alignment::MiddleCenter);
-	labelItemTemplate->MutableFontId().SetSize(44);
+	labelItemTemplate->MutableFontId().SetSize(88);
 	labelItemTemplate->MutableFontId().Name="arial88.fnt";
 
 	AddChild(listBox);

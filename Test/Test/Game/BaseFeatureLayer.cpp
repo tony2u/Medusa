@@ -66,12 +66,14 @@ bool BaseFeatureLayer::Enter()
 	mCurrentLayer = (BaseCaseLayer*)SceneManager::Instance().RunningScene()->CreateLayer(layerName, StringRef::Empty, IEventArg::Empty, LayerCreateFlags::AlwaysCreate);
 	mCurrentLayer->SetLogicZ(-1);
 	AddChild(mCurrentLayer);
+	mCurrentLayer->Enter();
 
 	return true;
 }
 
 void BaseFeatureLayer::OnReturn(INode* sender, TapGestureEventArg& e)
 {
+	mCurrentLayer->Exit();
 	DeleteChild(mCurrentLayer);
 	mCurrentLayer = nullptr;
 	SceneManager::Instance().RunningScene()->PopLayer(LayerPopFlags::DeleteCurrentLayerAsync);

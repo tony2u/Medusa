@@ -21,6 +21,7 @@ public:
 	static RenderStateType GetTypeIdStatic(){return RenderStateType::Array;}
 
 	virtual ArrayBufferRenderState* Clone()const override;
+	virtual void CopyFrom(const IRenderState& other)override;
 
 	static ArrayBufferRenderState* Current();
 };

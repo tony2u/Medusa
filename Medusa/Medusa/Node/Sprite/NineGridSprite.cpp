@@ -5,6 +5,7 @@
 #include "NineGridSprite.h"
 #include "Resource/Model/Mesh/Fixed/TextureNineGridMesh.h"
 #include "Resource/Material/IMaterial.h"
+#include "Resource/Texture/ITexture.h"
 
 MEDUSA_BEGIN;
 
@@ -37,9 +38,9 @@ void NineGridSprite::OnMoveableDirty(MoveableChangedFlags changedFlags)
 
 void NineGridSprite::OnUpdateMesh()
 {
-	TextureNineGridMesh* mesh=(TextureNineGridMesh*)mMesh;
+	TextureNineGridMesh* mesh=(TextureNineGridMesh*)mRenderingObject.Mesh();
 	RETURN_IF_NULL(mesh);
-	mesh->UpdateToNewTargetSize(mSize.To2D());
+	mesh->UpdateToNewTargetSize(mSize.To2D(), mRenderingObject.Material()->FirstTexture()->Size());
 	
 }
 

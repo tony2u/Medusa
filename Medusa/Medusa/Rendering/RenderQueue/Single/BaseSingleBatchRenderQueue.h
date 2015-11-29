@@ -17,11 +17,11 @@ public:
 							   RenderingStrategy strategy = RenderingStrategy::MultipleDynamicBatch);
 	virtual ~BaseSingleBatchRenderQueue(void);
 public:
-	IRenderTarget* RenderTarget() const { return mRenderTarget; }
-	void SetRenderTarget(IRenderTarget* val);
+	virtual IRenderTarget* RenderTarget() const override{ return mRenderTarget; }
+	virtual void SetRenderTarget(IRenderTarget* val)override;
 
-	Camera* GetCamera() const { return mCamera; }
-	void SetCamera(Camera* val);
+	virtual Camera* GetCamera() const override{ return mCamera; }
+	virtual void SetCamera(Camera* val)override;
 public:
 	virtual void Update(RenderableChangedFlags changedFlag)override;
 protected:

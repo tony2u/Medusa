@@ -44,6 +44,11 @@
 #include "Node/Skeleton/SpineSkeleton.h"
 #include "Resource/Skeleton/SkeletonModelFactory.h"
 
+#include "Resource/TextureAtlas/TextureAtlasRegion.h"
+#include "Resource/TextureAtlas/TextureAtlasFactory.h"
+#include "Rendering/RenderingObjectFactory.h"
+
+
 MEDUSA_BEGIN;
 
 NodeFactory::NodeFactory()
@@ -62,13 +67,16 @@ void NodeFactory::Clear()
 
 IShape* NodeFactory::CreateRect(const Size2F& rectSize, const Color4F& color)
 {
+
 	ShapeQuadMesh* mesh = MeshFactory::Instance().CreateShapeQuadMesh(rectSize, color);
 	RETURN_NULL_IF_NULL(mesh);
+	IMaterial* material = MaterialFactory::Instance().CreateShape(MEDUSA_PREFIX(Shape));
 	IShape* sprite = new IShape();
 	sprite->Initialize();
 	sprite->SetSizeToContent(SizeToContent::Mesh);
 
 	sprite->SetMesh(mesh);
+	sprite->SetMaterial(material);
 	sprite->SetSize(rectSize);
 	return sprite;
 }
@@ -77,11 +85,14 @@ IShape* NodeFactory::CreateRect( const Rect2F& rect, const Color4F& color)
 {
 	ShapeQuadMesh* mesh = MeshFactory::Instance().CreateShapeQuadMesh(rect, color);
 	RETURN_NULL_IF_NULL(mesh);
+	IMaterial* material = MaterialFactory::Instance().CreateShape(MEDUSA_PREFIX(Shape));
+
 	IShape* sprite = new IShape();
 	sprite->Initialize();
 	sprite->SetSizeToContent(SizeToContent::Mesh);
 
 	sprite->SetMesh(mesh);
+	sprite->SetMaterial(material);
 	sprite->SetSize(rect.Size);
 
 	return sprite;
@@ -89,26 +100,32 @@ IShape* NodeFactory::CreateRect( const Rect2F& rect, const Color4F& color)
 
 IShape* NodeFactory::CreateRectBorder(const Size2F& rectSize, const Color4F& color)
 {
-	ShapeGeneralMesh* mesh = MeshFactory::Instance().CreateShapeQuadBorderMesh(rectSize, color);
+	ShapeQuadMesh* mesh = MeshFactory::Instance().CreateShapeQuadMesh(rectSize, color);
 	RETURN_NULL_IF_NULL(mesh);
+	IMaterial* material = MaterialFactory::Instance().CreateShape(MEDUSA_PREFIX(Shape_WireFrame));
+
 	IShape* sprite = new IShape();
 	sprite->Initialize();
 	sprite->SetSizeToContent(SizeToContent::Mesh);
 
 	sprite->SetMesh(mesh);
+	sprite->SetMaterial(material);
 	sprite->SetSize(rectSize);
 	return sprite;
 }
 
 IShape* NodeFactory::CreateRectBorder(const Rect2F& rect, const Color4F& color)
 {
-	ShapeGeneralMesh* mesh = MeshFactory::Instance().CreateShapeQuadBorderMesh(rect, color);
+	ShapeQuadMesh* mesh = MeshFactory::Instance().CreateShapeQuadMesh(rect, color);
 	RETURN_NULL_IF_NULL(mesh);
+	IMaterial* material = MaterialFactory::Instance().CreateShape(MEDUSA_PREFIX(Shape_WireFrame));
+
 	IShape* sprite = new IShape();
 	sprite->Initialize();
 	sprite->SetSizeToContent(SizeToContent::Mesh);
 
 	sprite->SetMesh(mesh);
+	sprite->SetMaterial(material);
 	sprite->SetSize(rect.Size);
 
 	return sprite;
@@ -118,11 +135,13 @@ IShape* NodeFactory::CreateTriangle(const Point3F& p1, const Point3F& p2, const 
 {
 	ShapeTriangleMesh* mesh = MeshFactory::Instance().CreateShapeTriangleMesh(p1, p2, p3, color);
 	RETURN_NULL_IF_NULL(mesh);
+	IMaterial* material = MaterialFactory::Instance().CreateShape(MEDUSA_PREFIX(Shape));
 	IShape* sprite = new IShape();
 	sprite->Initialize();
 	sprite->SetSizeToContent(SizeToContent::Mesh);
 
 	sprite->SetMesh(mesh);
+	sprite->SetMaterial(material);
 	return sprite;
 
 }
@@ -131,11 +150,13 @@ IShape* NodeFactory::CreateTriangle(float width, float height, const Color4F& co
 {
 	ShapeTriangleMesh* mesh = MeshFactory::Instance().CreateShapeTriangleMesh(width, height, color);
 	RETURN_NULL_IF_NULL(mesh);
+	IMaterial* material = MaterialFactory::Instance().CreateShape(MEDUSA_PREFIX(Shape));
 	IShape* sprite = new IShape();
 	sprite->Initialize();
 	sprite->SetSizeToContent(SizeToContent::Mesh);
 
 	sprite->SetMesh(mesh);
+	sprite->SetMaterial(material);
 	return sprite;
 }
 
@@ -143,50 +164,18 @@ IShape* NodeFactory::CreateCircle(float radius, float precision, const Color4F& 
 {
 	ShapeGeneralMesh* mesh = MeshFactory::Instance().CreateShapeCircleMesh(radius, precision, color);
 	RETURN_NULL_IF_NULL(mesh);
+	IMaterial* material = MaterialFactory::Instance().CreateShape(MEDUSA_PREFIX(Shape_TrianglesFan));
+	material->SetDrawMode(GraphicsDrawMode::TriangleFan);
 	IShape* sprite = new IShape();
 	sprite->Initialize();
 	sprite->SetSizeToContent(SizeToContent::Mesh);
 	sprite->SetMesh(mesh);
+	sprite->SetMaterial(material);
 	return sprite;
 	
 }
 
-IShape* NodeFactory::CreateCircleBorder(float radius, float precision, const Color4F& color)
-{
-	ShapeGeneralMesh* mesh = MeshFactory::Instance().CreateShapeCircleBorderMesh(radius, precision, color);
-	RETURN_NULL_IF_NULL(mesh);
-	IShape* sprite = new IShape();
-	sprite->Initialize();
-	sprite->SetSizeToContent(SizeToContent::Mesh);
-	sprite->SetMesh(mesh);
-	return sprite;
 
-}
-
-IShape* NodeFactory::CreateTriangleBorder(const Point3F& p1, const Point3F& p2, const Point3F& p3, const Color4F& color)
-{
-	ShapeGeneralMesh* mesh = MeshFactory::Instance().CreateShapeTriangleBorderMesh(p1, p2, p3, color);
-	RETURN_NULL_IF_NULL(mesh);
-	IShape* sprite = new IShape();
-	sprite->Initialize();
-	sprite->SetSizeToContent(SizeToContent::Mesh);
-
-	sprite->SetMesh(mesh);
-	return sprite;
-
-}
-
-IShape* NodeFactory::CreateTriangleBorder(float width, float height, const Color4F& color)
-{
-	ShapeGeneralMesh* mesh = MeshFactory::Instance().CreateShapeTriangleBorderMesh(width, height, color);
-	RETURN_NULL_IF_NULL(mesh);
-	IShape* sprite = new IShape();
-	sprite->Initialize();
-	sprite->SetSizeToContent(SizeToContent::Mesh);
-
-	sprite->SetMesh(mesh);
-	return sprite;
-}
 
 Sprite* NodeFactory::CreateEmptySprite()
 {
@@ -198,11 +187,12 @@ Sprite* NodeFactory::CreateEmptySprite()
 
 Sprite* NodeFactory::CreateQuadSprite(const FileIdRef& textureName, const Rect2F& textureRect/*=Rect2F::Zero*/)
 {
-	TextureQuadMesh* mesh = MeshFactory::Instance().CreateTextureQuadMesh(textureName, textureRect);
-	RETURN_NULL_IF_NULL(mesh);
+	auto renderingObject = RenderingObjectFactory::Instance().CreateFromTexture(textureName, textureRect);
+	RETURN_NULL_IF_NULL(renderingObject);
+
 	Sprite* sprite = new Sprite();
-	sprite->SetMesh(mesh);
-	sprite->SetSize(mesh->Size());
+	sprite->SetRenderingObject(renderingObject);
+	sprite->SetSize(renderingObject.Mesh()->Size());
 	sprite->Initialize();
 
 	return sprite;
@@ -210,12 +200,13 @@ Sprite* NodeFactory::CreateQuadSprite(const FileIdRef& textureName, const Rect2F
 
 NineGridSprite* NodeFactory::CreateNineGridSprite(const Size2F& targetSize, const FileIdRef& textureName, const ThicknessF& padding, const Rect2F& textureRect/*=Rect2F::Zero*/)
 {
-	TextureNineGridMesh* mesh = MeshFactory::Instance().CreateTextureNineGridMesh(targetSize, textureName, padding, textureRect);
-	RETURN_NULL_IF_NULL(mesh);
+	auto renderingObject = RenderingObjectFactory::Instance().CreateNineGridTexture(targetSize, textureName,padding,textureRect);
+	RETURN_NULL_IF_NULL(renderingObject);
+
 	NineGridSprite* sprite = new NineGridSprite();
 	sprite->EnableLayout(false);	//suppress duplicate arrange after size changed
-	sprite->SetMesh(mesh);
-	sprite->SetSize(mesh->Size());
+	sprite->SetRenderingObject(renderingObject);
+	sprite->SetSize(renderingObject.Mesh()->Size());
 	sprite->Initialize();
 	sprite->EnableLayout(true);
 	return sprite;
@@ -224,11 +215,12 @@ NineGridSprite* NodeFactory::CreateNineGridSprite(const Size2F& targetSize, cons
 
 Sprite* NodeFactory::CreateSpriteFromAtlasRegion(TextureAtlasRegion* region)
 {
-	TextureQuadMesh* mesh = MeshFactory::Instance().CreateTextureQuadMeshFromAtlasRegion(region);
-	RETURN_NULL_IF_NULL(mesh);
+	auto renderingObject = RenderingObjectFactory::Instance().CreateFromTextureAtlasRegion(region);
+	RETURN_NULL_IF_NULL(renderingObject);
+
 	Sprite* sprite = new Sprite();
-	sprite->SetMesh(mesh);
-	sprite->SetSize(mesh->Size());
+	sprite->SetRenderingObject(renderingObject);
+	sprite->SetSize(renderingObject.Mesh()->Size());
 	sprite->Initialize();
 
 	return sprite;
@@ -237,15 +229,14 @@ Sprite* NodeFactory::CreateSpriteFromAtlasRegion(TextureAtlasRegion* region)
 
 Sprite* NodeFactory::CreateSpriteFromAtlasRegion(StringRef regionName, const FileIdRef& atlasFileId, TextureAtlasFileFormat fileFormat /*= TextureAtlasFileFormat::Spine*/, uint atlasPageCount /*= 1*/)
 {
-	TextureQuadMesh* mesh = MeshFactory::Instance().CreateTextureQuadMeshFromAtlasRegion(regionName, atlasFileId, fileFormat, atlasPageCount);
-	RETURN_NULL_IF_NULL(mesh);
+	auto renderingObject = RenderingObjectFactory::Instance().CreateFromTextureAtlasRegion(regionName, atlasFileId, fileFormat, atlasPageCount);
+	RETURN_NULL_IF_NULL(renderingObject);
+
 	Sprite* sprite = new Sprite();
-	sprite->SetMesh(mesh);
-	sprite->SetSize(mesh->Size());
+	sprite->SetRenderingObject(renderingObject);
+	sprite->SetSize(renderingObject.Mesh()->Size());
 	sprite->Initialize();
-
 	return sprite;
-
 }
 
 

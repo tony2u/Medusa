@@ -8,7 +8,7 @@ MEDUSA_BEGIN;
 
 
 SpotLight::SpotLight( const FileIdRef& fileId/*=FileId::Empty*/ ) 
-	:ILight(fileId),mViewProjectMatrix(Matrix::Identity)
+	:ILight(fileId),mViewProjectMatrix(Matrix4::Identity)
 {
 
 }

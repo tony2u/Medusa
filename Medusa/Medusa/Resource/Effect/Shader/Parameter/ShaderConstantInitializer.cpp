@@ -7,7 +7,7 @@
 #include "Resource/ResourceNames.h"
 #include "Rendering/RenderingContext.h"
 #include "Rendering/Batch/IRenderBatch.h"
-#include "Core/Geometry/Matrix.h"
+#include "Core/Geometry/Matrix4.h"
 #include "Core/Geometry/Matrix3.h"
 #include "Resource/Camera/Camera.h"
 #include "Resource/Texture/ITexture.h"
@@ -77,12 +77,12 @@ bool ShaderConstantInitializer::UpdateWorldViewProjectMatrix( ShaderConstant& un
 	RETURN_FALSE_IF_NULL(effect);
 
 	IRenderBatch* batch=RenderingContext::Instance().Batch();
-	const Matrix& modelMatrix=batch->GetModelMatrix();
+	const Matrix4& modelMatrix=batch->GetModelMatrix();
 	Camera* camera= RenderingContext::Instance().GetCamera();
 	if (camera!=nullptr)
 	{
-		const Matrix& projectionMatrix= camera->ViewProjectionMatrix();
-		Matrix pmvMatrix=modelMatrix*projectionMatrix;
+		const Matrix4& projectionMatrix= camera->ViewProjectionMatrix();
+		Matrix4 pmvMatrix=modelMatrix*projectionMatrix;
 		uniform.Invalidate();
 		uniform.SetMatrix(pmvMatrix);
 	}
@@ -104,7 +104,7 @@ bool ShaderConstantInitializer::UpdateViewProjectMatrix( ShaderConstant& uniform
 	Camera* camera= RenderingContext::Instance().GetCamera();
 	if (camera!=nullptr)
 	{
-		const Matrix& projectionMatrix= camera->ViewProjectionMatrix();
+		const Matrix4& projectionMatrix= camera->ViewProjectionMatrix();
 		uniform.SetMatrix(projectionMatrix);
 	}
 	else
@@ -121,7 +121,7 @@ bool ShaderConstantInitializer::UpdateWorldMatrix( ShaderConstant& uniform )
 	RETURN_FALSE_IF_NULL(effect);
 
 	IRenderBatch* batch=RenderingContext::Instance().Batch();
-	const Matrix& modelMatrix=batch->GetModelMatrix();
+	const Matrix4& modelMatrix=batch->GetModelMatrix();
 	uniform.Invalidate();
 	uniform.SetMatrix(modelMatrix);
 
@@ -132,10 +132,10 @@ bool ShaderConstantInitializer::UpdateWorldMatrix( ShaderConstant& uniform )
 bool ShaderConstantInitializer::UpdateWorldViewMatrixIT( ShaderConstant& uniform)
 {
 	IRenderBatch* batch=RenderingContext::Instance().Batch();
-	Matrix modelMatrix=batch->GetModelMatrix();
+	Matrix4 modelMatrix=batch->GetModelMatrix();
 	Camera* camera= RenderingContext::Instance().GetCamera();
-	const Matrix& viewMatrix=camera->ViewMatrix();
-	Matrix modelViewIT=modelMatrix*viewMatrix;
+	const Matrix4& viewMatrix=camera->ViewMatrix();
+	Matrix4 modelViewIT=modelMatrix*viewMatrix;
 	modelMatrix.Inverse();
 	modelMatrix.Transpose();
 	Matrix3 modelViewIT2(modelViewIT);
@@ -151,7 +151,7 @@ bool ShaderConstantInitializer::UpdateModelEyePosition( ShaderConstant& uniform)
 
 	Point3F pos= camera->EyePosition();
 	IRenderBatch* batch=RenderingContext::Instance().Batch();
-	Matrix modelMatrix=batch->GetModelMatrix();
+	Matrix4 modelMatrix=batch->GetModelMatrix();
 	modelMatrix.Inverse();
 	pos= modelMatrix.Transform(pos);
 	uniform.Invalidate();
@@ -165,7 +165,7 @@ bool ShaderConstantInitializer::UpdateModelEyeDirection( ShaderConstant& uniform
 	Camera* camera= RenderingContext::Instance().GetCamera();
 	Point3F direction= camera->EyeDirection();
 	IRenderBatch* batch=RenderingContext::Instance().Batch();
-	Matrix modelMatrix=batch->GetModelMatrix();
+	Matrix4 modelMatrix=batch->GetModelMatrix();
 	modelMatrix.Inverse();
 	direction= modelMatrix.TransformVector(direction);
 	direction.Normalize();
@@ -181,7 +181,7 @@ bool ShaderConstantInitializer::UpdateModelLightDirection( ShaderConstant& unifo
 	if (light!=nullptr)
 	{
 		IRenderBatch* batch=RenderingContext::Instance().Batch();
-		Matrix modelMatrix=batch->GetModelMatrix();
+		Matrix4 modelMatrix=batch->GetModelMatrix();
 		modelMatrix.Inverse();
 		Point3F direction=light->Direction();
 		direction=modelMatrix.TransformVector(direction);
@@ -204,7 +204,7 @@ bool ShaderConstantInitializer::UpdateModelLightPosition( ShaderConstant& unifor
 	if (light!=nullptr)
 	{
 		IRenderBatch* batch=RenderingContext::Instance().Batch();
-		Matrix modelMatrix=batch->GetModelMatrix();
+		Matrix4 modelMatrix=batch->GetModelMatrix();
 		modelMatrix.Inverse();
 		Point3F position=light->Position();
 		position=modelMatrix.Transform(position);
@@ -335,7 +335,7 @@ bool ShaderConstantInitializer::UpdateLightViewProjectMatrix( ShaderConstant& un
 	{
 		SpotLight* spotLight=(SpotLight*)light;
 		uniform.Invalidate();
-		const Matrix& matrix=spotLight->ViewProjectMatrix();
+		const Matrix4& matrix=spotLight->ViewProjectMatrix();
 		uniform.SetMatrix(matrix);
 		return true;
 	}
@@ -353,11 +353,11 @@ bool ShaderConstantInitializer::UpdateLightWorldViewProjectMatrix( ShaderConstan
 	if (light!=nullptr&&light->LightType()==GraphicsLightType::Spot)
 	{
 		IRenderBatch* batch=RenderingContext::Instance().Batch();
-		Matrix modelMatrix=batch->GetModelMatrix();
+		Matrix4 modelMatrix=batch->GetModelMatrix();
 
 		SpotLight* spotLight=(SpotLight*)light;
 		uniform.Invalidate();
-		const Matrix& matrix=spotLight->ViewProjectMatrix();
+		const Matrix4& matrix=spotLight->ViewProjectMatrix();
 		modelMatrix*=matrix;
 		uniform.SetMatrix(modelMatrix);
 		return true;

@@ -9,13 +9,13 @@
 #include "Graphics/Buffer/ColorGraphicsBuffer.h"
 #include "Core/Geometry/Quad.h"
 #include "Node/Sprite/Sprite.h"
-#include "Core/Geometry/Matrix.h"
+#include "Core/Geometry/Matrix4.h"
 
 MEDUSA_BEGIN;
 
 
-ShapeGeneralMesh::ShapeGeneralMesh(IEffect* effect/*=nullptr*/, IMaterial* material/*=nullptr*/, bool isStatic/*=false*/)
-	:IMesh(effect, material, isStatic)
+ShapeGeneralMesh::ShapeGeneralMesh(bool isStatic/*=false*/)
+	:IMesh(isStatic)
 {
 
 }
@@ -25,22 +25,21 @@ ShapeGeneralMesh::~ShapeGeneralMesh(void)
 {
 }
 
-void ShapeGeneralMesh::Initialize(const Size2F& rectSize, const Color4F& color, bool isBorder /*= false*/)
+void ShapeGeneralMesh::Initialize(const Size2F& rectSize, const Color4F& color)
 {
 	mSize = rectSize;
-	SetVertexBySize(rectSize, isBorder);
+	SetVertexBySize(rectSize);
 	SetColorAll(color);
-
 }
 
-void ShapeGeneralMesh::Initialize(const Rect2F& rect, const Color4F& color, bool isBorder /*= false*/)
+void ShapeGeneralMesh::Initialize(const Rect2F& rect, const Color4F& color)
 {
 	mSize = rect.Size;
-	SetVertexByRect(rect, isBorder);
+	SetVertexByRect(rect);
 	SetColorAll(color);
 
 }
-void ShapeGeneralMesh::Initialize(const Point3F& p1, const Point3F& p2, const Point3F& p3, const Color4F& color, bool isBorder /*= false*/)
+void ShapeGeneralMesh::Initialize(const Point3F& p1, const Point3F& p2, const Point3F& p3, const Color4F& color)
 {
 	SetColorAll(color);
 
@@ -49,79 +48,34 @@ void ShapeGeneralMesh::Initialize(const Point3F& p1, const Point3F& p2, const Po
 	mVertices.Add(p3);
 	OnVertexChanged();
 
-	uint indices[6] = { 0, 1, 1, 2, 0 };
-	mIndices.AppendRange(indices, 6);
-	mDrawMode = isBorder ? GraphicsDrawMode::Lines : GraphicsDrawMode::Triangles;
-
+	uint indices[6] = { 0, 1, 2 };
+	mIndices.AppendRange(indices, 3);
 	OnIndexChanged();
-
 
 }
 
-void ShapeGeneralMesh::Initialize(float width, float height, const Color4F& color, bool isBorder /*= false*/)
+void ShapeGeneralMesh::Initialize(float width, float height, const Color4F& color)
 {
 	Point3F p1(0.f, width*0.5f, 0.f);
 	Point3F p2(0.f, -width*0.5f, 0.f);
 	Point3F p3(height, 0.f, 0.f);
-	Initialize(p1, p2, p3, color, isBorder);
+	Initialize(p1, p2, p3, color);
 }
 
 
-void ShapeGeneralMesh::ExpandVertexRectSize(const Size2F& val, bool isBorder /*= false*/)
+void ShapeGeneralMesh::ExpandVertexRectSize(const Size2F& val)
 {
 	Point3F origin = mVertices[0];
-	mVertices.Clear();
-	mVertices.NewAdd() = origin;
-	mVertices.NewAdd() = Point3F(origin.X + val.Width, origin.Y);
-	mVertices.NewAdd() = Point3F(origin.X + val.Width, origin.Y + val.Height);
-	mVertices.NewAdd() = Point3F(origin.X, origin.Y + val.Height);
-	OnVertexChanged();
-
-	mIndices.Clear();
-	if (isBorder)
-	{
-		const uint indices[8] = { 0, 1, 1, 2, 2, 3, 3, 0 };
-		mIndices.AppendRange(indices, 8);
-		mDrawMode = GraphicsDrawMode::Lines;
-	}
-	else
-	{
-		const uint indices[6] = { 0, 1, 2, 2, 3, 0 };
-		mIndices.AppendRange(indices, 6);
-		mDrawMode = GraphicsDrawMode::Triangles;
-
-	}
-	OnIndexChanged();
+	SetVertexByRect(Rect2F(origin.To2D(), val));
 }
 
 
-void ShapeGeneralMesh::SetVertexBySize(const Size2F& val, bool isBorder /*= false*/)
+void ShapeGeneralMesh::SetVertexBySize(const Size2F& val)
 {
-	mVertices.Clear();
-	mVertices.NewAdd() = Point3F::Zero;
-	mVertices.NewAdd() = Point3F(val.Width, 0.f);
-	mVertices.NewAdd() = Point3F(val.Width, val.Height);
-	mVertices.NewAdd() = Point3F(0.f, val.Height);
-	OnVertexChanged();
-
-	mIndices.Clear();
-	if (isBorder)
-	{
-		const uint indices[8] = { 0, 1, 1, 2, 2, 3, 3, 0 };
-		mIndices.AppendRange(indices, 8);
-		mDrawMode = GraphicsDrawMode::Lines;
-	}
-	else
-	{
-		const uint indices[6] = { 0, 1, 2, 2, 3, 0 };
-		mIndices.AppendRange(indices, 6);
-		mDrawMode = GraphicsDrawMode::Triangles;
-
-	}
-	OnIndexChanged();
+	SetVertexByRect(Rect2F(Point2F::Zero, val));
 }
 
-void ShapeGeneralMesh::SetVertexByRect(const Rect2F& val, bool isBorder /*= false*/)
+void ShapeGeneralMesh::SetVertexByRect(const Rect2F& val)
 {
 	mVertices.Clear();
 	mVertices.NewAdd() = val.Origin;
@@ -131,21 +85,8 @@ void ShapeGeneralMesh::SetVertexByRect(const Rect2F& val, bool isBorder /*= fals
 	OnVertexChanged();
 
 	mIndices.Clear();
-	if (isBorder)
-	{
-		//in line mode
-		const uint indices[8] = { 0, 1, 1, 2, 2, 3, 3, 0 };
-		mIndices.AppendRange(indices, 8);
-		mDrawMode = GraphicsDrawMode::Lines;
-
-	}
-	else
-	{
-		const uint indices[6] = { 0, 1, 2, 2, 3, 0 };
-		mIndices.AppendRange(indices, 6);
-		mDrawMode = GraphicsDrawMode::Triangles;
-
-	}
+	const uint indices[6] = { 0, 1, 2, 2, 3, 0 };
+	mIndices.AppendRange(indices, 6);
 	OnIndexChanged();
 }
 
@@ -263,7 +204,7 @@ INode* ShapeGeneralMesh::CreateCloneInstance()const
 	return sprite;
 }
 
-void ShapeGeneralMesh::AddToVertexBufferObject(VertexGraphicsBuffer& bufferObject, size_t vertexIndex, const Matrix& matrix) const
+void ShapeGeneralMesh::AddToVertexBufferObject(VertexGraphicsBuffer& bufferObject, size_t vertexIndex, const Matrix4& matrix) const
 {
 	TryUpdateVertex(bufferObject, vertexIndex, mVertices, matrix);
 

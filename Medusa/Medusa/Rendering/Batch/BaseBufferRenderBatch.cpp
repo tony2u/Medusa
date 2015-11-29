@@ -97,7 +97,7 @@ void BaseBufferRenderBatch::RemoveNode(IRenderable* node)
 void BaseBufferRenderBatch::AddNodeToBuffer(uint& refVertexIndex, uint& refIndexIndex, IRenderable& node)
 {
 	IMesh* mesh = node.Mesh();
-	const Matrix& newMatrix = node.WorldMatrix();
+	const Matrix4& newMatrix = node.WorldMatrix();
 
 	mesh->AddToVertexBufferObject(mVertexBufferObject, refVertexIndex,  newMatrix);
 	mesh->AddToNormalBufferObject(mNormalBufferObject, refVertexIndex,  newMatrix);
@@ -119,13 +119,13 @@ void BaseBufferRenderBatch::UpdateNodeToBuffer(uint& refVertexIndex, uint& refIn
 	IMesh* mesh = node.Mesh();
 	if (changedFlags.IsNewVertex())
 	{
-		const Matrix& newMatrix = node.WorldMatrix();
+		const Matrix4& newMatrix = node.WorldMatrix();
 		mesh->AddToVertexBufferObject(mVertexBufferObject, refVertexIndex,  newMatrix);
 	}
 
 	if (changedFlags.IsNewNormal())
 	{
-		const Matrix& newMatrix = node.WorldMatrix();
+		const Matrix4& newMatrix = node.WorldMatrix();
 		mesh->AddToNormalBufferObject(mNormalBufferObject, refVertexIndex,  newMatrix);
 	}
 

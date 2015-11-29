@@ -13,7 +13,6 @@ namespace RenderPassNames
 	const StringRef Texture = "Texture.pass";
 	const StringRef PositionColor = "PositionColor.pass";
 	const StringRef POD = "POD.pass";
-	const StringRef FntFont = "FntFont.pass";
 	const StringRef Shape = "Shape.pass";
 
 
@@ -28,7 +27,6 @@ namespace VertexShaderFiles
 	const FileIdRef Texture = "Texture.vsh";
 	const FileIdRef Position = "Position.vsh";
 	const FileIdRef POD = "POD.vsh";
-	const FileIdRef FntFont = "FntFont.vsh";
 	const FileIdRef Shape = "Shape.vsh";
 
 
@@ -48,7 +46,6 @@ namespace PixelShaderFiles
 	const FileIdRef Texture = "Texture.fsh";
 	const FileIdRef Color = "Color.fsh";
 	const FileIdRef POD = "POD.fsh";
-	const FileIdRef FntFont = "FntFont.fsh";
 	const FileIdRef Shape = "Shape.fsh";
 
 

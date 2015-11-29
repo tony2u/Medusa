@@ -20,9 +20,6 @@ ITexture::ITexture(const FileIdRef& fileId,GraphicsTextureType textureType,Strin
 	mSamplerState=new SamplerRenderState(textureType,unit);
 	mSamplerState->SetTexture(Render::Instance().GenTexture());
 	mPixelStoreState=new PixelStoreRenderState();
-
-	mSamplerState->Retain();
-	mPixelStoreState->Retain();
 }
 
 

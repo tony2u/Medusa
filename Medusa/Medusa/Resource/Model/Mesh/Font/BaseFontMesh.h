@@ -13,7 +13,7 @@ We choose separate buffer instead of interleaved, because we want to update only
 class BaseFontMesh:public IMesh
 {
 public:
-	BaseFontMesh(IEffect* effect=nullptr,IMaterial* material=nullptr,bool isStatic=false);
+	BaseFontMesh(bool isStatic=false);
 	virtual ~BaseFontMesh(void);
 public:
 	virtual void ReserveMesh(uint charCount){}

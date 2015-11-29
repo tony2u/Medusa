@@ -11,8 +11,8 @@
 #include "Node/Sprite/Sprite.h"
 MEDUSA_BEGIN;
 
-TextureQuadMesh::TextureQuadMesh(IEffect* effect/*=nullptr*/, IMaterial* material/*=nullptr*/, bool isStatic/*=false*/)
-	:IMesh(effect, material, isStatic)
+TextureQuadMesh::TextureQuadMesh( bool isStatic/*=false*/)
+	:IMesh(isStatic)
 {
 
 }
@@ -124,7 +124,7 @@ bool TextureQuadMesh::CopyFrom(const TextureQuadMesh& val)
 
 
 
-void TextureQuadMesh::AddToVertexBufferObject(VertexGraphicsBuffer& bufferObject, size_t vertexIndex, const Matrix& matrix) const
+void TextureQuadMesh::AddToVertexBufferObject(VertexGraphicsBuffer& bufferObject, size_t vertexIndex, const Matrix4& matrix) const
 {
 	if (mFixType == MeshFixType::ForceToQuad)
 	{

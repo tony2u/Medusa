@@ -28,28 +28,17 @@ public:
 
 	ShapeTriangleMesh* CreateShapeTriangleMesh(const Point3F& p1, const Point3F& p2, const Point3F& p3, const Color4F& color);
 	ShapeTriangleMesh* CreateShapeTriangleMesh(float width, float height, const Color4F& color);
-
-	ShapeGeneralMesh* CreateShapeQuadBorderMesh(const Size2F& rectSize, const Color4F& color);
-	ShapeGeneralMesh* CreateShapeQuadBorderMesh(const Rect2F& rect, const Color4F& color);
-
-	ShapeGeneralMesh* CreateShapeTriangleBorderMesh(const Point3F& p1, const Point3F& p2, const Point3F& p3, const Color4F& color);
-	ShapeGeneralMesh* CreateShapeTriangleBorderMesh(float width, float height, const Color4F& color);
-
 	ShapeGeneralMesh* CreateShapeCircleMesh(float radius,float precision, const Color4F& color);
-	ShapeGeneralMesh* CreateShapeCircleBorderMesh(float radius, float precision, const Color4F& color);
 
 
 
-	TextureQuadMesh* CreateTextureQuadMesh(const FileIdRef& textureName, const Rect2F& textureRect = Rect2F::Zero, const Color4F& color = Color4F::White);
+	TextureQuadMesh* CreateTextureQuadMesh(const Size2F& textureSize, const Rect2F& textureRect = Rect2F::Zero, const Color4F& color = Color4F::White);
 	TextureQuadMesh* CreateTextureQuadMesh(const FileIdRef& textureName, const FileMapOrderItem& orderItem, const Rect2F& textureRect = Rect2F::Zero, const Color4F& color = Color4F::White);
 
-	TextureQuadMesh* CreateTextureQuadMeshFromAtlasRegion(const StringRef& regionName, const FileIdRef& atlasFileId, TextureAtlasFileFormat fileFormat = TextureAtlasFileFormat::Spine, uint atlasPageCount = 1, const Color4F& color = Color4F::White);
 	TextureQuadMesh* CreateTextureQuadMeshFromAtlasRegion(TextureAtlasRegion* region, const Color4F& color = Color4F::White);
 
-	bool CreateTextureQuadMeshesFromAtlas(SortedDictionary<uint, TextureQuadMesh*>& outMeshes, const StringRef& regionPattern, const FileIdRef& atlasFileId, TextureAtlasFileFormat fileFormat = TextureAtlasFileFormat::Spine, uint atlasPageCount = 1, const Color4F& color = Color4F::White);
-	bool CreateTextureQuadMeshesFromTextures(SortedDictionary<uint, TextureQuadMesh*>& outMeshes, const StringRef& textureNamePattern, const Color4F& color = Color4F::White);
 
-	TextureNineGridMesh* CreateTextureNineGridMesh(const Size2F& targetSize, const FileIdRef& textureName, const ThicknessF& padding, const Rect2F& textureRect = Rect2F::Zero, const Color4F& color = Color4F::White);
+	TextureNineGridMesh* CreateTextureNineGridMesh(const Size2F& targetSize, const Size2F& textureSize, const ThicknessF& padding, const Rect2F& textureRect = Rect2F::Zero, const Color4F& color = Color4F::White);
 	TextureGeneralMesh* CreateTextureGeneralMesh(ITexture* texture, bool isStatic = false);
 
 

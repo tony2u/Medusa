@@ -8,13 +8,13 @@
 #include "Graphics/Buffer/TexCoordGraphicsBuffer.h"
 #include "Graphics/Buffer/ColorGraphicsBuffer.h"
 #include "Graphics/Buffer/NormalGraphicsBuffer.h"
-#include "Core/Geometry/Matrix.h"
+#include "Core/Geometry/Matrix4.h"
 
 MEDUSA_BEGIN;
 
 
-TextureTriangleMesh::TextureTriangleMesh(IEffect* effect/*=nullptr*/, IMaterial* material/*=nullptr*/, bool isStatic/*=false*/)
-	:IMesh(effect, material, isStatic)
+TextureTriangleMesh::TextureTriangleMesh( bool isStatic/*=false*/)
+	:IMesh(isStatic)
 {
 
 }
@@ -31,7 +31,7 @@ INode* TextureTriangleMesh::CreateCloneInstance()const
 }
 
 
-void TextureTriangleMesh::AddToVertexBufferObject(VertexGraphicsBuffer& bufferObject, size_t vertexIndex, const Matrix& matrix) const
+void TextureTriangleMesh::AddToVertexBufferObject(VertexGraphicsBuffer& bufferObject, size_t vertexIndex, const Matrix4& matrix) const
 {
 	TryUpdateVertex(bufferObject,vertexIndex,mVertices, matrix);
 	

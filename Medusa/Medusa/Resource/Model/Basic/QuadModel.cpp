@@ -12,9 +12,7 @@ MEDUSA_BEGIN;
 QuadModel::QuadModel( const FileIdRef& fileId,IMaterial* material,const Rect2F& textureRect )
 	:BaseSingleTextureModel(fileId,material),mTextureRect(textureRect)
 {
-	IEffect* effect=EffectFactory::Instance().CreateSinglePassDefault(RenderPassNames::Texture);
-	mMeshModelNode.MutableMesh().SetEffect(effect);
-	mMeshModelNode.MutableMesh().SetMaterial(material);
+	
 }
 
 
@@ -27,9 +25,9 @@ bool QuadModel::Initialzie(ModelLoadingOptions loadingOptions/*=ModelLoadingOpti
 {
 	RETURN_FALSE_IF_FALSE(BaseSingleTextureModel::Initialzie(loadingOptions));
 	
-	const Size2U& textureSize= mMeshModelNode.Mesh().Material()->FirstTexture()->Size();
+	//const Size2U& textureSize= mMeshModelNode.Mesh().Material()->FirstTexture()->Size();
 
-	mMeshModelNode.MutableMesh().Initialize(textureSize, mTextureRect, mColor);
+	//mMeshModelNode.MutableMesh().Initialize(textureSize, mTextureRect, mColor);
 
 	//mMesh->AppendNormal(Point3F::OneZ,4);
 

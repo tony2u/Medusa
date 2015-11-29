@@ -32,7 +32,10 @@ public:
 
 	void AddChildNode(IModelNode* node);
 
-	virtual void UpdateWorldMatrixRecursively(const Matrix& parentWorldMatrix=Matrix::Identity);
+	virtual void UpdateWorldMatrixRecursively(const Matrix4& parentWorldMatrix=Matrix4::Identity);
+
+	virtual INode* CreateCloneInstance() { return nullptr; }
+	virtual INode* CreateReferenceInstance() { return nullptr; }
 protected:
 	HeapString mName;
 	List<IModelNode*> mNodes;

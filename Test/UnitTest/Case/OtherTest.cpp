@@ -4,8 +4,8 @@
 #include "Case/OtherTest.h"
 
 /*
-????TestFloat	1074.285570 / 10000000 = 0.000107
-????TestFloat2	30.188889 / 10000000 = 0.000003
+TestFloat	1074.285570 / 10000000 = 0.000107
+TestFloat2	30.188889 / 10000000 = 0.000003
 */
 void OtherTest::TestFloat()
 {

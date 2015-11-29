@@ -10,7 +10,7 @@
 #include "Graphics/Buffer/NormalGraphicsBuffer.h"
 #include "Core/Geometry/Quad.h"
 #include "Node/Sprite/Sprite.h"
-#include "Core/Geometry/Matrix.h"
+#include "Core/Geometry/Matrix4.h"
 
 #include "Core/Geometry/Vertex/TextureVertex.h"
 #include "Core/Geometry/Vertex/TextureNormalVertex.h"
@@ -18,7 +18,7 @@
 MEDUSA_BEGIN;
 
 
-GeneralMesh::GeneralMesh(IEffect* effect/*=nullptr*/, IMaterial* material/*=nullptr*/, bool isStatic/*=false*/) :IMesh(effect, material, isStatic)
+GeneralMesh::GeneralMesh( bool isStatic/*=false*/) :IMesh(isStatic)
 {
 
 }
@@ -203,12 +203,12 @@ INode* GeneralMesh::CreateCloneInstance()const
 	return sprite;
 }
 
-void GeneralMesh::AddToVertexBufferObject(VertexGraphicsBuffer& bufferObject, size_t vertexIndex, const Matrix& matrix) const
+void GeneralMesh::AddToVertexBufferObject(VertexGraphicsBuffer& bufferObject, size_t vertexIndex, const Matrix4& matrix) const
 {
 	TryUpdateVertex(bufferObject, vertexIndex, mVertices, matrix);
 }
 
-void GeneralMesh::AddToNormalBufferObject(NormalGraphicsBuffer& bufferObject, size_t vertexIndex, const Matrix& matrix) const
+void GeneralMesh::AddToNormalBufferObject(NormalGraphicsBuffer& bufferObject, size_t vertexIndex, const Matrix4& matrix) const
 {
 	TryUpdateNormal(bufferObject, vertexIndex, mNormals, matrix);
 }

@@ -18,7 +18,7 @@ We choose separate buffer instead of interleaved, because we want to update only
 class ShapeTriangleMesh :public IMesh
 {
 public:
-	ShapeTriangleMesh(IEffect* effect = nullptr, IMaterial* material = nullptr, bool isStatic = false);
+	ShapeTriangleMesh( bool isStatic = false);
 	virtual ~ShapeTriangleMesh(void);
 public:
 
@@ -41,7 +41,7 @@ public:
 	void Initialize(float width, float height, const Color4F& color);
 
 public:
-	virtual void AddToVertexBufferObject(VertexGraphicsBuffer& bufferObject, size_t vertexIndex, const Matrix& matrix)const;
+	virtual void AddToVertexBufferObject(VertexGraphicsBuffer& bufferObject, size_t vertexIndex, const Matrix4& matrix)const;
 	virtual void AddToColorBufferObject(ColorGraphicsBuffer& bufferObject, size_t vertexIndex, const Color4F& parentColor = Color4F::White)const;
 	virtual void AddToIndexBufferObject(IndexGraphicsBuffer& bufferObject, size_t vertexIndex, size_t indexIndex)const;
 

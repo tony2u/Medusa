@@ -8,7 +8,9 @@
 #include "Core/Geometry/Scale3.h"
 #include "Core/Geometry/Quaternion.h"
 #include "Core/Geometry/Color3.h"
-#include "Core/Geometry/Matrix.h"
+#include "Core/Geometry/Matrix4.h"
+#include "Core/Geometry/Matrix4.h"
+
 
 
 MEDUSA_BEGIN;
@@ -40,16 +42,16 @@ struct PODNode
 	List<PODScale,NoCompare<PODScale> > AnimationScales;		/*!< 7 floats per frame of animation. */
 
 	List<uint>	AnimationMatrixIndexes;
-	List<Matrix,NoCompare<Matrix> > AnimationMatrixes;		/*!< 16 floats per frame of animation. */
+	List<Matrix4,NoCompare<Matrix4> > AnimationMatrixes;		/*!< 16 floats per frame of animation. */
 
 	MemoryByteData UserData;
 
-	virtual bool TryGetMatrix(float frame,Matrix& outMatrix)const;
+	virtual bool TryGetMatrix(float frame,Matrix4& outMatrix)const;
 private:
-	void GetMatrix(uint frameIndex,Matrix& outMatrix)const;
-	void GetScaleMatrix(uint frameIndex,float frameBlend,Matrix& outMatrix)const;
-	void GetRotateMatrix(uint frameIndex,float frameBlend,Matrix& outMatrix)const;
-	void GetTranslateMatrix(uint frameIndex,float frameBlend,Matrix& outMatrix)const;
+	void GetMatrix(uint frameIndex,Matrix4& outMatrix)const;
+	void GetScaleMatrix(uint frameIndex,float frameBlend,Matrix4& outMatrix)const;
+	void GetRotateMatrix(uint frameIndex,float frameBlend,Matrix4& outMatrix)const;
+	void GetTranslateMatrix(uint frameIndex,float frameBlend,Matrix4& outMatrix)const;
 };
 
 class PODModel:public BaseSceneModel
@@ -72,7 +74,9 @@ public:
 	PODNode* GetPODNode(uint index){return mPODNodes[index];}
 	PODNode* GetPODNode(StringRef name);
 
-	bool TryGetWorldMatrix(PODNode* node,float frame,Matrix& outMatrix)const;
+	bool TryGetWorldMatrix(PODNode* node,float frame,Matrix4& outMatrix)const;
+
+	virtual INode* CreateCloneInstance()override;
 
 private:
 	static bool ReadIdentifier(MemoryStream& stream,PODIdentifier& outIdentifier,uint& outLength);

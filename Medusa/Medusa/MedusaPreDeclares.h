@@ -1,6 +1,3 @@
-// Copyright (c) 2015 fjz13. All rights reserved.
-// Use of this source code is governed by a MIT-style
-// license that can be found in the LICENSE file.
 #pragma once
 #include "Platform/Platform.h"
 MEDUSA_BEGIN;
@@ -242,6 +239,8 @@ class PODCameraFOVTimeline;
 
 class PODLighTimeline;
 
+class RenderingObjectTimeline;
+
 class RotationTimeline;
 
 class ScaleTimeline;
@@ -478,6 +477,10 @@ class RenderDevice;
 class RenderEngine;
 
 class RenderingContext;
+
+class RenderingObject;
+
+class RenderingObjectFactory;
 
 class RenderingStatics;
 
@@ -839,6 +842,8 @@ class PODCameraFOVTimelineModel;
 class PODJointTimelineModel;
 
 class PODLightTimelineModel;
+
+class RenderingObjectTimelineModel;
 
 class RotationTimelineModel;
 

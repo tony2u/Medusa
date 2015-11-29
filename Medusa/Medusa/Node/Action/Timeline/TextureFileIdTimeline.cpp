@@ -5,8 +5,8 @@
 #include "Node/Action/Timeline/TextureFileIdTimeline.h"
 #include "Node/INode.h"
 #include "Resource/Timeline/TextureFileIdTimelineModel.h"
-#include "Resource/Model/Mesh/MeshFactory.h"
-#include "Resource/Model/Mesh/Fixed/TextureQuadMesh.h"
+#include "Rendering/RenderingObjectFactory.h"
+
 
 MEDUSA_BEGIN;
 
@@ -32,9 +32,10 @@ bool TextureFileIdTimeline::OnUpdate(float prevElapsed,float dt, float blend /*=
 {
 	TextureFileIdTimelineModel* model = (TextureFileIdTimelineModel*)mModel;
 	FileIdRef fileId = model->GetFileId(Elapsed());
-	IMesh* mesh = MeshFactory::Instance().CreateTextureQuadMesh(fileId);
+
+	auto renderingObject = RenderingObjectFactory::Instance().CreateFromTexture(fileId);
 	INode* node = (INode*)mTarget;
-	node->SetMesh(mesh);
+	node->SetRenderingObject(renderingObject);
 	return true;
 }
 

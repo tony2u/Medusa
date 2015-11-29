@@ -11,7 +11,7 @@ DefaultMoveable::DefaultMoveable()
 	:mParentMoveable(nullptr), 
 	mSize(Size3F::Zero),mAnchor(Point3F::Zero), mPosition(Point3F::Zero),
 	mRotation(Rotation3F::Zero), mScale(Scale3F::One), mFlip(FlipMask::None), 
-	mMatrix(Matrix::Identity), mWorldMatrix(Matrix::Identity)
+	mMatrix(Matrix4::Identity), mWorldMatrix(Matrix4::Identity)
 {
 	mMatrix.SetUpdateDelegate(Bind(&DefaultMoveable::OnUpdateMatrix, this));
 	mWorldMatrix.SetUpdateDelegate(Bind(&DefaultMoveable::OnUpdateWorldMatrix,this));
@@ -26,14 +26,30 @@ DefaultMoveable::~DefaultMoveable(void)
 {
 }
 
-void DefaultMoveable::OnUpdateMatrix(Matrix& transform, int32 dirtyFlag)
+void DefaultMoveable::SetMoveable(const DefaultMoveable& val)
+{
+	mSize = val.mSize;
+	mAnchor = val.mAnchor;
+	mPosition = val.mPosition;
+	mRotation = val.mRotation;
+	mScale = val.mScale;
+	mFlip = val.mFlip;
+	mMatrix = val.mMatrix;
+	mWorldMatrix = val.mWorldMatrix;
+	mWorldInverseMatrix = val.mWorldInverseMatrix;
+	mBoundingBox = val.mBoundingBox;
+	mWorldBoundingBox = val.mWorldBoundingBox;
+	OnMoveableDirty(MoveableChangedFlags::MatrixChanged);
+}
+
+void DefaultMoveable::OnUpdateMatrix(Matrix4& transform, int32 dirtyFlag)
 {
 	transform.ResetWorld(mSize, mAnchor, mScale, mRotation, mPosition, mFlip);
 
 }
 
 
-void DefaultMoveable::OnUpdateWorldMatrix(Matrix& transform, int32 dirtyFlag)
+void DefaultMoveable::OnUpdateWorldMatrix(Matrix4& transform, int32 dirtyFlag)
 {
 	if (mParentMoveable != nullptr)
 	{
@@ -46,7 +62,7 @@ void DefaultMoveable::OnUpdateWorldMatrix(Matrix& transform, int32 dirtyFlag)
 }
 
 
-void DefaultMoveable::OnUpdateWorldInverseMatrix(Matrix& transform, int32 dirtyFlag)
+void DefaultMoveable::OnUpdateWorldInverseMatrix(Matrix4& transform, int32 dirtyFlag)
 {
 	transform = mWorldMatrix.Value();
 	transform.Inverse();
@@ -71,7 +87,7 @@ void DefaultMoveable::OnUpdateWorldBoundingBox(BoundingBox& outVal, int32 dirtyF
 	outVal = WorldMatrix().Transform(cube);
 }
 
-void DefaultMoveable::SetMatrix(const Matrix& val)
+void DefaultMoveable::ForceSetMatrix(const Matrix4& val)
 {
 	mMatrix.SetValue(val);
 	mWorldMatrix.SetDirty();
@@ -82,13 +98,9 @@ void DefaultMoveable::SetMatrix(const Matrix& val)
 	OnMoveableDirty(MoveableChangedFlags::MatrixChanged);
 }
 
-void DefaultMoveable::SetSRTFromMatrix(const Matrix& val, bool applyAnchor/* = true*/)
+void DefaultMoveable::SetSRTFromMatrix(const Matrix4& val)
 {
 	mMatrix.SetValue(val);
-	if (applyAnchor)
-	{
-		mMatrix.SetDirty();
-	}
 	val.DecomposeXYZ(mScale, mRotation, mPosition);
 	mWorldMatrix.SetDirty();
 	mWorldInverseMatrix.SetDirty();
@@ -115,7 +127,7 @@ bool DefaultMoveable::CheckWorldMatrixDirtyToRoot() const
 	}
 }
 
-const Matrix& DefaultMoveable::WorldMatrix() const
+const Matrix4& DefaultMoveable::WorldMatrix() const
 {
 	if (IsWorldMatrixDirty())
 	{
@@ -125,7 +137,7 @@ const Matrix& DefaultMoveable::WorldMatrix() const
 }
 
 
-const Matrix& DefaultMoveable::WorldInverseMatrix() const
+const Matrix4& DefaultMoveable::WorldInverseMatrix() const
 {
 	if (IsWorldMatrixDirty())
 	{
@@ -135,7 +147,7 @@ const Matrix& DefaultMoveable::WorldInverseMatrix() const
 	return mWorldInverseMatrix.Value();
 }
 
-void DefaultMoveable::ForceSetWorldMatrix(const Matrix& val)
+void DefaultMoveable::ForceSetWorldMatrix(const Matrix4& val)
 {
 	mWorldMatrix.SetValue(val);
 	mWorldInverseMatrix.SetDirty();

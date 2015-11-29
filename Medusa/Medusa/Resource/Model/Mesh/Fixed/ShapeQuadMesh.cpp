@@ -8,12 +8,12 @@
 #include "Graphics/Buffer/TexCoordGraphicsBuffer.h"
 #include "Graphics/Buffer/ColorGraphicsBuffer.h"
 #include "Graphics/Buffer/NormalGraphicsBuffer.h"
-#include "Core/Geometry/Matrix.h"
+#include "Core/Geometry/Matrix4.h"
 
 MEDUSA_BEGIN;
 
-ShapeQuadMesh::ShapeQuadMesh(IEffect* effect/*=nullptr*/, IMaterial* material/*=nullptr*/, bool isStatic/*=false*/)
-	:IMesh(effect, material, isStatic)
+ShapeQuadMesh::ShapeQuadMesh( bool isStatic/*=false*/)
+	:IMesh(isStatic)
 {
 
 }
@@ -69,7 +69,7 @@ INode* ShapeQuadMesh::CreateCloneInstance() const
 	return nullptr;
 }
 
-void ShapeQuadMesh::AddToVertexBufferObject(VertexGraphicsBuffer& bufferObject, size_t vertexIndex, const Matrix& matrix) const
+void ShapeQuadMesh::AddToVertexBufferObject(VertexGraphicsBuffer& bufferObject, size_t vertexIndex, const Matrix4& matrix) const
 {
 	if (mFixType == MeshFixType::ForceToQuad)
 	{

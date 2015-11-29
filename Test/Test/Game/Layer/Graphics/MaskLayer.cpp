@@ -34,7 +34,7 @@ bool MaskLayer::Initialize()
 	AddChild(rectShape);
 
 	
-	mFrontSprite->EnableScissor(true);
+	mFrontSprite->MutableRenderState().EnableScissor(true);
 
 	//BlendRenderState* state= mFrontSprite->MutableRenderState().BlendState(); 
 

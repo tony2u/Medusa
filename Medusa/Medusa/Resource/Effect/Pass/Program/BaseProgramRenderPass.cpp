@@ -24,7 +24,6 @@ BaseProgramRenderPass::BaseProgramRenderPass( const FileIdRef& fileId,IShader* v
 	mManagedAttributes.SetAll(nullptr);
 
 	mProgramState=new ProgramRenderState(0);
-	mProgramState->Retain();
 
 	SAFE_RETAIN(mVertexShader);
 	SAFE_RETAIN(mPixelShader);

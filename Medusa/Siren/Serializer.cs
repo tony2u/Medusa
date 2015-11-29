@@ -20,7 +20,7 @@ using Siren.Protocol.Binary;
 namespace Siren
 {
     /*
-     * TODO: ??Linq Expression ?????
+     * TODO: Linq Expression ?
      */
     public class Serializer
     {

@@ -12,7 +12,6 @@ MEDUSA_BEGIN;
 Base2DScene::Base2DScene(StringRef name/*=StringRef::Empty*/, const IEventArg& e /*= IEventArg::Empty*/) :IScene(name, e)
 {
 	mCamera = CameraFactory::Instance().CreateDefault(StringRef::Empty, true,true, ResourceShareType::Share);
-	mCamera->Retain();
 }
 
 

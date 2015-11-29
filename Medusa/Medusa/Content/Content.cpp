@@ -6,14 +6,12 @@
 
 #include "Content/Wrapper/FS/Color_fsh.cpp"
 #include "Content/Wrapper/FS/Texture_fsh.cpp"
-//#include "Content/Wrapper/FS/POD_fsh.cpp"
-#include "Content/Wrapper/FS/FntFont_fsh.cpp"
+#include "Content/Wrapper/FS/POD_fsh.cpp"
 #include "Content/Wrapper/FS/Shape_fsh.cpp"
 
 #include "Content/Wrapper/VS/Position_vsh.cpp"
 #include "Content/Wrapper/VS/Texture_vsh.cpp"
-//#include "Content/Wrapper/VS/POD_vsh.cpp"
-#include "Content/Wrapper/VS/FntFont_vsh.cpp"
+#include "Content/Wrapper/VS/POD_vsh.cpp"
 #include "Content/Wrapper/VS/Shape_vsh.cpp"
 
 #include "Content/Wrapper/Other/arial22_0_png.cpp"
@@ -32,16 +30,20 @@ void RegisterToFileSystem()
 {
 	Register_Color_fsh();
 	Register_Texture_fsh();
-	Register_FntFont_fsh();
 	Register_Shape_fsh();
+	Register_POD_fsh();
+
 
 	Register_Position_vsh();
 	Register_Texture_vsh();
-	Register_FntFont_vsh();
 	Register_Shape_vsh();
+	Register_POD_vsh();
+
 
 	Register_arial22_0_png();
 	Register_arial22_fnt();
+
+
 
 #ifdef MEDUSA_SCRIPT
 	Register_IGame_cs();

@@ -19,24 +19,20 @@ public:
 	virtual void Apply()const override;
 
 	virtual RenderTargetRenderState* Clone()const override;
+	virtual void CopyFrom(const IRenderState& other)override;
+
 	virtual bool Equals(const IRenderState& state)const override;
 	virtual RenderStateType Type()const override {return GetTypeIdStatic();}
 	static RenderStateType GetTypeIdStatic(){return RenderStateType::RenderTarget;}
 
 	uint FrameBuffer() const { return mFrameBuffer; }
-	void SetFrameBuffer(uint val) {
-		RETURN_IF_EQUAL(mFrameBuffer, val); mFrameBuffer = val; OnStateChanged();
-	}
+	void SetFrameBuffer(uint val) {RETURN_IF_EQUAL(mFrameBuffer, val); mFrameBuffer = val; OnStateChanged();}
 
 	const Rect2I& ViewPort() const { return mViewPort; }
-	void SetViewPort(const Rect2I& val) {
-		RETURN_IF_EQUAL(mViewPort, val); mViewPort = val; OnStateChanged();
-	}
+	void SetViewPort(const Rect2I& val) {RETURN_IF_EQUAL(mViewPort, val); mViewPort = val; OnStateChanged();}
 
 	const Color4F& ClearColor() const { return mClearColor; }
-	void SetClearColor(const Color4F& val) {
-		RETURN_IF_EQUAL(mClearColor, val); mClearColor = val; OnStateChanged();
-	}
+	void SetClearColor(const Color4F& val) {RETURN_IF_EQUAL(mClearColor, val); mClearColor = val; OnStateChanged();}
 
 	static RenderTargetRenderState* Current(bool isDefault=false);
 protected:

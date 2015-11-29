@@ -28,7 +28,7 @@ void IModelNode::AddChildNode( IModelNode* node )
 	node->SetParentNode(this);
 }
 
-void IModelNode::UpdateWorldMatrixRecursively( const Matrix& parentWorldMatrix/*=Matrix::Identity*/ )
+void IModelNode::UpdateWorldMatrixRecursively( const Matrix4& parentWorldMatrix/*=Matrix4::Identity*/ )
 {
 	mWorldMatrix=mMatrix.Value()*parentWorldMatrix;
 

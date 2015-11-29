@@ -10,6 +10,7 @@
 #include "Graphics/State/BlendRenderState.h"
 #include "Graphics/State/ScissorRenderState.h"
 #include "Graphics/State/RenderStateMachine.h"
+#include "Graphics/State/RenderStateFactory.h"
 
 
 MEDUSA_BEGIN;
@@ -17,252 +18,179 @@ MEDUSA_BEGIN;
 
 RenderStateSet::RenderStateSet()
 {
+	mItems.SetAll(nullptr);
 }
 
 
 RenderStateSet::~RenderStateSet(void)
 {
+
 }
-
-RenderStateSet& RenderStateSet::operator=(const RenderStateSet& val)
-{
-	mBlendState = val.mBlendState;
-	mScissorState = val.mScissorState;
-	return *this;
-}
-
-
 
 
 bool RenderStateSet::Equals(const RenderStateSet& states) const
 {
 	return false;
-
 }
 
 void RenderStateSet::Apply()const
 {
-	if (mBlendState != nullptr)
+	for (auto* state:mItems)
 	{
-		RenderStateMachine::Instance().Push(mBlendState);
+		if (state!=nullptr)
+		{
+			RenderStateMachine::Instance().Push(state);
+		}
 	}
-	if (mScissorState != nullptr)
-	{
-		RenderStateMachine::Instance().Push(mScissorState);
-	}
-
 }
 
 
 void RenderStateSet::Restore()const
 {
-	if (mBlendState != nullptr)
+	for (auto* state : mItems)
 	{
-		RenderStateMachine::Instance().Pop(mBlendState);
+		if (state != nullptr)
+		{
+			RenderStateMachine::Instance().Pop(state);
+		}
 	}
-
-	if (mScissorState != nullptr)
-	{
-		RenderStateMachine::Instance().Pop(mScissorState);
-	}
-
-}
-
-
-bool RenderStateSet::EnableBlend(bool val)
-{
-	bool isChanged = false;
-	if (mBlendState == nullptr)
-	{
-		mBlendState.Alloc();
-		mBlendState->Retain();
-		mBlendState->OnChanged += Bind(&RenderStateSet::OnStateChangedEvent, this);
-		isChanged = true;
-	}
-
-	if (mBlendState->Enable(val))
-	{
-		return true;
-	}
-	return isChanged;
-}
-
-bool RenderStateSet::SetBlendFunc(GraphicsBlendSrcFunc srcFunc, GraphicsBlendDestFunc destFunc)
-{
-	bool isChanged = false;
-	if (mBlendState == nullptr)
-	{
-		mBlendState.Alloc();
-		mBlendState->Retain();
-		mBlendState->OnChanged += Bind(&RenderStateSet::OnStateChangedEvent, this);
-		isChanged = true;
-	}
-
-	if (mBlendState->SetBlendFunc(srcFunc, destFunc))
-	{
-		return true;
-	}
-	return isChanged;
 }
 
 bool RenderStateSet::IsBlendEnabled() const
 {
-	return mBlendState != nullptr&&mBlendState->IsEnabled();
+	BlendRenderState* state = GetState<BlendRenderState>();
+	return state != nullptr&&state->IsEnabled();
 }
 
-bool RenderStateSet::RemoveBlend()
+void RenderStateSet::EnableBlend(bool val)
 {
-	if (mBlendState!=nullptr)
-	{
-		mBlendState.Release();
-		OnStateRemoved(RenderStateType::Blend);
-		return true;
-	}
-	return false;
+	BlendRenderState* state = AllocState<BlendRenderState>();
+	state->Enable(val);
 }
 
-
-BlendRenderState* RenderStateSet::BlendState()
+void RenderStateSet::SetBlendFunc(GraphicsBlendSrcFunc srcFunc, GraphicsBlendDestFunc destFunc)
 {
-	if (mBlendState == nullptr)
-	{
-		mBlendState.Alloc();
-		mBlendState->Retain();
-		mBlendState->OnChanged += Bind(&RenderStateSet::OnStateChangedEvent, this);
-	}
-	return mBlendState;
+	BlendRenderState* state = AllocState<BlendRenderState>();
+	state->SetBlendFunc(srcFunc, destFunc);
 }
+
+BlendRenderState* RenderStateSet::RemoveBlend()
+{
+	return RemoveState<BlendRenderState>();
+}
+
 
 bool RenderStateSet::HasScissorBox() const
 {
-	return mScissorState != nullptr;
+	ScissorRenderState* state = GetState<ScissorRenderState>();
+	return state != nullptr;
 }
 
 
 bool RenderStateSet::IsScissorEnabled() const
 {
-	return mScissorState != nullptr&&mScissorState->IsEnabled();
+	ScissorRenderState* state = GetState<ScissorRenderState>();
+	return state != nullptr&&state->IsEnabled();
 }
 
-bool RenderStateSet::SetScissorBox(const Rect2F& val)
+void RenderStateSet::SetScissorBox(const Rect2F& val)
 {
-	bool isChanged = false;
-
-	if (mScissorState == nullptr)
-	{
-		mScissorState.Alloc();
-		mScissorState->Retain();
-		mScissorState->OnChanged += Bind(&RenderStateSet::OnStateChangedEvent, this);
-		isChanged = true;
-	}
-
-	if (mScissorState->SetScissorBox(val))
-	{
-		return true;
-
-	}
-	return isChanged;
+	ScissorRenderState* state = AllocState<ScissorRenderState>();
+	state->SetScissorBox(val);
 }
 
-bool RenderStateSet::EnableScissor(bool val)
+void RenderStateSet::EnableScissor(bool val)
 {
-	bool isChanged = false;
-
-	if (mScissorState == nullptr)
-	{
-		mScissorState.Alloc();
-		mScissorState->Retain();
-		mScissorState->OnChanged += Bind(&RenderStateSet::OnStateChangedEvent, this);
-		isChanged = true;
-	}
-
-	if (mScissorState->Enable(val))
-	{
-		return true;
-
-	}
-	return isChanged;
+	ScissorRenderState* state = AllocState<ScissorRenderState>();
+	state->Enable(val);
 }
 
-bool RenderStateSet::RemoveScissor()
+ScissorRenderState* RenderStateSet::RemoveScissor()
 {
-	if (mScissorState!=nullptr)
-	{
-		mScissorState.Release();
-		OnStateRemoved(RenderStateType::Scissor);
-		return true;
-	}
-	return false;
+	return RemoveState<ScissorRenderState>();
+
 }
 
 const Rect2F* RenderStateSet::TryGetScissorBox() const
 {
-	RETURN_NULL_IF_NULL(mScissorState);
-	return &mScissorState->ScissorBox();
+	ScissorRenderState* state = GetState<ScissorRenderState>();
+	RETURN_NULL_IF_NULL(state);
+	return &state->ScissorBox();
 }
 
 const Rect2F& RenderStateSet::GetScissorBoxOrEmpty() const
 {
-	if (mScissorState != nullptr)
+	ScissorRenderState* state = GetState<ScissorRenderState>();
+	if (state != nullptr)
 	{
-		return mScissorState->ScissorBox();
+		return state->ScissorBox();
 	}
 	return Rect2F::Zero;
 }
 
 
-void RenderStateSet::UpdateFromParent(const RenderStateSet& selfRenderState, const RenderStateSet& parentRenderState, const Matrix& selfWorldMatrix, RenderStateType flag)
+void RenderStateSet::UpdateFromParent(const RenderStateSet& selfRenderState, const RenderStateSet& parentRenderState, const Matrix4& selfWorldMatrix, RenderStateType flag)
 {
-	
-	if (MEDUSA_HAS_FLAG(flag,RenderStateType::Blend))
+	FOR_EACH_SIZE(i, (uint)RenderStateType::Count)
 	{
-		//do not inherit
-		mBlendState = selfRenderState.mBlendState;
-	}
+		uint index = 1 << i;
+		CONTINUE_IF_FALSE(MEDUSA_HAS_FLAG(flag, index));
 
-	if (MEDUSA_HAS_FLAG(flag, RenderStateType::Scissor))
-	{
-		if (selfRenderState.mScissorState == nullptr)
+		auto* state = mItems[i];
+		auto* selfState = selfRenderState.mItems[i];
+		auto* parentState = parentRenderState.mItems[i];
+
+		if (selfState == nullptr&&parentState == nullptr)
 		{
-			mScissorState = parentRenderState.mScissorState;
+			if (state != nullptr)
+			{
+				state->Release();
+				mItems[i] = nullptr;
+			}
 		}
 		else
 		{
-			if (parentRenderState.mScissorState == nullptr)
+			if (state == nullptr)
 			{
-				mScissorState = selfRenderState.mScissorState;
-				mScissorState->Tansform(selfWorldMatrix);
-
+				//do not add event listener
+				state = RenderStateFactory::Instance().Create(i);
+				mItems[i] = state;
 			}
-			else
-			{
-				mScissorState = selfRenderState.mScissorState;
-				mScissorState->Tansform(selfWorldMatrix);
-
-				if (parentRenderState.mScissorState->IsEnabled())
-				{
-					Rect2F result = Rect2F::Intersect(mScissorState->ScissorBox(), parentRenderState.mScissorState->ScissorBox());
-					mScissorState->SetScissorBox(result);
-					mScissorState->Enable(true);
-				}
-			}
+			state->UpdateWorldState(selfState, parentState, selfWorldMatrix);
 		}
+
 	}
+
+	
 }
 
-void RenderStateSet::UpdateFromSelf(const RenderStateSet& selfRenderState, const Matrix& selfWorldMatrix, RenderStateType flag)
+void RenderStateSet::UpdateFromSelf(const RenderStateSet& selfRenderState, const Matrix4& selfWorldMatrix, RenderStateType flag)
 {
-	if (MEDUSA_HAS_FLAG(flag, RenderStateType::Blend))
+	FOR_EACH_SIZE(i, (uint)RenderStateType::Count)
 	{
-		mBlendState = selfRenderState.mBlendState;
-	}
+		uint index = 1 << i;
+		CONTINUE_IF_FALSE(MEDUSA_HAS_FLAG(flag, index));
+		
+		auto* state = mItems[i];
+		auto* selfState = selfRenderState.mItems[i];
 
-	if (MEDUSA_HAS_FLAG(flag, RenderStateType::Scissor))
-	{
-		mScissorState = selfRenderState.mScissorState;
-		if (mScissorState!=nullptr)
+		if (selfState!=nullptr)
 		{
-			mScissorState->Tansform(selfWorldMatrix);
+			if (state == nullptr)
+			{
+				//do not add event listener
+				state = RenderStateFactory::Instance().Create(i);
+				mItems[i] = state;
+			}
+			state->UpdateWorldState(selfState,nullptr,selfWorldMatrix);
+		}
+		else
+		{
+			if (state!= nullptr)
+			{
+				state->Release();
+				mItems[i] = nullptr;
+			}
 		}
 	}
 }
@@ -274,26 +202,40 @@ void RenderStateSet::OnStateChangedEvent(IRenderState& state)
 
 IRenderState* RenderStateSet::GetState(RenderStateType type) const
 {
-	IRenderState* outState;
-	TryGetState(type,outState);
-	return outState;
+	uint32 index = Math::CountTrailingZero((uint32)type);
+	return mItems[index];
 }
 
-bool RenderStateSet::TryGetState(RenderStateType type, IRenderState*& outState) const
+IRenderState* RenderStateSet::AllocState(RenderStateType type)
 {
-	switch (type)
+	uint32 index = Math::CountTrailingZero((uint32)type);
+	IRenderState* state = mItems[index];
+	if (state == nullptr)
 	{
-		case RenderStateType::Blend:
-			outState = mBlendState;
-			return true;
-		case RenderStateType::Scissor:
-			outState = mScissorState;
-			return true;
-		default:
-			outState = nullptr;
-			return false;
+		state = RenderStateFactory::Instance().Create(index);
+		state->OnChanged += Bind(&RenderStateSet::OnStateChangedEvent, this);
+		OnStateAdded(*state);
+		mItems[index] = state;
 	}
+	return state;
 }
 
+IRenderState* RenderStateSet::RemoveState(RenderStateType type)
+{
+	uint32 index = Math::CountTrailingZero((uint32)type);
+	IRenderState* state = mItems[index];
+	RETURN_NULL_IF_NULL(state);
+
+	state->OnChanged -= Bind(&RenderStateSet::OnStateChangedEvent, this);
+	OnStateRemoved(type);
+	mItems[index] = nullptr;
+	if (state->IsShared())
+	{
+		state->Release();
+		return state;
+	}
+	state->Release();	//release it self
+	return nullptr;
+}
 
 MEDUSA_END;

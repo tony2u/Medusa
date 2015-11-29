@@ -17,14 +17,14 @@ public:
 	virtual void Apply()const override;
 
 	virtual ProgramRenderState* Clone()const override;
+	virtual void CopyFrom(const IRenderState& other)override;
+
 	virtual bool Equals(const IRenderState& state)const override;
 	virtual RenderStateType Type()const override {return GetTypeIdStatic();}
 	static RenderStateType GetTypeIdStatic(){return RenderStateType::Program;}
 
 	uint Program() const { return mProgram; }
-	void SetProgram(uint val) {
-		RETURN_IF_EQUAL(mProgram, val); mProgram = val; OnStateChanged();
-	}
+	void SetProgram(uint val) {RETURN_IF_EQUAL(mProgram, val); mProgram = val; OnStateChanged();}
 
 	static ProgramRenderState* Current();
 protected:

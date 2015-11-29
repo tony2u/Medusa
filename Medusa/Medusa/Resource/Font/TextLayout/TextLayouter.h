@@ -11,20 +11,7 @@
 
 MEDUSA_BEGIN;
 
-/*
-1.?????'\n'?????????????????????,????????????
-2.???????????????????????
-3.?????????????,????????????????
 
-*/
-
-
-/************************************************************************/
-/*
-1.??????????????,?????????????Color???,????????
-2.????????????Interleaved Buffer,?????????????
-*/
-/************************************************************************/
 class TextLayouter
 {
 
@@ -37,9 +24,9 @@ public:
 	static Size2F GetSingleLineSize(IFont& font, const WStringRef& text);
 	static Size2F GetMultipleLineSize(IFont& font, const WStringRef& text, const Size2F& restrictSize = Size2F::Zero);
 
-	static bool LayoutMultipleLineText(List<BaseFontMesh*>& outMeshes, Size2F& outSize,
+	static bool LayoutMultipleLineText(List<BaseFontMesh*>& outMeshes, List<IMaterial*>& outMaterials, Size2F& outSize,
 									   IFont& font, const WStringRef& text, Alignment alignment = Alignment::LeftBottom, const Size2F& restrictSize = Size2F::Zero, ILabel* label = nullptr, bool isStatic = false);
-	static bool LayoutSingleLineText(List<BaseFontMesh*>& outMeshes, Size2F& outSize,
+	static bool LayoutSingleLineText(List<BaseFontMesh*>& outMeshes, List<IMaterial*>& outMaterials, Size2F& outSize,
 									 IFont& font, const WStringRef& text, Alignment alignment = Alignment::LeftBottom, const Size2F& restrictSize = Size2F::Zero, ILabel* label = nullptr, bool isStatic = false);
 private:
 	static Size2F GetMultipleLineSizeHelper(IFont& font, const WStringRef& text);
@@ -58,12 +45,12 @@ private:
 	static const FontChar* GetChar(IFont& font, wchar_t c);
 
 
-	static void AddCharToMesh(List<BaseFontMesh*>& outMeshes, IFont& font, const FontChar& fontChar, const Point3F& origin, ILabel* label = nullptr, bool isStatic = false);
+	static void AddCharToMesh(List<BaseFontMesh*>& outMeshes, List<IMaterial*>& outMaterials,IFont& font, const FontChar& fontChar, const Point3F& origin, ILabel* label = nullptr, bool isStatic = false);
 
-	static void LayoutMultipleLineMesh(List<BaseFontMesh*>& outMeshes,
+	static void LayoutMultipleLineMesh(List<BaseFontMesh*>& outMeshes, List<IMaterial*>& outMaterials,
 									   IFont& font, const Size2F& imageSize, const List<float>& lineWidths, const List<WHeapString>& lines, Alignment alignment, const Size2F& restrictSize, ILabel* label = nullptr, bool isStatic = false);
 
-	static void LayoutSingleLineMesh(List<BaseFontMesh*>& outMeshes,
+	static void LayoutSingleLineMesh(List<BaseFontMesh*>& outMeshes, List<IMaterial*>& outMaterials,
 									 IFont& font, const Size2F& imageSize, float lineWidth, const WStringRef& line, Alignment alignment, const Size2F& restrictSize, ILabel* label = nullptr, bool isStatic = false);
 
 	static Point2F GetPenOrigin(uint lineIndex, uint lineCount, float lineWidth, float lineHeight, Alignment alignment, const Size2F& restrictSize);

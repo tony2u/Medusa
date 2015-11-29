@@ -49,7 +49,7 @@ public:
 	const Array<Point3F, 4>& Vertices()  const{ return mVertices; }
 	const Array<Point2F, 4>& Texcoords() const { return mTexcoords; }
 
-	void UpdateMeshEffectAndMaterial(IMesh* mesh);
+	IMaterial* GetMaterial();
 protected:
 	HeapString mName;
 	Rect2U mTextureRect;

@@ -21,7 +21,6 @@ IRenderTarget::IRenderTarget(const FileIdRef& fileId/*=FileId::Empty*/):IResourc
 	mClearColor=Color4F::Black;
 
 	mRenderTargetRenderState=new RenderTargetRenderState();
-	mRenderTargetRenderState->Retain();
 }
 
 IRenderTarget::~IRenderTarget()

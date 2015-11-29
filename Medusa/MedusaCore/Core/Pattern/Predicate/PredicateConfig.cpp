@@ -41,7 +41,6 @@ bool PredicateConfig::LoadFromData(StringRef path, const MemoryByteData& data, u
 		predicate->Initialize();
 		Add(id, predicate);
 
-		predicate->Retain();
 		LoadPredicate(child, predicate);
 	}
 

@@ -34,8 +34,8 @@ v'=v*S*R*T	Append
 
 But because OpenGL store the matrix in column order, so OpenGL and DirectX will have the same items order!
 
-(T*R*S)-t?????S-t*R-t*T-t ,???????????????????S*R*T??,??OpenGL????????????????????,????????????(S*R*T)-t,???????T-t*R-t*S-t,
-??????????????????????S,R,T?????????????,????????SRT?????????????-t,??????????????????
+(T*R*S)-t equal to S-t*R-t*T-t ,we're saving S*R*T in row order,so when OpenGL read it in coloum order,it actuly read (S*R*T)-t,equal to T-t*R-t*S-t,
+and because we save all temp S,R,T in row order,so means every SRT do a -t,so the eventual result will be correct.
 */
 
 class Matrix4
@@ -51,36 +51,20 @@ public:
 	//inline Matrix4& operator=(const Matrix4& matrix);
 
 	//in row-major
-	inline Matrix4(float m11, float m12, float m13, float m14,
-				   float m21, float m22, float m23, float m24,
-				   float m31, float m32, float m33, float m34,
-				   float m41, float m42, float m43, float m44, bool isTransposed = false)
-	{
-		if (isTransposed)
-		{
-			M11 = m11; M21 = m12; M31 = m13; M41 = m14;
-			M12 = m21; M22 = m22; M32 = m23; M42 = m24;
-			M13 = m31; M23 = m32; M33 = m33; M43 = m34;
-			M14 = m41; M24 = m42; M34 = m43; M44 = m44;
-		}
-		else
-		{
-			M11 = m11; M12 = m12; M13 = m13; M14 = m14;
-			M21 = m21; M22 = m22; M23 = m23; M24 = m24;
-			M31 = m31; M32 = m32; M33 = m33; M34 = m34;
-			M41 = m41; M42 = m42; M43 = m43; M44 = m44;
-		}
+	Matrix4(float m11, float m12, float m13, float m14,
+		float m21, float m22, float m23, float m24,
+		float m31, float m32, float m33, float m34,
+		float m41, float m42, float m43, float m44, bool isTransposed = false);
 
-	}
-
-	explicit Matrix4(const Matrix43& m, bool isTransposed = false);
-	Matrix4& operator=(const Matrix43& m);
+	explicit Matrix4(const Matrix2& m);
+	Matrix4& operator=(const Matrix2& m);
 
 	explicit Matrix4(const Matrix3& m, bool isTransposed = false);
 	Matrix4& operator=(const Matrix3& m);
 
-	explicit Matrix4(const Matrix& m, bool isTransposed = false);
-	Matrix4& operator=(const Matrix& m);
+	explicit Matrix4(const Matrix43& m, bool isTransposed = false);
+	Matrix4& operator=(const Matrix43& m);
+
 
 	float* Items() { return M; }
 	const float* const Items()const { return M; }
@@ -172,8 +156,11 @@ public:
 
 	Matrix4& Transpose();
 	Matrix4& Translate(const Point3F& point);
+	Matrix4& Translate(const Point2F& point);
 	Matrix4& Scale(const Scale3F& scale);
+	Matrix4& Scale(const Scale2F& scale);
 	Matrix4& RotateXYZ(const Rotation3F& rotation);
+	Matrix4& RotateXY(const Rotation2F& rotation);
 	Matrix4& RotateX(float radian);
 	Matrix4& RotateY(float radian);
 	Matrix4& RotateZ(float radian);
@@ -182,19 +169,13 @@ public:
 	Matrix4& FlipY();
 	Matrix4& FlipZ();
 
-	Matrix4& ResetWorld(const Scale3F& scale, const Rotation3F& rotation, const Point3F& translation, FlipMask flip = FlipMask::None, Point3F flipPivot = Point3F::Zero, const Point3F& pivot = Point3F::Zero);
 	Matrix4& ResetWorld(const Size3F& size, const Point3F& anchor, const Scale3F& scale, const Rotation3F& rotation, const Point3F& translation, FlipMask flip = FlipMask::None);
+	Matrix4& ResetWorld(const Scale3F& scale, const Rotation3F& rotation, const Point3F& translation, FlipMask flip = FlipMask::None, Point3F flipPivot = Point3F::Zero, const Point3F& pivot = Point3F::Zero);
+	Matrix4& ResetWorldWithoutAnchor(const Scale3F& scale, const Rotation3F& rotation, const Point3F& translation, FlipMask flip = FlipMask::None);
 
 	Matrix4 CreateInverse();
 	Matrix43 CreateInverse43();
 
-	//************************************
-	// ????:    	InverseMatrixByGauss
-	// ????:   	Matrix44	
-	// ????:		????-????????
-	// ????:		
-	// ????:		
-	//************************************
 	Matrix4 CreateInverseByGauss();
 	Matrix4 CreateTranspose();
 
@@ -203,6 +184,7 @@ public:
 	static Matrix4 CreateScale(const Scale3F& scale);
 	static Matrix4 CreateScaleAxis(const Point3F& axis, float scale);
 	static Matrix4 CreateRotateXYZ(const Rotation3F& rotation);
+	static Matrix4 CreateRotateXY(const Rotation2F& rotation);
 	static Matrix4 CreateRotateX(float radian);
 	static Matrix4 CreateRotateY(float radian);
 	static Matrix4 CreateRotateZ(float radian);
@@ -221,8 +203,9 @@ public:
 
 	static Matrix4 CreateShear(float xy, float xz, float yx, float yz, float zx, float zy);
 	static Matrix4 CreateNormal();
-	static Matrix4 CreateWorld(const Scale3F& scale, const Rotation3F& rotation, const Point3F& translation, FlipMask flip = FlipMask::None, Point3F flipPivot = Point3F::Zero, const Point3F& pivot = Point3F::Zero);
 	static Matrix4 CreateWorld(const Size3F& size, const Point3F& anchor, const Scale3F& scale, const Rotation3F& rotation, const Point3F& translation, FlipMask flip = FlipMask::None);
+	static Matrix4 CreateWorldWithoutAnchor(const Scale3F& scale, const Rotation3F& rotation, const Point3F& translation, FlipMask flip = FlipMask::None);
+	static Matrix4 CreateWorld(const Scale3F& scale, const Rotation3F& rotation, const Point3F& translation, FlipMask flip = FlipMask::None, Point3F flipPivot = Point3F::Zero, const Point3F& pivot = Point3F::Zero);
 
 
 
@@ -255,24 +238,7 @@ public:
 	static Matrix4 PerspectiveOffCenter(float left, float right, float bottom, float top, float nearPlane, float farPlane, bool isRightHand = MEDUSA_IS_RIGHT_HAND, GraphicsSDK sdk = MEDUSA_DEFAULT_GRAPHICS_SDK);
 
 private:
-	//************************************
-	// ????:    	AdjointMatrix
-	// ????:   	Matrix4	
-	// ????:		?????????????
-	// ????:		
-	// ????:		
-	//************************************
 	Matrix4 AdjointMatrix();
-
-	//************************************
-	// ????:    	SubDeterminant
-	// ????:   	float	
-	// ????: 	byte row		
-	// ????: 	byte column		
-	// ????:		????????????????
-	// ????:		
-	// ????:		
-	//************************************
 	float SubDeterminant(byte row, byte column);
 
 #pragma endregion Transform
@@ -288,10 +254,10 @@ public:
 		float M[Size];
 		struct
 		{
-			union { float M11; float A; }; union { float M12; float B; }; float M13; float M14;
-			union { float M21; float C; }; union { float M22; float D; }; float M23; float M24;
+			float M11; float M12; float M13; float M14;
+			float M21; float M22; float M23; float M24;
 			float M31; float M32; float M33; float M34;
-			union { float M41; float X; }; union { float M42; float Y; }; union { float M43; float Z; }; float M44;
+			float M41; float M42;  float M43; float M44;
 		};
 	};
 

@@ -20,16 +20,10 @@ bool CircleShapeLayer::Initialize()
 	IShape* shape1= NodeFactory::Instance().CreateCircle(50.f,Math::PI2/720.f,Color4F::Red);
 	shape1->SetAnchor(0.5f, 0.5f);
 	shape1->SetDock(DockPoint::Percent);
-	shape1->SetRelativePosition(mpp(0.3, 0.5));
+	shape1->SetRelativePosition(mpp(0.3f, 0.5f));
 	AddChild(shape1);
 
-	IShape* shape2 = NodeFactory::Instance().CreateCircleBorder(50.f, Math::PI2 / 720.f, Color4F::Red);
-	shape2->SetDock(DockPoint::Percent);
-	shape2->SetRelativePosition(mpp(0.6, 0.5));
-
-	shape2->SetAnchor(0.5f, 0.5f);
-	AddChild(shape2);
-
+	
 	return true;
 }
 

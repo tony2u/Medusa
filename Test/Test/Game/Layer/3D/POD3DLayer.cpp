@@ -17,6 +17,13 @@ bool POD3DLayer::Initialize()
 {
 	RETURN_FALSE_IF_FALSE(BaseCaseLayer::Initialize());
 
+	RasterizerRenderState* state = this->MutableRenderState().AllocState<RasterizerRenderState>();
+	state->SetCullMode(GraphicsFace::Back);
+	state->Enable(true);
+
+	DepthStencilRenderState* depthState = this->MutableRenderState().AllocState<DepthStencilRenderState>();
+	depthState->EnableDepthTest(true);
+
 	auto* shape1 = NodeFactory::Instance().CreatePODSprite("Scene.pod");
 	//shape1->SetAnchor(0.5f, 0.5f);
 	//shape1->SetDock(DockPoint::MiddleCenter);
@@ -26,7 +33,24 @@ bool POD3DLayer::Initialize()
 }
 
 
+bool POD3DLayer::Enter()
+{
+	return true;
 
+	auto winSize = ResolutionAdapter::Instance().WinSize();
+	auto* camera = CameraFactory::Instance().CreateFromModel("Camera01", "Scene.pod", winSize, false);
+	IScene* scene = SceneManager::Instance().RunningScene();
+	scene->SetCamera(camera);
+	return true;
+}
+
+bool POD3DLayer::Exit()
+{
+	IScene* scene = SceneManager::Instance().RunningScene();
+	auto* camera= ResolutionAdapter::Instance().DefaultCamera2D();
+	scene->SetCamera(camera);
+	return true;
+}
 
 MEDUSA_IMPLEMENT_LAYER(POD3DLayer, BaseCaseLayer, StringRef::Empty);
 

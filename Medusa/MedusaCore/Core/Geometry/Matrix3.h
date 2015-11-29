@@ -60,8 +60,6 @@ public:
 	explicit Matrix3(const Matrix43& m, bool isTransposed = false);
 	Matrix3& operator=(const Matrix43& m);
 
-	explicit Matrix3(const Matrix& m, bool isTransposed = false);
-	Matrix3& operator=(const Matrix& m);
 
 	float* Items() { return M; }
 	const float* const Items()const { return M; }

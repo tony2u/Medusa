@@ -18,7 +18,7 @@ We choose separate buffer instead of interleaved, because we want to update only
 class TextureGeneralMesh :public IMesh
 {
 public:
-	TextureGeneralMesh(IEffect* effect = nullptr, IMaterial* material = nullptr, bool isStatic = false);
+	TextureGeneralMesh( bool isStatic = false);
 	virtual ~TextureGeneralMesh(void);
 public:
 	virtual size_t VertexCount()const override { return mVertices.Count(); }
@@ -58,7 +58,7 @@ public:
 
 	virtual INode* CreateCloneInstance()const override;
 public:
-	virtual void AddToVertexBufferObject(VertexGraphicsBuffer& bufferObject, size_t vertexIndex, const Matrix& matrix)const override;
+	virtual void AddToVertexBufferObject(VertexGraphicsBuffer& bufferObject, size_t vertexIndex, const Matrix4& matrix)const override;
 	virtual void AddToTexCoordBufferObject(TexCoordGraphicsBuffer& bufferObject, size_t vertexIndex)const override;
 	virtual void AddToColorBufferObject(ColorGraphicsBuffer& bufferObject, size_t vertexIndex, const Color4F& parentColor = Color4F::White)const override;
 	virtual void AddToIndexBufferObject(IndexGraphicsBuffer& bufferObject, size_t vertexIndex, size_t indexIndex)const override;

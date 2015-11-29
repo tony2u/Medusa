@@ -46,14 +46,21 @@ void SamplerRenderState::Apply()const
 SamplerRenderState* SamplerRenderState::Clone() const
 {
 	SamplerRenderState* state = new SamplerRenderState();
-	state->SetTextureType(mTextureType);
-	state->SetTextureUnit(mTextureUnit);
-	state->SetTexture(mTexture);
-	state->SetMagFilter(mMagFilter);
-	state->SetMinFilter(mMinFilter);
-	state->SetWrapS(mWrapS);
-	state->SetWrapT(mWrapT);
+	state->CopyFrom(*this);
 	return state;
+}
+
+void SamplerRenderState::CopyFrom(const IRenderState& other)
+{
+	MEDUSA_ASSERT(other.Type() == Type(), "Cannot copy render state with different type");
+	SamplerRenderState& val = (SamplerRenderState&)other;
+	mTextureType = val.mTextureType;
+	mTextureUnit = val.mTextureUnit;
+	mTexture = val.mTexture;
+	mMagFilter = val.mMagFilter;
+	mMinFilter = val.mMinFilter;
+	mWrapS = val.mWrapS;
+	mWrapT = val.mWrapT;
 }
 
 bool SamplerRenderState::Equals(const IRenderState& state) const

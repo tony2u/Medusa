@@ -33,7 +33,7 @@ bool ShapeProgressBar::Initialize()
 
 void ShapeProgressBar::OnUpdateMesh(bool isProgressTypeChanged/*=false*/)
 {
-	ShapeQuadMesh* mesh = (ShapeQuadMesh*)mMesh;
+	ShapeQuadMesh* mesh = (ShapeQuadMesh*)mRenderingObject.Mesh();
 
 	if (isProgressTypeChanged)
 	{

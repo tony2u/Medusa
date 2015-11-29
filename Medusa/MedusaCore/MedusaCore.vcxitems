@@ -295,7 +295,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Core\Geometry\Line3.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Core\Geometry\Map\GridCell.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Core\Geometry\Map\GridMap.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Core\Geometry\Matrix.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Core\Geometry\Matrix2.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Core\Geometry\Matrix3.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Core\Geometry\Matrix4.h" />
@@ -715,7 +714,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Core\Geometry\Graph\GraphEdge.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Core\Geometry\Graph\GraphNode.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Core\Geometry\Graph\GraphPath.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Core\Geometry\Matrix.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Core\Geometry\Matrix2.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Core\Geometry\Matrix3.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Core\Geometry\Matrix4.cpp" />

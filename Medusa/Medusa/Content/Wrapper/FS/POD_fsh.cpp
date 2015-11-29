@@ -16,7 +16,7 @@ varying mediump vec2	vTexCoord;\n\
 varying lowp float		vDot;\n\
 void main (void)\n\
 {\n\
-	gl_FragColor=texture2D(uTextureSampler,vTexCoord)*vDot;\n\
+	gl_FragColor=texture2D(uTextureSampler,vTexCoord);\n\
 }\n\
 ";
 //const static MemoryFileAutoRegister mRegister_POD_fsh(FileIdRef("POD.fsh"),_POD_fsh);

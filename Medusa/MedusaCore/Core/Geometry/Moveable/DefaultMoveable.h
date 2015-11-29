@@ -6,7 +6,7 @@
 #include "Core/Geometry/Point3.h"
 #include "Core/Geometry/Rotation3.h"
 #include "Core/Geometry/Scale3.h"
-#include "Core/Geometry/Matrix.h"
+#include "Core/Geometry/Matrix4.h"
 #include "Core/Pattern/LazyValue.h"
 #include "Core/Geometry/Cube.h"
 
@@ -21,6 +21,7 @@ class DefaultMoveable
 public:
 	DefaultMoveable();
 	virtual ~DefaultMoveable(void);
+	void SetMoveable(const DefaultMoveable& val);
 
 	const Size3F& Size() const { return mSize; }
 	void SetSize(const Size3F& val);
@@ -115,21 +116,21 @@ public:
 	void SetScale(float val) { SetScale(Scale3F(val, val, 1.f)); }
 
 
-	const Matrix& LocalMatrix()const { return mMatrix.Value(); }
-	void SetMatrix(const Matrix& val);
+	const Matrix4& LocalMatrix()const { return mMatrix.Value(); }
+	void ForceSetMatrix(const Matrix4& val);
 	bool IsMatrixDirty()const { return mMatrix.IsDirty(); }
-	void SetSRTFromMatrix(const Matrix& val, bool applyAnchor = true);
+	void SetSRTFromMatrix(const Matrix4& val);
 
 
-	const Matrix& WorldMatrix()const;
+	const Matrix4& WorldMatrix()const;
 	bool IsWorldMatrixDirty()const;
 	bool CheckWorldMatrixDirtyToRoot()const;
 
-	void ForceSetWorldMatrix(const Matrix& val);
+	void ForceSetWorldMatrix(const Matrix4& val);
 	bool TryUpdateWorldMatrix()const { return mWorldMatrix.TryUpdate(); }
 	size_t WorldMatrixVersion()const { return mWorldMatrix.Version(); }
 
-	const Matrix& WorldInverseMatrix()const;
+	const Matrix4& WorldInverseMatrix()const;
 
 	const BoundingBox& GetBoundingBox()const { return mBoundingBox.Value(); }
 	const BoundingBox& WorldBoundingBox()const { return mWorldBoundingBox.Value(); }
@@ -146,6 +147,7 @@ public:
 	bool HitTestWorld(const Point2F& worldPos)const;
 	virtual bool HitTestLocal(const Point2F& localPos)const;
 
+
 protected:
 	DefaultMoveable* ParentMoveable() const { return mParentMoveable; }
 	void SetParentMoveable(DefaultMoveable* val);
@@ -153,9 +155,9 @@ protected:
 	virtual void OnMoveableDirty(MoveableChangedFlags changedFlags) {}
 
 private:
-	void OnUpdateMatrix(Matrix& transform, int32 dirtyFlag);
-	void OnUpdateWorldMatrix(Matrix& transform, int32 dirtyFlag);
-	void OnUpdateWorldInverseMatrix(Matrix& transform, int32 dirtyFlag);
+	void OnUpdateMatrix(Matrix4& transform, int32 dirtyFlag);
+	void OnUpdateWorldMatrix(Matrix4& transform, int32 dirtyFlag);
+	void OnUpdateWorldInverseMatrix(Matrix4& transform, int32 dirtyFlag);
 	void OnUpdateBoundingBox(BoundingBox& outVal, int32 dirtyFlag);
 	void OnUpdateWorldBoundingBox(BoundingBox& outVal, int32 dirtyFlag);
 
@@ -171,9 +173,9 @@ protected:
 	FlipMask mFlip;
 
 
-	LazyMatrix mMatrix;
-	LazyMatrix mWorldMatrix;
-	LazyMatrix mWorldInverseMatrix;
+	LazyMatrix4 mMatrix;
+	LazyMatrix4 mWorldMatrix;
+	LazyMatrix4 mWorldInverseMatrix;
 
 
 	LazyBoundingBox mBoundingBox;	//self bounding box

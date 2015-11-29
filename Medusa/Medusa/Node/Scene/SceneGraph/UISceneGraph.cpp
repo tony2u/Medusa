@@ -26,12 +26,16 @@ bool UISceneGraph::OnUpdateQueue()
 {
 	MEDUSA_PROFILE("UISceneGraph::OnUpdateQueue");
 	mRenderQueue->Clear();
+	mRenderQueue->SetRenderTarget(mScene->RenderTarget());
+	mRenderQueue->SetCamera(mScene->GetCamera());
+
+
 	if (mScene->IsValidToRenderQueue())
 	{
 		AddNodeRecursivelyToRenderQueue(mScene);
 	}
 
-	//reorder the sprites ???????????? ????????sprite?????,?????????????????
+	//reorder the sprites by quadtree to improve,adjust sprite's order by same texture
 
 	return true;
 }
@@ -52,7 +56,7 @@ void UISceneGraph::AddNodeRecursivelyToRenderQueue(INode* node)
 	}
 
 	//add node
-	if (node->HasValidMesh())
+	if (node->HasValidRenderingObject())
 	{
 		mRenderQueue->AddNode(node);
 	}

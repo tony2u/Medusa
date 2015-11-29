@@ -41,7 +41,6 @@ bool BinaryPackage::Initialize()
 	if (IsReadOnly())
 	{
 		RETURN_FALSE_IF_FALSE(mStream.Open(mPath, FileOpenMode::ReadOnly, FileDataType::Binary));
-		mStream.Retain();
 		//mStream.SetBuffer(FileBufferMode::None, nullptr, 0);	//disable buffer as we'll buffer it ourself 
 		RETURN_FALSE_IF_FALSE(OnLoaded());
 	}
@@ -50,13 +49,11 @@ bool BinaryPackage::Initialize()
 		if (File::Exists(mPath))
 		{
 			RETURN_FALSE_IF_FALSE(mStream.Open(mPath, FileOpenMode::ReadWrite, FileDataType::Binary));
-			mStream.Retain();
 			RETURN_FALSE_IF_FALSE(OnLoaded());
 		}
 		else
 		{
 			RETURN_FALSE_IF_FALSE(mStream.Open(mPath, FileOpenMode::DestoryReadWriteOrCreate, FileDataType::Binary));
-			mStream.Retain();
 		}
 	}
 

@@ -45,7 +45,7 @@ void FntLabel::UpdateMesh()
 		mInternalMeshes.Clear();
 		return;
 	}
-	else if (mMesh==nullptr)
+	else if (mRenderingObject.Mesh() ==nullptr)
 	{
 		CreateMesh();
 	}
@@ -55,11 +55,11 @@ void FntLabel::UpdateMesh()
 
 	if (mIsMultipleLine)
 	{
-		TextLayouter::LayoutMultipleLineText(mInternalMeshes, outSize, *mFont, mString, mAlignment, mRestrictSize, this, mIsStatic);
+		TextLayouter::LayoutMultipleLineText(mInternalMeshes, mInternalMaterials, outSize, *mFont, mString, mAlignment, mRestrictSize, this, mIsStatic);
 	}
 	else
 	{
-		TextLayouter::LayoutSingleLineText(mInternalMeshes, outSize, *mFont, mString, mAlignment, mRestrictSize, this, mIsStatic);
+		TextLayouter::LayoutSingleLineText(mInternalMeshes, mInternalMaterials, outSize, *mFont, mString, mAlignment, mRestrictSize, this, mIsStatic);
 	}
 
 	SetSize(outSize);
@@ -83,6 +83,8 @@ void FntLabel::UpdateMesh()
 		if (!unusedIndices.IsEmpty())
 		{
 			mInternalMeshes.RemoveIndexes(unusedIndices);
+			mInternalMaterials.RemoveIndexes(unusedIndices);
+
 
 			FOR_EACH_COLLECTION(i, unusedSprites)
 			{
@@ -104,7 +106,7 @@ void FntLabel::OnUpdateFont()
 		SetMesh(nullptr);
 		SetSize(Size3F::Zero);
 		mInternalMeshes.Clear();
-
+		mInternalMaterials.Clear();
 		return;
 	}
 	else
@@ -117,10 +119,10 @@ void FntLabel::OnUpdateFont()
 
 BaseFontMesh* FntLabel::CreateFontMesh(IMaterial* material, bool isStatic /*= false*/)
 {
-	IEffect* effect = EffectFactory::Instance().CreateSinglePassDefault(RenderPassNames::FntFont);
-	FntTextMesh* mesh = new FntTextMesh(effect, material, isStatic);
+	FntTextMesh* mesh = new FntTextMesh(isStatic);
 	Sprite* sprite = new Sprite();
 	sprite->SetMesh(mesh);
+	sprite->SetMaterial(material);
 	mInternalMeshes.Add(mesh);
 	sprite->EnableManaged();
 	AddChild(sprite);
@@ -133,7 +135,7 @@ Point2F FntLabel::GetCharPosition(uint charIndex) const
 	BaseFontMesh* mesh = nullptr;
 	if (mFont->IsSingleMaterial() && mFont->IsFixedMaterial())
 	{
-		mesh = (BaseFontMesh*)mMesh;
+		mesh = (BaseFontMesh*)mRenderingObject.Mesh();
 	}
 
 	if (mManagedNodes.Count()==1)
@@ -155,7 +157,7 @@ Point2F FntLabel::GetCursorPosition(uint charIndex) const
 	BaseFontMesh* mesh = nullptr;
 	if (mFont->IsSingleMaterial() && mFont->IsFixedMaterial())
 	{
-		mesh = (BaseFontMesh*)mMesh;
+		mesh = (BaseFontMesh*)mRenderingObject.Mesh();
 	}
 
 	if (mManagedNodes.Count() == 1)
@@ -177,7 +179,7 @@ uint FntLabel::FindCharIndex(const Point2F& touchPosition, Point2F& outCharPosit
 	BaseFontMesh* mesh = nullptr;
 	if (mFont->IsSingleMaterial() && mFont->IsFixedMaterial())
 	{
-		mesh = (BaseFontMesh*)mMesh;
+		mesh = (BaseFontMesh*)mRenderingObject.Mesh();
 	}
 
 	if (mManagedNodes.Count() == 1)
@@ -196,15 +198,16 @@ uint FntLabel::FindCharIndex(const Point2F& touchPosition, Point2F& outCharPosit
 
 void FntLabel::CreateMesh()
 {
-	IEffect* effect = EffectFactory::Instance().CreateSinglePassDefault(RenderPassNames::FntFont);
 	const List<IMaterial*>& materials = mFont->Materials();
 
 	if (mFont->IsSingleMaterial() && mFont->IsFixedMaterial())
 	{
 		IMaterial* material = materials[0];
-		FntTextMesh* mesh = new FntTextMesh(effect, material, mIsStatic);
+		FntTextMesh* mesh = new FntTextMesh(mIsStatic);
 		SetMesh(mesh);
+		SetMaterial(material);
 		mInternalMeshes.Add(mesh);
+		mInternalMaterials.Add(material);
 	}
 	else
 	{
@@ -213,10 +216,11 @@ void FntLabel::CreateMesh()
 		{
 			IMaterial* material = materials[i];
 			Sprite* sprite = new Sprite();
-			sprite->SetMesh(new FntTextMesh(effect, material, mIsStatic));
-
+			sprite->SetMesh(new FntTextMesh(mIsStatic));
+			sprite->SetMaterial(material);
 			mInternalMeshes.Add((BaseFontMesh*)sprite->Mesh());
 			sprite->EnableManaged();
+			mInternalMaterials.Add(material);
 
 			AddChild(sprite);
 		}

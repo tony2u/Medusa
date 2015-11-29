@@ -25,7 +25,7 @@ bool PODJointTimelineModel::Initialize(const PODNode* node )
 }
 
 
-bool PODJointTimelineModel::TryGetMatrix( float frame,Matrix& outMatrix ) const
+bool PODJointTimelineModel::TryGetMatrix( float frame,Matrix4& outMatrix ) const
 {
 	return mNode->TryGetMatrix(frame,outMatrix);
 }

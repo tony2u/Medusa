@@ -58,9 +58,6 @@ public:
 	explicit Matrix43(const Matrix3& m, bool isTransposed = false);
 	Matrix43& operator=(const Matrix3& m);
 
-	explicit Matrix43(const Matrix& m, bool isTransposed = false);
-	Matrix43& operator=(const Matrix& m);
-
 	float* Items() { return M; }
 	const float* const Items()const { return M; }
 

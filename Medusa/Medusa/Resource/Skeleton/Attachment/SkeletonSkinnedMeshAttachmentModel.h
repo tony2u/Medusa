@@ -39,8 +39,9 @@ public:
 	void AddIndex(uint val);
 
 	const TextureGeneralMesh& Mesh() const { return mMesh; }
-	virtual IMesh* GetMesh() override { return &mMesh; }
 	virtual bool Initialize()override;
+
+	virtual RenderingObject GetRenderingObject()const;
 
 protected:
 	List<VertexWeightInfo> mWeights;

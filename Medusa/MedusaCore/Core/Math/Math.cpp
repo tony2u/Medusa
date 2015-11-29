@@ -230,7 +230,7 @@ namespace Math
 
 	float WrapToPI2(float a)
 	{
-		//limit a to 0 and 2??
+		//limit a to 0 and 2PI
 		return a - PI2 * Floor(a *PI2Inverse);
 	}
 
@@ -272,7 +272,7 @@ namespace Math
 	}
 
 
-	
+
 	float Exp2(float x)
 	{
 		return exp2(x);
@@ -545,6 +545,137 @@ namespace Math
 	float Hypot(float x, float y)
 	{
 		return hypotf(x, y);
+	}
+
+#if defined(MEDUSA_WINDOWS)
+# pragma intrinsic(_BitScanForward)
+#endif
+	uint32_t CountLeadingZero(uint32_t x)
+	{
+		if (x == 0)
+		{
+			return 32;
+		}
+
+		//https://en.wikipedia.org/wiki/Find_first_set#CLZ
+#ifdef MEDUSA_WINDOWS
+
+		unsigned long r = 0;
+		_BitScanForward(&r, x);
+		return r;
+#elif MEDUSA_HAS_BUILTIN(__builtin_clz)
+		return __builtin_clz(x);
+#else
+		static const uint8_t clz_table_4bit[16] = { 4, 3, 2, 2, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0 };
+		int n;
+		if ((x & 0xFFFF0000) == 0) { n = 16; x <<= 16; }
+		else { n = 0; }
+		if ((x & 0xFF000000) == 0) { n += 8; x <<= 8; }
+		if ((x & 0xF0000000) == 0) { n += 4; x <<= 4; }
+		n += (int)clz_table_4bit[x >> (32 - 4)];
+		return n;
+#endif
+
+	}
+
+#if defined(MEDUSA_WINDOWS)
+# pragma intrinsic(_BitScanReverse)
+#endif
+# pragma intrinsic(_BitScanReverse)
+	uint32_t CountTrailingZero(uint32_t x)
+	{
+		if (x==0)
+		{
+			return 0;
+		}
+		//https://en.wikipedia.org/wiki/Find_first_set#CLZ
+#ifdef MEDUSA_WINDOWS
+
+		unsigned long r = 0;
+		_BitScanReverse(&r, x);
+		return r;
+#elif MEDUSA_HAS_BUILTIN(__builtin_ctz)
+		return __builtin_ctz(x);
+#else
+		return 31- CountLeadingZero(x);
+#endif
+
+	}
+
+#if defined(MEDUSA_WINDOWS)&&defined(MEDUSA_X64)
+# pragma intrinsic(_BitScanForward64)
+#endif
+
+
+	uint32_t CountLeadingZero(uint64_t x)
+	{
+		if (x == 0)
+		{
+			return 64;
+		}
+#ifdef MEDUSA_X64
+#ifdef MEDUSA_WINDOWS
+		uint32_t r = 0;
+		_BitScanForward64(&r, x);
+		return r;
+#elif MEDUSA_HAS_BUILTIN(__builtin_clzll)
+		return __builtin_clzll(x);
+#else
+		// Scan the high 32 bits.
+		uint32_t r = CountLeadingZero(static_cast<uint32_t>(x >> 32));
+		if (r == 0)	//all zero
+		{
+			return 32 + CountLeadingZero(static_cast<uint32_t>(x));
+		}
+		return r;
+#endif
+#else
+		// Scan the high 32 bits.
+		uint32_t r = CountLeadingZero(static_cast<uint32_t>(x >> 32));
+		if (r == 0)	//all zero
+		{
+			return 32 + CountLeadingZero(static_cast<uint32_t>(x));
+		}
+		return r;
+#endif
+	}
+
+#if defined(MEDUSA_WINDOWS)&&defined(MEDUSA_X64)
+# pragma intrinsic(_BitScanReverse64)
+#endif
+
+	uint32_t CountTrailingZero(uint64_t x)
+	{
+		if (x == 0)
+		{
+			return 0;
+		}
+
+#ifdef MEDUSA_X64
+#ifdef MEDUSA_WINDOWS
+		uint32_t r = 0;
+		_BitScanReverse64(&r, x);
+		return r;
+#elif MEDUSA_HAS_BUILTIN(__builtin_ctzll)
+		return __builtin_ctzll(x);
+#else
+		uint32_t r = CountTrailingZero(static_cast<uint32_t>(x));
+		if (r == 0)	//all zero
+		{
+			// Scan the high 32 bits.
+			return 32 + CountTrailingZero(static_cast<uint32_t>(x >> 32));
+		}
+		return r;
+#endif
+#else
+		uint32_t r = CountTrailingZero(static_cast<uint32_t>(x));
+		if (r == 0)	//all zero
+		{
+			// Scan the high 32 bits.
+			return 32 + CountTrailingZero(static_cast<uint32_t>(x >> 32));
+		}
+		return r;
+#endif
 	}
 
 #pragma endregion Rounding and remainder functions
@@ -1287,7 +1418,6 @@ namespace Math
 		}
 
 	}
-
 
 
 

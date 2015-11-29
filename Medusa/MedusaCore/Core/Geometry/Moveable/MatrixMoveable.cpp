@@ -9,7 +9,7 @@ MEDUSA_BEGIN;
 
 
 MatrixMoveable::MatrixMoveable()
-	:mParentMoveable(nullptr),mMatrix(Matrix::Identity), mWorldMatrix(Matrix::Identity)
+	:mParentMoveable(nullptr),mMatrix(Matrix4::Identity), mWorldMatrix(Matrix4::Identity)
 {
 	mWorldMatrix.SetUpdateDelegate(Bind(&MatrixMoveable::OnUpdateWorldMatrix,this));
 	mWorldInverseMatrix.SetUpdateDelegate(Bind(&MatrixMoveable::OnUpdateWorldInverseMatrix,this));
@@ -22,7 +22,7 @@ MatrixMoveable::~MatrixMoveable(void)
 }
 
 
-void MatrixMoveable::OnUpdateWorldMatrix(Matrix& transform, int32 dirtyFlag)
+void MatrixMoveable::OnUpdateWorldMatrix(Matrix4& transform, int32 dirtyFlag)
 {
 	if (mParentMoveable != nullptr&&mParentMoveable->IsWorldMatrixDirty())
 	{
@@ -35,13 +35,13 @@ void MatrixMoveable::OnUpdateWorldMatrix(Matrix& transform, int32 dirtyFlag)
 }
 
 
-void MatrixMoveable::OnUpdateWorldInverseMatrix(Matrix& transform, int32 dirtyFlag)
+void MatrixMoveable::OnUpdateWorldInverseMatrix(Matrix4& transform, int32 dirtyFlag)
 {
 	transform=mWorldMatrix.Value();
 	transform.Inverse();
 }
 
-void MatrixMoveable::SetMatrix( const Matrix& val )
+void MatrixMoveable::SetMatrix( const Matrix4& val )
 {
 	mMatrix=val;
 	mWorldMatrix.SetDirty();

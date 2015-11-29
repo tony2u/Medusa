@@ -30,7 +30,14 @@ ProgramRenderState* ProgramRenderState::Clone() const
 	return state;
 }
 
-bool ProgramRenderState::Equals( const IRenderState& state ) const
+void ProgramRenderState::CopyFrom(const IRenderState& other)
+{
+	MEDUSA_ASSERT(other.Type() == Type(), "Cannot copy render state with different type");
+	ProgramRenderState& val = (ProgramRenderState&)other;
+	mProgram = val.mProgram;
+}
+
+bool ProgramRenderState::Equals(const IRenderState& state) const
 {
 	RETURN_FALSE_IF_FALSE(IRenderState::Equals(state));
 	const ProgramRenderState& val=(const ProgramRenderState&)state;

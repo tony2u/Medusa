@@ -12,9 +12,6 @@ TriangleModel::TriangleModel(const FileIdRef& fileId,IMaterial* material)
 	:BaseSingleTextureModel(fileId,material)
 {
 
-	IEffect* effect=EffectFactory::Instance().CreateSinglePassDefault(RenderPassNames::Texture);
-	mMeshModelNode.MutableMesh().SetEffect(effect);
-	mMeshModelNode.MutableMesh().SetMaterial(material);
 }
 
 

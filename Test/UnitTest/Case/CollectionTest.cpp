@@ -5,8 +5,8 @@
 
 /*
 size:10
-????TestDictionary	137.515038 / 100000 = 0.001375
-????TestList	279.998563 / 100000 = 0.002800
+TestDictionary	137.515038 / 100000 = 0.001375
+TestList	279.998563 / 100000 = 0.002800
 */
 void CollectionTest::TestDictionary()
 {

@@ -5,6 +5,7 @@
 #include "MedusaPreDeclares.h"
 #include "Resource/Model/IModelNode.h"
 #include "Graphics/GraphicsTypes.h"
+#include "Resource/Material/IMaterial.h"
 
 MEDUSA_BEGIN;
 
@@ -19,6 +20,11 @@ public:
 	virtual const IMesh* BaseMeshPtr() const=0;
 	virtual IMesh* MutableBaseMeshPtr()=0;
 
+	IMaterial* Material() const { return mMaterial; }
+	void SetMaterial(IMaterial* val) { SAFE_ASSIGN_REF(mMaterial,val); }
+protected:
+	IMaterial* mMaterial=nullptr;
+	
 };
 
 MEDUSA_END;

@@ -27,7 +27,6 @@ bool RenderPassFactory::Initialize()
 	RegisterRenderPassDescription(RenderPassNames::Texture, VertexShaderFiles::Texture, PixelShaderFiles::Texture);
 	RegisterRenderPassDescription(RenderPassNames::PositionColor, VertexShaderFiles::Position, PixelShaderFiles::Color);
 	RegisterRenderPassDescription(RenderPassNames::POD, VertexShaderFiles::POD, PixelShaderFiles::POD);
-	RegisterRenderPassDescription(RenderPassNames::FntFont, VertexShaderFiles::FntFont, PixelShaderFiles::FntFont);
 	RegisterRenderPassDescription(RenderPassNames::Shape, VertexShaderFiles::Shape, PixelShaderFiles::Shape);
 
 	return true;

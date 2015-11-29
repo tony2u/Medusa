@@ -29,7 +29,6 @@ IGraphicsBuffer::IGraphicsBuffer(GraphicsBufferType bufferType,GraphicsBufferUsa
 	{
 		mRenderState=new ElementArrayBufferRenderState();
 	}
-	mRenderState->Retain();
 }
 
 

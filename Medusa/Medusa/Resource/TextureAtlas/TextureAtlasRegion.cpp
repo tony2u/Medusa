@@ -7,7 +7,6 @@
 #include "Core/Log/Log.h"
 #include "Resource/Model/Mesh/IMesh.h"
 #include "Resource/Material/MaterialFactory.h"
-#include "Resource/Effect/EffectFactory.h"
 
 MEDUSA_BEGIN;
 
@@ -19,7 +18,7 @@ TextureAtlasRegion::TextureAtlasRegion()
 	mIsFlip(false),
 	mIsTexcoordUpSide(true)
 {
-
+	mPage = nullptr;
 }
 
 TextureAtlasRegion::~TextureAtlasRegion()
@@ -109,17 +108,12 @@ ITexture* TextureAtlasRegion::Texture() const
 	return mPage->GetTexture();
 }
 
-void TextureAtlasRegion::UpdateMeshEffectAndMaterial(IMesh* mesh)
+IMaterial* TextureAtlasRegion::GetMaterial()
 {
-	LOG_ASSERT_NOT_NULL(mesh);
 	ITexture* texture = mPage->LoadTexture();
-
-	IMaterial* material = MaterialFactory::Instance().Create(texture->GetFileId(), texture);
-	IEffect* effect = EffectFactory::Instance().CreateSinglePassDefault(RenderPassNames::Texture);
-
-	mesh->SetEffect(effect);
-	mesh->SetMaterial(material);
+	return MaterialFactory::Instance().CreateSingleTexture(texture);
 }
+
 
 void TextureAtlasRegion::SetIsRotate(bool val)
 {

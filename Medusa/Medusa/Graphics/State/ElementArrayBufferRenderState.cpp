@@ -36,7 +36,13 @@ ElementArrayBufferRenderState* ElementArrayBufferRenderState::Clone() const
 	return state;
 }
 
+void ElementArrayBufferRenderState::CopyFrom(const IRenderState& other)
+{
+	MEDUSA_ASSERT(other.Type() == Type(), "Cannot copy render state with different type");
+	ElementArrayBufferRenderState& val = (ElementArrayBufferRenderState&)other;
+	mBuffer = val.mBuffer;
+}
 
-MEDUSA_IMPLEMENT_RTTI(ElementArrayBufferRenderState,BaseBufferRenderState);
+MEDUSA_IMPLEMENT_RTTI(ElementArrayBufferRenderState, BaseBufferRenderState);
 
 MEDUSA_END;

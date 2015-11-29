@@ -55,7 +55,6 @@ bool BrainCache::LoadFromData(StringRef path, const MemoryByteData& data, uint f
 			Add(id + "Brain", brain);
 		}
 
-		brain->Retain();
 
 		//root behavior
 		StringRef rootBehaviorName = child.attribute("Behavior").value();

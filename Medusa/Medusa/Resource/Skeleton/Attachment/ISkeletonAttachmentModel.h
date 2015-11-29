@@ -5,6 +5,7 @@
 #include "Core/Pattern/IInitializable.h"
 #include "Core/String/HeapString.h"
 #include "SkeletonAttachmentType.h"
+#include "Rendering/RenderingObject.h"
 
 MEDUSA_BEGIN;
 
@@ -19,8 +20,8 @@ public:
 	StringRef Name() const { return mName; }
 
 	virtual bool Initialize() { return true; }
-	virtual IMesh* GetMesh(){ return nullptr; }
 
+	virtual RenderingObject GetRenderingObject()const { return nullptr; }
 protected:
 	HeapString mName;
 

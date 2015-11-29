@@ -43,7 +43,7 @@ QuadModel* ModelFactory::CreateQuad( const FileIdRef& fileId ,ResourceShareType 
 	QuadModel* model= (QuadModel*)Find(fileId);
 	RETURN_SELF_IF_NOT_NULL(model);
 
-	IMaterial* material= MaterialFactory::Instance().Create(fileId,ShaderSamplerNames::Texture);
+	IMaterial* material= MaterialFactory::Instance().CreateSingleTexture(fileId);
 
 	model=new QuadModel(fileId,material,Rect2I(Point2I::Zero,material->FirstTexture()->Size()));
 	model->Initialzie();

@@ -21,7 +21,7 @@ public:
 		SAFE_RELEASE(mMaterial);
 	}
 
-	virtual void UpdateWorldMatrixRecursively(const Matrix& parentWorldMatrix=Matrix::Identity)
+	virtual void UpdateWorldMatrixRecursively(const Matrix4& parentWorldMatrix=Matrix4::Identity)
 	{
 		mWorldMatrix=mMatrix.Value();
 		mMeshModelNode.UpdateWorldMatrixRecursively(mWorldMatrix.OldValue());
@@ -32,7 +32,7 @@ public:
 		if (result!=nullptr)
 		{
 			result->SetName(Name());
-			result->SetMatrix(mMeshModelNode.WorldMatrix());
+			result->SetMoveable(mMeshModelNode);
 			if(!result->Initialize())
 			{
 				SAFE_DELETE(result);

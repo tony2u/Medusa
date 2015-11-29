@@ -217,16 +217,6 @@ public:
 		Z=Math::Max(Z,point.Z);
 	}
 
-	//************************************
-	// ????:    	TripleMultiply
-	// ????:   	float	
-	// ????: 	const Point3F & a		
-	// ????: 	const Point3F & b		
-	// ????: 	const Point3F & c		
-	// ????:		?????? (a x b)*c
-	// ????:		
-	// ????:		
-	//************************************
 	static float TripleMultiply(const Point3& a,const Point3& b,const Point3& c)
 	{
         Point3 t=a.Cross(b);

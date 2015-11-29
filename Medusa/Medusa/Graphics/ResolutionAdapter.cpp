@@ -43,10 +43,8 @@ bool ResolutionAdapter::Initialize(const Size2F& winSize)
 bool Medusa::ResolutionAdapter::InitializeCameras()
 {
 	mDefaultCamera2D = CameraFactory::Instance().CreateDefault(MEDUSA_PREFIX(Default2D), true, true, ResourceShareType::Share);
-	mDefaultCamera2D->Retain();
 
 	mDefaultCamera3D = CameraFactory::Instance().CreateDefault(MEDUSA_PREFIX(Default3D), false, true, ResourceShareType::Share);
-	mDefaultCamera3D->Retain();
 	return true;
 }
 

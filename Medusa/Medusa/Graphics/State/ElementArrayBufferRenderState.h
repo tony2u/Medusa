@@ -19,6 +19,7 @@ public:
 	virtual RenderStateType Type()const override {return GetTypeIdStatic();}
 	static RenderStateType GetTypeIdStatic(){return RenderStateType::ElementArrayBuffer;}
 	virtual ElementArrayBufferRenderState* Clone()const override;
+	virtual void CopyFrom(const IRenderState& other)override;
 
 	static ElementArrayBufferRenderState* Current();
 };

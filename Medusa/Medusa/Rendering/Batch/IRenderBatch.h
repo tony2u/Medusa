@@ -4,7 +4,7 @@
 #pragma  once
 #include "Graphics/Render/Render.h"
 #include "Rendering/IRenderGroup.h"
-#include "Core/Geometry/Matrix.h"
+#include "Core/Geometry/Matrix4.h"
 #include "Rendering/Batch/BatchGroup.h"
 
 MEDUSA_BEGIN;
@@ -24,7 +24,7 @@ public:
 	BatchGroup Group() const { return mGroup; }
 	void SetGroup(BatchGroup val) { mGroup = val; }
 
-	Matrix& GetModelMatrix() { return mModelMatrix; }
+	Matrix4& GetModelMatrix() { return mModelMatrix; }
 
 	const IEffect* Effect() const { return mEffect; }
 	void SetEffect(const IEffect* val);
@@ -39,7 +39,7 @@ public:
 	void SetDrawMode(GraphicsDrawMode val) { mDrawMode = val; }
 
 	virtual bool IsAvailableFor(size_t newVertexCount, size_t newIndexCount)const { return true; }
-	bool IsAvailableFor(const IRenderable& node)const;
+	virtual bool IsAvailableFor(const IRenderable& node)const;
 
 	bool IsFreezed() const { return mIsFreezed; }
 	void Freeze() { mIsFreezed = true; }
@@ -64,7 +64,7 @@ public:
 	void SetRecycleFrameCount(uint64 val) { mRecycleFrameCount = val; }
 protected:
 	BatchGroup mGroup;
-	Matrix mModelMatrix;
+	Matrix4 mModelMatrix;
 	RenderingStrategy mRenderingStrategy;
 
 	bool mIsFreezed;

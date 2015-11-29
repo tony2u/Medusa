@@ -9,6 +9,7 @@
 #include "Resource/Effect/IEffect.h"
 #include "Resource/ResourceNames.h"
 #include "Graphics/ResolutionAdapter.h"
+#include "Core/Geometry/Matrix4.h"
 MEDUSA_BEGIN;
 
 ScissorRenderState::ScissorRenderState(const Rect2F& scissorBox/*=Rect2F::Zero*/, bool isScissorEnabled/*=false*/)
@@ -25,7 +26,6 @@ ScissorRenderState::~ScissorRenderState()
 void ScissorRenderState::Apply()const
 {
 	Render::Instance().EnableFeature(GraphicsFeatures::ScissorTest, mEnabled);
-
 	Render::Instance().SetScissorBox(mScissorBox);
 }
 
@@ -33,6 +33,14 @@ ScissorRenderState* ScissorRenderState::Clone() const
 {
 	ScissorRenderState* state = new ScissorRenderState(mScissorBox, mEnabled);
 	return state;
+}
+
+void ScissorRenderState::CopyFrom(const IRenderState& other)
+{
+	MEDUSA_ASSERT(other.Type() == Type(), "Cannot copy render state with different type");
+	ScissorRenderState& val = (ScissorRenderState&)other;
+	mEnabled = val.mEnabled;
+	mScissorBox = val.mScissorBox;
 }
 
 bool ScissorRenderState::Equals(const IRenderState& state) const
@@ -57,7 +65,7 @@ ScissorRenderState* ScissorRenderState::Current()
 }
 
 
-void ScissorRenderState::Tansform(const Matrix& matrix)
+void ScissorRenderState::Tansform(const Matrix4& matrix)
 {
 	mScissorBox = matrix.Transform(mScissorBox);
 }
@@ -89,6 +97,41 @@ intp ScissorRenderState::HashCode() const
 	return 0;
 }
 
+
+void ScissorRenderState::UpdateWorldState(const IRenderState* selfRenderState, const IRenderState* parentRenderState, const Matrix4& selfWorldMatrix)
+{
+	if (selfRenderState != nullptr&&parentRenderState==nullptr)
+	{
+		//use self first
+		MEDUSA_ASSERT(selfRenderState->Type() == Type(), "Cannot copy render state with different type");
+
+		CopyFrom(*selfRenderState);
+		Tansform(selfWorldMatrix);
+	}
+	else if (parentRenderState != nullptr&&selfRenderState == nullptr)
+	{
+		MEDUSA_ASSERT(parentRenderState->Type() == Type(), "Cannot copy render state with different type");
+
+		CopyFrom(*parentRenderState);
+		Tansform(selfWorldMatrix);
+	}
+	else if (selfRenderState != nullptr&&parentRenderState != nullptr)
+	{
+		MEDUSA_ASSERT(selfRenderState->Type() == Type(), "Cannot copy render state with different type");
+		MEDUSA_ASSERT(parentRenderState->Type() == Type(), "Cannot copy render state with different type");
+
+
+		CopyFrom(*selfRenderState);
+		Tansform(selfWorldMatrix);
+
+		ScissorRenderState* parent = (ScissorRenderState*)parentRenderState;
+
+		if (parent->IsEnabled())
+		{
+			mScissorBox = Rect2F::Intersect(mScissorBox, parent->mScissorBox);
+		}
+	}
+}
 
 MEDUSA_IMPLEMENT_RTTI(ScissorRenderState, IRenderState);
 MEDUSA_END;

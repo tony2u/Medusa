@@ -19,7 +19,7 @@ MEDUSA_BEGIN;
 
 
 IRenderBatch::IRenderBatch(RenderingStrategy renderingStrategy)
-	:mModelMatrix(Matrix::Identity),
+	:mModelMatrix(Matrix4::Identity),
 	mRenderingStrategy(renderingStrategy),
 	mIsFreezed(false),
 	mEffect(nullptr),
@@ -44,7 +44,7 @@ bool IRenderBatch::IsAvailableFor(const IRenderable& node) const
 
 bool IRenderBatch::Initialize()
 {
-	mModelMatrix = Matrix::Identity;
+	mModelMatrix = Matrix4::Identity;
 	mIsFreezed = false;
 	SAFE_RELEASE(mEffect);
 	SAFE_RELEASE(mMaterial);
@@ -57,7 +57,7 @@ bool IRenderBatch::Initialize()
 
 bool IRenderBatch::Uninitialize()
 {
-	mModelMatrix = Matrix::Identity;
+	mModelMatrix = Matrix4::Identity;
 	mIsFreezed = false;
 	SAFE_RELEASE(mEffect);
 	SAFE_RELEASE(mMaterial);

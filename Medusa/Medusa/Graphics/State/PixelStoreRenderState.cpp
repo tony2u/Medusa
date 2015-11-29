@@ -31,12 +31,19 @@ void PixelStoreRenderState::Apply()const
 PixelStoreRenderState* PixelStoreRenderState::Clone() const
 {
 	PixelStoreRenderState* state=new PixelStoreRenderState();
-	state->SetPackAlignment(mPackAlignment);
-	state->SetUnpackAlignment(mUnpackAlignment);
+	state->CopyFrom(*this);
 	return state;
 }
+void PixelStoreRenderState::CopyFrom(const IRenderState& other)
+{
+	MEDUSA_ASSERT(other.Type() == Type(), "Cannot copy render state with different type");
+	PixelStoreRenderState& val = (PixelStoreRenderState&)other;
+	mPackAlignment = val.mPackAlignment;
+	mUnpackAlignment = val.mUnpackAlignment;
+}
 
-bool PixelStoreRenderState::Equals( const IRenderState& state ) const
+
+bool PixelStoreRenderState::Equals(const IRenderState& state) const
 {
 	RETURN_FALSE_IF_FALSE(IRenderState::Equals(state));
 	const PixelStoreRenderState& val=(const PixelStoreRenderState&)state;

@@ -8,45 +8,51 @@
 #include "Graphics/State/RenderStateMachine.h"
 #include "Core/Collection/Linq.h"
 #include "Core/Pattern/AutoIncreaseId.h"
+#include "Resource/Effect/IEffect.h"
 
 MEDUSA_BEGIN;
 
-
-IMaterial::IMaterial(const FileIdRef& fileId/*=FileId::Empty*/):IResource(fileId),mFirstTexture(nullptr)
+IMaterial::IMaterial(ITexture* texture /*= nullptr*/, IEffect* effect /*= nullptr*/, GraphicsDrawMode drawMode /*= GraphicsDrawMode::Triangles*/, const FileIdRef& fileId /*= FileIdRef::Empty*/)
+	:IResource(fileId),
+	mFirstTexture(nullptr),
+	mEffect(effect),
+	mDrawMode(drawMode)
 {
 	mId = AutoIncreaseId<IMaterial>::New();
+	SAFE_RETAIN(mEffect);
+
+	if(texture!=nullptr)
+	{
+		AddTexture(texture);
+	}
 }
-
-IMaterial::IMaterial(ITexture* texture,const FileIdRef& fileId/*=FileId::Empty*/):IResource(fileId),mFirstTexture(nullptr)
-{
-	mId = AutoIncreaseId<IMaterial>::New();
-	AddTexture(texture);
-
-}
-
 
 IMaterial::~IMaterial(void)
 {
 	mTextureSamplerDict.Clear();
 	SAFE_RELEASE_DICTIONARY_VALUE(mTextures);
-	mFirstTexture=nullptr;
+	mFirstTexture = nullptr;
+
+	SAFE_RELEASE(mEffect);
+
 }
 
-void IMaterial::AddTexture( ITexture* texture )
+void IMaterial::AddTexture(ITexture* texture)
 {
-	MEDUSA_ASSERT_NOT_NULL(texture,"");
-	MEDUSA_ASSERT_FALSE(mTextures.ContainsKey(texture->Unit()),"Duplicate add texture of same unit");
-	MEDUSA_ASSERT_FALSE(mTextureSamplerDict.ContainsKey(texture->SamplerName()),"Duplicate add texture of same sampler name");
+	MEDUSA_ASSERT_NOT_NULL(texture, "");
+	MEDUSA_ASSERT_FALSE(mTextures.ContainsKey(texture->Unit()), "Duplicate add texture of same unit");
+	MEDUSA_ASSERT_FALSE(mTextureSamplerDict.ContainsKey(texture->SamplerName()), "Duplicate add texture of same sampler name");
 
 	texture->Retain();
-	mTextures.Add(texture->Unit(),texture);
+	mTextures.Add(texture->Unit(), texture);
 	mTextureSamplerDict.Add(texture->SamplerName(), texture);
+	OnMaterialChanged(RenderableChangedFlags::BatchChanged);
 
 	EnableBlend(texture->IsBlend());
-	
-	if (mFirstTexture==nullptr)
+
+	if (mFirstTexture == nullptr)
 	{
-		mFirstTexture=texture;
+		mFirstTexture = texture;
 	}
 }
 
@@ -55,16 +61,16 @@ ITexture* IMaterial::FirstTexture()const
 	return mFirstTexture;
 }
 
-ITexture* IMaterial::FindTextureBySampler( StringRef smaplerName )
+ITexture* IMaterial::FindTextureBySampler(StringRef smaplerName)
 {
-	return mTextureSamplerDict.TryGetValueWithFailed(smaplerName,nullptr);
+	return mTextureSamplerDict.TryGetValueWithFailed(smaplerName, nullptr);
 }
 
 void IMaterial::Apply()const
 {
-	FOR_EACH_COLLECTION(i,mTextures)
+	FOR_EACH_COLLECTION(i, mTextures)
 	{
-		ITexture* texture=i->Value;
+		ITexture* texture = i->Value;
 		texture->Apply();
 	}
 
@@ -75,28 +81,33 @@ void IMaterial::Restore()const
 {
 	RenderStateSet::Restore();
 
-	FOR_EACH_COLLECTION(i,mTextures)
+	FOR_EACH_COLLECTION(i, mTextures)
 	{
-		ITexture* texture=i->Value;
+		ITexture* texture = i->Value;
 		texture->Restore();
 	}
 }
 
-void IMaterial::OnUpdateHashCode(intp& outHashCode)
-{
-	//RenderStateCollection::OnUpdateHashCode(outHashCode);
-	FOR_EACH_COLLECTION(i,mTextures)
-	{
-		ITexture* texture=i->Value;
-		outHashCode^=(intp)texture;
-	}
-}
 
 bool IMaterial::Equals(const IMaterial& material) const
 {
 	RETURN_FALSE_IF_FALSE(RenderStateSet::Equals(material));
-	return Linq::IsEqual(mTextures,material.mTextures);
+	return Linq::IsEqual(mTextures, material.mTextures);
 }
 
+void IMaterial::SetEffect(const IEffect* val)
+{
+	RETURN_IF_EQUAL(mEffect, val);
+	SAFE_ASSIGN_REF(mEffect, val);
+	OnMaterialChanged(RenderableChangedFlags::BatchChanged);
+}
+
+void IMaterial::SetDrawMode(GraphicsDrawMode val)
+{
+	RETURN_IF_EQUAL(mDrawMode, val);
+	mDrawMode = val;
+	OnMaterialChanged(RenderableChangedFlags::BatchChanged);
+
+}
 
 MEDUSA_END;

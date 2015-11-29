@@ -31,7 +31,8 @@ public:
 	void SetScale(Scale3F& val) { mScale = val; }
 
 	const TextureQuadMesh& Mesh() const { return mMesh; }
-	virtual IMesh* GetMesh() override { return &mMesh; }
+	virtual RenderingObject GetRenderingObject()const;
+
 
 protected:
 	Point3F mPosition;

@@ -19,7 +19,7 @@ bool TextureAtlasFrameAnimationLayer::Initialize()
 	RETURN_FALSE_IF_FALSE(BaseCaseLayer::Initialize());
 	
 	{
-		ITimeline* timeline = TimelineFactory::Instance().CreateMeshTimelineFromTextureAtlasDefault("MeteorFall", TextureAtlasFileFormat::Spine, 1, Color4F::White, 24.f, true);
+		ITimeline* timeline = TimelineFactory::Instance().CreateRenderingObjectTimelineFromTextureAtlasDefault("MeteorFall", TextureAtlasFileFormat::Spine, 1, Color4F::White, 24.f, true);
 		Sprite* sprite = new Sprite("MeteorFall");
 		sprite->SetSize(512.f, 512.f);
 		sprite->SetDock(DockPoint::Percent);
@@ -29,7 +29,7 @@ bool TextureAtlasFrameAnimationLayer::Initialize()
 		sprite->RunAction(timeline);
 	}
 	{
-		ITimeline* timeline = TimelineFactory::Instance().CreateMeshTimelineFromTextureAtlasDefault("MeteorExplode", TextureAtlasFileFormat::Spine, 1, Color4F::White, 24.f, true);
+		ITimeline* timeline = TimelineFactory::Instance().CreateRenderingObjectTimelineFromTextureAtlasDefault("MeteorExplode", TextureAtlasFileFormat::Spine, 1, Color4F::White, 24.f, true);
 		Sprite* sprite = new Sprite("MeteorExplode");
 		sprite->SetSize(512.f, 512.f);
 		sprite->SetDock(DockPoint::Percent);

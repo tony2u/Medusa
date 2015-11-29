@@ -7,6 +7,7 @@
 #include "Graphics/GraphicsTypes.h"
 #include "Resource/BaseResourceFactory.h"
 #include "Resource/Material/IMaterial.h"
+#include "Core/Collection/SortedDictionary.h"
 
 MEDUSA_BEGIN;
 
@@ -20,14 +21,16 @@ public:
 	virtual bool Initialize();
 	virtual bool Uninitialize();
 public:
-	IMaterial* Create(const FileIdRef& fileId, ITexture* texture, ResourceShareType shareType = ResourceShareType::Share);
-	IMaterial* Create(const FileIdRef& fileId, StringRef samplerName = StringRef::Empty, ResourceShareType shareType = ResourceShareType::Share);
-	IMaterial* Create(const FileIdRef& fileId, const FileMapOrderItem& orderItem,StringRef samplerName = StringRef::Empty, ResourceShareType shareType = ResourceShareType::Share);
+	IMaterial* CreateSingleTexture(const FileIdRef& textureFileId,ResourceShareType shareType = ResourceShareType::Share);
+	IMaterial* CreateSingleTexture(ITexture* texture, ResourceShareType shareType = ResourceShareType::Share);
 
-
-	IMaterial* Create(const FileIdRef& fileId, IImage* image, StringRef samplerName = StringRef::Empty, GraphicsTextureUnits unit = GraphicsTextureUnits::Texture0, ResourceShareType shareType = ResourceShareType::Share);
+	IMaterial* CreateCustom(const FileIdRef& fileId, ITexture* texture,IEffect* effect, GraphicsDrawMode drawMode, ResourceShareType shareType = ResourceShareType::Share);
 
 	IMaterial* CreateEmpty(const FileIdRef& fileId, ResourceShareType shareType = ResourceShareType::Share);
+	IMaterial* CreateShape(const FileIdRef& fileId, ResourceShareType shareType = ResourceShareType::Share);
+
+	bool CreateTextures(SortedDictionary<uint, IMaterial*>& outMaterials, const StringRef& textureNamePattern);
+
 };
 
 MEDUSA_END;

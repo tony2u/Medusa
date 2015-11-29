@@ -58,7 +58,7 @@ void StopWatch::TraceResult() const
 	RETURN_IF_FALSE(mEnabled);
 	float dt=ElapsedMilliseconds();
 
-	WHeapString str(L"???");
+	WHeapString str(L"***");
 	if (!mName.IsEmpty())
 	{
 		WHeapString temp=StringParser::ToW(mName);
@@ -81,7 +81,7 @@ void StopWatch::PrintResult() const
 	RETURN_IF_FALSE(mEnabled);
 	float dt = ElapsedMilliseconds();
 
-	HeapString str("???");
+	HeapString str("***");
 	if (!mName.IsEmpty())
 	{
 		str.AppendFormat("{}\t", mName.Buffer());

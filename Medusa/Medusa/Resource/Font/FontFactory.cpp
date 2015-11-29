@@ -11,8 +11,10 @@
 #include "Resource/Image/PVRImage.h"
 #include "Resource/Image/DynamicAtlasRGBAImage.h"
 #include "Resource/Material/IMaterial.h"
-#include "Resource/Texture/ITexture.h"
+#include "Resource/Texture/ImageTexture.h"
 #include "Core/IO/FileSystem.h"
+#include "Resource/Texture/TextureFactory.h"
+
 
 MEDUSA_BEGIN;
 
@@ -324,7 +326,8 @@ IMaterial* FontFactory::AddGlyphImage(FontImageDepth destDepth, const Size2U& si
 
 	//at this time all current material is full, add a new image
 	DynamicAtlasRGBAImage* image = new DynamicAtlasRGBAImage("TTFFontImage", mInitialImageSize, mMaxImageSize, destInternalFormat, destPixelFormat, false);
-	IMaterial* material = MaterialFactory::Instance().Create("@TTFFontMaterial", image, ShaderSamplerNames::Texture);
+	ImageTexture* texture = TextureFactory::Instance().CreateFromImage(image->GetFileId(), image, ShaderSamplerNames::Texture, GraphicsTextureUnits::Texture0);
+	IMaterial* material = MaterialFactory::Instance().CreateSingleTexture(texture);
 	materials->Add(material);
 	SAFE_RETAIN(material);
 	if (image->AddImageRect(size, pitch, imageData, srcPixelFormat, srcDataType, outImageSize, outRect, true, GraphicsPixelConvertMode::Alpha))

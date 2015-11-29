@@ -13,6 +13,7 @@
 #include "Rendering/Batch/BatchPool.h"
 #include "Resource/Model/Mesh/IMesh.h"
 #include "Rendering/RenderingContext.h"
+#include <Resource/Material/IMaterial.h>
 
 MEDUSA_BEGIN;
 
@@ -55,10 +56,9 @@ void BaseSingleBatchRenderQueue::Update(RenderableChangedFlags changedFlag)
 		if (!mNodes.IsEmpty())
 		{
 			IRenderable* node = mNodes.First();
-			IMesh* mesh = node->Mesh();
-			mBatch->SetEffect(mesh->Effect());
-			mBatch->SetMaterial(mesh->Material());
-			mBatch->SetDrawMode(mesh->DrawMode());
+			mBatch->SetEffect(node->Material()->Effect());
+			mBatch->SetMaterial(node->Material());
+			mBatch->SetDrawMode(node->Material()->DrawMode());
 			mBatch->SetStateTreeNode(node->RenderStateTreeNode());
 		}
 

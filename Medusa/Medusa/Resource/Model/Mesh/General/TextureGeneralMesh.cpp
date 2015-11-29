@@ -11,12 +11,12 @@
 #include "Graphics/Buffer/NormalGraphicsBuffer.h"
 #include "Core/Geometry/Quad.h"
 #include "Node/Sprite/Sprite.h"
-#include "Core/Geometry/Matrix.h"
+#include "Core/Geometry/Matrix4.h"
 
 MEDUSA_BEGIN;
 
 
-TextureGeneralMesh::TextureGeneralMesh(IEffect* effect/*=nullptr*/, IMaterial* material/*=nullptr*/, bool isStatic/*=false*/) :IMesh(effect, material, isStatic)
+TextureGeneralMesh::TextureGeneralMesh( bool isStatic/*=false*/) :IMesh(isStatic)
 {
 
 }
@@ -205,7 +205,7 @@ INode* TextureGeneralMesh::CreateCloneInstance()const
 	return sprite;
 }
 
-void TextureGeneralMesh::AddToVertexBufferObject(VertexGraphicsBuffer& bufferObject, size_t vertexIndex, const Matrix& matrix) const
+void TextureGeneralMesh::AddToVertexBufferObject(VertexGraphicsBuffer& bufferObject, size_t vertexIndex, const Matrix4& matrix) const
 {
 	TryUpdateVertex(bufferObject,vertexIndex,mVertices, matrix);
 	

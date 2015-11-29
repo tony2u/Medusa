@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 #pragma once
 #include "Resource/Timeline/ITimelineModel.h"
-#include "Core/Geometry/Matrix.h"
+#include "Core/Geometry/Matrix4.h"
 #include "Resource/Model/Scene/PODDefines.h"
 
 MEDUSA_BEGIN;
@@ -13,7 +13,7 @@ class PODJointTimelineModel:public ITimelineModel
 public:
 	PODJointTimelineModel(const FileIdRef& fileId, float duration = 0.f);
 	virtual ~PODJointTimelineModel(void);
-	virtual bool TryGetMatrix(float frame,Matrix& outMatrix)const;
+	virtual bool TryGetMatrix(float frame,Matrix4& outMatrix)const;
 	using ITimelineModel::Initialize;
 	bool Initialize(const PODNode* node);
 

@@ -5,7 +5,7 @@
 #include "Core/Geometry/Point3.h"
 #include "Core/Geometry/Rotation3.h"
 #include "Core/Geometry/Scale3.h"
-#include "Core/Geometry/Matrix.h"
+#include "Core/Geometry/Matrix4.h"
 #include "Core/Pattern/LazyValue.h"
 #include "Core/Geometry/MoveableChangedFlags.h"
 
@@ -55,13 +55,13 @@ public:
 	void SetScaleY(float y){SetScale(Scale3F(mScale.X,y,mScale.Z));}
 	void SetScale(float val){SetScale(Scale3F(val,val,1.f));}
 
-	const Matrix& LocalMatrix()const{ return mMatrix.Value(); }
-	void SetMatrix(const Matrix& val);
+	const Matrix4& LocalMatrix()const{ return mMatrix.Value(); }
+	void ForceSetMatrix(const Matrix4& val);
 	bool IsMatrixDirty()const{return mMatrix.IsDirty();}
 
-	const Matrix& WorldMatrix()const;
+	const Matrix4& WorldMatrix()const;
 	bool IsWorldMatrixDirty()const;
-	void ForceSetWorldMatrix(const Matrix& val);
+	void ForceSetWorldMatrix(const Matrix4& val);
 	bool TryUpdateWorldMatrix()const{return mWorldMatrix.TryUpdate();}
 	size_t WorldMatrixVersion()const{return mWorldMatrix.Version();}
 
@@ -74,8 +74,8 @@ protected:
 	SRTMoveable* ParentMoveable() const { return mParentMoveable; }
 	void SetParentMoveable(SRTMoveable* val);
 private:
-	void OnUpdateMatrix(Matrix& transform, int32 dirtyFlag);
-	void OnUpdateWorldMatrix(Matrix& transform, int32 dirtyFlag);
+	void OnUpdateMatrix(Matrix4& transform, int32 dirtyFlag);
+	void OnUpdateWorldMatrix(Matrix4& transform, int32 dirtyFlag);
 
 protected:
 	SRTMoveable* mParentMoveable;
@@ -85,8 +85,8 @@ protected:
 	Scale3F mScale;
 	FlipMask mFlip;
 
-	LazyMatrix mMatrix;
-	LazyMatrix mWorldMatrix;
+	LazyMatrix4 mMatrix;
+	LazyMatrix4 mWorldMatrix;
 };
 
 MEDUSA_END;

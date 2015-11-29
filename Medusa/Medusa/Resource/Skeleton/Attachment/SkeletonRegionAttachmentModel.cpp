@@ -5,7 +5,7 @@
 #include "SkeletonRegionAttachmentModel.h"
 #include "Resource/TextureAtlas/TextureAtlasRegion.h"
 #include "Core/Geometry/Matrix2.h"
-#include "Core/Geometry/Matrix.h"
+#include "Core/Geometry/Matrix4.h"
 #include "Resource/TextureAtlas/TextureAtlasRegion.h"
 
 MEDUSA_BEGIN;
@@ -17,11 +17,6 @@ SkeletonRegionAttachmentModel::SkeletonRegionAttachmentModel(const StringRef& na
 	mRotation(Rotation3F::Zero),
 	mScale(Scale3F::One)
 {
-	mMesh.Retain();
-	region->UpdateMeshEffectAndMaterial(&mMesh);
-
-	
-	
 }
 
 
@@ -42,7 +37,7 @@ bool SkeletonRegionAttachmentModel::Initialize()
 
 	const Array<Point3F, 4>& vertexes=mRegion->Vertices();
 	
-	Matrix matrix = Matrix::CreateWorld(mSize, Point3F::Half, realScale, mRotation, mPosition);
+	Matrix4 matrix = Matrix4::CreateWorld(mSize, Point3F::Half, realScale, mRotation, mPosition);
 
 	Array<Point3F, 4>& vertices= mMesh.MutableVertices();
 	FOR_EACH_SIZE(i, vertices.Size)
@@ -56,6 +51,10 @@ bool SkeletonRegionAttachmentModel::Initialize()
 	return true;
 }
 
+RenderingObject SkeletonRegionAttachmentModel::GetRenderingObject() const
+{
+	return RenderingObject((IMesh*)&mMesh, mRegion->GetMaterial());
+}
 
 
 MEDUSA_END;

@@ -8,6 +8,7 @@
 #include "Resource/Texture/TextureFactory.h"
 #include "Core/Log/Log.h"
 #include "Resource/Texture/ImageTexture.h"
+#include "Resource/TextureAtlas/TextureAtlas.h"
 
 MEDUSA_BEGIN;
 
@@ -28,6 +29,7 @@ void TextureAtlasPage::AddRegion(TextureAtlasRegion* region)
 {
 	mRegions.Add(region);
 	region->SetPage(this);
+	region->UpdateMesh(mPageSize);
 }
 
 ITexture* TextureAtlasPage::LoadTexture()
@@ -55,6 +57,11 @@ ITexture* TextureAtlasPage::LoadTexture()
 	}
 
 	return mTexture;
+}
+
+void TextureAtlasPage::SetAtlas(TextureAtlas* val)
+{
+	mAtlas = val;
 }
 
 Size2U TextureAtlasPage::Size() const

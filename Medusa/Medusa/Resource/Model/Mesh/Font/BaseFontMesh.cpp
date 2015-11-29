@@ -7,7 +7,7 @@
 MEDUSA_BEGIN;
 
 
-BaseFontMesh::BaseFontMesh( IEffect* effect/*=nullptr*/,IMaterial* material/*=nullptr*/,bool isStatic/*=false*/ ):IMesh(effect,material,isStatic)
+BaseFontMesh::BaseFontMesh( bool isStatic/*=false*/ ):IMesh(isStatic)
 {
 
 }

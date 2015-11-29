@@ -11,8 +11,6 @@ MEDUSA_BEGIN;
 class BaseBufferRenderState:public IRenderState
 {
 	MEDUSA_DECLARE_RTTI;
-
-
 public:
 	BaseBufferRenderState(uint buffer=0);
 	virtual ~BaseBufferRenderState();

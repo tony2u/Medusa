@@ -28,8 +28,7 @@ bool MeshTimelineModel::InitializeWithSingleTexture(const FileIdRef& textureName
 	RETURN_FALSE_IF_FALSE(ITimelineModel::Initialize());
 	float frameInterval = 1.f / fps;
 
-	IMaterial* material = MaterialFactory::Instance().Create(textureName, ShaderSamplerNames::Texture);
-	IEffect* effect = EffectFactory::Instance().CreateSinglePassDefault(RenderPassNames::Texture);
+	IMaterial* material = MaterialFactory::Instance().CreateSingleTexture(textureName);
 	const Size2U& textureSize = material->FirstTexture()->Size();
 
 	Rect2F textureRect;
@@ -42,7 +41,7 @@ bool MeshTimelineModel::InitializeWithSingleTexture(const FileIdRef& textureName
 		{
 			textureRect.Origin.X = j*textureRect.Size.Width;
 			textureRect.Origin.Y = i*textureRect.Size.Height;
-			TextureQuadMesh* mesh = new TextureQuadMesh(effect, material);
+			TextureQuadMesh* mesh = new TextureQuadMesh();
 			mesh->Initialize(textureSize, textureRect);
 			AddMeshWithInterval(frameInterval, mesh);
 		}

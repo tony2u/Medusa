@@ -1,6 +1,3 @@
-// Copyright (c) 2015 fjz13. All rights reserved.
-// Use of this source code is governed by a MIT-style
-// license that can be found in the LICENSE file.
 #pragma once
 #include "MedusaPreCompiled.h"
 #include "MedusaCore.h"
@@ -225,6 +222,7 @@
 #include "Resource/Timeline/PODCameraFOVTimelineModel.h"
 #include "Resource/Timeline/PODJointTimelineModel.h"
 #include "Resource/Timeline/PODLightTimelineModel.h"
+#include "Resource/Timeline/RenderingObjectTimelineModel.h"
 #include "Resource/Timeline/RotationTimelineModel.h"
 #include "Resource/Timeline/ScaleTimelineModel.h"
 #include "Resource/Timeline/StringTimelineModel.h"
@@ -237,7 +235,7 @@
 #include "Rendering/Batch/BaseBufferRenderBatch.h"
 #include "Rendering/Batch/BatchGroup.h"
 #include "Rendering/Batch/BatchPool.h"
-#include "Rendering/Batch/CustomDrawMeshRenderBatch.h"
+#include "Rendering/Batch/Custom/CustomDrawMeshRenderBatch.h"
 #include "Rendering/Batch/IRenderBatch.h"
 #include "Rendering/Batch/Multiple/MultipleRenderBatch.h"
 #include "Rendering/Batch/Single/SingleRenderBatch.h"
@@ -256,6 +254,8 @@
 #include "Rendering/RenderEngine.h"
 #include "Rendering/RenderingContext.h"
 #include "Rendering/RenderingFlags.h"
+#include "Rendering/RenderingObject.h"
+#include "Rendering/RenderingObjectFactory.h"
 #include "Rendering/RenderingStatics.h"
 #include "Rendering/RenderingTypes.h"
 #include "Rendering/RenderQueue/IRenderQueue.h"
@@ -294,6 +294,7 @@
 #include "Node/Action/Timeline/MeshTimeline.h"
 #include "Node/Action/Timeline/PODCameraFOVTimeline.h"
 #include "Node/Action/Timeline/PODLighTimeline.h"
+#include "Node/Action/Timeline/RenderingObjectTimeline.h"
 #include "Node/Action/Timeline/RotationTimeline.h"
 #include "Node/Action/Timeline/ScaleTimeline.h"
 #include "Node/Action/Timeline/TextureFileIdTimeline.h"

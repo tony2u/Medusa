@@ -30,7 +30,6 @@ bool RenderStateTree::Initialize()
 	if (mEmptyNode == nullptr)
 	{
 		mEmptyNode = new RenderStateTreeLeafNode(nullptr, nullptr);
-		mEmptyNode->Retain();
 	}
 	return true;
 }
@@ -46,7 +45,7 @@ bool RenderStateTree::Uninitialize()
 
 RenderStateTreeLeafNode* RenderStateTree::FindUniqueNode(const RenderStateSet& state)
 {
-	RenderStateType type = (RenderStateType)0;	//first
+	RenderStateType type = (RenderStateType)1;	//first
 	return mRoot->FindUniqueNode(state, type);
 }
 
@@ -63,31 +62,39 @@ uint RenderStateTree::CalcuateId(const RenderStateTreeLeafNode& node) const
 void RenderStateTree::Release(RenderStateTreeLeafNode* node)
 {
 	RETURN_IF_NULL(node);
-	node->Release();
-
-	if (node->IsShared())
-	{
-		return;
-	}
 
 	auto* parent = node->Parent();
-	RETURN_IF_NULL(parent);
-	parent->Remove(node);
-
-	//find most top empty parent
-	if (parent->IsEmpty())
+	if (parent!=nullptr)
 	{
-		auto* top = parent;
-		auto* prevTop = parent;
-		do
+		if (node->IsShared())
 		{
-			prevTop = top;
-			top = top->Parent();
-		}while (top != mRoot&&top->IsSingle());
+			node->Release();
+		}
+		else
+		{
+			//single ref
+			node->Release();
+			parent->Remove(node);
+			//find most top empty parent
+			if (parent->IsEmpty())
+			{
+				auto* top = parent;
+				auto* prevTop = parent;
+				do
+				{
+					prevTop = top;
+					top = top->Parent();
+				} while (top != mRoot&&top->IsSingle());
 
-		top->Delete(prevTop);
+				top->Delete(prevTop);
+			}
+
+		}
 	}
-
+	else
+	{
+		node->Release();
+	}
 
 }
 

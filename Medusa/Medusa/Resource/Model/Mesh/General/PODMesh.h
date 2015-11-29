@@ -6,7 +6,7 @@
 #include "Resource/Model/Mesh/IMesh.h"
 #include "Graphics/Buffer/MemoryArrayGraphicsBuffer.h"
 #include "Graphics/Buffer/MemoryIndexGraphicsBuffer.h"
-#include "Core/Geometry/Matrix.h"
+#include "Core/Geometry/Matrix4.h"
 #include "Core/Geometry/Scale3.h"
 #include "Core/Memory/MemoryData.h"
 MEDUSA_BEGIN;
@@ -74,7 +74,7 @@ struct PODBoneBatches
 class PODMesh :public IMesh
 {
 public:
-	PODMesh(IEffect* effect = nullptr, IMaterial* material = nullptr, bool isStatic = false);
+	PODMesh( bool isStatic = false);
 	virtual ~PODMesh(void);
 	void FixInterleavedEndianness();
 
@@ -106,7 +106,7 @@ public:
 	PODData			BoneWeights;	/*!< nNumBones*nNumVertex floats (Vtx0Wt0, Vtx0Wt1, ... Vtx1Wt0, Vtx1Wt1, ...) */
 
 	PODBoneBatches	BoneBatches;	/*!< Bone tables */
-	Matrix			UnpackMatrix;	/*!< A matrix used for unscaling scaled vertex data created with PVRTModelPODScaleAndConvertVtxData*/
+	Matrix4			UnpackMatrix;	/*!< A matrix used for unscaling scaled vertex data created with PVRTModelPODScaleAndConvertVtxData*/
 
 	MemoryByteData InterleavedData;	/*!< Interleaved vertex data */
 private:

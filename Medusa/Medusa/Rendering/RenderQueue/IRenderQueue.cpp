@@ -74,7 +74,7 @@ void IRenderQueue::PrintRenderQueue(const RenderableNodeList& nodes)
 	FOR_EACH_SIZE(i, count)
 	{
 		IRenderable* node = (IRenderable*)nodes[i];
-		testStr.AppendFormat("{}:{}:{}\n", node->Id(), node->Mesh()->Material()->Name().c_str(), node->Name().c_str());
+		testStr.AppendFormat("{}:{}:{}\n", node->Id(), node->Material()->Name().c_str(), node->Name().c_str());
 	}
 	Log::Info(testStr);
 }

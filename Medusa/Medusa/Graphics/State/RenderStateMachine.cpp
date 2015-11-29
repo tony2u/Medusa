@@ -49,12 +49,12 @@ bool RenderStateMachine::Initialize()
 	mRenderStates.Add((uint)ScissorRenderState::GetTypeIdStatic(),RenderStateStack::New(ScissorRenderState::Current()));
 	mRenderStates.Add((uint)SamplerRenderState::GetTypeIdStatic(), RenderStateStack::New(SamplerRenderState::Current()));
 
-	FOR_EACH_COLLECTION(i,mRenderStates)
+	/*FOR_EACH_COLLECTION(i,mRenderStates)
 	{
 		RenderStateStack* stack=i->Value;
 		IRenderState* state=stack->Top();
 		state->Retain();
-	}
+	}*/
 	
 	return true;
 

@@ -57,6 +57,7 @@ IShader* ShaderFactory::CreateShader( const FileIdRef& fileId,const List<HeapStr
 	MemoryByteData data= FileSystem::Instance().ReadAllData(fileId);
 	if (data.IsNull())
 	{
+		Log::FormatError("Cannot find:{}-{}", fileId.Name, fileId.Order);
         delete result;
 		return nullptr;
 	}

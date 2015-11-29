@@ -20,13 +20,15 @@ public:
 	virtual bool Initialize()override;
 	virtual bool Uninitialize()override;
 public:
-	MeshTimelineModel* CreateMeshFromSingleTexture(const StringRef& name, const FileIdRef& textureName, uint coloumn, uint row = 1, float fps = 24.f, ResourceShareType shareType = ResourceShareType::Share);
-	MeshTimelineModel* CreateMeshFromTextureAtlas(const StringRef& name, const StringRef& regionPattern,const FileIdRef& atlasFileId, TextureAtlasFileFormat fileFormat = TextureAtlasFileFormat::Spine, uint atlasPageCount = 1, const Color4F& color = Color4F::White, float fps = 24.f, ResourceShareType shareType = ResourceShareType::Share);
-	MeshTimelineModel* CreateMeshFromTextures(const StringRef& name, const StringRef& textureNamePattern, float fps = 24.f, ResourceShareType shareType = ResourceShareType::Share);
+	RenderingObjectTimelineModel* CreateRenderingObjectFromSingleTexture(const StringRef& name, const FileIdRef& textureName, uint coloumn, uint row = 1, float fps = 24.f, ResourceShareType shareType = ResourceShareType::Share);
+	RenderingObjectTimelineModel* CreateMeshFromTextureAtlas(const StringRef& name, const StringRef& regionPattern,const FileIdRef& atlasFileId, TextureAtlasFileFormat fileFormat = TextureAtlasFileFormat::Spine, uint atlasPageCount = 1, const Color4F& color = Color4F::White, float fps = 24.f, ResourceShareType shareType = ResourceShareType::Share);
+	RenderingObjectTimelineModel* CreateRenderingObjectFromTextures(const StringRef& name, const StringRef& textureNamePattern, float fps = 24.f, ResourceShareType shareType = ResourceShareType::Share);
 
 	ITimelineModel* CreateSkeletonFromModel(const StringRef& modelName,ResourceShareType shareType = ResourceShareType::Share);
 	ITimelineModel* CreateCameraFromModel(const StringRef& cameraName,const StringRef& modelName,ResourceShareType shareType = ResourceShareType::Share);
 	ITimelineModel* CreateLightFromModel(const StringRef& lightName,const StringRef& modelName,ResourceShareType shareType = ResourceShareType::Share);
+
+
 };
 
 MEDUSA_END;

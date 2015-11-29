@@ -27,6 +27,8 @@ public:
 	virtual void Apply()const override;
 
 	virtual BlendRenderState* Clone()const override;
+	virtual void CopyFrom(const IRenderState& other)override;
+
 	virtual bool Equals(const IRenderState& state)const override;
 	virtual RenderStateType Type()const override {return GetTypeIdStatic();}
 	static RenderStateType GetTypeIdStatic(){return RenderStateType::Blend;}

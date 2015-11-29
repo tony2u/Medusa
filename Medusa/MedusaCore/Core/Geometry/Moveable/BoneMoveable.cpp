@@ -14,7 +14,7 @@ BoneMoveable::BoneMoveable()
 	 mSize(Size3F::Zero), mPosition(Point3F::Zero),
 	mRotation(Rotation3F::Zero), mScale(Scale3F::One), mFlip(FlipMask::None),
 	mWorldPosition(Point3F::Zero),mWorldRotation(Rotation3F::Zero), mWorldScale(Scale3F::One), mWorldFlip(FlipMask::None), 
-	mMatrix(Matrix::Identity), mWorldMatrix(Matrix::Identity), mWorldInverseMatrix(Matrix::Identity)
+	mMatrix(Matrix4::Identity), mWorldMatrix(Matrix4::Identity), mWorldInverseMatrix(Matrix4::Identity)
 {
 	mMatrix.SetUpdateDelegate(Bind(&BoneMoveable::OnUpdateMatrix, this));
 	mWorldMatrix.SetUpdateDelegate(Bind(&BoneMoveable::OnUpdateWorldMatrix, this));
@@ -29,26 +29,26 @@ BoneMoveable::~BoneMoveable(void)
 {
 }
 
-void BoneMoveable::OnUpdateMatrix(Matrix& transform,int32 dirtyFlag)
+void BoneMoveable::OnUpdateMatrix(Matrix4& transform,int32 dirtyFlag)
 {
 	//size do not used to update matrix
 	transform.ResetWorldWithoutAnchor(mScale, mRotation, mPosition, mFlip);
 }
 
 
-void BoneMoveable::OnUpdateWorldMatrix(Matrix& transform, int32 dirtyFlag)
+void BoneMoveable::OnUpdateWorldMatrix(Matrix4& transform, int32 dirtyFlag)
 {
 	UpdateWorldMatrixByInherit();
 }
 
 
-void BoneMoveable::OnUpdateWorldInverseMatrix(Matrix& transform, int32 dirtyFlag)
+void BoneMoveable::OnUpdateWorldInverseMatrix(Matrix4& transform, int32 dirtyFlag)
 {
 	transform = mWorldMatrix.Value();
 	transform.Inverse();
 }
 
-void BoneMoveable::SetMatrix(const Matrix& val)
+void BoneMoveable::ForceSetMatrix(const Matrix4& val)
 {
 	mMatrix.SetValue(val);
 	mWorldMatrix.SetDirty();
@@ -77,7 +77,7 @@ bool BoneMoveable::CheckWorldMatrixDirtyToRoot() const
 	}
 }
 
-const Matrix& BoneMoveable::WorldMatrix() const
+const Matrix4& BoneMoveable::WorldMatrix() const
 {
 	if (IsWorldMatrixDirty())
 	{
@@ -88,7 +88,7 @@ const Matrix& BoneMoveable::WorldMatrix() const
 
 
 
-void BoneMoveable::ForceSetWorldMatrix(const Matrix& val)
+void BoneMoveable::ForceSetWorldMatrix(const Matrix4& val)
 {
 	mWorldMatrix.SetValue(val);
 	mBoundingBox.SetDirty();

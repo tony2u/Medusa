@@ -12,7 +12,7 @@ MEDUSA_BEGIN;
 SRTMoveable::SRTMoveable()
 	:mParentMoveable(nullptr),
 	mPosition(Point3F::Zero),
-	mRotation(Rotation3F::Zero), mScale(Scale3F::One), mFlip(FlipMask::None), mMatrix(Matrix::Identity), mWorldMatrix(Matrix::Identity)
+	mRotation(Rotation3F::Zero), mScale(Scale3F::One), mFlip(FlipMask::None), mMatrix(Matrix4::Identity), mWorldMatrix(Matrix4::Identity)
 {
 	mMatrix.SetUpdateDelegate(Bind(&SRTMoveable::OnUpdateMatrix,this));
 	mWorldMatrix.SetUpdateDelegate(Bind(&SRTMoveable::OnUpdateWorldMatrix,this));
@@ -24,14 +24,14 @@ SRTMoveable::~SRTMoveable(void)
 {
 }
 
-void SRTMoveable::OnUpdateMatrix(Matrix& transform,int32 dirtyFlag)
+void SRTMoveable::OnUpdateMatrix(Matrix4& transform,int32 dirtyFlag)
 {
 	transform.ResetWorld(mScale, mRotation, mPosition, mFlip);
 
 }
 
 
-void SRTMoveable::OnUpdateWorldMatrix(Matrix& transform, int32 dirtyFlag)
+void SRTMoveable::OnUpdateWorldMatrix(Matrix4& transform, int32 dirtyFlag)
 {
 	if (mParentMoveable != nullptr&&mParentMoveable->IsWorldMatrixDirty())
 	{
@@ -44,7 +44,7 @@ void SRTMoveable::OnUpdateWorldMatrix(Matrix& transform, int32 dirtyFlag)
 }
 
 
-void SRTMoveable::SetMatrix(const Matrix& val)
+void SRTMoveable::ForceSetMatrix(const Matrix4& val)
 {
 	mMatrix.SetValue(val);
 	mWorldMatrix.SetDirty();
@@ -67,7 +67,7 @@ bool SRTMoveable::IsWorldMatrixDirty() const
 }
 
 
-const Matrix& SRTMoveable::WorldMatrix() const
+const Matrix4& SRTMoveable::WorldMatrix() const
 {
 	if (IsWorldMatrixDirty())
 	{
@@ -78,7 +78,7 @@ const Matrix& SRTMoveable::WorldMatrix() const
 
 
 
-void SRTMoveable::ForceSetWorldMatrix(const Matrix& val)
+void SRTMoveable::ForceSetWorldMatrix(const Matrix4& val)
 {
 	mWorldMatrix.SetValue(val);
 

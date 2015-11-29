@@ -15,7 +15,6 @@ BaseRenderStateTreeNode::BaseRenderStateTreeNode(IRenderState* state /*= nullptr
 	if (state != nullptr)
 	{
 		mState = state->Clone();
-		mState->Retain();
 	}
 	else
 	{

@@ -33,7 +33,7 @@ public:
 	virtual Camera* CreateCamera(const FileIdRef& fileId, const Size2F& winSize)const { return nullptr; }
 	virtual ILight* CreateLight(const FileIdRef& fileId)const{return nullptr;}
 
-	virtual void UpdateWorldMatrixRecursively(const Matrix& parentWorldMatrix=Matrix::Identity);
+	virtual void UpdateWorldMatrixRecursively(const Matrix4& parentWorldMatrix=Matrix4::Identity);
 	virtual INode* CreateCloneInstance();
 	virtual INode* CreateReferenceInstance();
 

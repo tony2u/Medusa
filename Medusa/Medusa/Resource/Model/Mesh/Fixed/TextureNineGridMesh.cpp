@@ -13,8 +13,8 @@
 
 MEDUSA_BEGIN;
 
-TextureNineGridMesh::TextureNineGridMesh(IEffect* effect/*=nullptr*/, IMaterial* material/*=nullptr*/, bool isStatic/*=false*/)
-	:IMesh(effect, material, isStatic), mTargetSize(Size2F::Zero), mPadding(ThicknessF::Zero), mTextureRect(Rect2F::Zero)
+TextureNineGridMesh::TextureNineGridMesh( bool isStatic/*=false*/)
+	:IMesh(isStatic), mTargetSize(Size2F::Zero), mPadding(ThicknessF::Zero), mTextureRect(Rect2F::Zero)
 {
 
 }
@@ -26,7 +26,7 @@ TextureNineGridMesh::~TextureNineGridMesh(void)
 
 
 
-void TextureNineGridMesh::Initialize(const Size2F& targetSize, const ThicknessF& padding, const Rect2F& textureRect/*=Rect2F::Zero*/, const Color4F& color/*=Color4F::White*/)
+void TextureNineGridMesh::Initialize(const Size2F& targetSize, const Size2F& textureSize, const ThicknessF& padding, const Rect2F& textureRect/*=Rect2F::Zero*/, const Color4F& color/*=Color4F::White*/)
 {
 	mVertices.ClearZero();
 	mTexcoords.ClearZero();
@@ -37,14 +37,14 @@ void TextureNineGridMesh::Initialize(const Size2F& targetSize, const ThicknessF&
 	mPadding = padding;
 	mTextureRect = textureRect;
 
-	UpdateToNewTargetSize(targetSize);
+	UpdateToNewTargetSize(targetSize, textureSize);
 
 	SetColorAll(color);
 }
 
 
 
-void TextureNineGridMesh::UpdateToNewTargetSize(const Size2F& targetSize)
+void TextureNineGridMesh::UpdateToNewTargetSize(const Size2F& targetSize, const Size2F& textureSize)
 {
 	/*
 	0	1	2	3
@@ -61,7 +61,6 @@ void TextureNineGridMesh::UpdateToNewTargetSize(const Size2F& targetSize)
 		return;
 	}
 	mTargetSize = targetSize;
-	Size2U textureSize = mMaterial->FirstTexture()->Size();
 	if (mTextureRect.IsEmpty())
 	{
 		mTextureRect.Size = textureSize;
@@ -120,7 +119,7 @@ bool TextureNineGridMesh::CopyFrom(const TextureNineGridMesh& val)
 
 
 
-void TextureNineGridMesh::AddToVertexBufferObject(VertexGraphicsBuffer& bufferObject, size_t vertexIndex, const Matrix& matrix) const
+void TextureNineGridMesh::AddToVertexBufferObject(VertexGraphicsBuffer& bufferObject, size_t vertexIndex, const Matrix4& matrix) const
 {
 	TryUpdateVertex(bufferObject,vertexIndex,mVertices, matrix);
 	

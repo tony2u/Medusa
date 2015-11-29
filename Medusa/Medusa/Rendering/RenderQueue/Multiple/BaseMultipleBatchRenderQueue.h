@@ -24,7 +24,12 @@ public:
 	~BaseMultipleBatchRenderQueue(void);
 public:
 	virtual void Update(RenderableChangedFlags changedFlag)override;
+public:
+	virtual IRenderTarget* RenderTarget() const override;
+	virtual void SetRenderTarget(IRenderTarget* val)override;
 
+	virtual Camera* GetCamera() const override;
+	virtual void SetCamera(Camera* val)override;
 protected:
 	virtual bool OnUpdateBatchList();
 	virtual bool OnUpdateRenderGroup();

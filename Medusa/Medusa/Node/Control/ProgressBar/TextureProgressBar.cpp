@@ -6,6 +6,9 @@
 #include "Resource/Model/Mesh/MeshFactory.h"
 #include "Resource/Model/Mesh/Fixed/TextureQuadMesh.h"
 #include "Resource/Material/IMaterial.h"
+#include "Resource/Material/MaterialFactory.h"
+#include "Rendering/RenderingObjectFactory.h"
+
 
 MEDUSA_BEGIN;
 
@@ -23,8 +26,13 @@ TextureProgressBar::~TextureProgressBar(void)
 
 bool TextureProgressBar::Initialize()
 {
-	TextureQuadMesh* mesh = MeshFactory::Instance().CreateTextureQuadMesh(mTextureName.ToRef());
-	this->SetMesh(mesh);
+
+	auto renderingObject = RenderingObjectFactory::Instance().CreateFromTexture(mTextureName);
+	RETURN_FALSE_IF_NULL(renderingObject);
+	SetRenderingObject(renderingObject);
+
+	TextureQuadMesh* mesh = (TextureQuadMesh*)renderingObject.Mesh();
+
 	SetSize(mesh->Size());
 	mVertices = mesh->Vertices();
 	mTexcoords = mesh->Texcoords();
@@ -35,7 +43,7 @@ bool TextureProgressBar::Initialize()
 
 void TextureProgressBar::OnUpdateMesh(bool isProgressTypeChanged/*=false*/)
 {
-	TextureQuadMesh* mesh = (TextureQuadMesh*)mMesh;
+	TextureQuadMesh* mesh = (TextureQuadMesh*)mRenderingObject.Mesh();
 
 	if (isProgressTypeChanged)
 	{

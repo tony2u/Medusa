@@ -32,19 +32,26 @@ void RasterizerRenderState::Apply()const
 
 RasterizerRenderState* RasterizerRenderState::Clone() const
 {
-	RasterizerRenderState* state=new RasterizerRenderState();
-	state->SetCullMode(mCullMode);
-	state->SetFrontFace(mFrontFace);
-	state->EnableCullFace(mCullFaceEnabled);
-	state->SetColorMask(mColorMask);
+	RasterizerRenderState* state = new RasterizerRenderState();
+	state->CopyFrom(*this);
 	return state;
 }
 
-bool RasterizerRenderState::Equals( const IRenderState& state ) const
+void RasterizerRenderState::CopyFrom(const IRenderState& other)
+{
+	MEDUSA_ASSERT(other.Type() == Type(), "Cannot copy render state with different type");
+	RasterizerRenderState& val = (RasterizerRenderState&)other;
+	mCullMode = val.mCullMode;
+	mFrontFace = val.mFrontFace;
+	mCullFaceEnabled = val.mCullFaceEnabled;
+	mColorMask = val.mColorMask;
+}
+
+bool RasterizerRenderState::Equals(const IRenderState& state) const
 {
 	RETURN_FALSE_IF_FALSE(IRenderState::Equals(state));
 	const RasterizerRenderState& val=(const RasterizerRenderState&)state;
-	return mCullFaceEnabled==val.IsCullFaceEnabled()&&
+	return mCullFaceEnabled==val.IsEnabled()&&
 		mCullMode==val.CullMode()&&
 		mFrontFace==val.FrontFace()&&
 		mColorMask==val.ColorMask();
@@ -55,7 +62,7 @@ RasterizerRenderState* RasterizerRenderState::Current()
 	IRender& render=Render::Instance();
 	RasterizerRenderState* state=new RasterizerRenderState();
 
-	state->EnableCullFace(render.GetBoolean(GraphicsBooleanName::CullFace));
+	state->Enable(render.GetBoolean(GraphicsBooleanName::CullFace));
 	state->SetCullMode(GraphicsFace(render.GetInteger(GraphicsIntegerName::CullFaceMode)));
 	state->SetFrontFace(GraphicsFrontFace(render.GetInteger(GraphicsIntegerName::FrontFace)));
 

@@ -18,11 +18,14 @@ HelloWorldScene::~HelloWorldScene(void)
 bool HelloWorldScene::Initialize()
 {
 	RETURN_FALSE_IF_FALSE(Base2DScene::Initialize());
-
-	PushLayer<HelloWorldLayer>();
-	
 	return true;
 }
 
 
-MEDUSA_IMPLEMENT_SCENE(HelloWorldScene,Base2DScene);
+bool HelloWorldScene::Enter()
+{
+	PushLayer<HelloWorldLayer>();
+	return true;
+}
+
+MEDUSA_IMPLEMENT_SCENE(HelloWorldScene, Base2DScene);

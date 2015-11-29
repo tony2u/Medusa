@@ -32,13 +32,13 @@ Camera* PODCameraModelNode::CreateCamera(const Size2F& winSize) const
 	PODModel* model = (PODModel*)mParentModel;
 
 	PODNode* cameraNode = model->GetPODNode(mName);
-	Matrix cameraMatrix;
+	Matrix4 cameraMatrix;
 	model->TryGetWorldMatrix(cameraNode, 0, cameraMatrix);
 	camera->SetEyePosition(cameraMatrix.Translation());
 
-	if (false)	//if (TargetObjectIndex>=0) //TODO: Don't know why it's different from PVRShaman
+	if (TargetObjectIndex>=0)
 	{
-		Matrix targetMatrix;
+		Matrix4 targetMatrix;
 
 		PODNode* targetNode = model->GetPODNode(TargetObjectIndex);
 		model->TryGetWorldMatrix(targetNode, 0, targetMatrix);

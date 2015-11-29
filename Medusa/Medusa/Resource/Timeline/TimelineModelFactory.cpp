@@ -7,7 +7,10 @@
 #include "Resource/Model/ModelFactory.h"
 #include "Resource/Model/Scene/BaseSceneModel.h"
 #include "Resource/Timeline/MeshTimelineModel.h"
+#include "Resource/Timeline/RenderingObjectTimelineModel.h"
 #include "Resource/Model/Mesh/MeshFactory.h"
+#include "Resource/Material/MaterialFactory.h"
+#include "Rendering/RenderingObjectFactory.h"
 
 MEDUSA_BEGIN;
 
@@ -76,16 +79,16 @@ ITimelineModel* TimelineModelFactory::CreateLightFromModel(const StringRef& ligh
 	return item;
 }
 
-MeshTimelineModel* TimelineModelFactory::CreateMeshFromSingleTexture(const StringRef& name, const FileIdRef& textureName, uint coloumn, uint row/*=1*/, float fps/*=24.f*/, ResourceShareType shareType /*= ResourceShareType::Share*/)
+RenderingObjectTimelineModel* TimelineModelFactory::CreateRenderingObjectFromSingleTexture(const StringRef& name, const FileIdRef& textureName, uint coloumn, uint row/*=1*/, float fps/*=24.f*/, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
 	{
 		ITimelineModel* val = Find(name);
-		RETURN_SELF_IF_NOT_NULL((MeshTimelineModel*)val);
+		RETURN_SELF_IF_NOT_NULL((RenderingObjectTimelineModel*)val);
 	}
 
-
-	MeshTimelineModel* model = new MeshTimelineModel(name);
-	model->InitializeWithSingleTexture(textureName, coloumn, row, fps);
+	IMaterial* material = MaterialFactory::Instance().CreateSingleTexture(textureName);
+	RenderingObjectTimelineModel* model = new RenderingObjectTimelineModel(name);
+	model->InitializeWithSingleTexture(material, coloumn, row, fps);
 	Add(model, shareType);
 
 	return model;
@@ -93,7 +96,7 @@ MeshTimelineModel* TimelineModelFactory::CreateMeshFromSingleTexture(const Strin
 
 
 
-MeshTimelineModel* TimelineModelFactory::CreateMeshFromTextureAtlas(const StringRef& name,
+RenderingObjectTimelineModel* TimelineModelFactory::CreateMeshFromTextureAtlas(const StringRef& name,
 																				 const StringRef& regionPattern,
 																				 const FileIdRef& atlasFileId,
 																				 TextureAtlasFileFormat fileFormat /*= TextureAtlasFileFormat::Spine*/,
@@ -104,44 +107,47 @@ MeshTimelineModel* TimelineModelFactory::CreateMeshFromTextureAtlas(const String
 {
 	{
 		ITimelineModel* val = Find(name);
-		RETURN_SELF_IF_NOT_NULL((MeshTimelineModel*)val);
+		RETURN_SELF_IF_NOT_NULL((RenderingObjectTimelineModel*)val);
 	}
 
 
-	SortedDictionary<uint, TextureQuadMesh*> outMeshes;
-	bool isSuccess = MeshFactory::Instance().CreateTextureQuadMeshesFromAtlas(outMeshes, regionPattern, atlasFileId, fileFormat, atlasPageCount, color);
+	SortedDictionary<uint, RenderingObject> outObjects;
+
+	bool isSuccess = RenderingObjectFactory::Instance().CreateFromTextureAtlas(outObjects, regionPattern, atlasFileId, fileFormat, atlasPageCount, color);
 	if (!isSuccess)
 	{
 		return nullptr;
 	}
 
-	MeshTimelineModel* model = new MeshTimelineModel(name);
-	model->InitializeWithMeshes(outMeshes, fps);
+	RenderingObjectTimelineModel* model = new RenderingObjectTimelineModel(name);
+	model->InitializeWithObjects(outObjects, fps);
 	Add(model, shareType);
 
 	return model;
 }
 
-MeshTimelineModel* TimelineModelFactory::CreateMeshFromTextures(const StringRef& name, const StringRef& textureNamePattern, float fps /*= 24.f*/, ResourceShareType shareType /*= ResourceShareType::Share*/)
+RenderingObjectTimelineModel* TimelineModelFactory::CreateRenderingObjectFromTextures(const StringRef& name, const StringRef& textureNamePattern, float fps /*= 24.f*/, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
 	{
 		ITimelineModel* val = Find(name);
-		RETURN_SELF_IF_NOT_NULL((MeshTimelineModel*)val);
+		RETURN_SELF_IF_NOT_NULL((RenderingObjectTimelineModel*)val);
 	}
-
-	SortedDictionary<uint, TextureQuadMesh*> outMeshes;
-	bool isSuccess = MeshFactory::Instance().CreateTextureQuadMeshesFromTextures(outMeshes, textureNamePattern);
-	if (!isSuccess|| outMeshes.IsEmpty())
+	SortedDictionary<uint, IMaterial*> outMaterials;
+	bool isSuccess=MaterialFactory::Instance().CreateTextures(outMaterials, textureNamePattern);
+	if (!isSuccess || outMaterials.IsEmpty())
 	{
 		Log::FormatError("Cannot find textures with Pattern:{}", textureNamePattern);
 		return nullptr;
 	}
 
-	MeshTimelineModel* model = new MeshTimelineModel(name);
-	model->InitializeWithMeshes(outMeshes, fps);
+	RenderingObjectTimelineModel* model = new RenderingObjectTimelineModel(name);
+	model->InitializeWithTextures(outMaterials, fps);
 	Add(model, shareType);
 
 	return model;
 }
+
+
+
 
 MEDUSA_END;

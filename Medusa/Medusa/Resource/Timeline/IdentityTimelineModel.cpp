@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 #include "MedusaPreCompiled.h"
 #include "IdentityTimelineModel.h"
-#include "Core/Geometry/Matrix.h"
+#include "Core/Geometry/Matrix4.h"
 
 MEDUSA_BEGIN;
 
@@ -18,9 +18,9 @@ IdentityTimelineModel::~IdentityTimelineModel(void)
 }
 
 
-bool IdentityTimelineModel::TryGetMatrix( float frame,Matrix& outMatrix ) const
+bool IdentityTimelineModel::TryGetMatrix( float frame,Matrix4& outMatrix ) const
 {
-	outMatrix=Matrix::Identity;
+	outMatrix=Matrix4::Identity;
 	return true;
 }
 

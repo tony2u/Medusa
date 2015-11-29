@@ -24,6 +24,7 @@ void TextureAtlas::AddPage(TextureAtlasPage* page)
 {
 	LOG_ASSERT_NOT_NULL(page);
 	mPages.Add(page);
+	page->SetAtlas(this);
 
 	const List<TextureAtlasRegion*>& regions = page->Regions();
 	FOR_EACH_COLLECTION(i, regions)

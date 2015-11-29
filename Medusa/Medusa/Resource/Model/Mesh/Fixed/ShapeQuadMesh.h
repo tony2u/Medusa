@@ -18,7 +18,7 @@ We choose separate buffer instead of interleaved, because we want to update only
 class ShapeQuadMesh :public IMesh
 {
 public:
-	ShapeQuadMesh(IEffect* effect = nullptr, IMaterial* material = nullptr, bool isStatic = false);
+	ShapeQuadMesh( bool isStatic = false);
 	virtual ~ShapeQuadMesh(void);
 public:
 
@@ -46,7 +46,7 @@ public:
 	virtual INode* CreateCloneInstance()const;
 
 public:
-	virtual void AddToVertexBufferObject(VertexGraphicsBuffer& bufferObject, size_t vertexIndex, const Matrix& matrix)const;
+	virtual void AddToVertexBufferObject(VertexGraphicsBuffer& bufferObject, size_t vertexIndex, const Matrix4& matrix)const;
 	virtual void AddToColorBufferObject(ColorGraphicsBuffer& bufferObject, size_t vertexIndex, const Color4F& parentColor = Color4F::White)const;
 	virtual void AddToIndexBufferObject(IndexGraphicsBuffer& bufferObject, size_t vertexIndex, size_t indexIndex)const;
 

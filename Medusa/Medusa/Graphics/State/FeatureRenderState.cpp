@@ -32,17 +32,19 @@ void FeatureRenderState::Apply()const
 FeatureRenderState* FeatureRenderState::Clone() const
 {
 	FeatureRenderState* state=new FeatureRenderState();
-	FOR_EACH_COLLECTION(i,mFeatures)
-	{
-		GraphicsFeatures feature=(GraphicsFeatures)i->Key;
-		bool isEnabled=i->Value;
-		state->Enable(feature,isEnabled);
-	}
-
+	state->CopyFrom(*this);
 	return state;
 }
 
-bool FeatureRenderState::Equals( const IRenderState& state ) const
+void FeatureRenderState::CopyFrom(const IRenderState& other)
+{
+	MEDUSA_ASSERT(other.Type() == Type(), "Cannot copy render state with different type");
+	FeatureRenderState& val = (FeatureRenderState&)other;
+	mFeatures = val.mFeatures;
+	
+}
+
+bool FeatureRenderState::Equals(const IRenderState& state) const
 {
 	RETURN_FALSE_IF_FALSE(IRenderState::Equals(state));
 	const FeatureRenderState& val=(const FeatureRenderState&)state;

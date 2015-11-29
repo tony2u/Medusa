@@ -6,7 +6,7 @@
 #include "Resource/Effect/Pass/Program/BaseProgramRenderPass.h"
 #include "Graphics/Render/Render.h"
 #include "Core/Geometry/Matrix3.h"
-#include "Core/Geometry/Matrix.h"
+#include "Core/Geometry/Matrix4.h"
 #include "Core/Log/Log.h"
 #include "Core/Geometry/Color3.h"
 #include "Core/Geometry/Color4.h"
@@ -391,7 +391,7 @@ void ShaderConstant::SetMatrix4( uint count,const float* data,bool isTransposed/
 #endif
 }
 
-void ShaderConstant::SetMatrix( const Matrix& matrix )
+void ShaderConstant::SetMatrix( const Matrix4& matrix )
 {
 	MEDUSA_ASSERT(mDataType==GraphicsUniformDataType::FloatMat4,"ErrorDataType");
 	SetMatrix4(1,matrix.Items());

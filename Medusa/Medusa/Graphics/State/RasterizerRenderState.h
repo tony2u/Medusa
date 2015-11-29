@@ -11,7 +11,7 @@
 
 MEDUSA_BEGIN;
 
-class RasterizerRenderState:public IRenderState
+class RasterizerRenderState :public IRenderState
 {
 	MEDUSA_DECLARE_RTTI;
 
@@ -21,34 +21,29 @@ public:
 	virtual void Apply()const override;
 
 	virtual RasterizerRenderState* Clone()const override;
+	virtual void CopyFrom(const IRenderState& other)override;
+
 	virtual bool Equals(const IRenderState& state)const override;
-	virtual RenderStateType Type()const override {return GetTypeIdStatic();}
-	static RenderStateType GetTypeIdStatic(){return RenderStateType::Rasterizer;}
+	virtual RenderStateType Type()const override { return GetTypeIdStatic(); }
+	static RenderStateType GetTypeIdStatic() { return RenderStateType::Rasterizer; }
 
 	GraphicsFace CullMode() const { return mCullMode; }
-	void SetCullMode(GraphicsFace val) {
-		RETURN_IF_EQUAL(mCullMode,val); mCullMode = val; OnStateChanged();
-	}
-	GraphicsFrontFace FrontFace() const { return mFrontFace; }
-	void SetFrontFace(GraphicsFrontFace val) {
-		RETURN_IF_EQUAL(mFrontFace, val); mFrontFace = val; OnStateChanged();
-	}
+	void SetCullMode(GraphicsFace val) { RETURN_IF_EQUAL(mCullMode, val); mCullMode = val; OnStateChanged(); }
 
-	bool IsCullFaceEnabled() const { return mCullFaceEnabled; }
-	void EnableCullFace(bool val) {
-		RETURN_IF_EQUAL(mCullFaceEnabled, val); mCullFaceEnabled = val; OnStateChanged();
-	}
+	GraphicsFrontFace FrontFace() const { return mFrontFace; }
+	void SetFrontFace(GraphicsFrontFace val) { RETURN_IF_EQUAL(mFrontFace, val); mFrontFace = val; OnStateChanged(); }
+
+	bool IsEnabled() const { return mCullFaceEnabled; }
+	void Enable(bool val) { RETURN_IF_EQUAL(mCullFaceEnabled, val); mCullFaceEnabled = val; OnStateChanged(); }
 
 	GraphicsColorMask ColorMask() const { return mColorMask; }
-	void SetColorMask(GraphicsColorMask val) {
-		RETURN_IF_EQUAL(mColorMask, val); mColorMask = val; OnStateChanged();
-	}
+	void SetColorMask(GraphicsColorMask val) { RETURN_IF_EQUAL(mColorMask, val); mColorMask = val; OnStateChanged(); }
 
 
 	static RasterizerRenderState* Current();
 protected:
 	bool mCullFaceEnabled;
-	
+
 	GraphicsFace mCullMode;	//default: back
 	GraphicsFrontFace mFrontFace;	//default: CCW
 	GraphicsColorMask mColorMask;

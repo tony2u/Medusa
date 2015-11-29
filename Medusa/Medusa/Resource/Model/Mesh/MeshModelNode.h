@@ -3,6 +3,7 @@
 // license that can be found in the LICENSE file.
 #pragma once
 #include "Resource/Model/Mesh/IMeshModelNode.h"
+#include "Node/Sprite/Sprite.h"
 
 MEDUSA_BEGIN;
 
@@ -11,8 +12,12 @@ template<typename TMesh>
 class MeshModelNode:public IMeshModelNode
 {
 public:
-	MeshModelNode(StringRef name):IMeshModelNode(name){}
+	MeshModelNode(StringRef name):IMeshModelNode(name)
+	{
+		mMesh.Retain();
+	}
 	virtual ~MeshModelNode(void){}
+
 	virtual const IMesh* BaseMeshPtr() const { return &mMesh; }
 	virtual IMesh* MutableBaseMeshPtr() { return &mMesh; }
 
@@ -22,6 +27,24 @@ public:
 	virtual void CustomDraw(RenderingFlags renderingFlags=RenderingFlags::None){}
 	virtual void Apply(){}
 	virtual void Restore(){}
+
+	virtual INode* CreateCloneInstance() override
+	{
+		Sprite* sprite = new Sprite(this->mName);
+		sprite->SetMoveable(*this);
+		sprite->SetMesh(&mMesh);
+		sprite->SetMaterial(mMaterial);
+		sprite->Initialize();
+
+		for (auto* node:this->mNodes)
+		{
+			auto* child = node->CreateCloneInstance();
+			sprite->AddChild(child);
+		}
+
+		return sprite; 
+	}
+	virtual INode* CreateReferenceInstance() { return nullptr; }
 protected:
 	TMesh mMesh;
 };

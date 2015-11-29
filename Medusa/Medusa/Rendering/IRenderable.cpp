@@ -21,36 +21,34 @@ IRenderable::IRenderable(const StringRef& name /*= StringRef::Empty*/)
 {
 	mId = AutoIncreaseId<IRenderable>::New();
 
-	mWorldColor.SetUpdateDelegate(Bind(&IRenderable::OnUpdateWorldColor,this));
-	mWorldRenderState.SetUpdateDelegate(Bind(&IRenderable::OnUpdateWorldRenderState,this));
+	mWorldColor.SetUpdateDelegate(Bind(&IRenderable::OnUpdateWorldColor, this));
+	mWorldRenderState.SetUpdateDelegate(Bind(&IRenderable::OnUpdateWorldRenderState, this));
 
 	mRenderStateTreeNode = RenderStateTree::Instance().EmptyNode();
 	mRenderStateTreeNode->Retain();
 
 	mRenderState.OnStateChanged += Bind(&IRenderable::OnStateChanged, this);
+	mRenderState.OnStateAdded += Bind(&IRenderable::OnStateAdded, this);
 	mRenderState.OnStateRemoved += Bind(&IRenderable::OnStateRemoved, this);
 
 }
 
 IRenderable::~IRenderable(void)
 {
-	if (mMesh!=nullptr)
-	{
-		mMesh->OnMeshChanged -= Bind(&IRenderable::OnMeshChanged, this);
-		mMesh->Release();
-		mMesh = nullptr;
-	}
+	mRenderingObject.UnregisterMeshChanged(Bind(&IRenderable::OnMeshChanged, this));
+	mRenderingObject.UnregisterMaterialChanged(Bind(&IRenderable::OnMaterialChanged, this));
 
-	if (mBatch!=nullptr)
+	if (mBatch != nullptr)
 	{
 		mBatch->RemoveNode(this);
 	}
+	RenderStateTree::Instance().Release(mRenderStateTreeNode);
 }
 
 
 bool IRenderable::IsValidToDrawSelf() const
 {
-	if (IsVisible() && HasValidMesh())
+	if (IsVisible() && HasValidRenderingObject())
 	{
 		float a = mWorldColor.Value().A;
 		return a > 0.001f;
@@ -71,54 +69,61 @@ bool IRenderable::IsValidToRenderQueue() const
 
 void IRenderable::SetMesh(IMesh* val)
 {
-	RETURN_IF_EQUAL(mMesh, val);
+	RETURN_IF_EQUAL(mRenderingObject.Mesh(), val);
 
-	if (mMesh!=nullptr)
-	{
-		mMesh->OnMeshChanged -= Bind(&IRenderable::OnMeshChanged, this);
-	}
+	mRenderingObject.UnregisterMeshChanged(Bind(&IRenderable::OnMeshChanged, this));
 	RenderableChangedFlags changeFlag = RenderableChangedFlags::DataTotalChanged;
-	const IEffect* originalEffect = mMesh != nullptr ? mMesh->Effect() : nullptr;
-	const IMaterial* originalMaterial = mMesh != nullptr ? mMesh->Material() : nullptr;
-	GraphicsDrawMode originalDrawMode = mMesh != nullptr ? mMesh->DrawMode() : GraphicsDrawMode::Count;
 
 	if (IsValidToRenderQueue())
 	{
-		bool isValidToDrawPrev = HasValidMesh();
-		SAFE_ASSIGN_REF(mMesh, val);
+		bool isValidToDrawPrev = mRenderingObject.IsValid();
+		mRenderingObject.SetMesh(val);
 
-		bool isValidToDrawNow = HasValidMesh();
+		bool isValidToDrawNow = mRenderingObject.IsValid();
 		if (isValidToDrawPrev != isValidToDrawNow)
 		{
 			changeFlag |= RenderableChangedFlags::RenderQueueChanged | RenderableChangedFlags::BatchChanged;
 		}
-		else
-		{
-			const IEffect* currentEffect = mMesh != nullptr ? mMesh->Effect() : nullptr;
-			const IMaterial* currentlMaterial = mMesh != nullptr ? mMesh->Material() : nullptr;
-			GraphicsDrawMode currentDrawMode = mMesh != nullptr ? mMesh->DrawMode() : GraphicsDrawMode::Count;
+	}
+	else
+	{
+		mRenderingObject.SetMesh(val);
+	}
 
-			if (originalEffect != currentEffect || originalMaterial != currentlMaterial || originalDrawMode != currentDrawMode)
-			{
-				changeFlag |= RenderableChangedFlags::BatchChanged;
-			}
+	mRenderingObject.RegisterMeshChanged(Bind(&IRenderable::OnMeshChanged, this));
+
+	mRenderState.EnableBlend(mRenderingObject.IsBlend());
+	OnMeshChanged(changeFlag);
+}
+
+void IRenderable::SetMaterial(IMaterial* val)
+{
+	RETURN_IF_EQUAL(mRenderingObject.Material(), val);
+	mRenderingObject.UnregisterMaterialChanged(Bind(&IRenderable::OnMaterialChanged, this));
+
+	RenderableChangedFlags changeFlag = RenderableChangedFlags::BatchChanged;
+	if (IsValidToRenderQueue())
+	{
+		bool isValidToDrawPrev = mRenderingObject.IsValid();
+		mRenderingObject.SetMaterial(val);
+
+		bool isValidToDrawNow = mRenderingObject.IsValid();
+		if (isValidToDrawPrev != isValidToDrawNow)
+		{
+			changeFlag |= RenderableChangedFlags::RenderQueueChanged;
 		}
 	}
 	else
 	{
-		SAFE_ASSIGN_REF(mMesh, val);
+		mRenderingObject.SetMaterial(val);
 	}
+	mRenderingObject.RegisterMaterialChanged(Bind(&IRenderable::OnMaterialChanged, this));
 
-	if (mMesh!=nullptr)
-	{
-		mMesh->OnMeshChanged+= Bind(&IRenderable::OnMeshChanged, this);
-	}
 
-	bool hasBlend = mMesh != nullptr&&mMesh->HasBlend();
-	EnableBlend(hasBlend);
-	OnMeshChanged(changeFlag);
+	mRenderState.EnableBlend(mRenderingObject.IsBlend());
+	OnMaterialChanged(changeFlag);
+
 }
-
 
 void IRenderable::SetVisible(bool val)
 {
@@ -160,14 +165,20 @@ void IRenderable::OnMoveableDirty(MoveableChangedFlags changedFlags)
 		Rect2F scissor;
 		scissor.Origin = Point2F::Zero;
 		scissor.Size = mSize.To2D();
-		SetScissor(scissor);
+		mRenderState.SetScissorBox(scissor);
 	}
 	AddRenderableChangedFlags(RenderableChangedFlags::DataTotalChanged);
 }
 
-bool IRenderable::HasValidMesh() const
+bool IRenderable::HasValidRenderingObject() const
 {
-	return mMesh != nullptr&&mMesh->IsValid();
+	return mRenderingObject.IsValid();
+}
+
+void IRenderable::SetRenderingObject(const RenderingObject& val)
+{
+	SetMesh(val.Mesh());
+	SetMaterial(val.Material());
 }
 
 void IRenderable::OnUpdateWorldColor(Color4F& outColor, int32 dirtyFlag)
@@ -191,16 +202,6 @@ void IRenderable::SetWorldColor(const Color4F& val)
 
 #pragma region State
 
-void IRenderable::EnableBlend(bool val)
-{
-	mRenderState.EnableBlend(val);
-}
-
-
-void IRenderable::EnableScissor(bool val)
-{
-	mRenderState.EnableScissor(val);
-}
 
 void IRenderable::EnableClipToBound(bool val)
 {
@@ -208,21 +209,16 @@ void IRenderable::EnableClipToBound(bool val)
 	mIsClipToBound = val;
 	if (mIsClipToBound)
 	{
-		EnableScissor(val);
+		mRenderState.EnableScissor(val);
 		Rect2F scissor;
 		scissor.Origin = Point2F::Zero;
 		scissor.Size = mSize.To2D();
-		SetScissor(scissor);
+		mRenderState.SetScissorBox(scissor);
 	}
 	else
 	{
 		mRenderState.RemoveScissor();
 	}
-}
-
-void IRenderable::SetScissor(const Rect2F& val)
-{
-	mRenderState.SetScissorBox(val);
 }
 
 void IRenderable::OnStateChanged(IRenderState& state)
@@ -231,6 +227,11 @@ void IRenderable::OnStateChanged(IRenderState& state)
 	OnBatchChanged();
 }
 
+void IRenderable::OnStateAdded(IRenderState& state)
+{
+	mWorldRenderState.AddDirtyFlag((int)state.Type());
+	OnBatchChanged();
+}
 
 void IRenderable::OnStateRemoved(RenderStateType state)
 {
@@ -281,7 +282,7 @@ void IRenderable::ForceUpdateRenderState(RenderStateType updateFlag /*= RenderSt
 
 	if (IsValidToDrawSelf())
 	{
-		mBatchGroup.Update(mRenderingPriority, *mMesh->Effect(), *mMesh->Material(), *mRenderStateTreeNode, mMesh->DrawMode(), mRenderingStrategy);
+		mBatchGroup.Update(mRenderingPriority, *mRenderingObject.Material()->Effect(), *mRenderingObject.Material(), *mRenderStateTreeNode, mRenderingObject.Material()->DrawMode(), mRenderingStrategy);
 	}
 	else
 	{
@@ -315,9 +316,9 @@ void IRenderable::SetRenderingStrategy(RenderingStrategy val)
 
 void IRenderable::SetMeshFixType(MeshFixType fixType)
 {
-	if (mMesh != nullptr)
+	if (mRenderingObject.Mesh()!=nullptr)
 	{
-		mMesh->SetFixType(fixType);
+		mRenderingObject.Mesh()->SetFixType(fixType);
 	}
 }
 
@@ -338,6 +339,11 @@ void IRenderable::OnRenderChanged(RenderableChangedFlags flag)
 }
 
 void IRenderable::OnMeshChanged(RenderableChangedFlags flag)
+{
+	AddRenderableChangedFlags(flag);
+}
+
+void IRenderable::OnMaterialChanged(RenderableChangedFlags flag)
 {
 	AddRenderableChangedFlags(flag);
 }

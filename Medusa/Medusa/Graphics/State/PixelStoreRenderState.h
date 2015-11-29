@@ -7,7 +7,7 @@
 
 MEDUSA_BEGIN;
 
-class PixelStoreRenderState:public IRenderState
+class PixelStoreRenderState :public IRenderState
 {
 	MEDUSA_DECLARE_RTTI;
 
@@ -17,17 +17,17 @@ public:
 	virtual void Apply()const override;
 
 	virtual PixelStoreRenderState* Clone()const override;
+	virtual void CopyFrom(const IRenderState& other)override;
+
 	virtual bool Equals(const IRenderState& state)const override;
-	virtual RenderStateType Type()const override {return GetTypeIdStatic();}
-	static RenderStateType GetTypeIdStatic(){return RenderStateType::PixelStore;}
+	virtual RenderStateType Type()const override { return GetTypeIdStatic(); }
+	static RenderStateType GetTypeIdStatic() { return RenderStateType::PixelStore; }
 
 	int PackAlignment() const { return mPackAlignment; }
 	void SetPackAlignment(int val) { RETURN_IF_EQUAL(mPackAlignment, val); mPackAlignment = val; OnStateChanged(); }
 
 	int UnpackAlignment() const { return mUnpackAlignment; }
-	void SetUnpackAlignment(int val) {
-		RETURN_IF_EQUAL(mUnpackAlignment, val); mUnpackAlignment = val; OnStateChanged();
-	}
+	void SetUnpackAlignment(int val) { RETURN_IF_EQUAL(mUnpackAlignment, val); mUnpackAlignment = val; OnStateChanged(); }
 
 	static PixelStoreRenderState* Current();
 protected:

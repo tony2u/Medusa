@@ -432,7 +432,7 @@ void INode::OnMoveableDirty(MoveableChangedFlags changedFlags)
 		if (mDebugDrawShape != nullptr)
 		{
 			ShapeGeneralMesh* quadMesh = (ShapeGeneralMesh*)mDebugDrawShape->Mesh();
-			quadMesh->ExpandVertexRectSize(mSize.To2D(), true);	//it will override debugBounding box
+			quadMesh->ExpandVertexRectSize(mSize.To2D());	//it will override debugBounding box
 		}
 	}
 }
@@ -719,9 +719,9 @@ void INode::OnMeshChanged(RenderableChangedFlags flag)
 	IRenderable::OnMeshChanged(flag);
 	if (this->mSizeToContent==SizeToContent::Mesh)
 	{
-		if (mMesh != nullptr)
+		if (mRenderingObject.Mesh() != nullptr)
 		{
-			SetSize(mMesh->Size());
+			SetSize(mRenderingObject.Mesh()->Size());
 		}
 		else
 		{

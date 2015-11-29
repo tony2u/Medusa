@@ -27,7 +27,6 @@ public:
 		}
 		item = new TItem();
 		mItems.Add(rttiClass, item);
-		item->Retain();
 		return item;
 	}
 

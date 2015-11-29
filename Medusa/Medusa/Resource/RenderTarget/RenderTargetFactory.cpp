@@ -23,7 +23,6 @@ bool RenderTargetFactory::Initialize()
 	if (mDefault==nullptr)
 	{
 		mDefault = new DefaultRenderTarget(mDefaultRenderTargetName);
-		mDefault->Retain();
 	}
 
 	mCurrent=mDefault;

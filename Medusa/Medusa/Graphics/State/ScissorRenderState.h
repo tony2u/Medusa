@@ -18,6 +18,8 @@ public:
 	virtual void Apply()const override;
 
 	virtual ScissorRenderState* Clone()const override;
+	virtual void CopyFrom(const IRenderState& other)override;
+
 	virtual bool Equals(const IRenderState& state)const override;
 	virtual RenderStateType Type()const override {return GetTypeIdStatic();}
 	static RenderStateType GetTypeIdStatic(){return RenderStateType::Scissor;}
@@ -28,10 +30,11 @@ public:
 	const Rect2F& ScissorBox() const { return mScissorBox; }
 	bool SetScissorBox(const Rect2F& val);
 
-	void Tansform(const Matrix& matrix);
+	void Tansform(const Matrix4& matrix);
 
 	static ScissorRenderState* Current();
 	virtual intp HashCode() const override;
+	virtual void UpdateWorldState(const IRenderState* selfRenderState, const IRenderState* parentRenderState, const Matrix4& selfWorldMatrix);
 
 protected:
 	Rect2F mScissorBox;	// in window coordinates

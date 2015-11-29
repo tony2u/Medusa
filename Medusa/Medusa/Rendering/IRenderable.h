@@ -12,6 +12,8 @@
 #include "Rendering/RenderingFlags.h"
 #include "Rendering/Batch/BatchGroup.h"
 #include "Core/Geometry/Segment.h"
+#include "Rendering/RenderingObject.h"
+
 MEDUSA_BEGIN;
 
 
@@ -25,9 +27,15 @@ public:
 	StringRef Name() const { return mName; }
 	void SetName(StringRef val) { mName = val; }
 
-	bool HasValidMesh()const;
-	IMesh* Mesh()const { return mMesh; }
+	bool HasValidRenderingObject()const;
+	const RenderingObject& GetRenderingObject() const { return mRenderingObject; }
+	void SetRenderingObject(const RenderingObject& val);
+
+	IMesh* Mesh()const { return mRenderingObject.Mesh(); }
 	void SetMesh(IMesh* val);
+
+	IMaterial* Material() const { return mRenderingObject.Material(); }
+	void SetMaterial(IMaterial* val);
 
 	uintp Id() const { return mId; }
 
@@ -59,17 +67,7 @@ public:
 
 	bool IsWorldRenderStateDirty()const;
 	const RenderStateSet& WorldRenderState() const { return mWorldRenderState.Value(); }
-
 	RenderStateTreeLeafNode* RenderStateTreeNode() const { return mRenderStateTreeNode; }
-
-	bool HasBlend()const { return mRenderState.IsBlendEnabled(); }
-	void EnableBlend(bool val);
-
-	bool IsScissorEnabled() const { return mRenderState.IsScissorEnabled(); }
-	void EnableScissor(bool val);
-
-	const Rect2F& Scissor() const { return mRenderState.GetScissorBoxOrEmpty(); }
-	void SetScissor(const Rect2F& val);
 
 	bool IsClipToBound() const { return mIsClipToBound; }
 	void EnableClipToBound(bool val);
@@ -103,6 +101,7 @@ protected:
 	void OnRenderQueueChanged();
 	void OnBatchChanged();
 	void OnStateChanged(IRenderState& state);
+	void OnStateAdded(IRenderState& state);
 	void OnStateRemoved(RenderStateType state);
 	
 
@@ -113,6 +112,8 @@ protected:
 	virtual void OnMoveableDirty(MoveableChangedFlags changedFlags);
 	virtual void OnRenderChanged(RenderableChangedFlags flag);
 	virtual void OnMeshChanged(RenderableChangedFlags flag);
+	virtual void OnMaterialChanged(RenderableChangedFlags flag);
+
 private:
 
 	void OnUpdateWorldRenderState(RenderStateSet& outVal, int32 dirtyFlag);
@@ -123,8 +124,9 @@ protected:
 	IRenderable* mParentRenderable=nullptr;
 
 	HeapString mName;
-
-	IMesh* mMesh=nullptr;
+	
+	RenderingObject mRenderingObject;
+	
 	uintp mId;
 	bool mIsVisible=true;
 	bool mIsClipToBound=false;	//auto clip to bound

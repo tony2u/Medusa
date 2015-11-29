@@ -1,4 +1,4 @@
-// Copyright (c) 2015 fjz13. All rights reserved.
+﻿// Copyright (c) 2015 fjz13. All rights reserved.
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 #include "MedusaPreCompiled.h"
@@ -22,11 +22,12 @@
 #include "Core/Geometry/EulerAngle.h"
 #include "Core/IO/Stream/MemoryStream.h"
 #include "Resource/Model/Mesh/MeshModelNode.h"
+#include "Node/Sprite/Sprite.h"
 
 MEDUSA_BEGIN;
 
 
-bool PODNode::TryGetMatrix( float frame,Matrix& outMatrix ) const
+bool PODNode::TryGetMatrix( float frame,Matrix4& outMatrix ) const
 {
 	outMatrix.LoadIdentity();
 	RETURN_FALSE_IF(frame<0.f);
@@ -34,7 +35,7 @@ bool PODNode::TryGetMatrix( float frame,Matrix& outMatrix ) const
 	uint frameIndex=(uint)frame;
 	float frameBlend=frame-(float)frameIndex;
 
-	outMatrix=Matrix::Identity;
+	outMatrix=Matrix4::Identity;
 
 	if (!AnimationMatrixes.IsEmpty())
 	{
@@ -50,7 +51,7 @@ bool PODNode::TryGetMatrix( float frame,Matrix& outMatrix ) const
 	return true;
 }
 
-void PODNode::GetMatrix( uint frameIndex,Matrix& outMatrix ) const
+void PODNode::GetMatrix( uint frameIndex,Matrix4& outMatrix ) const
 {
 	//first get,use =
 	RETURN_IF_EMPTY(AnimationMatrixes);
@@ -73,7 +74,7 @@ void PODNode::GetMatrix( uint frameIndex,Matrix& outMatrix ) const
 	}
 }
 
-void PODNode::GetScaleMatrix( uint frameIndex,float frameBlend,Matrix& outMatrix ) const
+void PODNode::GetScaleMatrix( uint frameIndex,float frameBlend,Matrix4& outMatrix ) const
 {
 	//first get,use =
 
@@ -90,7 +91,7 @@ void PODNode::GetScaleMatrix( uint frameIndex,float frameBlend,Matrix& outMatrix
 			if (frameIndex==AnimationScaleIndexes.Size()-1)
 			{
 				//last frame
-				outMatrix=Matrix::CreateScale(scale1.Scale);
+				outMatrix=Matrix4::CreateScale(scale1.Scale);
 			}
 			else
 			{
@@ -98,7 +99,7 @@ void PODNode::GetScaleMatrix( uint frameIndex,float frameBlend,Matrix& outMatrix
 				const PODScale& scale2= AnimationScales[index2];
 
 				Scale3F resultScale=Scale3F::LinearInterpolate(scale1.Scale,scale2.Scale,frameBlend);
-				outMatrix=Matrix::CreateScale(resultScale);
+				outMatrix=Matrix4::CreateScale(resultScale);
 
 			}
 
@@ -109,24 +110,24 @@ void PODNode::GetScaleMatrix( uint frameIndex,float frameBlend,Matrix& outMatrix
 			if (frameIndex==AnimationScales.Size()-1)
 			{
 				//last frame
-				outMatrix=Matrix::CreateScale(scale1.Scale);
+				outMatrix=Matrix4::CreateScale(scale1.Scale);
 			}
 			else
 			{
 				const PODScale& scale2= AnimationScales[frameIndex+1];
 				Scale3F resultScale=Scale3F::LinearInterpolate(scale1.Scale,scale2.Scale,frameBlend);
-				outMatrix=Matrix::CreateScale(resultScale);
+				outMatrix=Matrix4::CreateScale(resultScale);
 			}
 		}
 	}
 	else
 	{
 		const PODScale& scale= AnimationScales[0];
-		outMatrix=Matrix::CreateScale(scale.Scale);
+		outMatrix=Matrix4::CreateScale(scale.Scale);
 	}
 }
 
-void PODNode::GetRotateMatrix( uint frameIndex,float frameBlend,Matrix& outMatrix ) const
+void PODNode::GetRotateMatrix( uint frameIndex,float frameBlend,Matrix4& outMatrix ) const
 {
 	RETURN_IF_EMPTY(AnimationRotations);
 	if (AnimationFlags.Has(PODAnimiationFlags::HasRotation))
@@ -140,14 +141,14 @@ void PODNode::GetRotateMatrix( uint frameIndex,float frameBlend,Matrix& outMatri
 			if (frameIndex==AnimationRotationIndexes.Size()-1)
 			{
 				//last frame
-				outMatrix*=Matrix::CreateFromQuaternion(q1);
+				outMatrix*=Matrix4::CreateFromQuaternion(q1);
 			}
 			else
 			{
 				uint index2=AnimationRotationIndexes[frameIndex+1];
 				const Quaternion& q2= AnimationRotations[index2];
 				Quaternion resultQ=Quaternion::Slerp(q1,q2,frameBlend);
-				outMatrix*=Matrix::CreateFromQuaternion(resultQ);
+				outMatrix*=Matrix4::CreateFromQuaternion(resultQ);
 			}
 		}
 		else
@@ -156,24 +157,24 @@ void PODNode::GetRotateMatrix( uint frameIndex,float frameBlend,Matrix& outMatri
 			if (frameIndex==AnimationRotations.Size()-1)
 			{
 				//last frame
-				outMatrix*=Matrix::CreateFromQuaternion(q1);
+				outMatrix*=Matrix4::CreateFromQuaternion(q1);
 			}
 			else
 			{
 				const Quaternion& q2= AnimationRotations[frameIndex+1];
 				Quaternion resultQ=Quaternion::Slerp(q1,q2,frameBlend);
-				outMatrix*=Matrix::CreateFromQuaternion(resultQ);
+				outMatrix*=Matrix4::CreateFromQuaternion(resultQ);
 			}
 		}
 	}
 	else
 	{
 		const Quaternion& q= AnimationRotations[0];
-		outMatrix*=Matrix::CreateFromQuaternion(q);
+		outMatrix*=Matrix4::CreateFromQuaternion(q);
 	}
 }
 
-void PODNode::GetTranslateMatrix( uint frameIndex,float frameBlend,Matrix& outMatrix ) const
+void PODNode::GetTranslateMatrix( uint frameIndex,float frameBlend,Matrix4& outMatrix ) const
 {
 	RETURN_IF_EMPTY(AnimationPositions);
 
@@ -188,14 +189,14 @@ void PODNode::GetTranslateMatrix( uint frameIndex,float frameBlend,Matrix& outMa
 			if (frameIndex==AnimationPositionIndexes.Size()-1)
 			{
 				//last frame
-				outMatrix*=Matrix::CreateTranslate(q1);
+				outMatrix*=Matrix4::CreateTranslate(q1);
 			}
 			else
 			{
 				uint index2=AnimationPositionIndexes[frameIndex+1];
 				const Point3F& q2= AnimationPositions[index2];
 				Point3F resultQ=Point3F::LinearInterpolate(q1,q2,frameBlend);
-				outMatrix*=Matrix::CreateTranslate(resultQ);
+				outMatrix*=Matrix4::CreateTranslate(resultQ);
 			}
 		}
 		else
@@ -204,20 +205,20 @@ void PODNode::GetTranslateMatrix( uint frameIndex,float frameBlend,Matrix& outMa
 			if (frameIndex==AnimationPositions.Size()-1)
 			{
 				//last frame
-				outMatrix*=Matrix::CreateTranslate(q1);
+				outMatrix*=Matrix4::CreateTranslate(q1);
 			}
 			else
 			{
 				const Point3F& q2= AnimationPositions[frameIndex+1];
 				Point3F resultQ=Point3F::LinearInterpolate(q1,q2,frameBlend);
-				outMatrix*=Matrix::CreateTranslate(resultQ);
+				outMatrix*=Matrix4::CreateTranslate(resultQ);
 			}
 		}
 	}
 	else
 	{
 		const Point3F& q= AnimationPositions[0];
-		outMatrix*=Matrix::CreateTranslate(q);
+		outMatrix*=Matrix4::CreateTranslate(q);
 	}
 }
 
@@ -247,14 +248,14 @@ PODNode* PODModel::GetPODNode( StringRef name )
 	return nullptr;
 }
 
-bool PODModel::TryGetWorldMatrix( PODNode* node,float frame,Matrix& outMatrix ) const
+bool PODModel::TryGetWorldMatrix( PODNode* node,float frame,Matrix4& outMatrix ) const
 {
 	if(node->TryGetMatrix(frame,outMatrix))
 	{
 		if(node->ParentIndex>=0)
 		{
 			const PODNode* parentNode=mPODNodes[node->ParentIndex];
-			Matrix parentMatrix;
+			Matrix4 parentMatrix;
 			if (parentNode->TryGetMatrix(frame,parentMatrix))
 			{
 				outMatrix*=parentMatrix;
@@ -267,6 +268,22 @@ bool PODModel::TryGetWorldMatrix( PODNode* node,float frame,Matrix& outMatrix ) 
 	
 }
 
+INode* PODModel::CreateCloneInstance()
+{
+	//create self
+	Sprite* sprite = new Sprite();
+	sprite->SetMoveable(*this);
+	sprite->Initialize();
+	//self children
+	for(auto* mesh : mMeshNodes)
+	{
+		auto* child = mesh->CreateCloneInstance();
+		sprite->AddChild(child);
+	}
+	sprite->SetRenderingStrategyRecursively(RenderingStrategy::CustomDrawMesh);
+
+	return sprite;
+}
 
 bool PODModel::Initialzie(ModelLoadingOptions loadingOptions/*=ModelLoadingOptions::None*/)
 {
@@ -278,7 +295,7 @@ bool PODModel::Initialzie(ModelLoadingOptions loadingOptions/*=ModelLoadingOptio
 		material->Initialize(mTextureNames);
 	}
 
-	Matrix outNodeMatrix;
+	Matrix4 outNodeMatrix;
 
 	//order: mesh,light,camera
 	uint index=0;
@@ -287,14 +304,14 @@ bool PODModel::Initialzie(ModelLoadingOptions loadingOptions/*=ModelLoadingOptio
 	for (;index<size;index++)
 	{
 		PODNode* podNode=mPODNodes[index];
-		IMeshModelNode* mesh=mMeshNodes[podNode->Index];
-		mesh->SetName(podNode->Name);
+		IMeshModelNode* meshNode=mMeshNodes[podNode->Index];
+		meshNode->SetName(podNode->Name);
 		if(podNode->MaterialIndex>=0)
 		{
 			if (podNode->MaterialIndex<(int)mMaterials.Count())
 			{
 				IMaterial* material=mMaterials[podNode->MaterialIndex];
-				mesh->MutableBaseMeshPtr()->SetMaterial(material);
+				meshNode->SetMaterial(material);
 			}
 			else
 			{
@@ -306,23 +323,33 @@ bool PODModel::Initialzie(ModelLoadingOptions loadingOptions/*=ModelLoadingOptio
 		if (podNode->ParentIndex>=0)
 		{
 			IMeshModelNode* parentMesh=mMeshNodes[podNode->ParentIndex];
-			parentMesh->AddChildNode(mesh);
+			parentMesh->AddChildNode(meshNode);
 		}
 		else
 		{
-			rootMeshes.Add(mesh);
+			rootMeshes.Add(meshNode);
 		}
 
-		mesh->Initialzie();
+		PODMesh* podMesh= (PODMesh*)meshNode->MutableBaseMeshPtr();
+		podMesh->Initialzie();
 
-		if(TryGetWorldMatrix(podNode,0,outNodeMatrix))
+		if (podNode->TryGetMatrix(0.f, outNodeMatrix))
 		{
-			mesh->SetMatrix(outNodeMatrix);
+			meshNode->SetSRTFromMatrix(outNodeMatrix);
 		}
 		else
 		{
 			Log::Info("No matrix");
 		}
+
+		/*if(TryGetWorldMatrix(podNode,0,outNodeMatrix))
+		{
+			meshNode->SetSRTFromMatrix(outNodeMatrix);
+		}
+		else
+		{
+			Log::Info("No matrix");
+		}*/
 	}
 	mMeshNodes.Clear();
 	mMeshNodes=rootMeshes;
@@ -334,9 +361,10 @@ bool PODModel::Initialzie(ModelLoadingOptions loadingOptions/*=ModelLoadingOptio
 		PODNode* podNode=mPODNodes[index];
 		BaseLightModelNode* light=mLights[podNode->Index];
 		light->SetName(podNode->Name);
-		if(TryGetWorldMatrix(podNode,0,outNodeMatrix))
+		
+		if (podNode->TryGetMatrix(0.f, outNodeMatrix))
 		{
-			light->SetMatrix(outNodeMatrix);
+			light->SetSRTFromMatrix(outNodeMatrix);
 		}
 		else
 		{
@@ -351,9 +379,9 @@ bool PODModel::Initialzie(ModelLoadingOptions loadingOptions/*=ModelLoadingOptio
 		PODCameraModelNode* camera=(PODCameraModelNode*)mCameras[podNode->Index];
 		camera->SetName(podNode->Name);
 
-		if(TryGetWorldMatrix(podNode,0,outNodeMatrix))
+		if (podNode->TryGetMatrix(0.f, outNodeMatrix))
 		{
-			camera->SetMatrix(outNodeMatrix);
+			camera->SetSRTFromMatrix(outNodeMatrix);
 		}
 		else
 		{
@@ -368,9 +396,9 @@ bool PODModel::Initialzie(ModelLoadingOptions loadingOptions/*=ModelLoadingOptio
 		VirtualModelNode* node=new VirtualModelNode(podNode->Name);
 		AddVirtualNode(node);
 
-		if(TryGetWorldMatrix(podNode,0,outNodeMatrix))
+		if (podNode->TryGetMatrix(0.f, outNodeMatrix))
 		{
-			node->SetMatrix(outNodeMatrix);
+			node->SetSRTFromMatrix(outNodeMatrix);
 		}
 		else
 		{
@@ -1157,7 +1185,12 @@ bool PODModel::ReadNode( MemoryStream& stream,PODModel& model )
 			RETURN_FALSE_IF_FALSE(stream.ReadToList(size,node->AnimationMatrixIndexes));
 			break;
 		case (int)PODIdentifier::NodeAnimationMatrixes:
+			// Matrices are stored "Row Major" in memory, and used "Column Major" mathematically.
 			RETURN_FALSE_IF_FALSE(stream.ReadToList(size,node->AnimationMatrixes));
+			/*for (auto& m:node->AnimationMatrixes)
+			{
+				m.Transpose();
+			}*/
 			break;
 
 		case (int)PODIdentifier::NodePosition:	//older format
@@ -1184,7 +1217,7 @@ bool PODModel::ReadNode( MemoryStream& stream,PODModel& model )
 			break;
 		case (int)PODIdentifier::NodeMatrix:	//older format
 			{
-				Matrix matrix;
+				Matrix4 matrix;
 				RETURN_FALSE_IF_FALSE(stream.ReadTo(matrix));
 				node->AnimationMatrixes.Add(matrix);
 			}

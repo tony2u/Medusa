@@ -31,7 +31,7 @@ public:
  	virtual void CustomDraw(IRenderable* node,RenderingFlags renderingFlags=RenderingFlags::None);
  	virtual void BatchDraw(IRenderable* node,IRenderBatch* batch,RenderingFlags renderingFlags=RenderingFlags::None);
 
-	virtual void UpdateWorldMatrixRecursively(const Matrix& parentWorldMatrix=Matrix::Identity){}
+	virtual void UpdateWorldMatrixRecursively(const Matrix4& parentWorldMatrix=Matrix4::Identity){}
 
 	virtual INode* CreateCloneInstance()=0;
 	virtual INode* CreateReferenceInstance()=0;

@@ -6,7 +6,7 @@
 #include "Resource/Effect/IEffect.h"
 #include "Resource/Material/IMaterial.h"
 #include "Core/Geometry/Point3.h"
-#include "Core/Geometry/Matrix.h"
+#include "Core/Geometry/Matrix4.h"
 #include "Graphics/Buffer/VertexGraphicsBuffer.h"
 #include "Graphics/Buffer/IndexGraphicsBuffer.h"
 #include "Graphics/Buffer/TexCoordGraphicsBuffer.h"
@@ -15,65 +15,27 @@
 
 MEDUSA_BEGIN;
 
-IMesh::IMesh(IEffect* effect/*=nullptr*/, IMaterial* material/*=nullptr*/, bool isStatic/*=false*/)
-	:mEffect(effect),
-	mMaterial(material),
-	mIsStatic(isStatic),
+IMesh::IMesh(bool isStatic/*=false*/)
+	:mIsStatic(isStatic),
 	mSize(Size3F::Zero)
 {
 	static uint id = 0;
 	mId = ++id;
-
-	SAFE_RETAIN(mEffect);
-	SAFE_RETAIN(mMaterial);
 }
-
 
 IMesh::~IMesh(void)
 {
-	SAFE_RELEASE(mEffect);
-	SAFE_RELEASE(mMaterial);
+	
 }
-
 
 void IMesh::SetIsStatic(bool val)
 {
 	mIsStatic = val;
 }
 
-
-void IMesh::SetMaterial(const IMaterial* val)
-{
-	if (mMaterial != val)
-	{
-		SAFE_ASSIGN_REF(mMaterial, val);
-		OnMeshChanged(RenderableChangedFlags::BatchChanged);
-	}
-}
-
-void IMesh::SetEffect(const IEffect* val)
-{
-	if (mEffect != val)
-	{
-		SAFE_ASSIGN_REF(mEffect, val);
-		OnMeshChanged(RenderableChangedFlags::BatchChanged);
-
-	}
-}
-
-void IMesh::SetDrawMode(GraphicsDrawMode val)
-{
-	if (mDrawMode != val)
-	{
-		mDrawMode = val;
-		OnMeshChanged(RenderableChangedFlags::BatchChanged);
-	}
-}
-
 bool IMesh::CopyFrom(const IMesh& val)
 {
-	SetEffect(val.Effect());
-	SetMaterial(val.Material());
+
 	OnAllComponentChanged();
 
 	return true;
@@ -81,10 +43,7 @@ bool IMesh::CopyFrom(const IMesh& val)
 
 bool IMesh::HasBlend() const
 {
-	RETURN_FALSE_IF_NULL(mMaterial);
-	RETURN_FALSE_IF_NULL(mEffect);
-
-	return mMaterial->IsBlendEnabled() || mHasAlpha;
+	return  mHasAlpha;
 }
 
 void IMesh::Clear()
@@ -129,7 +88,7 @@ void IMesh::OnAllComponentChanged()
 }
 
 
-bool IMesh::TryUpdateVertex(VertexGraphicsBuffer& bufferObject, size_t vertexIndex, const ICollection<Point3F>& vertices, const Matrix& matrix) const
+bool IMesh::TryUpdateVertex(VertexGraphicsBuffer& bufferObject, size_t vertexIndex, const ICollection<Point3F>& vertices, const Matrix4& matrix) const
 {
 	RETURN_TRUE_IF_EMPTY(vertices);
 	bufferObject.ReserveSize(vertexIndex, vertices.Count());
@@ -145,13 +104,13 @@ bool IMesh::TryUpdateVertex(VertexGraphicsBuffer& bufferObject, size_t vertexInd
 	return true;
 }
 
-bool IMesh::TryUpdateNormal(NormalGraphicsBuffer& bufferObject, size_t vertexIndex, const ICollection<Point3F>& normals, const Matrix& matrix) const
+bool IMesh::TryUpdateNormal(NormalGraphicsBuffer& bufferObject, size_t vertexIndex, const ICollection<Point3F>& normals, const Matrix4& matrix) const
 {
 	RETURN_TRUE_IF_EMPTY(normals);
 
 	bufferObject.ReserveSize(vertexIndex, normals.Count());
 
-	Matrix matrixCopy = matrix;
+	Matrix4 matrixCopy = matrix;
 
 	//normal
 	matrixCopy.Inverse();

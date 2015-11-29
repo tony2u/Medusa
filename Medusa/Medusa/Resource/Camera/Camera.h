@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 #pragma once
-#include "Core/Geometry/Matrix.h"
+#include "Core/Geometry/Matrix4.h"
 #include "Core/String/HeapString.h"
 #include "Resource/IResource.h"
 #include "Core/Geometry/Cube.h"
@@ -49,8 +49,8 @@ public:
 	void SetPerspectiveEx(float left,float right,float bottom,float top,float nearPlane,float farPlane);
 	void LookAt(const Vector3F& eyes, const Vector3F& target, const Vector3F& up);
 
-	const Matrix& ViewProjectionMatrix() { return mViewProjectionMatrix.Value(); }
-	const Matrix& ViewMatrix() { return mViewMatrix.Value(); }
+	const Matrix4& ViewProjectionMatrix() { return mViewProjectionMatrix.Value(); }
+	const Matrix4& ViewMatrix() { return mViewMatrix.Value(); }
 
 	float FovY() const { return mFovY; }
 	void SetFovY(float val);
@@ -60,8 +60,8 @@ public:
 	void SetFarZ(float val);
 	
 protected:
-	void OnUpdateViewProjectionMatrix(Matrix& transform,int32 dirtyFlag);
-	void OnUpdateViewMatrix(Matrix& transform, int32 dirtyFlag);
+	void OnUpdateViewProjectionMatrix(Matrix4& transform,int32 dirtyFlag);
+	void OnUpdateViewMatrix(Matrix4& transform, int32 dirtyFlag);
 
 protected:
 	CubeF mFrustum;
@@ -69,8 +69,8 @@ protected:
 	
 	Vector3F mEyeTarget;
 	Vector3F mCameraUp;
-	LazyMatrix mViewProjectionMatrix;
-	LazyMatrix mViewMatrix;
+	LazyMatrix4 mViewProjectionMatrix;
+	LazyMatrix4 mViewMatrix;
 
 	bool mIsOrtho;
 

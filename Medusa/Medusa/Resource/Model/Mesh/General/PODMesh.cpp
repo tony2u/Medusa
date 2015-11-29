@@ -12,8 +12,8 @@
 
 MEDUSA_BEGIN;
 
-PODMesh::PODMesh( IEffect* effect/*=nullptr*/,IMaterial* material/*=nullptr*/ ,bool isStatic/*=false*/)
-	:IMesh(effect,material,isStatic),
+PODMesh::PODMesh( bool isStatic/*=false*/)
+	:IMesh(isStatic),
 	mVertexBufferObject(GraphicsDataType::Float,GraphicsBufferUsage::StaticDraw,1),
 	mIndexBufferObject(GraphicsDataType::UShort,GraphicsBufferUsage::StaticDraw,1)
 {
@@ -173,7 +173,6 @@ void PODMesh::Draw(IRenderQueue& renderQueue, RenderingFlags renderingFlags/*=Re
 	RenderingStatics::Instance().CountOriginalAndBatchDraw();
 	RenderingStatics::Instance().CountVertexCount(mVertexCount);
 	RenderingStatics::Instance().CountTriangleCount(FaceCount);
-	RenderingStatics::Instance().CountDrawMode(mDrawMode);
 }
 
 size_t PODMesh::IndexCount() const

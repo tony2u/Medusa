@@ -10,7 +10,7 @@
 #include "Rendering/RenderingFlags.h"
 #include "Graphics/GraphicsTypes.h"
 #include "Rendering/RenderableChangedFlags.h"
-#include "Core/Geometry/Matrix.h"
+#include "Core/Geometry/Matrix4.h"
 #include "Core/Pattern/Event.h"
 
 MEDUSA_BEGIN;
@@ -19,7 +19,7 @@ MEDUSA_BEGIN;
 class IMesh :public ISharableThreadSafe
 {
 public:
-	IMesh(IEffect* effect = nullptr, IMaterial* material = nullptr, bool isStatic = false);
+	IMesh( bool isStatic = false);
 	virtual ~IMesh(void);
 
 	Event<void(RenderableChangedFlags)> OnMeshChanged;
@@ -28,22 +28,12 @@ public:
 	bool IsStatic() const { return mIsStatic; }
 	virtual void SetIsStatic(bool val);
 
-	bool IsValid()const { return mEffect != nullptr&&mMaterial != nullptr; }
-	const IEffect* Effect() const { return mEffect; }
-	void SetEffect(const IEffect* val);
-
-	const IMaterial* Material() const { return mMaterial; }
-	void SetMaterial(const IMaterial* val);
-
 	virtual bool HasBlend()const;
 	bool HasAlpha() const { return mHasAlpha; }
 	void ForceSetHasAlpha(bool val) { mHasAlpha = val; }	//mHasAlpha will be calculated automatically inside,but you can change it forcedly
 
 	const Size3F& Size() const { return mSize; }
 	void SetSize(const Size3F& val) { mSize = val; }
-
-	GraphicsDrawMode DrawMode() const { return mDrawMode; }
-	void SetDrawMode(GraphicsDrawMode val);
 
 	const MeshComponentVersions& Version() const { return mVersion; }
 	MeshComponentVersions& MutableVersion() { return mVersion; }
@@ -61,8 +51,8 @@ public:
 	bool CopyFrom(const IMesh& val);
 
 
-	virtual void AddToVertexBufferObject(VertexGraphicsBuffer& bufferObject, size_t vertexIndex, const Matrix& matrix)const {};
-	virtual void AddToNormalBufferObject(NormalGraphicsBuffer& bufferObject, size_t vertexIndex, const Matrix& matrix)const {};
+	virtual void AddToVertexBufferObject(VertexGraphicsBuffer& bufferObject, size_t vertexIndex, const Matrix4& matrix)const {};
+	virtual void AddToNormalBufferObject(NormalGraphicsBuffer& bufferObject, size_t vertexIndex, const Matrix4& matrix)const {};
 	virtual void AddToTexCoordBufferObject(TexCoordGraphicsBuffer& bufferObject, size_t vertexIndex)const {};
 	virtual void AddToColorBufferObject(ColorGraphicsBuffer& bufferObject, size_t vertexIndex, const Color4F& parentColor = Color4F::White)const {};
 	virtual void AddToIndexBufferObject(IndexGraphicsBuffer& bufferObject, size_t vertexIndex, size_t indexIndex)const {};
@@ -79,15 +69,11 @@ public:
 	virtual void OnAllComponentChanged();
 
 protected:
-	bool TryUpdateVertex(VertexGraphicsBuffer& bufferObject, size_t vertexIndex, const ICollection<Point3F>& vertices, const Matrix& matrix) const;
-	bool TryUpdateNormal(NormalGraphicsBuffer& bufferObject, size_t vertexIndex, const ICollection<Point3F>& normals, const Matrix& matrix ) const;
+	bool TryUpdateVertex(VertexGraphicsBuffer& bufferObject, size_t vertexIndex, const ICollection<Point3F>& vertices, const Matrix4& matrix) const;
+	bool TryUpdateNormal(NormalGraphicsBuffer& bufferObject, size_t vertexIndex, const ICollection<Point3F>& normals, const Matrix4& matrix ) const;
 	bool TryUpdateColor(ColorGraphicsBuffer& bufferObject, size_t vertexIndex, const ICollection<Color4F>& colors, const Color4F& parentColor = Color4F::White) const;
 protected:
 	uint mId;
-	const IEffect* mEffect=nullptr;	//batch
-	const IMaterial* mMaterial=nullptr;	//batch
-	GraphicsDrawMode mDrawMode= GraphicsDrawMode::Triangles;//batch
-
 	bool mHasAlpha=false;
 	bool mIsStatic=false;
 	Size3F mSize;

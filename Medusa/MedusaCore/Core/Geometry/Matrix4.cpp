@@ -6,7 +6,6 @@
 #include "Core/Geometry/Matrix3.h"
 #include "Core/Geometry/Matrix43.h"
 #include "Core/Geometry/Matrix2.h"
-#include "Core/Geometry/Matrix.h"
 
 
 #include "Core/Geometry/EulerAngle.h"
@@ -34,6 +33,75 @@ const Matrix4 Matrix4::Identity = Matrix4(1.f, 0.f, 0.f, 0.f,
 	0.f, 1.f, 0.f, 0.f,
 	0.f, 0.f, 1.f, 0.f,
 	0.f, 0.f, 0.f, 1.f);
+
+Matrix4::Matrix4(float m11, float m12, float m13, float m14,
+	float m21, float m22, float m23, float m24,
+	float m31, float m32, float m33, float m34,
+	float m41, float m42, float m43, float m44, bool isTransposed /*= false*/)
+{
+	if (isTransposed)
+	{
+		M11 = m11; M12 = m21; M13 = m31; M14 = m41;
+		M21 = m12; M22 = m22; M23 = m32; M24 = m42;
+		M31 = m13; M32 = m23; M33 = m33; M34 = m43;
+		M41 = m14; M42 = m24; M43 = m34; M44 = m44;
+	}
+	else
+	{
+		M11 = m11; M12 = m12; M13 = m13; M14 = m14;
+		M21 = m21; M22 = m22; M23 = m23; M24 = m24;
+		M31 = m31; M32 = m32; M33 = m33; M34 = m34;
+		M41 = m41; M42 = m42; M43 = m43; M44 = m44;
+	}
+}
+
+
+Matrix4::Matrix4(const Matrix2& m)
+{
+	M11 = m.M11; M12 = m.M12; M13 = 0.f; M14 = 0.f;
+	M21 = m.M21; M22 = m.M22; M23 = 0.f; M24 = 0.f;
+	M31 = 0.f; M32 = 0.f; M33 = 1.f; M34 = 0.f;
+	M41 = m.M31; M42 = m.M32; M43 = 0.f; M44 = 1.f;
+}
+
+Matrix4& Matrix4::operator=(const Matrix2& m)
+{
+	M11 = m.M11; M12 = m.M12; M13 = 0.f; M14 = 0.f;
+	M21 = m.M21; M22 = m.M22; M23 = 0.f; M24 = 0.f;
+	M31 = 0.f; M32 = 0.f; M33 = 1.f; M34 = 0.f;
+	M41 = m.M31; M42 = m.M32; M43 = 0.f; M44 = 1.f;
+
+	return *this;
+}
+
+Matrix4::Matrix4(const Matrix3& m, bool isTransposed/*=false*/)
+{
+	if (isTransposed)
+	{
+		M11 = m.M11; M12 = m.M21; M13 = 0.f; M14 = m.M31;
+		M21 = m.M12; M22 = m.M22; M23 = 0.f; M24 = m.M32;
+		M31 = 0.f; M32 = 0.f; M33 = 1.f; M34 = 0.f;
+		M41 = m.M13; M42 = m.M23; M43 = 0.f; M44 = m.M33;
+	}
+	else
+	{
+		M11 = m.M11; M12 = m.M12; M13 = 0.f; M14 = m.M13;
+		M21 = m.M21; M22 = m.M22; M23 = 0.f; M24 = m.M23;
+		M31 = 0.f; M32 = 0.f; M33 = 1.f; M34 = 0.f;
+		M41 = m.M31; M42 = m.M32; M43 = 0.f; M44 = m.M33;
+	}
+
+}
+
+Matrix4& Matrix4::operator=(const Matrix3& m)
+{
+	M11 = m.M11; M12 = m.M12; M13 = 0.f; M14 = m.M13;
+	M21 = m.M21; M22 = m.M22; M23 = 0.f; M24 = m.M23;
+	M31 = 0.f; M32 = 0.f; M33 = 1.f; M34 = 0.f;
+	M41 = m.M31; M42 = m.M32; M43 = 0.f; M44 = m.M33;
+
+	return *this;
+}
 
 
 Matrix4::Matrix4(const Matrix43& m, bool isTransposed/*=false*/)
@@ -65,72 +133,16 @@ Matrix4& Matrix4::operator=(const Matrix43& m)
 	return *this;
 }
 
-Matrix4::Matrix4(const Matrix3& m, bool isTransposed/*=false*/)
-{
-	if (isTransposed)
-	{
-		M11 = m.M11; M21 = m.M12; M31 = m.M13; M41 = 0.f;
-		M12 = m.M21; M22 = m.M22; M32 = m.M23; M42 = 0.f;
-		M13 = m.M31; M23 = m.M32; M33 = m.M33; M43 = 0.f;
-		M14 = 0.f; M24 = 0.f; M34 = 0.f; M44 = 1.f;
-	}
-	else
-	{
-		M11 = m.M11; M12 = m.M12; M13 = m.M13; M14 = 0.f;
-		M21 = m.M21; M22 = m.M22; M23 = m.M23; M24 = 0.f;
-		M31 = m.M31; M32 = m.M32; M33 = m.M33; M34 = 0.f;
-		M41 = 0.f; M42 = 0.f; M43 = 0.f; M44 = 1.f;
-	}
-
-}
-
-Matrix4::Matrix4(const Matrix& m, bool isTransposed /*= false*/)
-{
-	if (isTransposed)
-	{
-		M11 = m.M11; M21 = m.M12; M31 = m.M13; M41 = m.M41;
-		M12 = m.M21; M22 = m.M22; M32 = m.M23; M42 = m.M42;
-		M13 = m.M31; M23 = m.M32; M33 = m.M33; M43 = m.M43;
-		M14 = m.M41; M24 = m.M42; M34 = m.M43; M44 = m.M44;
-	}
-	else
-	{
-		M11 = m.M11; M12 = m.M12; M13 = m.M13; M14 = m.M14;
-		M21 = m.M21; M22 = m.M22; M23 = m.M23; M24 = m.M24;
-		M31 = m.M31; M32 = m.M32; M33 = m.M33; M34 = m.M34;
-		M41 = m.M41; M42 = m.M42; M43 = m.M43; M44 = m.M44;
-	}
-}
-
-
-Matrix4& Matrix4::operator=(const Matrix3& m)
-{
-	M11 = m.M11; M12 = m.M12; M13 = m.M13; M14 = 0.f;
-	M21 = m.M21; M22 = m.M22; M23 = m.M23; M24 = 0.f;
-	M31 = m.M31; M32 = m.M32; M33 = m.M33; M34 = 0.f;
-	M41 = 0.f; M42 = 0.f; M43 = 0.f; M44 = 1.f;
-	return *this;
-}
-
-Matrix4& Matrix4::operator=(const Matrix& m)
-{
-	M11 = m.M11; M12 = m.M12; M13 = m.M13; M14 = m.M14;
-	M21 = m.M21; M22 = m.M22; M23 = m.M23; M24 = m.M24;
-	M31 = m.M31; M32 = m.M32; M33 = m.M33; M34 = m.M34;
-	M41 = m.M41; M42 = m.M42; M43 = m.M43; M44 = m.M44;
-	return *this;
-}
-
 Matrix4& Matrix4::Multiply(const Matrix4& m, MatrixOrder order)
 {
 	Matrix4 result;
 	if (order == MatrixOrder::Prepend)
 	{
 #ifdef MEDUSA_MATH_VFP_ENABLED
-		Matrix4Mul(m.Items(),Items(),result.Items());
+		Matrix4Mul(m.Items(), Items(), result.Items());
 #else
 #ifdef MEDUSA_MATH_NEON_ENABLED
-		NEON_Matrix4Mul(m.Items(),Items(),result.Items());
+		NEON_Matrix4Mul(m.Items(), Items(), result.Items());
 #else
 
 		result.M11 = m.M11*M11 + m.M12*M21 + m.M13*M31 + m.M14*M41;
@@ -152,16 +164,18 @@ Matrix4& Matrix4::Multiply(const Matrix4& m, MatrixOrder order)
 		result.M42 = m.M41*M12 + m.M42*M22 + m.M43*M32 + m.M44*M42;
 		result.M43 = m.M41*M13 + m.M42*M23 + m.M43*M33 + m.M44*M43;
 		result.M44 = m.M41*M14 + m.M42*M24 + m.M43*M34 + m.M44*M44;
+
+
 #endif
 #endif
 	}
 	else
 	{
 #ifdef MEDUSA_MATH_VFP_ENABLED
-		Matrix4Mul(Items(),m.Items(),result.Items());
+		Matrix4Mul(Items(), m.Items(), result.Items());
 #else
 #ifdef MEDUSA_MATH_NEON_ENABLED
-		NEON_Matrix4Mul(Items(),m.Items(),result.Items());
+		NEON_Matrix4Mul(Items(), m.Items(), result.Items());
 #else
 
 		result.M11 = M11*m.M11 + M12*m.M21 + M13*m.M31 + M14*m.M41;
@@ -420,6 +434,23 @@ Matrix4& Matrix4::Translate(const Point3F& point)
 	return *this;
 }
 
+Matrix4& Matrix4::Translate(const Point2F& point)
+{
+	M11 += M14*point.X;
+	M12 += M14*point.Y;
+
+	M21 += M24*point.X;
+	M22 += M24*point.Y;
+
+	M31 += M34*point.X;
+	M32 += M34*point.Y;
+
+	M41 += M44*point.X;
+	M42 += M44*point.Y;
+
+	return *this;
+}
+
 Matrix4& Matrix4::Scale(const Scale3F& scale)
 {
 	M11 *= scale.X;
@@ -440,12 +471,37 @@ Matrix4& Matrix4::Scale(const Scale3F& scale)
 	return *this;
 }
 
+Matrix4& Matrix4::Scale(const Scale2F& scale)
+{
+	M11 *= scale.X;
+	M12 *= scale.Y;
+
+	M21 *= scale.X;
+	M22 *= scale.Y;
+
+	M31 *= scale.X;
+	M32 *= scale.Y;
+
+	M41 *= scale.X;
+	M42 *= scale.Y;
+	return *this;
+}
+
+
 Matrix4& Matrix4::RotateXYZ(const Rotation3F& rotation)
 {
 	Matrix4 temp = CreateRotateXYZ(rotation);
 	Append(temp);
 	return *this;
 }
+
+Matrix4& Matrix4::RotateXY(const Rotation2F& rotation)
+{
+	Matrix4 temp = CreateRotateXY(rotation);
+	Append(temp);
+	return *this;
+}
+
 
 Matrix4& Matrix4::RotateX(float radian)
 {
@@ -561,6 +617,12 @@ Matrix4& Matrix4::ResetWorld(const Scale3F& scale, const Rotation3F& rotation, c
 Matrix4& Matrix4::ResetWorld(const Size3F& size, const Point3F& anchor, const Scale3F& scale, const Rotation3F& rotation, const Point3F& translation, FlipMask flip /*= FlipMask::None*/)
 {
 	*this = CreateWorld(size, anchor, scale, rotation, translation, flip);
+	return *this;
+}
+
+Matrix4& Matrix4::ResetWorldWithoutAnchor(const Scale3F& scale, const Rotation3F& rotation, const Point3F& translation, FlipMask flip /*= FlipMask::None*/)
+{
+	*this = CreateWorldWithoutAnchor(scale, rotation, translation, flip);
 	return *this;
 }
 
@@ -808,22 +870,130 @@ Matrix4 Matrix4::CreateScaleAxis(const Point3F& axis, float scale)
 Matrix4 Matrix4::CreateRotateXYZ(const Rotation3F& rotation)
 {
 	//rotate order: x,y,z
+	uint t = Math::IsZero(rotation.X) ? 0 : 1;
+	t |= Math::IsZero(rotation.Y) ? 0 : 2;
+	t |= Math::IsZero(rotation.Y) ? 0 : 4;
+
+	RotationType type = (RotationType)t;
+	switch (type)
+	{
+	case RotationType::None:
+		return Identity;
+		break;
+	case RotationType::X:
+	{
+		float cosX = Math::Cos(rotation.X);
+		float sinX = Math::Sin(rotation.X);
+
+		return Matrix4(1.f, 0.f, 0.f, 0.f,
+			0.f, cosX, sinX, 0.f,
+			0.f, -sinX, cosX, 0.f,
+			0.f, 0.f, 0.f, 1.f);
+	}
+	case RotationType::Y:
+	{
+		float cosY = Math::Cos(rotation.Y);
+		float sinY = Math::Sin(rotation.Y);
+
+		return Matrix4(cosY, 0.f, -sinY, 0.f,
+			0.f, 1.f, 0.f, 0.f,
+			sinY, 0.f, cosY, 0.f,
+			0.f, 0.f, 0.f, 1.f);
+	}
+	case RotationType::Z:
+	{
+		float cosZ = Math::Cos(rotation.Z);
+		float sinZ = Math::Sin(rotation.Z);
+
+		return Matrix4(cosZ, sinZ, 0.f, 0.f,
+			-sinZ, cosZ, 0.f, 0.f,
+			0.f, 0.f, 1.f, 0.f,
+			0.f, 0.f, 0.f, 1.f);
+	}
+	case RotationType::XY:
+	{
+		float cosY = Math::Cos(rotation.Y);
+		float cosX = Math::Cos(rotation.X);
+
+		float sinY = Math::Sin(rotation.Y);
+		float sinX = Math::Sin(rotation.X);
+
+		float sinXsinY = sinX*sinY;
+		float cosXsinY = cosX*sinY;
+
+		return Matrix4(cosY, 0.f, -sinY, 0.f,
+			sinXsinY, cosX, sinX*cosY, 0.f,
+			cosXsinY, -sinX, cosX*cosY, 0.f,
+			0.f, 0.f, 0.f, 1.f);
+	}
+	break;
+	case RotationType::XZ:
+	{
+		float cosZ = Math::Cos(rotation.Z);
+		float cosX = Math::Cos(rotation.X);
+
+		float sinZ = Math::Sin(rotation.Z);
+		float sinX = Math::Sin(rotation.X);
+
+		return Matrix4(cosZ, sinZ, 0.f, 0.f,
+			-cosX*sinZ, cosX*cosZ, sinX, 0.f,
+			sinX*sinZ, -sinX*cosZ, cosX, 0.f,
+			0.f, 0.f, 0.f, 1.f);
+	}
+	case RotationType::YZ:
+	{
+		float cosY = Math::Cos(rotation.Y);
+		float cosZ = Math::Cos(rotation.Z);
+
+		float sinY = Math::Sin(rotation.Y);
+		float sinZ = Math::Sin(rotation.Z);
+
+		return Matrix4(cosY*cosZ, cosY*sinZ, -sinY, 0.f,
+			-sinZ, cosZ, 0.f, 0.f,
+			sinY*cosZ, sinY*sinZ, cosY, 0.f,
+			0.f, 0.f, 0.f, 1.f);
+	}
+	case RotationType::XYZ:
+	{
+		float cosY = Math::Cos(rotation.Y);
+		float cosZ = Math::Cos(rotation.Z);
+		float cosX = Math::Cos(rotation.X);
+
+		float sinY = Math::Sin(rotation.Y);
+		float sinZ = Math::Sin(rotation.Z);
+		float sinX = Math::Sin(rotation.X);
+
+		float sinXsinY = sinX*sinY;
+		float cosXsinY = cosX*sinY;
+
+		return Matrix4(cosY*cosZ, cosY*sinZ, -sinY, 0.f,
+			sinXsinY*cosZ - cosX*sinZ, sinXsinY*sinZ + cosX*cosZ, sinX*cosY, 0.f,
+			cosXsinY*cosZ + sinX*sinZ, cosXsinY*sinZ - sinX*cosZ, cosX*cosY, 0.f,
+			0.f, 0.f, 0.f, 1.f);
+	}
+	}
+
+	return Identity;
+}
+
+Matrix4 Matrix4::CreateRotateXY(const Rotation2F& rotation)
+{
+	//rotate order : x,y
 	float cosY = Math::Cos(rotation.Y);
-	float cosZ = Math::Cos(rotation.Z);
 	float cosX = Math::Cos(rotation.X);
 
 	float sinY = Math::Sin(rotation.Y);
-	float sinZ = Math::Sin(rotation.Z);
 	float sinX = Math::Sin(rotation.X);
 
 	float sinXsinY = sinX*sinY;
 	float cosXsinY = cosX*sinY;
 
-	return Matrix4(cosY*cosZ, cosY*sinZ, -sinY, 0.f,
-		sinXsinY*cosZ - cosX*sinZ, sinXsinY*sinZ + cosX*cosZ, sinX*cosY, 0.f,
-		cosXsinY*cosZ + sinX*sinZ, cosXsinY*sinZ - sinX*cosZ, cosX*cosY, 0.f,
+	return Matrix4(cosY, 0.f, -sinY, 0.f,
+		sinXsinY, cosX, sinX*cosY, 0.f,
+		cosXsinY, -sinX, cosX*cosY, 0.f,
 		0.f, 0.f, 0.f, 1.f);
 }
+
 
 Matrix4 Matrix4::CreateRotateX(float radian)
 {
@@ -926,9 +1096,9 @@ Matrix4 Matrix4::CreateFromQuaternion(const Quaternion& q)
 	float wy = q.W*q.Y;
 	float wz = q.W*q.Z;
 
-	return Matrix4(1.f - 2.f*(yy + zz), 2.f*(xy + wz), 2.f*(xz - wy), 0.f,
-		2.f*(xy - wz), 1 - 2.f*(xx + zz), 2.f*(yz + wx), 0.f,
-		2.f*(xz + wy), 2.f*(yz - wx), 1 - 2.f*(xx + yy), 0.f,
+	return Matrix4(1.f - 2.f*(yy + zz), 2.f*(xy - wz), 2.f*(xz + wy), 0.f,
+		2.f*(xy + wz), 1 - 2.f*(xx + zz), 2.f*(yz - wx), 0.f,
+		2.f*(xz - wy), 2.f*(yz + wx), 1 - 2.f*(xx + yy), 0.f,
 		0.f, 0.f, 0.f, 1.f);
 }
 
@@ -940,14 +1110,14 @@ Matrix4 Matrix4::CreateWorld(const Size3F& size, const Point3F& anchor, const Sc
 	float flipY = flip.Has(FlipMask::Y) ? 1.f : 0.f;
 	float flipZ = flip.Has(FlipMask::Z) ? 1.f : 0.f;
 
-	Point3F flipPivot(0.5f*size.Width*flipX, 0.5f*size.Height*flipY, 0.5f*size.Depth*flipZ);
+	Point3F flipPivot(anchor.X*size.Width*flipX, anchor.Y*size.Height*flipY, anchor.Z*size.Depth*flipZ);
 
 	return CreateWorld(scale, rotation, translation, flip, flipPivot, pivot);
 }
 
 Matrix4 Matrix4::CreateWorld(const Scale3F& scale, const Rotation3F& rotation, const Point3F& translation, FlipMask flip /*= FlipMask::None*/, Point3F flipPivot /*= Point3F::Zero*/, const Point3F& pivot/*=Point3F::Zero*/)
 {
-	//matrix order: flip*scale*rotation*translation
+	//matrix order: -flipPivot*flip*(flipPivot)*(-pivot)*scale*rotation*translation
 
 	//rotate order: x,y,z
 	float flipX = flip.Has(FlipMask::X) ? -1.f : 1.f;
@@ -987,16 +1157,63 @@ Matrix4 Matrix4::CreateWorld(const Scale3F& scale, const Rotation3F& rotation, c
 		return Matrix4(m11*flipX, m12, m13, 0.f,
 			m21, m22*flipY, m23, 0.f,
 			m31, m32, m33*flipZ, 0.f,
-			-flipPivot.X*m11*flipX + m41, -flipPivot.Y*m22*flipY + m42, -flipPivot.Z*m33*flipZ + m43, 1.f);
+			flipPivot.X*(1.f - flipX)*m11 + m41, flipPivot.Y*(1.f - flipY)*m22 + m42, flipPivot.Z*(1.f - flipZ)*m33 + m43, 1.f);
 	}
 	else
 	{
 		return Matrix4(scale.X*flipX, 0.f, 0.f, 0.f,
 			0.f, scale.Y*flipY, 0.f, 0.f,
 			0.f, 0.f, scale.Z*flipZ, 0.f,
-			-flipPivot.X*scale.X*flipX + translation.X - scale.X*pivot.X, -flipPivot.Y*scale.Y*flipY + translation.Y - scale.Y*pivot.Y, -flipPivot.Z*scale.Z*flipZ + translation.Z - scale.Z*pivot.Z, 1.f);
+			flipPivot.X*(1.f - flipX)*scale.X + translation.X - scale.X*pivot.X, flipPivot.Y*(1.f - flipY)*scale.Y + translation.Y - scale.Y*pivot.Y, flipPivot.Z*(1.f - flipZ)*scale.Z + translation.Z - scale.Z*pivot.Z, 1.f);
 	}
 
+}
+Matrix4 Matrix4::CreateWorldWithoutAnchor(const Scale3F& scale, const Rotation3F& rotation, const Point3F& translation, FlipMask flip /*= FlipMask::None*/)
+{
+	//matrix order: flip*scale*rotation*translation
+
+	//rotate order: x,y,z
+	float flipX = flip.Has(FlipMask::X) ? -1.f : 1.f;
+	float flipY = flip.Has(FlipMask::Y) ? -1.f : 1.f;
+	float flipZ = flip.Has(FlipMask::Z) ? -1.f : 1.f;
+
+	if (rotation != Rotation3F::Zero)
+	{
+		float cosY = Math::Cos(rotation.Y);
+		float cosZ = Math::Cos(rotation.Z);
+		float cosX = Math::Cos(rotation.X);
+
+		float sinY = Math::Sin(rotation.Y);
+		float sinZ = Math::Sin(rotation.Z);
+		float sinX = Math::Sin(rotation.X);
+
+		float sinXsinY = sinX*sinY;
+		float cosXsinY = cosX*sinY;
+
+		float m11 = scale.X*cosY*cosZ;
+		float m12 = scale.X*cosY*sinZ;
+		float m13 = scale.X*(-sinY);
+
+		float m21 = scale.Y*(sinXsinY*cosZ - cosX*sinZ);
+		float m22 = scale.Y*(sinXsinY*sinZ + cosX*cosZ);
+		float m23 = scale.Y*sinX*cosY;
+
+		float m31 = scale.Z*(cosXsinY*cosZ + sinX*sinZ);
+		float m32 = scale.Z*(cosXsinY*sinZ - sinX*cosZ);
+		float m33 = scale.Z*cosX*cosY;
+
+		return Matrix4(m11*flipX, m12, m13, 0.f,
+			m21, m22*flipY, m23, 0.f,
+			m31, m32, m33*flipZ, 0.f,
+			translation.X, translation.Y, translation.Z, 1.f);
+	}
+	else
+	{
+		return Matrix4(scale.X*flipX, 0.f, 0.f, 0.f,
+			0.f, scale.Y*flipY, 0.f, 0.f,
+			0.f, 0.f, scale.Z*flipZ, 0.f,
+			translation.X, translation.Y, translation.Z, 1.f);
+	}
 }
 
 Matrix4 Matrix4::CreateProjectToXY()

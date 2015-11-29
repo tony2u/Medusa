@@ -5,7 +5,7 @@
 #include "Core/Geometry/Point3.h"
 #include "Core/Geometry/Rotation3.h"
 #include "Core/Geometry/Scale3.h"
-#include "Core/Geometry/Matrix.h"
+#include "Core/Geometry/Matrix4.h"
 #include "Core/Pattern/LazyValue.h"
 #include "Core/Geometry/MoveableInheritFlags.h"
 #include "Core/Geometry/MoveableChangedFlags.h"
@@ -15,11 +15,11 @@ MEDUSA_BEGIN;
 
 /*
 NOTE:
-???????????????????,???????????????,
-??
+Bone matrix is different from other matrix,becuase the rotation and scale in bone is independent
+So
 (S1*R1*T1)*(S2*R2*T2)=(S1*S2)*(R1*R2)*T1*T2
-????????????,?????,??????,??????????,??????????
-??,???,???????
+Scale and rotate are orthogonality,fit commutative law,can change order,so scale can multiply directly, and rotation too
+And,the roation's pivot is at origin
 
 */
 
@@ -80,15 +80,15 @@ public:
 	bool IsWorldFlipY()const { return mWorldFlip.Has(FlipMask::Y); }
 	bool IsWorldFlipZ()const { return mWorldFlip.Has(FlipMask::Z); }
 
-	const Matrix& LocalMatrix()const{ return mMatrix.Value(); }
-	void SetMatrix(const Matrix& val);
+	const Matrix4& LocalMatrix()const{ return mMatrix.Value(); }
+	void ForceSetMatrix(const Matrix4& val);
 	bool IsMatrixDirty()const{return mMatrix.IsDirty();}
 
-	const Matrix& WorldMatrix()const;
+	const Matrix4& WorldMatrix()const;
 	bool IsWorldMatrixDirty()const;
 	bool CheckWorldMatrixDirtyToRoot()const;
 
-	void ForceSetWorldMatrix(const Matrix& val);
+	void ForceSetWorldMatrix(const Matrix4& val);
 	bool TryUpdateWorldMatrix()const{return mWorldMatrix.TryUpdate();}
 	size_t WorldMatrixVersion()const{return mWorldMatrix.Version();}
 
@@ -112,7 +112,7 @@ public:
 	bool UpdateWorldMatrix(bool forceUpdateWorldMatrix = false);
 	void UpdateWorldMatrixByInherit();
 
-	const Matrix& WorldInverseMatrix()const { return mWorldInverseMatrix.Value(); }
+	const Matrix4& WorldInverseMatrix()const { return mWorldInverseMatrix.Value(); }
 
 	const BoundingBox& GetBoundingBox()const { return mBoundingBox.Value(); }
 	const BoundingBox& WorldBoundingBox()const { return mWorldBoundingBox.Value(); }
@@ -127,9 +127,9 @@ protected:
 	virtual void OnMoveableDirty(MoveableChangedFlags changedFlags){}
 
 private:
-	void OnUpdateMatrix(Matrix& transform, int32 dirtyFlag);
-	void OnUpdateWorldMatrix(Matrix& transform, int32 dirtyFlag);
-	void OnUpdateWorldInverseMatrix(Matrix& transform, int32 dirtyFlag);
+	void OnUpdateMatrix(Matrix4& transform, int32 dirtyFlag);
+	void OnUpdateWorldMatrix(Matrix4& transform, int32 dirtyFlag);
+	void OnUpdateWorldInverseMatrix(Matrix4& transform, int32 dirtyFlag);
 	void OnUpdateBoundingBox(BoundingBox& outVal, int32 dirtyFlag);
 	void OnUpdateWorldBoundingBox(BoundingBox& outVal, int32 dirtyFlag);
 protected:
@@ -150,9 +150,9 @@ protected:
 
 
 
-	LazyMatrix mMatrix;
-	LazyMatrix mWorldMatrix;
-	LazyMatrix mWorldInverseMatrix;
+	LazyMatrix4 mMatrix;
+	LazyMatrix4 mWorldMatrix;
+	LazyMatrix4 mWorldInverseMatrix;
 
 	LazyBoundingBox mBoundingBox;	//self bounding box
 	LazyBoundingBox mWorldBoundingBox;	//recursive bounding box

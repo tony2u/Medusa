@@ -28,6 +28,13 @@ public:
 	virtual void Draw(RenderingFlags renderingFlags = RenderingFlags::None);
 	virtual void Update(RenderableChangedFlags changedFlag) = 0;
 
+public:
+	virtual IRenderTarget* RenderTarget() const = 0;
+	virtual void SetRenderTarget(IRenderTarget* val) = 0;
+
+	virtual Camera* GetCamera() const = 0;
+	virtual void SetCamera(Camera* val) = 0;
+
 protected:
 	virtual bool OnUpdateCommands(RenderingFlags renderingFlags = RenderingFlags::None);
 

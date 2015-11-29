@@ -3,6 +3,11 @@
 // license that can be found in the LICENSE file.
 #include "MedusaPreCompiled.h"
 #include "BaseSkeletonTextureAttachmentModel.h"
+#include "Resource/TextureAtlas/TextureAtlasPage.h"
+#include "Resource/TextureAtlas/TextureAtlas.h"
+#include "Resource/TextureAtlas/TextureAtlasRegion.h"
+
+
 
 
 MEDUSA_BEGIN;
@@ -14,14 +19,19 @@ BaseSkeletonTextureAttachmentModel::BaseSkeletonTextureAttachmentModel(const Str
 	mSize(Size3F::Zero),
 	mColor(Color4F::White)
 {
-	
-
+	if (mRegion != nullptr)
+	{
+		mRegion->Page()->Atlas()->Retain();
+	}
 }
 
 
 BaseSkeletonTextureAttachmentModel::~BaseSkeletonTextureAttachmentModel(void)
 {
-
+	if (mRegion!=nullptr)
+	{
+		mRegion->Page()->Atlas()->Release();
+	}
 }
 
 

@@ -51,6 +51,26 @@ void BaseMultipleBatchRenderQueue::Update(RenderableChangedFlags changedFlag)
 	mIsCommandChanged |= OnUpdateBatchData();
 }
 
+void BaseMultipleBatchRenderQueue::SetCamera(Camera* val)
+{
+	mRenderGroup->SetCamera(val);
+}
+
+Camera* BaseMultipleBatchRenderQueue::GetCamera() const
+{
+	return mRenderGroup->GetCamera();
+}
+
+void BaseMultipleBatchRenderQueue::SetRenderTarget(IRenderTarget* val)
+{
+	mRenderGroup->SetRenderTarget(val);
+}
+
+IRenderTarget* BaseMultipleBatchRenderQueue::RenderTarget() const
+{
+	return mRenderGroup->RenderTarget();
+}
+
 bool BaseMultipleBatchRenderQueue::OnUpdateBatchList()
 {
 	BatchList& fontBatches = mBatches.MutableFront();

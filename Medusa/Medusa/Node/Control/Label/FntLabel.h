@@ -27,6 +27,8 @@ protected:
 
 protected:
 	List<BaseFontMesh*> mInternalMeshes;
+	List<IMaterial*> mInternalMaterials;
+
 };
 
 MEDUSA_END;

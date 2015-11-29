@@ -45,7 +45,12 @@ public:
 
 	FileIdRef Id() const { return mFileId.ToRef(); }
 	void SetFileId(FileIdRef val) { mFileId = val; }
+
+	TextureAtlas* Atlas() const { return mAtlas; }
+	void SetAtlas(TextureAtlas* val);
 protected:
+	TextureAtlas* mAtlas=nullptr;
+
 	FileId mFileId;
 
 	FileId mTextureFileId;

@@ -54,7 +54,6 @@ ThreadPoolWork* ThreadPool::CreateWork(const StringRef& name, ICommand* command)
 {
 	ThreadPoolWork* work = new ThreadPoolWork(name, command);
 	mNamedWorks.Add(name, work);
-	work->Retain();
 	return work;
 }
 
@@ -62,7 +61,6 @@ ThreadPoolWork* ThreadPool::CreateWork(ICommand* command)
 {
 	ThreadPoolWork* work = new ThreadPoolWork(StringRef::Empty, command);
 	mUnnamedWorks.Add(work);
-	work->Retain();
 	return work;
 
 }
@@ -150,7 +148,6 @@ ThreadPoolTimer* ThreadPool::CreateTimer(const StringRef& name, ICommand* comman
 {
 	ThreadPoolTimer* timer = new ThreadPoolTimer(name, command, delay, repeatCount, repeatInterval, repeatIntervalRange);
 	mNamedTimers.Add(name, timer);
-	timer->Retain();
 	return timer;
 }
 
@@ -158,7 +155,6 @@ ThreadPoolTimer* ThreadPool::CreateTimer(ICommand* command, uint delay /*= 0*/, 
 {
 	ThreadPoolTimer* timer = new ThreadPoolTimer(StringRef::Empty, command, delay, repeatCount, repeatInterval, repeatIntervalRange);
 	mUnnamedTimers.Add(timer);
-	timer->Retain();
 
 	return timer;
 }
@@ -247,7 +243,6 @@ ThreadPoolWait* ThreadPool::CreateWait(const StringRef& name, ICommand* command,
 {
 	ThreadPoolWait* wait = new ThreadPoolWait(name, command, waitable);
 	mNamedWaits.Add(name, wait);
-	wait->Retain();
 	return wait;
 }
 
@@ -255,7 +250,6 @@ ThreadPoolWait* ThreadPool::CreateWait(ICommand* command, IWaitable* waitable)
 {
 	ThreadPoolWait* wait = new ThreadPoolWait(StringRef::Empty, command, waitable);
 	mUnnamedWaits.Add(wait);
-	wait->Retain();
 	return wait;
 }
 

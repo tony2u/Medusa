@@ -112,6 +112,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\State\PixelStoreRenderState.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\State\ProgramRenderState.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\State\RasterizerRenderState.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\State\RenderStateFactory.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\State\RenderStateMachine.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\State\RenderStateSet.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\State\RenderStateType.h" />
@@ -277,6 +278,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Node\Action\Timeline\MeshTimeline.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Node\Action\Timeline\PODCameraFOVTimeline.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Node\Action\Timeline\PODLighTimeline.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Node\Action\Timeline\RenderingObjectTimeline.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Node\Action\Timeline\RotationTimeline.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Node\Action\Timeline\ScaleTimeline.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Node\Action\Timeline\TextureFileIdTimeline.h" />
@@ -412,7 +414,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Rendering\Batch\BaseBufferRenderBatch.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Rendering\Batch\BatchGroup.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Rendering\Batch\BatchPool.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Rendering\Batch\CustomDrawMeshRenderBatch.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Rendering\Batch\Custom\CustomDrawMeshRenderBatch.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Rendering\Batch\IRenderBatch.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Rendering\Batch\Multiple\MultipleRenderBatch.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Rendering\Batch\Single\SingleRenderBatch.h" />
@@ -431,6 +433,8 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Rendering\RenderEngine.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Rendering\RenderingContext.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Rendering\RenderingFlags.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Rendering\RenderingObject.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Rendering\RenderingObjectFactory.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Rendering\RenderingStatics.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Rendering\RenderingTypes.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Rendering\RenderQueue\IRenderQueue.h" />
@@ -594,6 +598,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Resource\Timeline\PODCameraFOVTimelineModel.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Resource\Timeline\PODJointTimelineModel.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Resource\Timeline\PODLightTimelineModel.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Resource\Timeline\RenderingObjectTimelineModel.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Resource\Timeline\RotationTimelineModel.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Resource\Timeline\ScaleTimelineModel.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Resource\Timeline\StringTimelineModel.h" />
@@ -628,7 +633,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Audio\StreamAudioSource.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Content\Content.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Content\Wrapper\FS\Color_fsh.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Content\Wrapper\FS\FntFont_fsh.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Content\Wrapper\FS\POD_fsh.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Content\Wrapper\FS\Shape_fsh.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Content\Wrapper\FS\Texture_fsh.cpp" />
@@ -638,7 +642,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Content\Wrapper\Script\ILayer_cs.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Content\Wrapper\Script\INode_cs.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Content\Wrapper\Script\IScene_cs.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Content\Wrapper\VS\FntFont_vsh.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Content\Wrapper\VS\POD_vsh.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Content\Wrapper\VS\Position_vsh.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Content\Wrapper\VS\Shape_vsh.cpp" />
@@ -681,6 +684,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\State\PixelStoreRenderState.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\State\ProgramRenderState.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\State\RasterizerRenderState.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\State\RenderStateFactory.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\State\RenderStateMachine.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\State\RenderStateSet.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\State\RenderTargetRenderState.cpp" />
@@ -720,6 +724,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Node\Action\Timeline\MeshTimeline.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Node\Action\Timeline\PODCameraFOVTimeline.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Node\Action\Timeline\PODLighTimeline.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Node\Action\Timeline\RenderingObjectTimeline.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Node\Action\Timeline\RotationTimeline.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Node\Action\Timeline\ScaleTimeline.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Node\Action\Timeline\TextureFileIdTimeline.cpp" />
@@ -818,7 +823,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Rendering\Batch\BaseBufferRenderBatch.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Rendering\Batch\BatchGroup.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Rendering\Batch\BatchPool.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Rendering\Batch\CustomDrawMeshRenderBatch.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Rendering\Batch\Custom\CustomDrawMeshRenderBatch.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Rendering\Batch\IRenderBatch.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Rendering\Batch\Multiple\MultipleRenderBatch.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Rendering\Batch\Single\SingleRenderBatch.cpp" />
@@ -831,6 +836,8 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Rendering\RenderDevice.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Rendering\RenderEngine.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Rendering\RenderingContext.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Rendering\RenderingObject.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Rendering\RenderingObjectFactory.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Rendering\RenderingStatics.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Rendering\RenderQueue\IRenderQueue.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Rendering\RenderQueue\Multiple\BaseMultipleBatchRenderQueue.cpp" />
@@ -969,6 +976,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Resource\Timeline\PODCameraFOVTimelineModel.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Resource\Timeline\PODJointTimelineModel.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Resource\Timeline\PODLightTimelineModel.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Resource\Timeline\RenderingObjectTimelineModel.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Resource\Timeline\RotationTimelineModel.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Resource\Timeline\ScaleTimelineModel.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Resource\Timeline\StringTimelineModel.cpp" />
@@ -984,7 +992,6 @@
     <None Include="$(MSBuildThisFileDirectory)Application\Window\ios\IOSWindow.mm" />
     <None Include="$(MSBuildThisFileDirectory)Application\Window\ios\MyRootViewController.mm" />
     <None Include="$(MSBuildThisFileDirectory)Content\FS\Color.fsh" />
-    <None Include="$(MSBuildThisFileDirectory)Content\FS\FntFont.fsh" />
     <None Include="$(MSBuildThisFileDirectory)Content\FS\POD.fsh" />
     <None Include="$(MSBuildThisFileDirectory)Content\FS\Shape.fsh" />
     <None Include="$(MSBuildThisFileDirectory)Content\FS\Texture.fsh" />
@@ -1000,10 +1007,6 @@
     <Image Include="$(MSBuildThisFileDirectory)Content\Other\arial22_0.png" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="$(MSBuildThisFileDirectory)Content\VS\FntFont.vsh">
-      <DeploymentContent>false</DeploymentContent>
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </FxCompile>
     <FxCompile Include="$(MSBuildThisFileDirectory)Content\VS\POD.vsh">
       <DeploymentContent>false</DeploymentContent>
       <ExcludedFromBuild>true</ExcludedFromBuild>

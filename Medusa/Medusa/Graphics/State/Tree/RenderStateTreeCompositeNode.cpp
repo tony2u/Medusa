@@ -23,8 +23,8 @@ RenderStateTreeCompositeNode::~RenderStateTreeCompositeNode(void)
 
 RenderStateTreeLeafNode* RenderStateTreeCompositeNode::FindUniqueNode(const RenderStateSet& stateSet, RenderStateType type)
 {
-	RenderStateType lastType = (RenderStateType)((uint32)RenderStateType::Count - 1);
-	RenderStateType nextType = (RenderStateType)((uint32)type + 1);
+	RenderStateType lastType = (RenderStateType)(((uint32)RenderStateType::Count - 1)<<1);
+	RenderStateType nextType = (RenderStateType)((uint32)type <<1);
 	bool isMiddle = type < lastType;
 
 	IRenderState* state = stateSet.GetState(type);
@@ -57,7 +57,6 @@ RenderStateTreeLeafNode* RenderStateTreeCompositeNode::FindUniqueNode(const Rend
 			if (mNextNullStateNode == nullptr)
 			{
 				mNextNullStateNode = new RenderStateTreeLeafNode(nullptr, this);
-				((RenderStateTreeLeafNode*)mNextNullStateNode)->Retain();
 			}
 			return (RenderStateTreeLeafNode*)mNextNullStateNode;
 		}
@@ -68,7 +67,6 @@ RenderStateTreeLeafNode* RenderStateTreeCompositeNode::FindUniqueNode(const Rend
 			{
 				nextNode = new RenderStateTreeLeafNode(state, this);
 				mNextStateNodes.Add(nextNode);
-				nextNode->Retain();
 			}
 
 			return nextNode;

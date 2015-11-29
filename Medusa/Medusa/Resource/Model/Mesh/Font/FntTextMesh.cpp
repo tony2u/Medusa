@@ -8,7 +8,7 @@
 #include "Graphics/Buffer/TexCoordGraphicsBuffer.h"
 #include "Graphics/Buffer/ColorGraphicsBuffer.h"
 #include "Core/Geometry/Quad.h"
-#include "Core/Geometry/Matrix.h"
+#include "Core/Geometry/Matrix4.h"
 #include "Resource/Font/FontChar.h"
 #include "Resource/Font/IFont.h"
 #include "Rendering/RenderingContext.h"
@@ -22,8 +22,8 @@
 MEDUSA_BEGIN;
 
 
-FntTextMesh::FntTextMesh(IEffect* effect/*=nullptr*/, IMaterial* material/*=nullptr*/, bool isStatic/*=false*/)
-	:BaseFontMesh(effect, material, isStatic),
+FntTextMesh::FntTextMesh( bool isStatic/*=false*/)
+	:BaseFontMesh(isStatic),
 	mVertexTexcoordBuffer(GraphicsBufferType::Array, GraphicsBufferUsage::DynamicDraw, GraphicsDataType::Float, 0)
 {
 	if (mIsStatic)
@@ -253,11 +253,9 @@ void FntTextMesh::Draw(IRenderQueue& renderQueue, RenderingFlags renderingFlags/
 	RenderingStatics::Instance().CountOriginalAndBatchDraw();
 	RenderingStatics::Instance().CountVertexCount(VertexCount());
 	RenderingStatics::Instance().CountTriangleCount(IndexCount() / 3);
-	RenderingStatics::Instance().CountDrawMode(mDrawMode);
-
 }
 
-void FntTextMesh::AddToVertexBufferObject(VertexGraphicsBuffer& bufferObject, size_t vertexIndex, const Matrix& matrix) const
+void FntTextMesh::AddToVertexBufferObject(VertexGraphicsBuffer& bufferObject, size_t vertexIndex, const Matrix4& matrix) const
 {
 	RETURN_IF_EMPTY(mVertexTexcoordBuffer);
 	bufferObject.ReserveSize(vertexIndex, VertexCount());

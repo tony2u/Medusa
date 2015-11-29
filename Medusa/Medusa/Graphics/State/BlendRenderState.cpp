@@ -38,17 +38,24 @@ void BlendRenderState::Apply()const
 }
 
 
+void BlendRenderState::CopyFrom(const IRenderState& other)
+{
+	MEDUSA_ASSERT(other.Type() == Type(),"Cannot copy render state with different type");
+	BlendRenderState& val = (BlendRenderState&)other;
+	mEnabled= val.mEnabled;
+	mSrcRGBFunc = val.mSrcRGBFunc;
+	mSrcAlphaFunc = val.mSrcAlphaFunc;
+	mDestRGBFunc = val.mDestRGBFunc;
+	mDestAlphaFunc = val.mDestAlphaFunc;
+	mBlendRGBEquation = val.mBlendRGBEquation;
+	mBlendAlphaEquation = val.mBlendAlphaEquation;
+	mBlendColor = val.mBlendColor;
+}
+
 BlendRenderState* BlendRenderState::Clone() const
 {
 	BlendRenderState* state = new BlendRenderState();
-	state->Enable(mEnabled);
-	state->SetBlendAlphaEquation(mBlendAlphaEquation);
-	state->SetBlendColor(mBlendColor);
-	state->SetBlendRGBEquation(mBlendRGBEquation);
-	state->SetDestAlphaFunc(mDestAlphaFunc);
-	state->SetDestRGBFunc(mDestRGBFunc);
-	state->SetSrcAlphaFunc(mSrcAlphaFunc);
-	state->SetSrcRGBFunc(mSrcRGBFunc);
+	state->CopyFrom(*this);
 	return state;
 }
 
@@ -205,6 +212,8 @@ intp BlendRenderState::HashCode() const
 	}
 	return 0;
 }
+
+
 
 MEDUSA_IMPLEMENT_RTTI(BlendRenderState, IRenderState);
 

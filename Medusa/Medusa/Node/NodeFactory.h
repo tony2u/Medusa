@@ -25,8 +25,6 @@ public:
 
 	IShape* CreateRectBorder(const Size2F& rectSize, const Color4F& color);
 	IShape* CreateRectBorder(const Rect2F& rect, const Color4F& color);
-	IShape* CreateTriangleBorder(const Point3F& p1, const Point3F& p2, const Point3F& p3, const Color4F& color);
-	IShape* CreateTriangleBorder(float width, float height, const Color4F& color);
 
 	IShape* CreateRect(const Size2F& rectSize, const Color4F& color);
 	IShape* CreateRect(const Rect2F& rect, const Color4F& color);
@@ -34,8 +32,6 @@ public:
 	IShape* CreateTriangle(float width, float height, const Color4F& color);
 
 	IShape* CreateCircle(float radius, float precision,const Color4F& color);
-	IShape* CreateCircleBorder(float radius, float precision, const Color4F& color);
-
 
 	Sprite* CreateEmptySprite();
 

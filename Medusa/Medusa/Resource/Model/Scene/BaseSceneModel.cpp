@@ -22,7 +22,7 @@ BaseSceneModel::~BaseSceneModel(void)
 	SAFE_DELETE_COLLECTION(mNodes);
 }
 
-void BaseSceneModel::UpdateWorldMatrixRecursively( const Matrix& parentWorldMatrix/*=Matrix::Identity*/ )
+void BaseSceneModel::UpdateWorldMatrixRecursively( const Matrix4& parentWorldMatrix/*=Matrix4::Identity*/ )
 {
 	BaseMultipleModel::UpdateWorldMatrixRecursively(parentWorldMatrix);
 

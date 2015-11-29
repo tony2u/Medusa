@@ -1,6 +1,3 @@
-// Copyright (c) 2015 fjz13. All rights reserved.
-// Use of this source code is governed by a MIT-style
-// license that can be found in the LICENSE file.
 #pragma once
 #include "MedusaCorePreCompiled.h"
 
@@ -178,7 +175,6 @@
 #include "Core/Geometry/Line3.h"
 #include "Core/Geometry/Map/GridCell.h"
 #include "Core/Geometry/Map/GridMap.h"
-#include "Core/Geometry/Matrix.h"
 #include "Core/Geometry/Matrix2.h"
 #include "Core/Geometry/Matrix3.h"
 #include "Core/Geometry/Matrix4.h"
@@ -254,11 +250,12 @@
 #include "Core/IO/Storage/FileEntry.h"
 #include "Core/IO/Storage/FilePermission.h"
 #include "Core/IO/Storage/FileStorage.h"
+#include "Core/IO/Stream/BlockCodeReadStream.h"
+#include "Core/IO/Stream/BlockCodeWriteStream.h"
 #include "Core/IO/Stream/BlockReadStream.h"
 #include "Core/IO/Stream/BlockWriteStream.h"
 #include "Core/IO/Stream/BufferStream.h"
-#include "Core/IO/Stream/BlockCodeReadStream.h"
-#include "Core/IO/Stream/BlockCodeWriteStream.h"
+#include "Core/IO/Stream/FileCodeWriteStream.h"
 #include "Core/IO/Stream/FileStream.h"
 #include "Core/IO/Stream/HashStream.h"
 #include "Core/IO/Stream/IStream.h"

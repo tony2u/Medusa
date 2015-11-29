@@ -18,7 +18,6 @@ namespace RenderPassNames
 	const extern StringRef Texture;
 	const extern StringRef PositionColor;
 	const extern StringRef POD;
-	const extern StringRef FntFont;
 	const extern StringRef Shape;
 
 
@@ -33,7 +32,6 @@ namespace VertexShaderFiles
 	const extern FileIdRef Texture;
 	const extern FileIdRef Position;
 	const extern FileIdRef POD;
-	const extern FileIdRef FntFont;
 	const extern FileIdRef Shape;
 
 
@@ -51,7 +49,6 @@ namespace PixelShaderFiles
 	const extern FileIdRef Texture;
 	const extern FileIdRef Color;
 	const extern FileIdRef POD;
-	const extern FileIdRef FntFont;
 	const extern FileIdRef Shape;
 
 

@@ -10,7 +10,7 @@ class IdentityTimelineModel:public ITimelineModel
 public:
 	IdentityTimelineModel(const FileIdRef& fileId, float duration = 0.f);
 	virtual ~IdentityTimelineModel(void);
-	virtual bool TryGetMatrix(float frame,Matrix& outMatrix)const;
+	virtual bool TryGetMatrix(float frame,Matrix4& outMatrix)const;
 };
 
 MEDUSA_END;

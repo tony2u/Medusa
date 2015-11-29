@@ -11,7 +11,6 @@ MEDUSA_BEGIN;
 Base3DScene::Base3DScene(StringRef name/*=StringRef::Empty*/, const IEventArg& e /*= IEventArg::Empty*/) :IScene(name,e)
 {
 	mCamera = CameraFactory::Instance().CreateDefault(StringRef::Empty, false,true, ResourceShareType::Share);
-	mCamera->Retain();
 }
 
 

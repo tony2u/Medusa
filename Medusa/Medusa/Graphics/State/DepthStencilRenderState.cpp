@@ -19,7 +19,6 @@ DepthStencilRenderState::~DepthStencilRenderState()
 
 void DepthStencilRenderState::Apply()const
 {
-
 	IRender& render= Render::Instance();
 	render.EnableFeature(GraphicsFeatures::DepthTest,mDepthTestEnabled);
 	render.EnableDepthWrite(mDepthWritable);
@@ -41,33 +40,42 @@ void DepthStencilRenderState::Apply()const
 DepthStencilRenderState* DepthStencilRenderState::Clone() const
 {
 	DepthStencilRenderState* state=new DepthStencilRenderState();
-	state->EnableDepthTest(mDepthTestEnabled);
-	state->EnableDepthWrite(mDepthWritable);
-	state->SetDepthFunc(mDepthFunc);
-	state->SetDepthClearValue(mDepthClearValue);
-
-	state->EnableStencilTest(mStencilTestEnabled);
-	state->SetStencilClearValue(mStencilClearValue);
-
-	state->SetFrontStencilDepthFailOp(mFrontStencilDepthFailOp);
-	state->SetFrontStencilFailOp(mFrontStencilFailOp);
-	state->SetFrontStencilFunc(mFrontStencilFunc);
-	state->SetFrontStencilPassOp(mFrontStencilPassOp);
-	state->SetFrontReadMask(mFrontReadMask);
-	state->SetFrontWriteMask(mFrontWriteMask);
-	state->SetFrontRefValue(mFrontRefValue);
-
-	state->SetBackStencilDepthFailOp(mBackStencilDepthFailOp);
-	state->SetBackStencilFailOp(mBackStencilFailOp);
-	state->SetBackStencilFunc(mBackStencilFunc);
-	state->SetBackStencilPassOp(mBackStencilPassOp);
-	state->SetBackReadMask(mBackReadMask);
-	state->SetBackWriteMask(mBackWriteMask);
-	state->SetBackRefValue(mBackRefValue);
+	state->CopyFrom(*this);
 	return state;
 }
 
-bool DepthStencilRenderState::Equals( const IRenderState& state ) const
+void DepthStencilRenderState::CopyFrom(const IRenderState& other)
+{
+	MEDUSA_ASSERT(other.Type() == Type(), "Cannot copy render state with different type");
+	DepthStencilRenderState& val = (DepthStencilRenderState&)other;
+
+	mDepthTestEnabled = val.mDepthTestEnabled;
+	mDepthWritable = val.mDepthWritable;
+	mDepthFunc = val.mDepthFunc;
+	mDepthClearValue = val.mDepthClearValue;
+
+	mStencilTestEnabled = val.mStencilTestEnabled;
+	mStencilClearValue = val.mStencilClearValue;
+
+	mFrontStencilDepthFailOp = val.mFrontStencilDepthFailOp;
+	mFrontStencilFailOp = val.mFrontStencilFailOp;
+	mFrontStencilFunc = val.mFrontStencilFunc;
+	mFrontStencilPassOp = val.mFrontStencilPassOp;
+	mFrontReadMask = val.mFrontReadMask;
+	mFrontWriteMask = val.mFrontWriteMask;
+	mFrontRefValue = val.mFrontRefValue;
+
+	mBackStencilDepthFailOp = val.mBackStencilDepthFailOp;
+	mBackStencilFailOp = val.mBackStencilFailOp;
+	mBackStencilFunc = val.mBackStencilFunc;
+	mBackStencilPassOp = val.mBackStencilPassOp;
+	mBackReadMask = val.mBackReadMask;
+	mBackWriteMask = val.mBackWriteMask;
+	mBackRefValue = val.mBackRefValue;
+
+}
+
+bool DepthStencilRenderState::Equals(const IRenderState& state) const
 {
 	RETURN_FALSE_IF_FALSE(IRenderState::Equals(state));
 	const DepthStencilRenderState& val=(const DepthStencilRenderState&)state;

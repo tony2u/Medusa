@@ -40,9 +40,6 @@ bool PODCameraFOVTimeline::Start()
 
 	mCamera=CameraFactory::Instance().Find(cameraName);
 	RETURN_FALSE_IF_NULL(mCamera);
-	mCamera->Retain();
-
-	
 
 	return true;
 }

@@ -1,6 +1,3 @@
-// Copyright (c) 2015 fjz13. All rights reserved.
-// Use of this source code is governed by a MIT-style
-// license that can be found in the LICENSE file.
 #pragma once
 #include "CorePlatform/CorePlatform.h"
 MEDUSA_BEGIN;
@@ -419,8 +416,6 @@ class Line2;
 template<typename T>
 class Line3;
 
-class Matrix;
-
 class Matrix2;
 
 class Matrix4;
@@ -575,15 +570,17 @@ class FileEntry;
 
 class FileStorage;
 
+class BlockCodeReadStream;
+
+class BlockCodeWriteStream;
+
 class BlockReadStream;
 
 class BlockWriteStream;
 
 class BufferStream;
 
-class BlockCodeReadStream;
-
-class BlockCodeWriteStream;
+class FileCodeWriteStream;
 
 class FileStream;
 
@@ -1089,7 +1086,6 @@ typedef Line2<int> Line2I;
 typedef Line2<float> Line2F;
 typedef Line3<int> Line3I;
 typedef Line3<float> Line3F;
-typedef LazyValue<Matrix> LazyMatrix;
 typedef LazyValue<Matrix3> LazyMatrix3;
 typedef LazyValue<Matrix4> LazyMatrix4;
 typedef LazyValue<Matrix43> LazyMatrix43;

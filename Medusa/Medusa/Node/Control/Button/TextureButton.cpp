@@ -3,8 +3,8 @@
 // license that can be found in the LICENSE file.
 #include "MedusaPreCompiled.h"
 #include "TextureButton.h"
-#include "Resource/Model/Mesh/MeshFactory.h"
 #include "Resource/Model/Mesh/Fixed/TextureQuadMesh.h"
+#include "Rendering/RenderingObjectFactory.h"
 #include "Resource/Material/IMaterial.h"
 
 MEDUSA_BEGIN;
@@ -107,10 +107,10 @@ void TextureButton::OnUpdateMesh()
 
 void TextureButton::SetImage(const FileIdRef& image)
 {
-	TextureQuadMesh* mesh = MeshFactory::Instance().CreateTextureQuadMesh(image);
-	this->SetMesh(mesh);
+	auto renderingObject = RenderingObjectFactory::Instance().CreateFromTexture(image);
 
-	Size2U textureSize = mesh->Material()->FirstTexture()->Size();
+	SetRenderingObject(renderingObject);
+	Size2U textureSize = renderingObject.Material()->FirstTexture()->Size();
 	SetSize(textureSize);
 }
 

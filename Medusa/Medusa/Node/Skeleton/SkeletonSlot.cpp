@@ -40,11 +40,11 @@ void SkeletonSlot::SetAttachment(ISkeletonAttachmentModel* val)
 	mAttachment = val;
 	if (mAttachment != nullptr)
 	{
-		SetMesh(mAttachment->GetMesh());
+		SetRenderingObject(mAttachment->GetRenderingObject());
 	}
 	else
 	{
-		SetMesh(nullptr);
+		SetRenderingObject(nullptr);
 	}
 }
 

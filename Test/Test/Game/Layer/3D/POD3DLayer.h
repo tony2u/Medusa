@@ -13,5 +13,9 @@ public:
 	POD3DLayer(StringRef name=StringRef::Empty,const IEventArg& e=IEventArg::Empty);
 	virtual ~POD3DLayer(void);
 	virtual bool Initialize()override;
+	virtual bool Enter();
+	virtual bool Exit();
+
+
 };
 

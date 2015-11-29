@@ -14,7 +14,7 @@ Camera::Camera(const FileIdRef& fileId/*=FileId::Empty*/)
 	:IResource(fileId),
 	mEyeTarget(Vector3F::Zero),
 	mCameraUp(Vector3F::Zero),
-	mViewProjectionMatrix(Matrix::Identity)
+	mViewProjectionMatrix(Matrix4::Identity)
 {
 	mId = AutoIncreaseId<Camera>::New();
 
@@ -216,25 +216,25 @@ void Camera::SetFovY(float val)
 }
 
 
-void Camera::OnUpdateViewProjectionMatrix(Matrix& transform, int32 dirtyFlag)
+void Camera::OnUpdateViewProjectionMatrix(Matrix4& transform, int32 dirtyFlag)
 {
 	if (mIsOrtho)
 	{
-		transform = Matrix::OrthoOffCenter(mFrustum.Left(), mFrustum.Right(), mFrustum.Bottom(), mFrustum.Top(), mFrustum.Near(), mFrustum.Far());
+		transform = Matrix4::OrthoOffCenter(mFrustum.Left(), mFrustum.Right(), mFrustum.Bottom(), mFrustum.Top(), mFrustum.Near(), mFrustum.Far());
 	}
 	else
 	{
-		transform = Matrix::PerspectiveOffCenter(mFrustum.Left(), mFrustum.Right(), mFrustum.Bottom(), mFrustum.Top(), mFrustum.Near(), mFrustum.Far());
+		transform = Matrix4::PerspectiveOffCenter(mFrustum.Left(), mFrustum.Right(), mFrustum.Bottom(), mFrustum.Top(), mFrustum.Near(), mFrustum.Far());
 	}
 
-	const Matrix& viewMatrix = mViewMatrix.Value();
+	const Matrix4& viewMatrix = mViewMatrix.Value();
 	transform = viewMatrix*transform;
 }
 
 
-void Camera::OnUpdateViewMatrix(Matrix& transform, int32 dirtyFlag)
+void Camera::OnUpdateViewMatrix(Matrix4& transform, int32 dirtyFlag)
 {
-	transform = Matrix::LookAt(mEyePosition, mEyeTarget, mCameraUp);
+	transform = Matrix4::LookAt(mEyePosition, mEyeTarget, mCameraUp);
 }
 
 

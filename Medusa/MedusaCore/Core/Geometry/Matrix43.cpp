@@ -6,9 +6,6 @@
 #include "Core/Geometry/Matrix3.h"
 #include "Core/Geometry/Matrix2.h"
 #include "Core/Geometry/Matrix4.h"
-#include "Core/Geometry/Matrix.h"
-
-
 
 #include "Core/Geometry/EulerAngle.h"
 #include "Core/Geometry/Quaternion.h"
@@ -85,23 +82,6 @@ Matrix43::Matrix43( const Matrix3& m ,bool isTransposed)
 	}
 }
 
-Matrix43::Matrix43(const Matrix& m, bool isTransposed /*= false*/)
-{
-	if (isTransposed)
-	{
-		M11 = m.M11; M12 = m.M21; M13 = m.M31;
-		M21 = m.M12; M22 = m.M22; M23 = m.M32;
-		M31 = m.M13; M32 = m.M23; M33 = m.M33;
-		M41 = m.M14; M42 = m.M24; M43 = m.M34;
-	}
-	else
-	{
-		M11 = m.M11; M12 = m.M12; M13 = m.M13;
-		M21 = m.M21; M22 = m.M22; M23 = m.M23;
-		M31 = m.M31; M32 = m.M32; M33 = m.M33;
-		M41 = m.M41; M42 = m.M42; M43 = m.M43;
-	}
-}
 
 Matrix43::Matrix43(const float* items)
 {
@@ -114,15 +94,6 @@ Matrix43& Matrix43::operator=( const Matrix3& m )
 	M21=m.M21;M22=m.M22;M23=m.M23;
 	M31=m.M31;M32=m.M32;M33=m.M33;
 	M41=0.f;M42=0.f;M43=0.f;
-	return *this;
-}
-
-Matrix43& Matrix43::operator=(const Matrix& m)
-{
-	M11 = m.M11; M12 = m.M12; M13 = m.M13;
-	M21 = m.M21; M22 = m.M22; M23 = m.M23;
-	M31 = m.M31; M32 = m.M32; M33 = m.M33;
-	M41 = m.M41; M42 = m.M42; M43 = m.M43;
 	return *this;
 }
 
@@ -608,14 +579,14 @@ Matrix43 Matrix43::CreateFromEuler( const EulerAngle& angle )
 Matrix43 Matrix43::CreateFromQuaternion( const Quaternion& q )
 {
 	/*
-	????????????????.
-	??????????????:
+	Quaternion and matrix can be converted to each other
+	often:
 
 	[ ww+xx-yy-zz , 2xy-2wz , 2xz+2wy ]
 	[ 2xy+2wz , ww-xx-yy-zz , 2yz-2wx ]
 	[ 2xz-2wy , 2yz+2wx , ww-xx-yy-zz ]
 
-	???????????, ???????????:
+	But with normalized Quaternion, Could be simplifed to :
 
 	[ 1-2yy-2zz , 2xy-2wz , 2xz+2wy ]
 	[ 2xy+2wz , 1-2xx-2zz , 2yz-2wx ]
@@ -632,10 +603,10 @@ Matrix43 Matrix43::CreateFromQuaternion( const Quaternion& q )
 	float wy=q.W*q.Y;
 	float wz=q.W*q.Z;
 
-	return Matrix43(1.f-2.f*(yy+zz),2.f*(xy+wz),2.f*(xz-wy),
-		2.f*(xy-wz),1-2.f*(xx+zz),2.f*(yz+wx),
-		2.f*(xz+wy),2.f*(yz-wx),1-2.f*(xx+yy),
-		0.f,0.f,0.f);
+	return Matrix43(1.f - 2.f*(yy + zz), 2.f*(xy - wz), 2.f*(xz + wy),
+		2.f*(xy + wz), 1 - 2.f*(xx + zz), 2.f*(yz - wx),
+		2.f*(xz - wy), 2.f*(yz + wx), 1 - 2.f*(xx + yy), 
+		0.f, 0.f, 0.f);
 }
 
 Matrix43 Matrix43::CreateProjectToXY()

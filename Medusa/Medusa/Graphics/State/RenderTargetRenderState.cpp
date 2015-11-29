@@ -37,13 +37,21 @@ void RenderTargetRenderState::Apply()const
 RenderTargetRenderState* RenderTargetRenderState::Clone() const
 {
 	RenderTargetRenderState* state=new RenderTargetRenderState();
-	state->SetFrameBuffer(mFrameBuffer);
-	state->SetViewPort(mViewPort);
-	state->SetClearColor(mClearColor);
+	state->CopyFrom(*this);
 	return state;
 }
 
-bool RenderTargetRenderState::Equals( const IRenderState& state ) const
+void RenderTargetRenderState::CopyFrom(const IRenderState& other)
+{
+	MEDUSA_ASSERT(other.Type() == Type(), "Cannot copy render state with different type");
+	RenderTargetRenderState& val = (RenderTargetRenderState&)other;
+	mFrameBuffer = val.mFrameBuffer;
+	mViewPort = val.mViewPort;
+	mClearColor = val.mClearColor;
+
+}
+
+bool RenderTargetRenderState::Equals(const IRenderState& state) const
 {
 	RETURN_FALSE_IF_FALSE(IRenderState::Equals(state));
 	RETURN_TRUE_IF_TRUE(mIsDefault);

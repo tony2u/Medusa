@@ -23,7 +23,7 @@ TextLayouter::~TextLayouter()
 }
 
 
-bool TextLayouter::LayoutMultipleLineText(List<BaseFontMesh*>& outMeshes, Size2F& outSize,
+bool TextLayouter::LayoutMultipleLineText(List<BaseFontMesh*>& outMeshes, List<IMaterial*>& outMaterials, Size2F& outSize,
 										  IFont& font,
 										  const WStringRef& text,
 										  Alignment alignment/*=Alignment::LeftBottom*/,
@@ -56,7 +56,7 @@ bool TextLayouter::LayoutMultipleLineText(List<BaseFontMesh*>& outMeshes, Size2F
 	outSize.Height = static_cast<float>(outLineWidths.Count()*font.LineHeight());
 	ReserveMesh(outMeshes, text);
 
-	LayoutMultipleLineMesh(outMeshes, font, outSize, outLineWidths, outLines, alignment, restrictSize, label);
+	LayoutMultipleLineMesh(outMeshes,outMaterials, font, outSize, outLineWidths, outLines, alignment, restrictSize, label);
 
 	ShrinkMesh(outMeshes);
 	return true;
@@ -64,7 +64,7 @@ bool TextLayouter::LayoutMultipleLineText(List<BaseFontMesh*>& outMeshes, Size2F
 }
 
 
-bool TextLayouter::LayoutSingleLineText(List<BaseFontMesh*>& outMeshes,
+bool TextLayouter::LayoutSingleLineText(List<BaseFontMesh*>& outMeshes, List<IMaterial*>& outMaterials,
 										Size2F& outSize,
 										IFont& font,
 										const WStringRef& text,
@@ -81,7 +81,7 @@ bool TextLayouter::LayoutSingleLineText(List<BaseFontMesh*>& outMeshes,
 
 	ReserveMesh(outMeshes, text);
 
-	LayoutSingleLineMesh(outMeshes, font, outSize, outSize.Width, outString, alignment, restrictSize, label);
+	LayoutSingleLineMesh(outMeshes,outMaterials, font, outSize, outSize.Width, outString, alignment, restrictSize, label);
 	ShrinkMesh(outMeshes);
 	return true;
 }
@@ -320,7 +320,7 @@ bool TextLayouter::WordWrap(List<WHeapString>& outLines, List<float>& outLineWid
 	return !outLines.IsEmpty();
 }
 
-void TextLayouter::LayoutMultipleLineMesh(List<BaseFontMesh*>& outMeshes,
+void TextLayouter::LayoutMultipleLineMesh(List<BaseFontMesh*>& outMeshes, List<IMaterial*>& outMaterials,
 										  IFont& font,
 										  const Size2F& imageSize,
 										  const List<float>& lineWidths,
@@ -371,7 +371,7 @@ void TextLayouter::LayoutMultipleLineMesh(List<BaseFontMesh*>& outMeshes,
 				wchar_t c = line[j];
 				const FontChar* fontChar = GetChar(font, c);
 				Log::AssertNotNull(fontChar, "fontChar");
-				AddCharToMesh(outMeshes, font, *fontChar, origin, label, isStatic);
+				AddCharToMesh(outMeshes,outMaterials, font, *fontChar, origin, label, isStatic);
 				if (hasKerning&&j != 0)
 				{
 					Point3F nextPen = origin;
@@ -411,7 +411,7 @@ void TextLayouter::LayoutMultipleLineMesh(List<BaseFontMesh*>& outMeshes,
 				wchar_t c = line[j];
 				const FontChar* fontChar = GetChar(font, c);
 				Log::AssertNotNull(fontChar, "fontChar");
-				AddCharToMesh(outMeshes, font, *fontChar, origin, label, isStatic);
+				AddCharToMesh(outMeshes,outMaterials, font, *fontChar, origin, label, isStatic);
 				origin.X += fontChar->HAdvance;
 			}
 		}
@@ -420,7 +420,7 @@ void TextLayouter::LayoutMultipleLineMesh(List<BaseFontMesh*>& outMeshes,
 
 
 
-void TextLayouter::LayoutSingleLineMesh(List<BaseFontMesh*>& outMeshes,
+void TextLayouter::LayoutSingleLineMesh(List<BaseFontMesh*>& outMeshes, List<IMaterial*>& outMaterials,
 										IFont& font,
 										const Size2F& imageSize,
 										float lineWidth,
@@ -453,7 +453,7 @@ void TextLayouter::LayoutSingleLineMesh(List<BaseFontMesh*>& outMeshes,
 			wchar_t c = line[j];
 			const FontChar* fontChar = GetChar(font, c);
 			Log::AssertNotNull(fontChar, "fontChar");
-			AddCharToMesh(outMeshes, font, *fontChar, origin, label, isStatic);
+			AddCharToMesh(outMeshes,outMaterials, font, *fontChar, origin, label, isStatic);
 			if (hasKerning&&j != 0)
 			{
 				Point3F nextPen = origin;
@@ -484,14 +484,14 @@ void TextLayouter::LayoutSingleLineMesh(List<BaseFontMesh*>& outMeshes,
 
 			const FontChar* fontChar = GetChar(font, c);
 			Log::AssertNotNull(fontChar, "fontChar");
-			AddCharToMesh(outMeshes, font, *fontChar, origin, label, isStatic);
+			AddCharToMesh(outMeshes,outMaterials, font, *fontChar, origin, label, isStatic);
 			origin.X += fontChar->HAdvance;
 		}
 	}
 }
 
 
-void TextLayouter::AddCharToMesh(List<BaseFontMesh*>& outMeshes, IFont& font, const FontChar& fontChar, const Point3F& origin, ILabel* label/*=nullptr*/, bool isStatic/*=false*/)
+void TextLayouter::AddCharToMesh(List<BaseFontMesh*>& outMeshes, List<IMaterial*>& outMaterials, IFont& font, const FontChar& fontChar, const Point3F& origin, ILabel* label/*=nullptr*/, bool isStatic/*=false*/)
 {
 	RETURN_IF_NULL(fontChar.Material());
 
@@ -501,21 +501,17 @@ void TextLayouter::AddCharToMesh(List<BaseFontMesh*>& outMeshes, IFont& font, co
 	}
 
 	BaseFontMesh* mesh = nullptr;
-	if (outMeshes.Count() == 1 && outMeshes.First()->Material() == fontChar.Material())
+	if (outMeshes.Count() == 1 && outMaterials.First() == fontChar.Material())
 	{
 		mesh = outMeshes.First();
 	}
 	else
 	{
 		//Because one font won't contains many material, so it's ok here.
-		FOR_EACH_COLLECTION(i, outMeshes)
+		intp index= outMaterials.IndexOf(fontChar.Material());
+		if(index!=-1)
 		{
-			BaseFontMesh* item = *i;
-			if (item->Material() == fontChar.Material())
-			{
-				mesh = item;
-				break;
-			}
+			mesh = outMeshes[index];
 		}
 	}
 
@@ -523,6 +519,8 @@ void TextLayouter::AddCharToMesh(List<BaseFontMesh*>& outMeshes, IFont& font, co
 	{
 		//still cannot find the mesh, try create a new mesh in label
 		mesh = label->CreateFontMesh(fontChar.Material(), isStatic);
+		outMeshes.Add(mesh);
+		outMaterials.Add(fontChar.Material());
 	}
 
 	Log::AssertNotNull(mesh, "Mesh");

@@ -21,7 +21,7 @@ We choose separate buffer instead of interleaved, because we want to update only
 class FntTextMesh :public BaseFontMesh
 {
 public:
-	FntTextMesh(IEffect* effect = nullptr, IMaterial* material = nullptr, bool isStatic = false);
+	FntTextMesh( bool isStatic = false);
 	virtual ~FntTextMesh(void);
 public:
 	virtual void SetIsStatic(bool val)override;
@@ -42,7 +42,7 @@ public:
 	virtual void Restore()override;
 	virtual void Draw(IRenderQueue& renderQueue, RenderingFlags renderingFlags = RenderingFlags::None)override;
 
-	virtual void AddToVertexBufferObject(VertexGraphicsBuffer& bufferObject, size_t vertexIndex, const Matrix& matrix)const override;
+	virtual void AddToVertexBufferObject(VertexGraphicsBuffer& bufferObject, size_t vertexIndex, const Matrix4& matrix)const override;
 	virtual void AddToTexCoordBufferObject(TexCoordGraphicsBuffer& bufferObject, size_t vertexIndex)const override;
 	virtual void AddToIndexBufferObject(IndexGraphicsBuffer& bufferObject, size_t vertexIndex, size_t indexIndex)const override;
 	virtual void AddToColorBufferObject(ColorGraphicsBuffer& bufferObject, size_t vertexIndex, const Color4F& parentColor = Color4F::White)const override;

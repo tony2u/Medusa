@@ -18,7 +18,7 @@ We choose separate buffer instead of interleaved, because we want to update only
 class ShapeGeneralMesh :public IMesh
 {
 public:
-	ShapeGeneralMesh(IEffect* effect = nullptr, IMaterial* material = nullptr, bool isStatic = false);
+	ShapeGeneralMesh(bool isStatic = false);
 	virtual ~ShapeGeneralMesh(void);
 public:
 	virtual size_t VertexCount()const override { return mVertices.Count(); }
@@ -29,19 +29,19 @@ public:
 	const List<uint>& Indices() const { return mIndices; }
 
 
-	void Initialize(const Size2F& rectSize, const Color4F& color, bool isBorder = false);
-	void Initialize(const Rect2F& rect, const Color4F& color, bool isBorder = false);
-	void Initialize(const Point3F& p1, const Point3F& p2, const Point3F& p3, const Color4F& color, bool isBorder = false);
-	void Initialize(float width, float height, const Color4F& color, bool isBorder = false);
+	void Initialize(const Size2F& rectSize, const Color4F& color);
+	void Initialize(const Rect2F& rect, const Color4F& color);
+	void Initialize(const Point3F& p1, const Point3F& p2, const Point3F& p3, const Color4F& color);
+	void Initialize(float width, float height, const Color4F& color);
 
 	void InitializeBorder(const Size2F& rectSize, const Color4F& color);
 	void InitializeBorder(const Rect2F& rect, const Color4F& color);
 	void InitializeBorder(const Point3F& p1, const Point3F& p2, const Point3F& p3, const Color4F& color);
 	void InitializeBorder(float width, float height, const Color4F& color);
 
-	void SetVertexBySize(const Size2F& val, bool isBorder = false);
-	void SetVertexByRect(const Rect2F& val, bool isBorder = false);
-	void ExpandVertexRectSize(const Size2F& val, bool isBorder = false);
+	void SetVertexBySize(const Size2F& val);
+	void SetVertexByRect(const Rect2F& val);
+	void ExpandVertexRectSize(const Size2F& val);
 
 	void SetColorAll(const Color4F& val);
 
@@ -61,7 +61,7 @@ public:
 
 	virtual INode* CreateCloneInstance()const override;
 public:
-	virtual void AddToVertexBufferObject(VertexGraphicsBuffer& bufferObject, size_t vertexIndex, const Matrix& matrix)const override;
+	virtual void AddToVertexBufferObject(VertexGraphicsBuffer& bufferObject, size_t vertexIndex, const Matrix4& matrix)const override;
 	virtual void AddToColorBufferObject(ColorGraphicsBuffer& bufferObject, size_t vertexIndex, const Color4F& parentColor = Color4F::White)const override;
 	virtual void AddToIndexBufferObject(IndexGraphicsBuffer& bufferObject, size_t vertexIndex, size_t indexIndex)const override;
 public:

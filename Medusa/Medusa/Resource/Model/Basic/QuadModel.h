@@ -2,10 +2,12 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 #pragma once
+#include "MedusaPreDeclares.h"
 #include "Resource/Model/BaseSingleTextureModel.h"
 #include "Resource/Material/IMaterial.h"
 #include "Core/Geometry/Rect2.h"
 #include "Resource/Model/Mesh/Fixed/TextureQuadMesh.h"
+
 MEDUSA_BEGIN;
 
 class QuadModel:public BaseSingleTextureModel<TextureQuadMesh>

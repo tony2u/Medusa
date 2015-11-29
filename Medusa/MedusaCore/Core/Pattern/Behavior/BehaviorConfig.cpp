@@ -44,7 +44,6 @@ bool BehaviorConfig::LoadFromData(StringRef path, const MemoryByteData& data, ui
 		IBehavior* behavior = BehaviorFactory::Instance().SmartCreate(typeName);
 		behavior->LoadFromXmlNode(child);
 		behavior->Initialize();
-		behavior->Retain();
 		if (id.EndWith("Behavior"))
 		{
 			Add(id, behavior);

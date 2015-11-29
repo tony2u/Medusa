@@ -25,7 +25,8 @@ BMPFont::~BMPFont(void)
 
 BMPFont* BMPFont::CreateFromPVR(const FontId& fontId)
 {
-	IMaterial* textureMaterial = MaterialFactory::Instance().Create(fontId.ToRef(), ShaderSamplerNames::Texture);
+	IMaterial* textureMaterial = MaterialFactory::Instance().CreateSingleTexture(fontId.ToRef());
+
 	ITexture* texture = textureMaterial->FirstTexture();
 
 	IImage* image = texture->Image();
@@ -179,7 +180,7 @@ BMPFont* BMPFont::CreateFromBMPBinary(const FontId& fontId, const IStream& strea
 	FOR_EACH_SIZE(i, pageCount)
 	{
 		HeapString pageFileName = stream.ReadString();
-		IMaterial* material = MaterialFactory::Instance().Create(pageFileName, ShaderSamplerNames::Texture);
+		IMaterial* material = MaterialFactory::Instance().CreateSingleTexture(pageFileName);
 		if (material == nullptr)
 		{
 			Log::FormatError("Failed to read material:{}", pageFileName.c_str());
@@ -363,7 +364,7 @@ BMPFont* BMPFont::CreateFromBMPText(const FontId& fontId, const IStream& stream)
 
 		pageFileName.RemoveLast();
 
-		IMaterial* material = MaterialFactory::Instance().Create(pageFileName, ShaderSamplerNames::Texture);
+		IMaterial* material = MaterialFactory::Instance().CreateSingleTexture(pageFileName);
 		if (material == nullptr)
 		{
 			Log::FormatError("Failed to read material:{}", pageFileName.c_str());
@@ -468,7 +469,7 @@ BMPFont* BMPFont::CreateFromBMPText(const FontId& fontId, const IStream& stream)
 
 BMPFont* BMPFont::CreateFromSingleTexture(const FontId& fontId, wchar_t firstChar /*= L'0'*/)
 {
-	IMaterial* material = MaterialFactory::Instance().Create(fontId.ToRef(), ShaderSamplerNames::Texture);
+	IMaterial* material = MaterialFactory::Instance().CreateSingleTexture(fontId.ToRef());
 	if (material == nullptr)
 	{
 		Log::FormatError("Failed to read font material:{}", fontId.Name.c_str());

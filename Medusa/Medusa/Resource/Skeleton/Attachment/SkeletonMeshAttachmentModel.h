@@ -8,6 +8,7 @@
 #include "Core/Collection/List.h"
 #include "Resource/Model/Mesh/General/TextureGeneralMesh.h"
 
+
 MEDUSA_BEGIN;
 
 
@@ -33,11 +34,14 @@ public:
 	void AddIndex(uint val);
 
 	const TextureGeneralMesh& Mesh() const { return mMesh; }
-	virtual IMesh* GetMesh() override{ return &mMesh; }
 	virtual bool Initialize() override;
+	virtual RenderingObject GetRenderingObject()const;
 
 protected:
 	TextureGeneralMesh mMesh;
+
+	RenderingObject mRenderingObject;
+
 };
 
 MEDUSA_END;

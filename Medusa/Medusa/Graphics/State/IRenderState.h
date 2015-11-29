@@ -11,9 +11,6 @@
 #include "Core/Pattern/Event.h"
 MEDUSA_BEGIN;
 
-
-
-
 class IRenderState :public RTTIObject, public IClone<IRenderState>, public ISharableSingleThread
 {
 	MEDUSA_DECLARE_RTTI_ROOT;
@@ -23,12 +20,16 @@ public:
 public:
 	IRenderState();
 	virtual ~IRenderState();
-	virtual void Apply()const = 0;
-
-	virtual IRenderState* Clone()const override= 0;
-	virtual bool Equals(const IRenderState& state)const;
 	virtual RenderStateType Type()const = 0;
 	virtual intp HashCode() const { return 0; }
+	virtual bool Equals(const IRenderState& state)const;
+
+	virtual void Apply()const = 0;
+
+	virtual IRenderState* Clone()const;
+	virtual void CopyFrom(const IRenderState& other){}
+	virtual void UpdateWorldState(const IRenderState* selfRenderState, const IRenderState* parentRenderState, const Matrix4& selfWorldMatrix);
+
 protected:
 	void OnStateChanged();
 };

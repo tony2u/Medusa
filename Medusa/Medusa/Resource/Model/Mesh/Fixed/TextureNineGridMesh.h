@@ -21,7 +21,7 @@ We choose separate buffer instead of interleaved, because we want to update only
 class TextureNineGridMesh :public IMesh
 {
 public:
-	TextureNineGridMesh(IEffect* effect = nullptr, IMaterial* material = nullptr, bool isStatic = false);
+	TextureNineGridMesh( bool isStatic = false);
 	virtual ~TextureNineGridMesh(void);
 public:
 	virtual size_t VertexCount()const { return 16; }
@@ -45,15 +45,15 @@ public:
 	void SetColor(uint i, const Color4F& val);
 	void SetColorAll(const Color4F& val);
 
-	void Initialize(const Size2F& targetSize, const ThicknessF& padding, const Rect2F& textureRect = Rect2F::Zero, const Color4F& color = Color4F::White);
-	void UpdateToNewTargetSize(const Size2F& targetSize);
+	void Initialize(const Size2F& targetSize, const Size2F& textureSize, const ThicknessF& padding, const Rect2F& textureRect = Rect2F::Zero, const Color4F& color = Color4F::White);
+	void UpdateToNewTargetSize(const Size2F& targetSize, const Size2F& textureSize);
 
 
 
 	virtual INode* CreateCloneInstance()const;
 
 public:
-	virtual void AddToVertexBufferObject(VertexGraphicsBuffer& bufferObject, size_t vertexIndex, const Matrix& matrix)const;
+	virtual void AddToVertexBufferObject(VertexGraphicsBuffer& bufferObject, size_t vertexIndex, const Matrix4& matrix)const;
 	virtual void AddToTexCoordBufferObject(TexCoordGraphicsBuffer& bufferObject, size_t vertexIndex)const;
 	virtual void AddToColorBufferObject(ColorGraphicsBuffer& bufferObject, size_t vertexIndex, const Color4F& parentColor = Color4F::White)const;
 	virtual void AddToIndexBufferObject(IndexGraphicsBuffer& bufferObject, size_t vertexIndex, size_t indexIndex)const;

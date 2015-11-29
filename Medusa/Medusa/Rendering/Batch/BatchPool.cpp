@@ -6,8 +6,10 @@
 #include "Rendering/IRenderable.h"
 #include "Rendering/Batch/Multiple/MultipleRenderBatch.h"
 #include "Rendering/Batch/Single/SingleRenderBatch.h"
+#include "Rendering/Batch/Custom/CustomDrawMeshRenderBatch.h"
 #include "Resource/Model/Mesh/IMesh.h"
 #include "Application/Application.h"
+#include <Resource/Material/IMaterial.h>
 
 
 MEDUSA_BEGIN;
@@ -22,6 +24,8 @@ IRenderBatch* BatchNewerById::New(RenderingStrategy id)
 		case RenderingStrategy::SingleDynamicBatch:
 		case RenderingStrategy::SingleStaticBatch:
 			return new SingleRenderBatch(id);
+		case RenderingStrategy::CustomDrawMesh:
+			return new CustomDrawMeshRenderBatch();
 		default:
 			return nullptr;
 	}
@@ -42,10 +46,9 @@ IRenderBatch* BatchPool::Create(IRenderable* node)
 {
 	IRenderBatch* batch = Create(node->GetRenderingStrategy());
 	batch->Initialize();
-	IMesh* mesh = node->Mesh();
-	batch->SetEffect(mesh->Effect());
-	batch->SetMaterial(mesh->Material());
-	batch->SetDrawMode(mesh->DrawMode());
+	batch->SetEffect(node->Material()->Effect());
+	batch->SetMaterial(node->Material());
+	batch->SetDrawMode(node->Material()->DrawMode());
 	batch->SetStateTreeNode(node->RenderStateTreeNode());
 	batch->SetGroup(node->GetBatchGroup());
 	mRecycledNodes.Remove(batch);

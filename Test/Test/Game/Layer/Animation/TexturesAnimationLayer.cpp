@@ -18,7 +18,7 @@ bool TexturesAnimationLayer::Initialize()
 {
 	RETURN_FALSE_IF_FALSE(BaseCaseLayer::Initialize());
 
-	ITimeline* timeline= TimelineFactory::Instance().CreateMeshTimelineFromTextures("CellOpen", "CellOpen1.png", 15.f, true);
+	ITimeline* timeline= TimelineFactory::Instance().CreateRenderingObjectTimelineFromTextures("CellOpen", "CellOpen1.png", 15.f, true);
 	Sprite* sprite = new Sprite("CellOpen");
 	sprite->SetSizeToContent(SizeToContent::Mesh);
 
