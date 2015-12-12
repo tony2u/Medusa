@@ -3,9 +3,7 @@
 // license that can be found in the LICENSE file.
 #pragma once
 #include "MedusaPreDeclares.h"
-#include "Core/Geometry/Rect2.h"
 #include "Core/Geometry/Point2.h"
-#include "Core/Collection/Array.h"
 
 MEDUSA_BEGIN;
 
@@ -52,8 +50,6 @@ public:
 	FontChar(wchar_t id);
 
 	wchar_t Id=0;
-	Rect2U TextureRect;
-	Array<Point2F,4> TextureCoords;
 	Point2I HBearing;
 	ushort HAdvance=0;	//character width
 
@@ -61,27 +57,18 @@ public:
 	ushort VAdvance=0;	//character height
 
 	int Channel;	//The texture channel where the character image is found (1 = blue, 2 = green, 4 = red, 8 = alpha, 15 = all channels).
-	void SetMaterial(IMaterial* material);
-	IMaterial* Material() const { return mMaterial; }
 
-	intp HashCode()const
-	{
-		return TextureRect.HashCode();
-	}
+	TextureAtlasRegion* Region() const { return mRegion; }
+	void SetRegion(TextureAtlasRegion* val) { mRegion = val; }
 
 	bool operator==(const FontChar& val)const
 	{
 		return Id==val.Id;
 	}
 
-	void UpdateTextureCoords(const Size2U& textureSize);
-	void UpdateTextureCoordsReverse(const Size2U& textureSize);
-
-	void UpdateTextureCoords(const Rect2U textureRect,const Size2U& textureSize);
-
-
 private:
-	IMaterial* mMaterial;
+	TextureAtlasRegion* mRegion=nullptr;
+	
 };
 
 MEDUSA_END;

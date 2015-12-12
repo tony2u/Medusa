@@ -64,7 +64,7 @@ bool BaseFeatureLayer::Enter()
 	mIndex = 0;
 	StringRef layerName = mLayers[mIndex];
 	mCurrentLayer = (BaseCaseLayer*)SceneManager::Instance().RunningScene()->CreateLayer(layerName, StringRef::Empty, IEventArg::Empty, LayerCreateFlags::AlwaysCreate);
-	mCurrentLayer->SetLogicZ(-1);
+	mCurrentLayer->SetDepth(-1);
 	AddChild(mCurrentLayer);
 	mCurrentLayer->Enter();
 
@@ -96,7 +96,7 @@ void BaseFeatureLayer::OnLeft(INode* sender, TapGestureEventArg& e)
 	DeleteChild(mCurrentLayer);
 	mCurrentLayer = nullptr;
 	mCurrentLayer = (BaseCaseLayer*)SceneManager::Instance().RunningScene()->CreateLayer(layerName, StringRef::Empty, IEventArg::Empty, LayerCreateFlags::AlwaysCreate);
-	mCurrentLayer->SetLogicZ(-1);
+	mCurrentLayer->SetDepth(-1);
 	AddChild(mCurrentLayer);
 }
 
@@ -112,7 +112,7 @@ void BaseFeatureLayer::OnRight(INode* sender, TapGestureEventArg& e)
 	DeleteChild(mCurrentLayer);
 	mCurrentLayer = nullptr;
 	mCurrentLayer = (BaseCaseLayer*)SceneManager::Instance().RunningScene()->CreateLayer(layerName, StringRef::Empty, IEventArg::Empty, LayerCreateFlags::AlwaysCreate);
-	mCurrentLayer->SetLogicZ(-1);
+	mCurrentLayer->SetDepth(-1);
 	AddChild(mCurrentLayer);
 }
 

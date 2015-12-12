@@ -19,14 +19,7 @@ public:
 public:
 	BMPFont(const FontId& fontId);
 	virtual ~BMPFont(void);
-
-
-
-
 private:
-
-
-
 };
 
 MEDUSA_END;

@@ -10,6 +10,10 @@
 #include "Resource/Material/IMaterial.h"
 #include "Resource/Texture/ITexture.h"
 #include "Core/IO/FileSystem.h"
+#include "Resource/TextureAtlas/TextureAtlasPage.h"
+#include "Resource/TextureAtlas/TextureAtlas.h"
+#include "Resource/TextureAtlas/TextureAtlasRegion.h"
+
 
 MEDUSA_BEGIN;
 
@@ -25,9 +29,8 @@ BMPFont::~BMPFont(void)
 
 BMPFont* BMPFont::CreateFromPVR(const FontId& fontId)
 {
-	IMaterial* textureMaterial = MaterialFactory::Instance().CreateSingleTexture(fontId.ToRef());
-
-	ITexture* texture = textureMaterial->FirstTexture();
+	TextureAtlasPage* page = new TextureAtlasPage(fontId.ToRef());
+	ITexture* texture = page->LoadTexture();
 
 	IImage* image = texture->Image();
 	RETURN_NULL_IF_NULL(image);
@@ -42,7 +45,7 @@ BMPFont* BMPFont::CreateFromPVR(const FontId& fontId)
 	}
 
 	BMPFont* resultFont = new BMPFont(fontId);
-	resultFont->AddMaterial(textureMaterial);
+
 	resultFont->SetAscender(fontHeader->Ascent);
 	resultFont->SetLineHeight(fontHeader->LineSpace);
 	resultFont->SetTotalCharCount(fontHeader->NumCharacters);
@@ -61,8 +64,6 @@ BMPFont* BMPFont::CreateFromPVR(const FontId& fontId)
 	PVRImageMetaDataBlock* rectMetaBlock = pvrImage->GetMetaBlock((uint)PVRVersionIdentifier::PVR3, (uint)PVRFontMetaBlockKey::Rects);
 
 	bool hasSpace = false;
-	Size2U imageSize = image->Size();
-	Point2F textureCoord;
 
 	FOR_EACH_SIZE(i, (uint)fontHeader->NumCharacters)
 	{
@@ -73,24 +74,32 @@ BMPFont* BMPFont::CreateFromPVR(const FontId& fontId)
 		fontChar->HBearing.X = ((short*)metricsMetaBlock->Data)[i];
 		fontChar->HAdvance = ((short*)metricsMetaBlock->Data)[i + 1];
 
-		fontChar->UpdateTextureCoords(((Rect2U*)rectMetaBlock->Data)[i], imageSize);
+		TextureAtlasRegion* region = new TextureAtlasRegion();
+		region->SetId(fontChar->Id);
+		region->SetTextureRect(((Rect2U*)rectMetaBlock->Data)[i]);
+		page->AddRegion(region);
+		fontChar->SetRegion(region);
 
-		fontChar->SetMaterial(textureMaterial);
 		resultFont->AddChar(fontChar);
 
 		if (fontChar->Id == ' ')
 		{
+			resultFont->SetSpaceFontChar(fontChar);
 			hasSpace = true;
-			resultFont->SetSpaceFontChar(*fontChar);
 		}
 	}
 
+	resultFont->Atlas()->AddPage(page);
+
 	if (!hasSpace)
 	{
-		FontChar spaceFontChar;
-		spaceFontChar.Id = ' ';
-		spaceFontChar.HAdvance = fontHeader->SpaceWidth;
-		resultFont->SetSpaceFontChar(spaceFontChar);
+		FontChar* fontChar =new FontChar();
+		fontChar->Id = ' ';
+		fontChar->HAdvance = fontHeader->SpaceWidth;
+		
+		resultFont->AddChar(fontChar);
+		resultFont->SetSpaceFontChar(fontChar);
+		
 	}
 
 	FOR_EACH_SIZE(i, (uint)fontHeader->NumKerningPairs)
@@ -176,18 +185,19 @@ BMPFont* BMPFont::CreateFromBMPBinary(const FontId& fontId, const IStream& strea
 	stream.ReadChar();
 	/*uint pageBlockSize=*/stream.Read<uint>();
 
-	Dictionary<int, IMaterial*> fontTextures;
 	FOR_EACH_SIZE(i, pageCount)
 	{
 		HeapString pageFileName = stream.ReadString();
-		IMaterial* material = MaterialFactory::Instance().CreateSingleTexture(pageFileName);
-		if (material == nullptr)
+		TextureAtlasPage* page = new TextureAtlasPage(pageFileName);
+		page->SetId(i);
+		ITexture* texture = page->LoadTexture();
+		
+		if (texture == nullptr)
 		{
-			Log::FormatError("Failed to read material:{}", pageFileName.c_str());
+			Log::FormatError("Failed to read texture:{}", pageFileName.c_str());
 			return nullptr;
 		}
-		fontTextures.Add((int)i, material);
-		bmpFont->AddMaterial(material);
+		bmpFont->Atlas()->AddPage(page);
 	}
 
 
@@ -205,47 +215,56 @@ BMPFont* BMPFont::CreateFromBMPBinary(const FontId& fontId, const IStream& strea
 	FOR_EACH_SIZE(i, charCount)
 	{
 		FontChar* fontChar = new FontChar();
+		TextureAtlasRegion* region = new TextureAtlasRegion();
+		region->SetIsTexcoordUpSide(false);
 
 		fontChar->Id = (wchar_t)stream.Read<uint>();
-		fontChar->TextureRect.Origin.X = stream.Read<ushort>();
-		fontChar->TextureRect.Origin.Y = stream.Read<ushort>();
-		fontChar->TextureRect.Size.Width = stream.Read<ushort>();
-		fontChar->TextureRect.Size.Height = stream.Read<ushort>();
+		region->SetId(fontChar->Id);
+
+		Rect2U textureRect;
+		textureRect.Origin.X = stream.Read<ushort>();
+		textureRect.Origin.Y = stream.Read<ushort>();
+		textureRect.Size.Width = stream.Read<ushort>();
+		textureRect.Size.Height = stream.Read<ushort>();
+		region->SetTextureRect(textureRect);
+
 		fontChar->HBearing.X = stream.Read<short>();
 		fontChar->HBearing.Y = stream.Read<short>();
 		fontChar->HAdvance = stream.Read<short>();
 		pageId = stream.ReadChar();
 		fontChar->Channel = stream.ReadChar();
 
-		fontChar->SetMaterial(fontTextures.TryGetValueWithFailed(pageId, nullptr));
-		if (fontChar->Material() == nullptr)
+		
+		TextureAtlasPage* page= bmpFont->Atlas()->FindPage(pageId);
+		if (page == nullptr)
 		{
 			Log::FormatError("Failed to find page id:{}", pageId);
 			return nullptr;
 		}
+		page->AddRegion(region);
+		fontChar->SetRegion(region);
 
 		fontChar->HBearing.Y = (int)(bmpFont->Ascender() - fontChar->HBearing.Y);
-
-		fontChar->UpdateTextureCoordsReverse(textureSize);
-
 		bmpFont->AddChar(fontChar);
 
 		if (fontChar->Id == ' ')
 		{
-			bmpFont->SetSpaceFontChar(*fontChar);
+			bmpFont->SetSpaceFontChar(fontChar);
 			hasSpace = true;
 		}
 	}
 
 	if (!hasSpace)
 	{
-		FontChar spaceFontChar;
-		spaceFontChar.Id = ' ';
-		spaceFontChar.HAdvance = (ushort)bmpFont->Size() / 2;
-
-		bmpFont->SetSpaceFontChar(spaceFontChar);
+		FontChar* fontChar = new FontChar();
+		fontChar->Id = ' ';
+		fontChar->HAdvance = (ushort)bmpFont->Size() / 2;
+		bmpFont->AddChar(fontChar);
+		bmpFont->SetSpaceFontChar(fontChar);
 	}
 
+
+	
 	int kerningBlockId = stream.ReadChar();
 	if (kerningBlockId != -1)
 	{
@@ -354,7 +373,6 @@ BMPFont* BMPFont::CreateFromBMPText(const FontId& fontId, const IStream& stream)
 
 	//read page lines
 	HeapString pageFileName;
-	Dictionary<int, IMaterial*> fontTextures;
 	FOR_EACH_SIZE(i, pageCount)
 	{
 		StringRef pageLine = outLines[lineIndex++];
@@ -364,14 +382,16 @@ BMPFont* BMPFont::CreateFromBMPText(const FontId& fontId, const IStream& stream)
 
 		pageFileName.RemoveLast();
 
-		IMaterial* material = MaterialFactory::Instance().CreateSingleTexture(pageFileName);
-		if (material == nullptr)
+		TextureAtlasPage* page = new TextureAtlasPage(pageFileName);
+		page->SetId(pageId);
+		ITexture* texture = page->LoadTexture();
+
+		if (texture == nullptr)
 		{
 			Log::FormatError("Failed to read material:{}", pageFileName.c_str());
 			return nullptr;
 		}
-		fontTextures.Add(pageId, material);
-		bmpFont->AddMaterial(material);
+		bmpFont->Atlas()->AddPage(page);
 	}
 
 	//read char count line
@@ -389,13 +409,17 @@ BMPFont* BMPFont::CreateFromBMPText(const FontId& fontId, const IStream& stream)
 	FOR_EACH_SIZE(i, charCount)
 	{
 		FontChar* fontChar = new FontChar();
+		TextureAtlasRegion* region = new TextureAtlasRegion();
+		region->SetIsTexcoordUpSide(false);
 
+		fontChar->SetRegion(region);
+		Rect2U textureRect;
 		StringRef charLine = outLines[lineIndex++];
 		isSuccess = StringParser::TryReadKeyValue(charLine, "id", '=', ' ', fontChar->Id);
-		isSuccess = StringParser::TryReadKeyValue(charLine, "x", '=', ' ', fontChar->TextureRect.Origin.X);
-		isSuccess = StringParser::TryReadKeyValue(charLine, "y", '=', ' ', fontChar->TextureRect.Origin.Y);
-		isSuccess = StringParser::TryReadKeyValue(charLine, "width", '=', ' ', fontChar->TextureRect.Size.Width);
-		isSuccess = StringParser::TryReadKeyValue(charLine, "height", '=', ' ', fontChar->TextureRect.Size.Height);
+		isSuccess = StringParser::TryReadKeyValue(charLine, "x", '=', ' ', textureRect.Origin.X);
+		isSuccess = StringParser::TryReadKeyValue(charLine, "y", '=', ' ', textureRect.Origin.Y);
+		isSuccess = StringParser::TryReadKeyValue(charLine, "width", '=', ' ', textureRect.Size.Width);
+		isSuccess = StringParser::TryReadKeyValue(charLine, "height", '=', ' ', textureRect.Size.Height);
 		isSuccess = StringParser::TryReadKeyValue(charLine, "xoffset", '=', ' ', fontChar->HBearing.X);
 		isSuccess = StringParser::TryReadKeyValue(charLine, "yoffset", '=', ' ', fontChar->HBearing.Y);
 		isSuccess = StringParser::TryReadKeyValue(charLine, "xadvance", '=', ' ', fontChar->HAdvance);
@@ -403,32 +427,35 @@ BMPFont* BMPFont::CreateFromBMPText(const FontId& fontId, const IStream& stream)
 		isSuccess = StringParser::TryReadKeyValue(charLine, "page", '=', ' ', pageId);
 		isSuccess = StringParser::TryReadKeyValue(charLine, "chnl", '=', ' ', fontChar->Channel);
 
-		fontChar->SetMaterial(fontTextures.TryGetValueWithFailed(pageId, nullptr));
-		if (fontChar->Material() == nullptr)
+		region->SetId(fontChar->Id);
+		region->SetTextureRect(textureRect);
+
+		auto* page= bmpFont->Atlas()->FindPage(pageId);
+		if (page == nullptr)
 		{
 			Log::FormatError("Failed to find page id:{}", pageId);
 			return nullptr;
 		}
-
+		page->AddRegion(region);
 		fontChar->HBearing.Y = (int)(bmpFont->Ascender() - fontChar->HBearing.Y);
-		fontChar->UpdateTextureCoordsReverse(textureSize);
 
 		bmpFont->AddChar(fontChar);
 
 		if (fontChar->Id == ' ')
 		{
-			bmpFont->SetSpaceFontChar(*fontChar);
+			bmpFont->SetSpaceFontChar(fontChar);
 			hasSpace = true;
 		}
 	}
 
 	if (!hasSpace)
 	{
-		FontChar spaceFontChar;
-		spaceFontChar.Id = ' ';
-		spaceFontChar.HAdvance = (ushort)bmpFont->Size() / 2;
+		FontChar* fontChar = new FontChar();
+		fontChar->Id = ' ';
+		fontChar->HAdvance = (ushort)bmpFont->Size() / 2;
+		bmpFont->AddChar(fontChar);
+		bmpFont->SetSpaceFontChar(fontChar);
 
-		bmpFont->SetSpaceFontChar(spaceFontChar);
 	}
 
 	if (lineIndex < outLines.Count())
@@ -469,13 +496,15 @@ BMPFont* BMPFont::CreateFromBMPText(const FontId& fontId, const IStream& stream)
 
 BMPFont* BMPFont::CreateFromSingleTexture(const FontId& fontId, wchar_t firstChar /*= L'0'*/)
 {
-	IMaterial* material = MaterialFactory::Instance().CreateSingleTexture(fontId.ToRef());
-	if (material == nullptr)
+	TextureAtlasPage* page = new TextureAtlasPage(fontId.Name);
+	ITexture* texture = page->LoadTexture();
+
+	if (page == nullptr)
 	{
 		Log::FormatError("Failed to read font material:{}", fontId.Name.c_str());
 		return nullptr;
 	}
-	Size2U textureSize = material->FirstTexture()->Size();
+	Size2U textureSize = texture->Size();
 	uint fontSize = fontId.Size();;
 	std::unique_ptr<BMPFont> bmpFont(new BMPFont(fontId));
 
@@ -485,7 +514,7 @@ BMPFont* BMPFont::CreateFromSingleTexture(const FontId& fontId, wchar_t firstCha
 	bmpFont->SetImageSize(textureSize);
 
 
-	bmpFont->AddMaterial(material);
+	bmpFont->Atlas()->AddPage(page);
 	uint charCount = textureSize.Width / fontSize;
 	bmpFont->SetTotalCharCount(charCount);
 
@@ -495,34 +524,43 @@ BMPFont* BMPFont::CreateFromSingleTexture(const FontId& fontId, wchar_t firstCha
 	FOR_EACH_UINT32(i, charCount)
 	{
 		FontChar* fontChar = new FontChar();
+		TextureAtlasRegion* region = new TextureAtlasRegion();
+		fontChar->SetRegion(region);
+
+		Rect2U textureRect;
+
 		fontChar->Id = firstChar++;
-		fontChar->TextureRect.Origin.X = i*charWidth;
-		fontChar->TextureRect.Origin.Y = 0;
-		fontChar->TextureRect.Size.Width = charWidth;
-		fontChar->TextureRect.Size.Height = textureSize.Height;
+		textureRect.Origin.X = i*charWidth;
+		textureRect.Origin.Y = 0;
+		textureRect.Size.Width = charWidth;
+		textureRect.Size.Height = textureSize.Height;
 		fontChar->HAdvance = (ushort)charWidth;
-		fontChar->SetMaterial(material);
 
 		fontChar->HBearing.Y = (int)(bmpFont->Ascender());
 
-		fontChar->UpdateTextureCoordsReverse(textureSize);
+		region->SetIsTexcoordUpSide(false);
+		region->SetTextureRect(textureRect);
+		page->AddRegion(region);
 
 		bmpFont->AddChar(fontChar);
 
 		if (fontChar->Id == ' ')
 		{
-			bmpFont->SetSpaceFontChar(*fontChar);
+			bmpFont->SetSpaceFontChar(fontChar);
+
 			hasSpace = true;
 		}
 	}
 
 	if (!hasSpace)
 	{
-		FontChar spaceFontChar;
-		spaceFontChar.Id = ' ';
-		spaceFontChar.HAdvance = (ushort)bmpFont->Size() / 2;
+		FontChar* fontChar = new FontChar();
+		fontChar->Id = ' ';
+		fontChar->HAdvance = (ushort)bmpFont->Size() / 2;
+		bmpFont->AddChar(fontChar);
+		bmpFont->SetSpaceFontChar(fontChar);
 
-		bmpFont->SetSpaceFontChar(spaceFontChar);
+
 	}
 
 	BMPFont* resultFont = bmpFont.release();

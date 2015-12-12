@@ -24,17 +24,18 @@ public:
 	virtual bool Initialize()override;
 	virtual bool Uninitialize()override;
 public:
+	TextureAtlas* CreateEmpty(const FileIdRef& fileId, ResourceShareType shareType = ResourceShareType::Share);
+
 	TextureAtlas* Create(const FileIdRef& fileId, TextureAtlasFileFormat fileFormat = TextureAtlasFileFormat::Spine, uint atlasPageCount = 1, ResourceShareType shareType = ResourceShareType::Share);
 	TextureAtlasRegion* CreateAtlasRegion(StringRef regionName,const FileIdRef& atlasFileId, TextureAtlasFileFormat fileFormat = TextureAtlasFileFormat::Spine,  uint atlasPageCount = 1);
-	TextureAtlasRegion* FindAtlasRegion(TextureAtlas* atlas, StringRef regionName);
+	TextureAtlasRegion* CreateAtlasRegion(int regionId, const FileIdRef& atlasFileId, TextureAtlasFileFormat fileFormat = TextureAtlasFileFormat::Spine, uint atlasPageCount = 1);
+
 
 private:
 	static TextureAtlasPage* CreateSpineAtlasPage(const FileIdRef& fileId);
 	static TextureAtlasRegion* CreateSpineAtlasRegion(const IStream& stream);
 
-
 	PageCreater mPageCreater[(uint)TextureAtlasFileFormat::Count];
-
 private:
 	static bool ReadLineToValues(const IStream& stream, const StringRef& name, HeapString& outLine, List<HeapString>& outValues);
 	static GraphicsInternalFormat ToImageFormat(const StringRef& val);

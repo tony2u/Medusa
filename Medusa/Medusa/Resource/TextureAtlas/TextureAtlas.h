@@ -23,9 +23,19 @@ public:
 	const List<TextureAtlasPage*>& Pages() const { return mPages; }
 
 	TextureAtlasRegion* FindRegion(const StringRef& name)const;
+	TextureAtlasRegion* FindRegion(int id)const;
+
+	TextureAtlasPage* FindPage(int id)const;
+
+	bool TryAddRegion(TextureAtlasRegion* region);
 protected:
 	List<TextureAtlasPage*> mPages;
+
+	Dictionary<int,TextureAtlasPage*> mPageDict;
+
 	Dictionary<StringRef, TextureAtlasRegion*> mRegionDict;	//for quick access
+	Dictionary<int, TextureAtlasRegion*> mRegionIdDict;	//for quick access
+
 
 };
 

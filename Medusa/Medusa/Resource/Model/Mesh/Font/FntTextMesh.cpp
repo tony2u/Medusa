@@ -18,6 +18,7 @@
 #include "Resource/ResourceNames.h"
 #include "Core/Log/Log.h"
 #include "Node/Sprite/Sprite.h"
+#include "Resource/TextureAtlas/TextureAtlasRegion.h"
 
 MEDUSA_BEGIN;
 
@@ -126,31 +127,31 @@ void FntTextMesh::AddFontChar(const IFont& font, const FontChar& fontChar, const
 	if (mCharIndex >= items.Count())
 	{
 		uint originalIndex = mCharIndex;
-		ReserveMesh(mCharCount + 1);
+		ReserveMesh(mCharIndex + 1);
 		mCharIndex = originalIndex;
 	}
 
 	FontCharQuad& quad = items[mCharIndex];
     bool isVertexChanged = true;
     bool isCharChanged=true;
-    if (mCharCount>=mChars.Count())
+    if (mCharIndex >=mChars.Count())
     {
         //new char
         mChars.Add(fontChar.Id);
         mPositions.Add(origin);
     }
-    else
-    {
-        Point3F& oldOrigin = mPositions[mCharIndex];
-        wchar_t& oldChar = mChars[mCharIndex];
-        isCharChanged = oldChar != fontChar.Id;
-        if (!isCharChanged)
-        {
-            isVertexChanged = oldOrigin != origin;
-        }
-        
-        oldChar=fontChar.Id;
-        oldOrigin=origin;
+	else
+	{
+		Point3F& oldOrigin = mPositions[mCharIndex];
+		wchar_t& oldChar = mChars[mCharIndex];
+		isCharChanged = oldChar != fontChar.Id;
+		if (!isCharChanged)
+		{
+			isVertexChanged = oldOrigin != origin;
+		}
+
+		mChars[mCharIndex] =fontChar.Id;
+		mPositions[mCharIndex] =origin;
     }
     
 	
@@ -158,11 +159,13 @@ void FntTextMesh::AddFontChar(const IFont& font, const FontChar& fontChar, const
 
 	if (isCharChanged)
 	{
-		quad.LeftBottom.TexCoord = fontChar.TextureCoords[0];
-		quad.RightBottom.TexCoord = fontChar.TextureCoords[1];
-		quad.RightTop.TexCoord = fontChar.TextureCoords[2];
-		quad.LeftTop.TexCoord = fontChar.TextureCoords[3];
+		auto& textureCoords= fontChar.Region()->Texcoords();
+		quad.LeftBottom.TexCoord = textureCoords[0];
+		quad.RightBottom.TexCoord = textureCoords[1];
+		quad.RightTop.TexCoord = textureCoords[2];
+		quad.LeftTop.TexCoord = textureCoords[3];
         
+		
 		isVertexChanged = true;
 		OnTexcoordChanged();
 	}
@@ -171,19 +174,21 @@ void FntTextMesh::AddFontChar(const IFont& font, const FontChar& fontChar, const
 	{
 		Point3F pos = origin;
 		pos.X += (float)fontChar.HBearing.X;
+		auto& textureRect = fontChar.Region()->TextureRect();
+
 		//pos.Y+=(float)(font.GetDescender()-((int)fontChar.TextureRect.Size.Height-(int)fontChar.HBearing.Y));
-		pos.Y += (float)(-((int)fontChar.TextureRect.Size.Height - (int)fontChar.HBearing.Y));
+		pos.Y += (float)(-((int)textureRect.Size.Height - (int)fontChar.HBearing.Y));
 
 		quad.LeftBottom.Vertex = pos;
 
-		pos.X += fontChar.TextureRect.Size.Width;
+		pos.X += textureRect.Size.Width;
 		quad.RightBottom.Vertex = pos;
 
-		pos.Y += fontChar.TextureRect.Size.Height;
+		pos.Y += textureRect.Size.Height;
 		quad.RightTop.Vertex = pos;
 
 		pos = quad.LeftBottom.Vertex;
-		pos.Y += fontChar.TextureRect.Size.Height;
+		pos.Y += textureRect.Size.Height;
 		quad.LeftTop.Vertex = pos;
 
 		mVertexTexcoordBuffer.SetSingleDirtyIndex(mCharIndex - 1);

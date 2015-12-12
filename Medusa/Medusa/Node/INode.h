@@ -72,8 +72,8 @@ public:
 public:
 	//node tree
 
-	bool operator<(const INode& node)const { return mLogicZ < node.mLogicZ; }
-	int Compare(const INode& node)const { return mLogicZ - node.mLogicZ; }
+	bool operator<(const INode& node)const { return mDepth < node.mDepth; }
+	int Compare(const INode& node)const { return mDepth - node.mDepth; }
 
 	INode* Parent() const { return mParent; }
 	IScene* TryGetRootScene()const;
@@ -115,8 +115,8 @@ public:
 	INode* FindChildRecursively(StringRef name);
 	const INode* FindChildRecursively(StringRef name)const;
 
-	int LogicZ() const { return mLogicZ; }
-	void SetLogicZ(int val) { mLogicZ = val; }
+	int Depth() const { return mDepth; }
+	void SetDepth(int val) { mDepth = val; }
 	void ReorderAllChilds();
 
 	int Tag() const { return mTag; }
@@ -221,7 +221,7 @@ protected:
 	virtual void OnMeshChanged(RenderableChangedFlags flag)override;
 
 protected:
-	int mLogicZ=0;	//used to indicate updating order
+	int mDepth=0;	//used to indicate updating order
 	int mTag=0;
 
 	Dictionary<HeapString, INode*> mNodeDict;

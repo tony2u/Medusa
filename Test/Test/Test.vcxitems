@@ -38,6 +38,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Game\Layer\Control\ProgressBarLayer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Game\Layer\Control\TextureButtonLayer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Game\Layer\Font\FontFeatureLayer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Game\Layer\Font\TTFLayer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Game\Layer\Graphics\BlendTestLayer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Game\Layer\Graphics\GraphicsFeatureLayer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Game\Layer\Graphics\MaskLayer.cpp" />
@@ -87,6 +88,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Game\Layer\Control\ProgressBarLayer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Game\Layer\Control\TextureButtonLayer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Game\Layer\Font\FontFeatureLayer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Game\Layer\Font\TTFLayer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Game\Layer\Graphics\BlendTestLayer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Game\Layer\Graphics\GraphicsFeatureLayer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Game\Layer\Graphics\MaskLayer.h" />

@@ -82,7 +82,7 @@ bool TestGame::Uninitialize()
 bool TestGame::Start()
 {
 	RETURN_FALSE_IF_FALSE(IGame::Start());
-	ApplicationStatics::Instance().ShowAll(false);
+	//ApplicationStatics::Instance().ShowAll(false);
 	//ApplicationStatics::Instance().ShowPerformance(true);
 	//RenderingStatics::Instance().ShowGPU(true);
 

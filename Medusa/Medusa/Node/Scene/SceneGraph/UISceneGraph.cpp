@@ -50,7 +50,7 @@ void UISceneGraph::AddNodeRecursivelyToRenderQueue(INode* node)
 	for (; i < count; i++)
 	{
 		INode* childNode = childs[i];
-		BREAK_IF(childNode->LogicZ() >= 0);
+		BREAK_IF(childNode->Depth() >= 0);
 		CONTINUE_IF_FALSE(childNode->IsValidToRenderQueue());
 		AddNodeRecursivelyToRenderQueue(childNode);
 	}

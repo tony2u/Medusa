@@ -14,7 +14,12 @@ class TextureAtlasPage
 {
 public:
 	TextureAtlasPage(const FileIdRef& fileId);
+	TextureAtlasPage(int id);
+
 	virtual ~TextureAtlasPage();
+
+	int Id() const { return mId; }
+	void SetId(int val) { mId = val; }
 
 	GraphicsTextureMagFilter MagFilter() const { return mMagFilter; }
 	void SetMagFilter(GraphicsTextureMagFilter val) { mMagFilter = val; }
@@ -33,28 +38,26 @@ public:
 	void AddRegion(TextureAtlasRegion* region);
 
 	Size2U Size()const;
-	void SetPageSize(const Size2U& val) { mPageSize = val; }
+	void SetPageSize(const Size2U& val);
 
 	bool IsLoaded()const{ return mTexture != nullptr; }
 
 	ITexture* LoadTexture();
 	ITexture* GetTexture() const { return mTexture; }
+	void SetTexture(ITexture* val);
 
-	FileIdRef TextureFileId() const { return mTextureFileId.ToRef(); }
-	void SetTextureFileId(FileIdRef val) { mTextureFileId = val; }
-
-	FileIdRef Id() const { return mFileId.ToRef(); }
+	FileIdRef GetFileId() const { return mFileId.ToRef(); }
 	void SetFileId(FileIdRef val) { mFileId = val; }
 
 	TextureAtlas* Atlas() const { return mAtlas; }
 	void SetAtlas(TextureAtlas* val);
+
+	
 protected:
 	TextureAtlas* mAtlas=nullptr;
 
 	FileId mFileId;
 
-	FileId mTextureFileId;
-	
 	GraphicsTextureMagFilter mMagFilter= GraphicsTextureMagFilter::Linear;
 	GraphicsTextureMinFilter mMinFilter= GraphicsTextureMinFilter::Linear;
 	GraphicsTextureWrapMode mWrapS= GraphicsTextureWrapMode::ClampToEdge;
@@ -62,6 +65,8 @@ protected:
 	List<TextureAtlasRegion*> mRegions;
 
 protected:
+	int mId=-1;
+
 	Size2U mPageSize;//always equal with texture size
 	ITexture* mTexture=nullptr;	//cached,lazy load
 };

@@ -148,6 +148,7 @@ void IRenderable::SetColor(const Color4F& val)
 	mWorldColor.SetDirty();
 
 	bool isValid2 = IsValidToRenderQueue();
+	mWorldColor.SetDirty();	//reset dirty make sure color will set to children
 
 	if (isValid != isValid2)
 	{

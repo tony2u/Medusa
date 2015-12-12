@@ -13,7 +13,7 @@ public:
 	FntLabel(StringRef name, IFont* font, Alignment alignment = Alignment::LeftBottom, Size2F restrictSize = Size2F::Zero, bool isMultipleLine = true, bool isStatic = false);
 	virtual ~FntLabel(void);
 
-	virtual BaseFontMesh* CreateFontMesh(IMaterial* material, bool isStatic = false)override;
+	virtual BaseFontMesh* CreateFontMesh(TextureAtlasPage* page, bool isStatic = false)override;
 
 	virtual Point2F GetCharPosition(uint charIndex)const override;
 	virtual Point2F GetCursorPosition(uint charIndex)const override;
@@ -27,7 +27,7 @@ protected:
 
 protected:
 	List<BaseFontMesh*> mInternalMeshes;
-	List<IMaterial*> mInternalMaterials;
+	List<TextureAtlasPage*> mInternalPages;
 
 };
 

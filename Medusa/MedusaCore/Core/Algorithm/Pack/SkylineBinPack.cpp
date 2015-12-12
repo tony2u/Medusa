@@ -13,18 +13,18 @@
 MEDUSA_BEGIN;
 
 SkylineBinPack::SkylineBinPack()
-:mBinSize(Size2U::Zero)
+	:mBinSize(Size2U::Zero)
 {
 }
 
 SkylineBinPack::SkylineBinPack(const Size2U& size, bool useWasteMap/*=false*/)
 {
-	Init(size,useWasteMap);
+	Init(size, useWasteMap);
 }
 
-void SkylineBinPack::Init(const Size2U& size,bool useWasteMap)
+void SkylineBinPack::Init(const Size2U& size, bool useWasteMap)
 {
-	mBinSize=size;
+	mBinSize = size;
 
 	mIsUseWasteMap = useWasteMap;
 	mUsedSurfaceArea = 0;
@@ -32,7 +32,7 @@ void SkylineBinPack::Init(const Size2U& size,bool useWasteMap)
 	mUsedRects.Clear();
 
 	Skyline line;
-	line.Origin=0;
+	line.Origin = 0;
 	line.Width = mBinSize.Width;
 	mLines.Add(line);
 
@@ -46,33 +46,33 @@ void SkylineBinPack::Init(const Size2U& size,bool useWasteMap)
 
 void SkylineBinPack::GrowSize(const Size2U& newSize)
 {
-	RETURN_IF(mBinSize>=newSize);
+	RETURN_IF(mBinSize >= newSize);
 	//add next line
 	Skyline line;
-	line.Origin.X=mBinSize.Width;
-	line.Origin.Y=0;
-	line.Width = newSize.Width-mBinSize.Width;
+	line.Origin.X = mBinSize.Width;
+	line.Origin.Y = 0;
+	line.Width = newSize.Width - mBinSize.Width;
 	mLines.Add(line);
-	mBinSize=newSize;
-	
+	mBinSize = newSize;
+
 }
 
 
 
 void SkylineBinPack::Insert(List<Size2U> &sizes, List<Rect2U> &outRects, LevelChoiceHeuristic method)
 {
-	while(sizes.Count() > 0)
+	while (sizes.Count() > 0)
 	{
 		Rect2U bestRect;
-		Size2U bestSize(Math::IntMaxValue,Math::IntMaxValue);
+		Size2U bestSize(Math::IntMaxValue, Math::IntMaxValue);
 		int bestSkylineIndex = -1;
 		int bestRectIndex = -1;
-		for(size_t i = 0; i < sizes.Count(); ++i)
+		for (size_t i = 0; i < sizes.Count(); ++i)
 		{
 			Rect2U newRect;
 			Size2U outBestSize;
-			int outBestIndex=0;
-			switch(method)
+			int outBestIndex = 0;
+			switch (method)
 			{
 			case LevelChoiceHeuristic::LevelBottomLeft:
 				newRect = FindPositionForNewNodeBottomLeft(sizes[i], outBestSize, outBestIndex);
@@ -112,7 +112,7 @@ Rect2U SkylineBinPack::Insert(const Size2U& size, LevelChoiceHeuristic method)
 	if (mIsUseWasteMap)
 	{
 		// First try to pack this rectangle into the waste map, if it fits.
-		Rect2U rect = mWasteMap.Insert(size, true, GuillotineBinPack::FreeRectChoiceHeuristic::RectBestShortSideFit, 
+		Rect2U rect = mWasteMap.Insert(size, true, GuillotineBinPack::FreeRectChoiceHeuristic::RectBestShortSideFit,
 			GuillotineBinPack::GuillotineSplitHeuristic::SplitMaximizeArea);
 
 		if (rect.Size.Height != 0)
@@ -121,9 +121,9 @@ Rect2U SkylineBinPack::Insert(const Size2U& size, LevelChoiceHeuristic method)
 			return rect;
 		}
 	}
-	
-	
-	switch(method)
+
+
+	switch (method)
 	{
 	case LevelChoiceHeuristic::LevelBottomLeft: return InsertBottomLeft(size);
 	case LevelChoiceHeuristic::LevelMinWasteFit: return InsertMinWaste(size);
@@ -137,7 +137,7 @@ bool SkylineBinPack::RectangleFits(int skylineNodeIndex, const Size2U& size, uin
 	outY = mLines[skylineNodeIndex].Origin.Y;
 
 	int widthLeft = size.Width;
-	while(widthLeft > 0)
+	while (widthLeft > 0)
 	{
 		outY = Math::Max(outY, mLines[skylineNodeIndex].Origin.Y);
 		RETURN_FALSE_IF(outY + size.Height > mBinSize.Height);
@@ -154,7 +154,7 @@ bool SkylineBinPack::RectangleFits(int skylineNodeIndex, const Size2U& size, uin
 	bool fits = RectangleFits(skylineNodeIndex, size, outY);
 	if (fits)
 		outWastedArea = ComputeWastedArea(skylineNodeIndex, size, outY);
-	
+
 	return fits;
 }
 
@@ -164,7 +164,7 @@ uint SkylineBinPack::ComputeWastedArea(int skylineNodeIndex, const Size2U& size,
 	const uint rectLeft = mLines[skylineNodeIndex].Origin.X;
 	const uint rectRight = rectLeft + size.Width;
 
-	for(; skylineNodeIndex < (int)mLines.Count() && mLines[skylineNodeIndex].Origin.X < rectRight; ++skylineNodeIndex)
+	for (; skylineNodeIndex < (int)mLines.Count() && mLines[skylineNodeIndex].Origin.X < rectRight; ++skylineNodeIndex)
 	{
 		if (mLines[skylineNodeIndex].Origin.X >= rectRight || mLines[skylineNodeIndex].Right() <= rectLeft)
 			break;
@@ -183,7 +183,7 @@ void SkylineBinPack::AddWasteMapArea(int skylineNodeIndex, const Size2U& size, u
 	const uint rectLeft = mLines[skylineNodeIndex].Origin.X;
 	const uint rectRight = rectLeft + size.Width;
 
-	for(; skylineNodeIndex < (int)mLines.Count() && mLines[skylineNodeIndex].Origin.X < rectRight; ++skylineNodeIndex)
+	for (; skylineNodeIndex < (int)mLines.Count() && mLines[skylineNodeIndex].Origin.X < rectRight; ++skylineNodeIndex)
 	{
 		if (mLines[skylineNodeIndex].Origin.X >= rectRight || mLines[skylineNodeIndex].Right() <= rectLeft)
 			break;
@@ -221,39 +221,38 @@ void SkylineBinPack::AddSkylineLevel(int skylineNodeIndex, const Rect2U &rect)
 	assert(newLine.Right() <= mBinSize.Width);
 	assert(newLine.Origin.Y <= mBinSize.Height);
 
-	for(size_t i = skylineNodeIndex+1; i < mLines.Count(); ++i)
+	//remove occupied lines
+	for (size_t i = skylineNodeIndex + 1; i < mLines.Count(); ++i)
 	{
-		assert(mLines[i-1].Origin.X <= mLines[i].Origin.X);
+		assert(newLine.Origin.X <= mLines[i].Origin.X);
 
-		if (mLines[i].Origin.X < mLines[i-1].Right())
+		if (mLines[i].Right() <= newLine.Right())
 		{
-			int shrink = mLines[i-1].Right() - mLines[i].Origin.X;
-
-			mLines[i].Origin.X += shrink;
-			mLines[i].Width -= shrink;
-
-			if (mLines[i].Width <= 0)
-			{
-				mLines.RemoveAt(i);
-				--i;
-			}
-			else
-				break;
+			mLines.RemoveAt(i);
+			--i;
 		}
 		else
+		{
+			int shrink = newLine.Right() - mLines[i].Origin.X;
+			if (shrink>0)
+			{
+				mLines[i].Origin.X += shrink;
+				mLines[i].Width -= shrink;
+			}
 			break;
+		}
 	}
 	MergeSkylines();
 }
 
 void SkylineBinPack::MergeSkylines()
 {
-	for(size_t i = 0; i < mLines.Count()-1; ++i)
+	for (size_t i = 0; i < mLines.Count() - 1; ++i)
 	{
-		if (mLines[i].Origin.Y == mLines[i+1].Origin.Y)
+		if (mLines[i].Origin.Y == mLines[i + 1].Origin.Y)
 		{
-			mLines[i].Width += mLines[i+1].Width;
-			mLines.RemoveAt(i+1);
+			mLines[i].Width += mLines[i + 1].Width;
+			mLines.RemoveAt(i + 1);
 			--i;
 		}
 	}
@@ -271,24 +270,27 @@ Rect2U SkylineBinPack::InsertBottomLeft(const Size2U& size)
 		AddSkylineLevel(outBestIndex, newRect);
 		mUsedSurfaceArea += size.Area();
 	}
-	
+
 
 	return newRect;
 }
 
 Rect2U SkylineBinPack::FindPositionForNewNodeBottomLeft(const Size2U& size, Size2U& outBestSize, int &outBestIndex) const
 {
-	outBestSize=Math::IntMaxValue;;
+	outBestSize = Math::IntMaxValue;
 	outBestIndex = -1;
 	// Used to break ties if there are nodes at the same level. Then pick the narrowest one.
-	Rect2U newRect=Rect2U::Zero;
+	Rect2U newRect = Rect2U::Zero;
 
-	size_t lineCount=mLines.Count();
-	for(size_t i = 0; i < lineCount; ++i)
+	size_t lineCount = mLines.Count();
+	uint minY = mBinSize.Height;
+
+	for (size_t i = 0; i < lineCount; ++i)
 	{
 		uint outY;
-		if (RectangleFits((int)i, size, outY))
+		if (RectangleFits((int)i, size, outY)&&outY<minY)
 		{
+			minY = outY;	//find most bottom line
 			if (outY + size.Height < outBestSize.Height || (outY + size.Height == outBestSize.Height && mLines[i].Width < outBestSize.Width))
 			{
 				outBestIndex = (int)i;
@@ -298,7 +300,7 @@ Rect2U SkylineBinPack::FindPositionForNewNodeBottomLeft(const Size2U& size, Size
 
 				newRect.Origin.X = mLines[i].Origin.X;
 				newRect.Origin.Y = outY;
-				newRect.Size=size;
+				newRect.Size = size;
 			}
 		}
 	}
@@ -329,9 +331,9 @@ Rect2U SkylineBinPack::FindPositionForNewNodeMinWaste(const Size2U& size, uint &
 	outBestHeight = Math::UIntMaxValue;
 	outBestWastedArea = Math::UIntMaxValue;
 	outBestIndex = -1;
-	Rect2U newNode=Rect2U::Zero;
-	
-	for(size_t i = 0; i < mLines.Count(); ++i)
+	Rect2U newNode = Rect2U::Zero;
+
+	for (size_t i = 0; i < mLines.Count(); ++i)
 	{
 		uint outY;
 		uint outWastedArea;
@@ -346,10 +348,10 @@ Rect2U SkylineBinPack::FindPositionForNewNodeMinWaste(const Size2U& size, uint &
 
 				newNode.Origin.X = mLines[i].Origin.X;
 				newNode.Origin.Y = outY;
-				newNode.Size=size;
+				newNode.Size = size;
 			}
 		}
-		
+
 	}
 
 	return newNode;

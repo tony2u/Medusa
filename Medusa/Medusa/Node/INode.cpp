@@ -482,7 +482,7 @@ bool INode::UpdateRecursively(float dt, const NodeUpdateFlags& flag/*=NodeUpdate
 		for (; i >= 0; --i)
 		{
 			INode* child = mNodes[i];
-			BREAK_IF(child->mLogicZ < 0);
+			BREAK_IF(child->mDepth < 0);
 			if (child->ForceIsRunning())
 			{
 				RETURN_TRUE_IF_FALSE(child->UpdateRecursively(dt, flag));
@@ -610,7 +610,7 @@ bool INode::EnterRecursively()
 	for (; i >= 0; --i)
 	{
 		INode* child = mNodes[i];
-		BREAK_IF(child->LogicZ() < 0);
+		BREAK_IF(child->Depth() < 0);
 		RETURN_FALSE_IF_FALSE(child->EnterRecursively());
 	}
 
@@ -632,7 +632,7 @@ bool INode::ExitRecursively()
 	for (; i >= 0; --i)
 	{
 		INode* child = mNodes[i];
-		BREAK_IF(child->LogicZ() < 0);
+		BREAK_IF(child->Depth() < 0);
 		RETURN_FALSE_IF_FALSE(child->ExitRecursively());
 	}
 
@@ -655,7 +655,7 @@ bool INode::UpdateLogicRecursively()
 	for (; i >= 0; --i)
 	{
 		INode* child = mNodes[i];
-		BREAK_IF(child->LogicZ() < 0);
+		BREAK_IF(child->Depth() < 0);
 		RETURN_FALSE_IF_FALSE(child->UpdateLogicRecursively());
 	}
 
@@ -677,7 +677,7 @@ bool INode::ResetLogicRecursively()
 	for (; i >= 0; --i)
 	{
 		INode* child = mNodes[i];
-		BREAK_IF(child->LogicZ() < 0);
+		BREAK_IF(child->Depth() < 0);
 		RETURN_FALSE_IF_FALSE(child->ResetLogicRecursively());
 	}
 
@@ -1117,7 +1117,7 @@ void INode::EnableDebugDraw(bool val)
 
 			mDebugDrawShape = NodeFactory::Instance().CreateRectBorder(debugBoundingBox, color);
 
-			mDebugDrawShape->SetLogicZ(Math::IntMaxValue);	//always on top
+			mDebugDrawShape->SetDepth(Math::IntMaxValue);	//always on top
 			mDebugDrawShape->SetRenderingPriority(RenderingPriority::Foreground9);
 			mDebugDrawShape->EnableManaged();
 			AddChild(mDebugDrawShape);

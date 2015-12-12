@@ -26,31 +26,16 @@ public:
 	virtual void Clear();
 	virtual void ReleaseCache();
 
-
 	virtual bool Remove(const FontId& fontId);
 	virtual IFont* Find(const FontId& fontId)const;
 	virtual bool Add(IFont* val, ResourceShareType shareType = ResourceShareType::Share);
 public:
 	IFont* Create(const FontId& fontId, ResourceShareType shareType = ResourceShareType::Share);
 	IFont* CreateFromSingleTexture(const FontId& fontId, wchar_t firstChar = L'0', ResourceShareType shareType = ResourceShareType::Share);
-
-
 	IFont* CreateFromMemory(const FontId& fontId, const MemoryByteData& data, ResourceShareType shareType = ResourceShareType::Share);
-
-	IMaterial* AddGlyphImage(FontImageDepth destDepth, const Size2U& size, int pitch, const MemoryByteData& imageData, FontImageDepth srcDepth, Size2U& outImageSize, Rect2U& outRect);
 private:
 	Dictionary<FontId, IFont*, DefaultHashCoder<FontId>, EqualCompare<FontId> > mItems;
 	List<IFont*> mCacheItems;
-
-
-	Size2U mInitialImageSize;	//default image size
-	Size2U mMaxImageSize;
-	//3 type images to cache all ttf glyphs,in these case to make more chars into less draw calls
-
-	List<IMaterial*> mRGBAMaterials;
-	List<IMaterial*> mRGBMaterials;
-	List<IMaterial*> mAlphaMaterials;
-
 };
 
 MEDUSA_END;

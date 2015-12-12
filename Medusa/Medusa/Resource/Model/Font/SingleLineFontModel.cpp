@@ -42,8 +42,9 @@ void SingleLineFontModel::SetText( WStringRef text )
 
 	Size2F outSize;
 	List<BaseFontMesh*> meshes;
-	List<IMaterial*> outMaterials;
-	TextLayouter::LayoutSingleLineText(meshes, outMaterials,outSize,*mFont,mText,mAlignment,mRestrictSize);
+	List<TextureAtlasPage*> pages;
+
+	TextLayouter::LayoutSingleLineText(meshes, pages,outSize,*mFont,mText,mAlignment,mRestrictSize);
 
 	//AddMeshes(meshes);
 	SetSize(outSize);

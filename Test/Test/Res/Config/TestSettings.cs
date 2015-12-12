@@ -6,7 +6,7 @@ class TestSettings
     uint Version = 1;	//  main=1?free=2
     uint Language = 1;   //  enus=1,zhcn=2
     uint Device = 2;   //  sd=1,hd=2
-	uint DebugInfo=0;	//Performance=1,GPU=2,Touch=4
+	uint DebugInfo=1;	//Performance=1,GPU=2,Touch=4
 	
     bool IsMockEnabled = false; //mock
     bool IsCheatEnabled = false;    

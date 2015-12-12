@@ -32,6 +32,17 @@ void TextureAtlasRegion::SetPage(TextureAtlasPage* val)
 
 }
 
+void TextureAtlasRegion::SetIsTexcoordUpSide(bool val)
+{
+	RETURN_IF_EQUAL(mIsTexcoordUpSide, val);
+	mIsTexcoordUpSide = val;
+
+	if (mPage != nullptr)
+	{
+		UpdateMesh(mPage->Size());
+	}
+}
+
 bool TextureAtlasRegion::UpdateMesh(const Size2U& textureSize)
 {
 	Rect2F quadRect(mOffset.X, mOffset.Y, mTextureRect.Size.Width, mTextureRect.Size.Height);
@@ -119,6 +130,21 @@ void TextureAtlasRegion::SetIsRotate(bool val)
 {
 	RETURN_IF_EQUAL(mIsRotate, val);
 	mIsRotate = val;
+	if (mPage != nullptr)
+	{
+		UpdateMesh(mPage->Size());
+	}
+}
+
+void TextureAtlasRegion::SetTextureRect(const Rect2U& val)
+{
+	RETURN_IF_EQUAL(mTextureRect, val);
+	mTextureRect = val;
+
+	if (mPage!=nullptr)
+	{
+		UpdateMesh(mPage->Size());
+	}
 }
 
 

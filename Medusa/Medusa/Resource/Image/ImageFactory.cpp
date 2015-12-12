@@ -282,6 +282,14 @@ MEDUSA_FORCE_INLINE void ImageFactory::RGBA_RGB_Real(byte* dest, const byte* src
 	dest[2] += (byte)(((src[2] - dest[2])*(uint)src[3]) / 255);
 }
 
+MEDUSA_FORCE_INLINE void ImageFactory::Alpha_RGBA_Alpha(byte* dest, const byte* src)
+{
+	dest[0] = 0xFF;
+	dest[1] = 0xFF;
+	dest[2] = 0xFF;
+	dest[3] = src[0];
+}
+
 ImageFactory::PixelConverter ImageFactory::GetPixelConverter(GraphicsPixelFormat destFormat, GraphicsPixelDataType destDataType, GraphicsPixelFormat srcFormat, GraphicsPixelDataType srcDataType, GraphicsPixelConvertMode mode)
 {
 	if (destFormat == GraphicsPixelFormat::RGB&&destDataType == GraphicsPixelDataType::Byte&&srcFormat == GraphicsPixelFormat::RGBA&&srcDataType == GraphicsPixelDataType::Byte)
@@ -312,6 +320,15 @@ ImageFactory::PixelConverter ImageFactory::GetPixelConverter(GraphicsPixelFormat
 			return RGB_RGBA_Alpha;
 		}
 	}
+
+	if (destFormat == GraphicsPixelFormat::RGBA&&destDataType == GraphicsPixelDataType::Byte&&srcFormat == GraphicsPixelFormat::Alpha&&srcDataType == GraphicsPixelDataType::Byte)
+	{
+		if (mode == GraphicsPixelConvertMode::Alpha)
+		{
+			return Alpha_RGBA_Alpha;
+		}
+	}
+
 
 	return nullptr;
 }

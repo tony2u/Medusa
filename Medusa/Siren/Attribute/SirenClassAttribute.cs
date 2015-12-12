@@ -25,6 +25,11 @@ namespace Siren.Attribute
             Template = template;
             Directory = directory;
             Mode = mode;
+
+            if (!Mode.HasFlag(SirenGenerateMode.Embeded)&& !Mode.HasFlag(SirenGenerateMode.Generate) &&!Mode.HasFlag(SirenGenerateMode.Suppress))
+            {
+                Mode |= SirenGenerateMode.Generate;
+            }
         }
     }
 

@@ -18,7 +18,7 @@ public:
 
 	bool IsExpandable() const { return mMaxImageSize<=mImageSize; }
 
-	bool AddImageRect(const Size2U& size,int pitch,const MemoryByteData& imageData,GraphicsPixelFormat pixelFormat,GraphicsPixelDataType srcDataType,Size2U& outImageSize,Rect2U& outRect,bool isFlipY=false,GraphicsPixelConvertMode mode=GraphicsPixelConvertMode::Normal);
+	bool AddImageRect(const Size2U& size,int pitch,const MemoryByteData& imageData,GraphicsPixelFormat pixelFormat,GraphicsPixelDataType srcDataType,Rect2U& outRect,bool isFlipY=false,GraphicsPixelConvertMode mode=GraphicsPixelConvertMode::Normal);
 protected:
 	SkylineBinPack mPack;
 	Size2U mMaxImageSize;

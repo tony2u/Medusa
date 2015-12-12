@@ -22,15 +22,14 @@ DynamicAtlasRGBAImage::~DynamicAtlasRGBAImage(void)
 }
 
 bool DynamicAtlasRGBAImage::AddImageRect(const Size2U& size,int pitch,const MemoryByteData& imageData,GraphicsPixelFormat pixelFormat,GraphicsPixelDataType srcDataType,
-								  Size2U& outImageSize,Rect2U& outRect,bool isFlipY/*=false*/,GraphicsPixelConvertMode mode/*=PixelConvertMode::Normal*/)
+								  Rect2U& outRect, bool isFlipY/*=false*/,GraphicsPixelConvertMode mode/*=PixelConvertMode::Normal*/)
 {
 	RETURN_FALSE_IF(size>mMaxImageSize);
 	outRect=mPack.Insert(size,SkylineBinPack::LevelChoiceHeuristic::LevelBottomLeft);
 	if (outRect!=Rect2U::Zero)
 	{
-		outRect.Size-=1;
+		outRect.Size-=1;	//should -1 to remove edge
 		CopyImage(outRect,imageData,pixelFormat,srcDataType,pitch,isFlipY,mode);
-		outImageSize=mImageSize;
 		return true;
 	}
 
@@ -56,10 +55,8 @@ bool DynamicAtlasRGBAImage::AddImageRect(const Size2U& size,int pitch,const Memo
 			mImageData=newImageData;
 
 			//draw new image
-			outRect.Size-=1;
+			outRect.Size-=1;//should -1 to remove edge
 			CopyImage(outRect,imageData,pixelFormat,srcDataType,pitch,isFlipY,mode);
-			outImageSize=mImageSize;
-
 			return true;
 		}
 

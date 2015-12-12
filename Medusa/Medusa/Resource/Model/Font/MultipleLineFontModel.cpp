@@ -41,9 +41,9 @@ void MultipleLineFontModel::SetText( WStringRef text )
 
 	Size2F outSize;
 	List<BaseFontMesh*> meshes;
-	List<IMaterial*> materials;
+	List<TextureAtlasPage*> pages;
 
-	TextLayouter::LayoutMultipleLineText(meshes, materials, outSize,*mFont,mText,mAlignment,mRestrictSize);
+	TextLayouter::LayoutMultipleLineText(meshes, pages, outSize,*mFont,mText,mAlignment,mRestrictSize);
 
 	//AddMeshes(meshes);
 	SetSize(outSize);

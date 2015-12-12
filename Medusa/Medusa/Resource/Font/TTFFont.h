@@ -16,6 +16,9 @@ MEDUSA_BEGIN;
 class TTFFont:public IFont
 {
 public:
+	static bool InitializeLibrary();
+	static bool UninitializeLibrary();
+
 	static TTFFont* CreateFromFile(const FontId& fontId);
 	static TTFFont* CreateFromData(const FontId& fontId,const MemoryByteData& data);
 
@@ -26,7 +29,7 @@ public:
 	virtual ~TTFFont(void);
 	virtual bool Initialize();
 	virtual uint Preload(const WStringRef& str);
-	virtual bool IsFixedMaterial()const{ return false; }
+	virtual bool IsFixed()const{ return false; }
 protected:
 	virtual const FontChar* OnLoadChar(wchar_t c);
 	virtual const FontKerning* OnLoadKerning(int prev,int next);
@@ -35,14 +38,20 @@ protected:
 private:
 	inline intp FontUnitToPixelSize(intp fontUnitSize)const;
 	inline intp FixedPointToPixelSize(intp val)const;
+
+	TextureAtlasRegion* AddGlyphImage(wchar_t c,FontImageDepth destDepth, const Size2U& size, int pitch, const MemoryByteData& imageData, FontImageDepth srcDepth);
+
 private:
-	FT_Library mLibrary;
+	static FT_Library mLibrary;
 	FT_Face mFace;
 
 	FT_UInt32 mGlyphLoadFlags=0;
 
 	MemoryByteData mFontData;
 
+	Size2U mInitialImageSize;	//default image size
+	Size2U mMaxImageSize;
+	//3 type images to cache all ttf glyphs,in these case to make more chars into less draw calls
 };
 
 MEDUSA_END;

@@ -38,10 +38,6 @@ public:
 
 	const FontChar* TryLoadChar(wchar_t c);
 
-	void AddMaterial(IMaterial* textureMaterial);
-	void TryAddMaterial(IMaterial* textureMaterial);
-
-
 	const FontId& GetFontId() const { return mFontId; }
 	FontId& MutableFontId() { return mFontId; }
 
@@ -66,10 +62,10 @@ public:
 	intp Descender() const { return mDescender; }
 	void SetDescender(intp val) { mDescender = val; }
 
-	uint SpaceWidth() const { return mSpaceFontChar.HAdvance; }
-	
-	const FontChar& SpaceFontChar() const { return mSpaceFontChar; }
-	void SetSpaceFontChar(const FontChar& val) { mSpaceFontChar = val; }
+	uint SpaceWidth() const { return mSpaceFontChar->HAdvance; }
+	const FontChar* SpaceFontChar() const { return mSpaceFontChar; }
+	void SetSpaceFontChar(const FontChar* val) { mSpaceFontChar = val; }
+
 
 	const FontKerning* GetKerning(int prev,int next)const;
 	FontKerning* GetKerning(int prev,int next);
@@ -77,9 +73,8 @@ public:
 
 	bool HasKerning()const{return mFlags.Has(FontFlags::HasKerning); }
 
-	const List<IMaterial*>& Materials() const { return mMaterials; }
-	bool IsSingleMaterial()const{return mMaterials.Count()==1;}
-	virtual bool IsFixedMaterial()const{ return true; }
+	bool HasSinglePage()const;
+	virtual bool IsFixed()const{ return true; }
 
 	bool IsBold() const { return mFlags.Has(FontFlags::IsBold); }
 	void SetIsBold(bool val) {mFlags.SetOrRemoveIf(FontFlags::IsBold,val); }
@@ -106,6 +101,9 @@ public:
 
 	FontFlags Flags() const { return mFlags; }
 	void SetFlags(FontFlags val) { mFlags = val; }
+
+	TextureAtlas* Atlas() const { return mAtlas; }
+	void SetAtlas(TextureAtlas* val);
 
 	virtual uint Preload(const WStringRef& str){return 0;}
 protected:
@@ -136,11 +134,15 @@ protected:
 	uintp mUnderlineTickness=0;
 
 	//contents
-	List<IMaterial*> mMaterials;
+	TextureAtlas* mAtlas;
+	
 	Dictionary<wchar_t,FontChar*> mChars;
 	Dictionary<uint64,FontKerning*> mKernings;
 
-	FontChar mSpaceFontChar;
+	const FontChar* mSpaceFontChar=nullptr;
+	
+	//const static char* mASCIIChars;
+	const static char* mNEHEChars;
 
 };
 

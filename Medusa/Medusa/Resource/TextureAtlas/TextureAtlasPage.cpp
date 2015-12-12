@@ -19,6 +19,14 @@ TextureAtlasPage::TextureAtlasPage(const FileIdRef& fileId)
 
 }
 
+TextureAtlasPage::TextureAtlasPage(int id)
+	:mId(id),
+	mPageSize(Size2U::Zero)
+{
+
+}
+
+
 TextureAtlasPage::~TextureAtlasPage()
 {
 	SAFE_RELEASE(mTexture);
@@ -30,15 +38,19 @@ void TextureAtlasPage::AddRegion(TextureAtlasRegion* region)
 	mRegions.Add(region);
 	region->SetPage(this);
 	region->UpdateMesh(mPageSize);
+	if (mAtlas!=nullptr)
+	{
+		mAtlas->TryAddRegion(region);
+	}
 }
 
 ITexture* TextureAtlasPage::LoadTexture()
 {
 	RETURN_SELF_IF_NOT_NULL(mTexture);
-	mTexture = TextureFactory::Instance().CreateFromFile(mTextureFileId.ToRef());
+	mTexture = TextureFactory::Instance().CreateFromFile(mFileId.ToRef());
 	if (mTexture == nullptr)
 	{
-		Log::AssertFailedFormat("Cannot load texture:{}-{}", mTextureFileId.Name.c_str(), (uint)mTextureFileId.Order);
+		Log::AssertFailedFormat("Cannot load texture:{}-{}", mFileId.Name.c_str(), (uint)mFileId.Order);
 		return nullptr;
 	}
 
@@ -49,14 +61,21 @@ ITexture* TextureAtlasPage::LoadTexture()
 	mTexture->SetWrapS(mWrapS);
 	mTexture->SetWrapT(mWrapT);
 
-	Size2U textureSize = mTexture->Size();
+	mPageSize = mTexture->Size();
 	FOR_EACH_COLLECTION(i, mRegions)
 	{
 		TextureAtlasRegion* region = *i;
-		region->UpdateMesh(textureSize);
+		region->UpdateMesh(mPageSize);
 	}
 
 	return mTexture;
+}
+
+void TextureAtlasPage::SetTexture(ITexture* val)
+{
+	SAFE_ASSIGN_REF(mTexture, val);
+	SetPageSize(mTexture->Size());
+
 }
 
 void TextureAtlasPage::SetAtlas(TextureAtlas* val)
@@ -72,6 +91,22 @@ Size2U TextureAtlasPage::Size() const
 	}
 
 	return mPageSize;
+}
+
+
+void Medusa::TextureAtlasPage::SetPageSize(const Size2U& val)
+{
+	RETURN_IF_EQUAL(mPageSize, val);
+	mPageSize = val;
+
+	//update all mesh texcoord
+	FOR_EACH_COLLECTION(i, mRegions)
+	{
+		TextureAtlasRegion* region = *i;
+		region->UpdateMesh(mPageSize);
+	}
+
+
 }
 
 

@@ -13,6 +13,9 @@
 #include "Node/Sprite/Sprite.h"
 #include "Resource/Effect/EffectFactory.h"
 #include "Core/Log/Log.h"
+#include "Resource/Material/MaterialFactory.h"
+#include "Resource/TextureAtlas/TextureAtlasPage.h"
+#include "Resource/TextureAtlas/TextureAtlas.h"
 
 MEDUSA_BEGIN;
 
@@ -32,9 +35,10 @@ void FntLabel::UpdateMesh()
 {
 	if (mString.IsEmpty())
 	{
-		if (mFont->IsSingleMaterial() && mFont->IsFixedMaterial())
+		if (mFont->HasSinglePage() && mFont->IsFixed())
 		{
 			SetMesh(nullptr);
+			SetMaterial(nullptr);
 		}
 
 		if (!mManagedNodes.IsEmpty())
@@ -55,11 +59,11 @@ void FntLabel::UpdateMesh()
 
 	if (mIsMultipleLine)
 	{
-		TextLayouter::LayoutMultipleLineText(mInternalMeshes, mInternalMaterials, outSize, *mFont, mString, mAlignment, mRestrictSize, this, mIsStatic);
+		TextLayouter::LayoutMultipleLineText(mInternalMeshes, mInternalPages, outSize, *mFont, mString, mAlignment, mRestrictSize, this, mIsStatic);
 	}
 	else
 	{
-		TextLayouter::LayoutSingleLineText(mInternalMeshes, mInternalMaterials, outSize, *mFont, mString, mAlignment, mRestrictSize, this, mIsStatic);
+		TextLayouter::LayoutSingleLineText(mInternalMeshes, mInternalPages, outSize, *mFont, mString, mAlignment, mRestrictSize, this, mIsStatic);
 	}
 
 	SetSize(outSize);
@@ -83,7 +87,7 @@ void FntLabel::UpdateMesh()
 		if (!unusedIndices.IsEmpty())
 		{
 			mInternalMeshes.RemoveIndexes(unusedIndices);
-			mInternalMaterials.RemoveIndexes(unusedIndices);
+			mInternalPages.RemoveIndexes(unusedIndices);
 
 
 			FOR_EACH_COLLECTION(i, unusedSprites)
@@ -106,7 +110,7 @@ void FntLabel::OnUpdateFont()
 		SetMesh(nullptr);
 		SetSize(Size3F::Zero);
 		mInternalMeshes.Clear();
-		mInternalMaterials.Clear();
+		mInternalPages.Clear();
 		return;
 	}
 	else
@@ -117,11 +121,13 @@ void FntLabel::OnUpdateFont()
 
 }
 
-BaseFontMesh* FntLabel::CreateFontMesh(IMaterial* material, bool isStatic /*= false*/)
+BaseFontMesh* FntLabel::CreateFontMesh(TextureAtlasPage* page, bool isStatic /*= false*/)
 {
 	FntTextMesh* mesh = new FntTextMesh(isStatic);
 	Sprite* sprite = new Sprite();
 	sprite->SetMesh(mesh);
+
+	IMaterial* material = MaterialFactory::Instance().CreateSingleTexture(page->LoadTexture());
 	sprite->SetMaterial(material);
 	mInternalMeshes.Add(mesh);
 	sprite->EnableManaged();
@@ -133,7 +139,7 @@ BaseFontMesh* FntLabel::CreateFontMesh(IMaterial* material, bool isStatic /*= fa
 Point2F FntLabel::GetCharPosition(uint charIndex) const
 {
 	BaseFontMesh* mesh = nullptr;
-	if (mFont->IsSingleMaterial() && mFont->IsFixedMaterial())
+	if (mFont->HasSinglePage() && mFont->IsFixed())
 	{
 		mesh = (BaseFontMesh*)mRenderingObject.Mesh();
 	}
@@ -155,7 +161,7 @@ Point2F FntLabel::GetCharPosition(uint charIndex) const
 Point2F FntLabel::GetCursorPosition(uint charIndex) const
 {
 	BaseFontMesh* mesh = nullptr;
-	if (mFont->IsSingleMaterial() && mFont->IsFixedMaterial())
+	if (mFont->HasSinglePage() && mFont->IsFixed())
 	{
 		mesh = (BaseFontMesh*)mRenderingObject.Mesh();
 	}
@@ -177,7 +183,7 @@ Point2F FntLabel::GetCursorPosition(uint charIndex) const
 uint FntLabel::FindCharIndex(const Point2F& touchPosition, Point2F& outCharPosition) const
 {
 	BaseFontMesh* mesh = nullptr;
-	if (mFont->IsSingleMaterial() && mFont->IsFixedMaterial())
+	if (mFont->HasSinglePage() && mFont->IsFixed())
 	{
 		mesh = (BaseFontMesh*)mRenderingObject.Mesh();
 	}
@@ -198,29 +204,34 @@ uint FntLabel::FindCharIndex(const Point2F& touchPosition, Point2F& outCharPosit
 
 void FntLabel::CreateMesh()
 {
-	const List<IMaterial*>& materials = mFont->Materials();
+	auto* atlas = mFont->Atlas();
 
-	if (mFont->IsSingleMaterial() && mFont->IsFixedMaterial())
+	if (mFont->HasSinglePage() && mFont->IsFixed())
 	{
-		IMaterial* material = materials[0];
+		auto* page = atlas->GetPage(0);
 		FntTextMesh* mesh = new FntTextMesh(mIsStatic);
 		SetMesh(mesh);
+		IMaterial* material = MaterialFactory::Instance().CreateSingleTexture(page->LoadTexture());
+
+
 		SetMaterial(material);
 		mInternalMeshes.Add(mesh);
-		mInternalMaterials.Add(material);
+		mInternalPages.Add(page);
 	}
 	else
 	{
-		size_t count = materials.Count();
+		size_t count = atlas->PageCount();
 		FOR_EACH_SIZE(i, count)
 		{
-			IMaterial* material = materials[i];
+			auto* page = atlas->GetPage(i);
+			IMaterial* material = MaterialFactory::Instance().CreateSingleTexture(page->LoadTexture());
+
 			Sprite* sprite = new Sprite();
 			sprite->SetMesh(new FntTextMesh(mIsStatic));
 			sprite->SetMaterial(material);
 			mInternalMeshes.Add((BaseFontMesh*)sprite->Mesh());
 			sprite->EnableManaged();
-			mInternalMaterials.Add(material);
+			mInternalPages.Add(page);
 
 			AddChild(sprite);
 		}

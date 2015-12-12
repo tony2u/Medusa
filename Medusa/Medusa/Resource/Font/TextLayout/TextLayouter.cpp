@@ -6,7 +6,9 @@
 #include "Core/Log/Log.h"
 #include "Resource/Model/Mesh/Font/BaseFontMesh.h"
 #include "Core/String/StringParser.h"
-#include "Resource/Material/IMaterial.h"
+#include "Resource/TextureAtlas/TextureAtlasPage.h"
+#include "Resource/TextureAtlas/TextureAtlasRegion.h"
+
 #include "Core/Math/Math.h"
 #include "Resource/ResourceNames.h"
 #include "Node/Control/Label/ILabel.h"
@@ -23,7 +25,7 @@ TextLayouter::~TextLayouter()
 }
 
 
-bool TextLayouter::LayoutMultipleLineText(List<BaseFontMesh*>& outMeshes, List<IMaterial*>& outMaterials, Size2F& outSize,
+bool TextLayouter::LayoutMultipleLineText(List<BaseFontMesh*>& outMeshes, List<TextureAtlasPage*>& outPages, Size2F& outSize,
 										  IFont& font,
 										  const WStringRef& text,
 										  Alignment alignment/*=Alignment::LeftBottom*/,
@@ -56,7 +58,7 @@ bool TextLayouter::LayoutMultipleLineText(List<BaseFontMesh*>& outMeshes, List<I
 	outSize.Height = static_cast<float>(outLineWidths.Count()*font.LineHeight());
 	ReserveMesh(outMeshes, text);
 
-	LayoutMultipleLineMesh(outMeshes,outMaterials, font, outSize, outLineWidths, outLines, alignment, restrictSize, label);
+	LayoutMultipleLineMesh(outMeshes,outPages, font, outSize, outLineWidths, outLines, alignment, restrictSize, label);
 
 	ShrinkMesh(outMeshes);
 	return true;
@@ -64,7 +66,7 @@ bool TextLayouter::LayoutMultipleLineText(List<BaseFontMesh*>& outMeshes, List<I
 }
 
 
-bool TextLayouter::LayoutSingleLineText(List<BaseFontMesh*>& outMeshes, List<IMaterial*>& outMaterials,
+bool TextLayouter::LayoutSingleLineText(List<BaseFontMesh*>& outMeshes, List<TextureAtlasPage*>& outPages,
 										Size2F& outSize,
 										IFont& font,
 										const WStringRef& text,
@@ -81,7 +83,7 @@ bool TextLayouter::LayoutSingleLineText(List<BaseFontMesh*>& outMeshes, List<IMa
 
 	ReserveMesh(outMeshes, text);
 
-	LayoutSingleLineMesh(outMeshes,outMaterials, font, outSize, outSize.Width, outString, alignment, restrictSize, label);
+	LayoutSingleLineMesh(outMeshes,outPages, font, outSize, outSize.Width, outString, alignment, restrictSize, label);
 	ShrinkMesh(outMeshes);
 	return true;
 }
@@ -320,7 +322,7 @@ bool TextLayouter::WordWrap(List<WHeapString>& outLines, List<float>& outLineWid
 	return !outLines.IsEmpty();
 }
 
-void TextLayouter::LayoutMultipleLineMesh(List<BaseFontMesh*>& outMeshes, List<IMaterial*>& outMaterials,
+void TextLayouter::LayoutMultipleLineMesh(List<BaseFontMesh*>& outMeshes, List<TextureAtlasPage*>& outPages,
 										  IFont& font,
 										  const Size2F& imageSize,
 										  const List<float>& lineWidths,
@@ -371,7 +373,7 @@ void TextLayouter::LayoutMultipleLineMesh(List<BaseFontMesh*>& outMeshes, List<I
 				wchar_t c = line[j];
 				const FontChar* fontChar = GetChar(font, c);
 				Log::AssertNotNull(fontChar, "fontChar");
-				AddCharToMesh(outMeshes,outMaterials, font, *fontChar, origin, label, isStatic);
+				AddCharToMesh(outMeshes,outPages, font, *fontChar, origin, label, isStatic);
 				if (hasKerning&&j != 0)
 				{
 					Point3F nextPen = origin;
@@ -411,7 +413,7 @@ void TextLayouter::LayoutMultipleLineMesh(List<BaseFontMesh*>& outMeshes, List<I
 				wchar_t c = line[j];
 				const FontChar* fontChar = GetChar(font, c);
 				Log::AssertNotNull(fontChar, "fontChar");
-				AddCharToMesh(outMeshes,outMaterials, font, *fontChar, origin, label, isStatic);
+				AddCharToMesh(outMeshes,outPages, font, *fontChar, origin, label, isStatic);
 				origin.X += fontChar->HAdvance;
 			}
 		}
@@ -420,7 +422,7 @@ void TextLayouter::LayoutMultipleLineMesh(List<BaseFontMesh*>& outMeshes, List<I
 
 
 
-void TextLayouter::LayoutSingleLineMesh(List<BaseFontMesh*>& outMeshes, List<IMaterial*>& outMaterials,
+void TextLayouter::LayoutSingleLineMesh(List<BaseFontMesh*>& outMeshes, List<TextureAtlasPage*>& outPages,
 										IFont& font,
 										const Size2F& imageSize,
 										float lineWidth,
@@ -453,7 +455,7 @@ void TextLayouter::LayoutSingleLineMesh(List<BaseFontMesh*>& outMeshes, List<IMa
 			wchar_t c = line[j];
 			const FontChar* fontChar = GetChar(font, c);
 			Log::AssertNotNull(fontChar, "fontChar");
-			AddCharToMesh(outMeshes,outMaterials, font, *fontChar, origin, label, isStatic);
+			AddCharToMesh(outMeshes,outPages, font, *fontChar, origin, label, isStatic);
 			if (hasKerning&&j != 0)
 			{
 				Point3F nextPen = origin;
@@ -484,31 +486,32 @@ void TextLayouter::LayoutSingleLineMesh(List<BaseFontMesh*>& outMeshes, List<IMa
 
 			const FontChar* fontChar = GetChar(font, c);
 			Log::AssertNotNull(fontChar, "fontChar");
-			AddCharToMesh(outMeshes,outMaterials, font, *fontChar, origin, label, isStatic);
+			AddCharToMesh(outMeshes,outPages, font, *fontChar, origin, label, isStatic);
 			origin.X += fontChar->HAdvance;
 		}
 	}
 }
 
 
-void TextLayouter::AddCharToMesh(List<BaseFontMesh*>& outMeshes, List<IMaterial*>& outMaterials, IFont& font, const FontChar& fontChar, const Point3F& origin, ILabel* label/*=nullptr*/, bool isStatic/*=false*/)
+void TextLayouter::AddCharToMesh(List<BaseFontMesh*>& outMeshes, List<TextureAtlasPage*>& outPages, IFont& font, const FontChar& fontChar, const Point3F& origin, ILabel* label/*=nullptr*/, bool isStatic/*=false*/)
 {
-	RETURN_IF_NULL(fontChar.Material());
+	RETURN_IF_NULL(fontChar.Region());
 
+	auto* page = fontChar.Region()->Page();
 	if (StdString::ConstValues<wchar_t>::IsEmptyChar(fontChar.Id))
 	{
 		return;
 	}
 
 	BaseFontMesh* mesh = nullptr;
-	if (outMeshes.Count() == 1 && outMaterials.First() == fontChar.Material())
+	if (outMeshes.Count() == 1 && outPages.First() == page)
 	{
 		mesh = outMeshes.First();
 	}
 	else
 	{
 		//Because one font won't contains many material, so it's ok here.
-		intp index= outMaterials.IndexOf(fontChar.Material());
+		intp index= outPages.IndexOf(page);
 		if(index!=-1)
 		{
 			mesh = outMeshes[index];
@@ -518,9 +521,9 @@ void TextLayouter::AddCharToMesh(List<BaseFontMesh*>& outMeshes, List<IMaterial*
 	if (mesh == nullptr)
 	{
 		//still cannot find the mesh, try create a new mesh in label
-		mesh = label->CreateFontMesh(fontChar.Material(), isStatic);
+		mesh = label->CreateFontMesh(page, isStatic);
 		outMeshes.Add(mesh);
-		outMaterials.Add(fontChar.Material());
+		outPages.Add(page);
 	}
 
 	Log::AssertNotNull(mesh, "Mesh");
@@ -736,13 +739,8 @@ float TextLayouter::GetCharWidth(IFont& font, wchar_t c)
 
 const FontChar* TextLayouter::GetChar(IFont& font, wchar_t c)
 {
-	if (c == L' ')
-	{ 
-		return &font.SpaceFontChar();
-	}
-
 	const FontChar* fontChar = font.TryLoadChar(c);
-	if (fontChar == nullptr || fontChar->Material() == nullptr)
+	if (fontChar == nullptr)
 	{
 		Log::FormatError(L"Cannot find char:{}", c);
 		return nullptr;

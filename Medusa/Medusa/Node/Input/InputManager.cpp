@@ -108,7 +108,7 @@ bool InputManager::ShowKeyboard(INode* node)
 
 	UpdateInputPassingRecursively();
 	IScene* scene = SceneManager::Instance().RunningScene();
-
+	RETURN_FALSE_IF_NULL(scene);
 	KeyboardEventArg e;
 	KeyboardWillShowHelper(scene, e);
 	KeyboardShowedHelper(scene, e);
@@ -124,6 +124,7 @@ bool InputManager::HideKeyboard(INode* node)
 
 	UpdateInputPassingRecursively();
 	IScene* scene = SceneManager::Instance().RunningScene();
+	RETURN_FALSE_IF_NULL(scene);
 	KeyboardEventArg e;
 	KeyboardWillHideHelper(scene, e);
 	KeyboardHidedHelper(scene, e);
@@ -149,6 +150,7 @@ void InputManager::TouchesBegan(TouchEventArg& e)
 	{
 		UpdateInputPassingRecursively();
 		IScene* scene = SceneManager::Instance().RunningScene();
+		RETURN_IF_NULL(scene);
 		TouchesBeganHelper(scene, e);
 	}
 	
@@ -171,6 +173,7 @@ void InputManager::TouchesMoved(TouchEventArg& e)
 	{
 		UpdateInputPassingRecursively();
 		IScene* scene = SceneManager::Instance().RunningScene();
+		RETURN_IF_NULL(scene);
 		TouchesMovedHelper(scene, e);
 	}
 	
@@ -193,6 +196,7 @@ void InputManager::TouchesEnded(TouchEventArg& e)
 	{
 		UpdateInputPassingRecursively();
 		IScene* scene = SceneManager::Instance().RunningScene();
+		RETURN_IF_NULL(scene);
 		TouchesEndedHelper(scene, e);
 		if (e.IsAllTouchEnded())
 		{
@@ -219,6 +223,7 @@ void InputManager::TouchesCancelled(TouchEventArg& e)
 	{
 		UpdateInputPassingRecursively();
 		IScene* scene = SceneManager::Instance().RunningScene();
+		RETURN_IF_NULL(scene);
 		TouchesCancelledHelper(scene, e);
 		Reset();
 	}
@@ -241,6 +246,7 @@ void InputManager::KeyDown(KeyDownEventArg& e)
 	{
 		UpdateInputPassingRecursively();
 		IScene* scene = SceneManager::Instance().RunningScene();
+		RETURN_IF_NULL(scene);
 		KeyDownHelper(scene, e);
 	}
 
@@ -261,6 +267,7 @@ void InputManager::KeyUp(KeyUpEventArg& e)
 	{
 		UpdateInputPassingRecursively();
 		IScene* scene = SceneManager::Instance().RunningScene();
+		RETURN_IF_NULL(scene);
 		KeyUpHelper(scene, e);
 	}
 	
@@ -281,6 +288,7 @@ void InputManager::CharInput(CharInputEventArg& e)
 	{
 		UpdateInputPassingRecursively();
 		IScene* scene = SceneManager::Instance().RunningScene();
+		RETURN_IF_NULL(scene);
 		CharInputHelper(scene, e);
 	}
 	
@@ -301,6 +309,7 @@ void InputManager::Scroll(ScrollEventArg& e)
 	{
 		UpdateInputPassingRecursively();
 		IScene* scene = SceneManager::Instance().RunningScene();
+		RETURN_IF_NULL(scene);
 		ScrollHelper(scene, e);
 	}
 
@@ -320,18 +329,18 @@ void InputManager::TouchesBeganHelper(INode* node, TouchEventArg& e)
 	{
 		INode* child = nodeList[i];
 
-		BREAK_IF(child->LogicZ() < 0);
+		BREAK_IF(child->Depth() < 0);
 
 		if (child->IsInputPassingEnabled())
 		{
-			//Log::LogInfoFormat("{} Touch Began {}:{} %x",i,child->LogicZ(),child->GetName().c_str(),child);
+			//Log::LogInfoFormat("{} Touch Began {}:{} %x",i,child->Depth(),child->GetName().c_str(),child);
 
 			TouchesBeganHelper(child, e);
 			RETURN_IF_TRUE(e.Handled);
 		}
 		else
 		{
-			//Log::LogInfoFormat("{} Touch Ignore {}:{} %x",i,child->LogicZ(),child->GetName().c_str(),child);
+			//Log::LogInfoFormat("{} Touch Ignore {}:{} %x",i,child->Depth(),child->GetName().c_str(),child);
 		}
 		if (child->IsModal())
 		{
@@ -389,7 +398,7 @@ void InputManager::TouchesMovedHelper(INode* node, TouchEventArg& e)
 	for (; i >= 0; --i)
 	{
 		INode* child = nodeList[i];
-		BREAK_IF(child->LogicZ() < 0);
+		BREAK_IF(child->Depth() < 0);
 
 		if (child->IsInputPassingEnabled())
 		{
@@ -445,7 +454,7 @@ void InputManager::TouchesEndedHelper(INode* node, TouchEventArg& e)
 	for (; i >= 0; --i)
 	{
 		INode* child = nodeList[i];
-		BREAK_IF(child->LogicZ() < 0);
+		BREAK_IF(child->Depth() < 0);
 
 		if (child->IsInputPassingEnabled())
 		{
@@ -505,7 +514,7 @@ void InputManager::TryFireEventHelper(INode* node, TouchEventArg& e)
 	for (; i >= 0; --i)
 	{
 		INode* child = nodeList[i];
-		BREAK_IF(child->LogicZ() < 0);
+		BREAK_IF(child->Depth() < 0);
 
 		if (child->IsInputPassingEnabled())
 		{
@@ -559,7 +568,7 @@ void InputManager::TouchesCancelledHelper(INode* node, TouchEventArg& e)
 	for (; i >= 0; --i)
 	{
 		INode* child = nodeList[i];
-		BREAK_IF(child->LogicZ() < 0);
+		BREAK_IF(child->Depth() < 0);
 
 		if (child->IsInputPassingEnabled())
 		{
@@ -613,7 +622,7 @@ void InputManager::KeyDownHelper(INode* node, KeyDownEventArg& e)
 	for (; i >= 0; --i)
 	{
 		INode* child = nodeList[i];
-		BREAK_IF(child->LogicZ() < 0);
+		BREAK_IF(child->Depth() < 0);
 
 		if (child->IsInputPassingEnabled())
 		{
@@ -668,7 +677,7 @@ void InputManager::KeyUpHelper(INode* node, KeyUpEventArg& e)
 	for (; i >= 0; --i)
 	{
 		INode* child = nodeList[i];
-		BREAK_IF(child->LogicZ() < 0);
+		BREAK_IF(child->Depth() < 0);
 
 		if (child->IsInputPassingEnabled())
 		{
@@ -721,7 +730,7 @@ void InputManager::CharInputHelper(INode* node, CharInputEventArg& e)
 	for (; i >= 0; --i)
 	{
 		INode* child = nodeList[i];
-		BREAK_IF(child->LogicZ() < 0);
+		BREAK_IF(child->Depth() < 0);
 
 		if (child->IsInputPassingEnabled())
 		{
@@ -774,7 +783,7 @@ void InputManager::ScrollHelper(INode* node, ScrollEventArg& e)
 	for (; i >= 0; --i)
 	{
 		INode* child = nodeList[i];
-		BREAK_IF(child->LogicZ() < 0);
+		BREAK_IF(child->Depth() < 0);
 
 		if (child->IsInputPassingEnabled())
 		{
@@ -827,7 +836,7 @@ void InputManager::KeyboardWillShowHelper(INode* node, KeyboardEventArg& e)
 	for (; i >= 0; --i)
 	{
 		INode* child = nodeList[i];
-		BREAK_IF(child->LogicZ() < 0);
+		BREAK_IF(child->Depth() < 0);
 
 		if (child->IsInputPassingEnabled())
 		{
@@ -880,7 +889,7 @@ void InputManager::KeyboardShowedHelper(INode* node, KeyboardEventArg& e)
 	for (; i >= 0; --i)
 	{
 		INode* child = nodeList[i];
-		BREAK_IF(child->LogicZ() < 0);
+		BREAK_IF(child->Depth() < 0);
 
 		if (child->IsInputPassingEnabled())
 		{
@@ -933,7 +942,7 @@ void InputManager::KeyboardWillHideHelper(INode* node, KeyboardEventArg& e)
 	for (; i >= 0; --i)
 	{
 		INode* child = nodeList[i];
-		BREAK_IF(child->LogicZ() < 0);
+		BREAK_IF(child->Depth() < 0);
 
 		if (child->IsInputPassingEnabled())
 		{
@@ -986,7 +995,7 @@ void InputManager::KeyboardHidedHelper(INode* node, KeyboardEventArg& e)
 	for (; i >= 0; --i)
 	{
 		INode* child = nodeList[i];
-		BREAK_IF(child->LogicZ() < 0);
+		BREAK_IF(child->Depth() < 0);
 
 		if (child->IsInputPassingEnabled())
 		{

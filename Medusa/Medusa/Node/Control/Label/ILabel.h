@@ -34,7 +34,7 @@ public:
 	bool IsMultipleLine() const { return mIsMultipleLine; }
 	void EnableMultipleLine(bool val);
 
-	virtual BaseFontMesh* CreateFontMesh(IMaterial* material, bool isStatic = false) { return nullptr; }
+	virtual BaseFontMesh* CreateFontMesh(TextureAtlasPage* page, bool isStatic = false) { return nullptr; }
 
 	bool IsStatic() const { return mIsStatic; }
 	void SetIsStatic(bool val) { mIsStatic = val; }

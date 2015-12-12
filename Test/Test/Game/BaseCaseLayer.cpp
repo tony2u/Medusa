@@ -25,7 +25,7 @@ bool BaseCaseLayer::Initialize()
 	ILabel* label = NodeFactory::Instance().CreateSingleLineLabel(FontId("arial22.fnt"), title, Alignment::LeftBottom, Size2U::Zero, true);
 	label->SetDock(DockPoint::MiddleTop);
 	label->SetAnchorPoint(AnchorPoint::MiddleTop);
-	label->SetLogicZ(9999);
+	label->SetDepth(9999);
 	AddChild(label);
 
 

@@ -344,7 +344,7 @@ TextureProgressBar* NodeFactory::CreateTextureProgressBar(ProgressType progressT
 {
 	TextureProgressBar* val = CreateTextureProgressBar(progressType, textureName, percent);
 	Sprite* sprite = CreateQuadSprite(backgroundTextureName);
-	sprite->SetLogicZ(-1);
+	sprite->SetDepth(-1);
 	val->AddChild(sprite);
 	return val;
 }

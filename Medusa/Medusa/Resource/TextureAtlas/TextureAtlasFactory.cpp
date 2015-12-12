@@ -33,18 +33,30 @@ bool TextureAtlasFactory::Uninitialize()
 	return true;
 }
 
+TextureAtlas* TextureAtlasFactory::CreateEmpty(const FileIdRef& fileId, ResourceShareType shareType /*= ResourceShareType::Share*/)
+{
+	{
+		TextureAtlas* atlas = Find(fileId);
+		RETURN_SELF_IF_NOT_NULL(atlas);
+	}
+
+	TextureAtlas* result = new TextureAtlas(fileId);
+	Add(result, shareType);
+	return result;
+}
+
 TextureAtlasRegion* TextureAtlasFactory::CreateAtlasRegion(StringRef regionName, const FileIdRef& atlasFileId, TextureAtlasFileFormat fileFormat /*= TextureAtlasFileFormat::Spine*/, uint atlasPageCount /*= 1*/)
 {
 	TextureAtlas* atlas = Create(atlasFileId, fileFormat, atlasPageCount);
-	return FindAtlasRegion(atlas, regionName);
-}
-
-TextureAtlasRegion* TextureAtlasFactory::FindAtlasRegion(TextureAtlas* atlas, StringRef regionName)
-{
-	RETURN_NULL_IF_NULL(atlas);
 	return atlas->FindRegion(regionName);
 }
 
+
+TextureAtlasRegion* TextureAtlasFactory::CreateAtlasRegion(int regionId, const FileIdRef& atlasFileId, TextureAtlasFileFormat fileFormat /*= TextureAtlasFileFormat::Spine*/, uint atlasPageCount /*= 1*/)
+{
+	TextureAtlas* atlas = Create(atlasFileId, fileFormat, atlasPageCount);
+	return atlas->FindRegion(regionId);
+}
 
 TextureAtlas* TextureAtlasFactory::Create(const FileIdRef& fileId, TextureAtlasFileFormat fileFormat /*= TextureAtlasFileFormat::Spine*/, uint atlasPageCount /*= 1*/, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
@@ -79,7 +91,6 @@ TextureAtlas* TextureAtlasFactory::Create(const FileIdRef& fileId, TextureAtlasF
 
 TextureAtlasPage* TextureAtlasFactory::CreateSpineAtlasPage(const FileIdRef& fileId)
 {
-	std::unique_ptr<TextureAtlasPage> page(new TextureAtlasPage(fileId));
 	const IStream* stream = FileSystem::Instance().ReadFile(fileId,FileDataType::Text);
 	RETURN_NULL_IF_NULL(stream);
 
@@ -93,7 +104,7 @@ TextureAtlasPage* TextureAtlasFactory::CreateSpineAtlasPage(const FileIdRef& fil
 		stream->ReadLineToString(outLine, false);
 	} while (outLine.IsEmpty());
 
-	page->SetTextureFileId(outLine);
+	std::unique_ptr<TextureAtlasPage> page(new TextureAtlasPage(outLine));
 
 	outLine.Clear();
 	RETURN_NULL_IF_FALSE(ReadLineToValues(*stream, "size", outLine, outValues));

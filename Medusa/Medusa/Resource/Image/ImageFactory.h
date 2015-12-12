@@ -43,6 +43,9 @@ private:
 	MEDUSA_FORCE_INLINE static void RGBA_RGB_Normal(byte* dest, const byte* src);
 	MEDUSA_FORCE_INLINE static void RGBA_RGB_Real(byte* dest, const byte* src);
 
+	MEDUSA_FORCE_INLINE static void Alpha_RGBA_Alpha(byte* dest, const byte* src);
+
+
 	static PixelConverter GetPixelConverter(GraphicsPixelFormat destFormat, GraphicsPixelDataType destDataType, GraphicsPixelFormat srcFormat, GraphicsPixelDataType srcDataType, GraphicsPixelConvertMode mode);
 };
 

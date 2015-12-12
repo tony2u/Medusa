@@ -17,6 +17,9 @@ public:
 	TextureAtlasRegion();
 	virtual ~TextureAtlasRegion();
 public:
+	int Id() const { return mId; }
+	void SetId(int val) { mId = val; }
+
 	StringRef Name() const { return mName; }
 	void SetName(const StringRef& val) { mName = val; }
 
@@ -24,7 +27,7 @@ public:
 	void SetIsRotate(bool val);
 
 	const Rect2U& TextureRect() const { return mTextureRect; }
-	void SetTextureRect(const Rect2U& val) { mTextureRect = val; }
+	void SetTextureRect(const Rect2U& val);
 
 	const Size2U& Size() const { return mTextureRect.Size; }
 	void SetSize(const Size2U& val) { mTextureRect.Size = val; }
@@ -41,7 +44,7 @@ public:
 	ITexture* Texture()const;
 
 	bool IsTexcoordUpSide() const { return mIsTexcoordUpSide; }
-	void SetIsTexcoordUpSide(bool val) { mIsTexcoordUpSide = val; }
+	void SetIsTexcoordUpSide(bool val);
 
 	bool UpdateMesh(const Size2U& textureSize);
 	bool AssertMeshLoaded();
@@ -51,6 +54,8 @@ public:
 
 	IMaterial* GetMaterial();
 protected:
+	int mId=-1;
+	
 	HeapString mName;
 	Rect2U mTextureRect;
 
