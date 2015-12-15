@@ -5,6 +5,11 @@
 #include "Core/Pattern/Object/MapObjectFactory.h"
 #include "Core/String/StringRef.h"
 #include "MedusaPreDeclares.h"
+#include "Node/Layer/LayerPushFlags.h"
+#include "Node/Layer/LayerPopFlags.h"
+#include "Node/Layer/LayerCreateFlags.h"
+#include "Node/Layer/LayerDeleteFlags.h"
+#include "Core/Command/EventArg/IEventArg.h"
 
 MEDUSA_BEGIN;
 
@@ -22,7 +27,11 @@ public:
 		return factory;
 	}
 
-};
+	
+	template<typename T>
+	T* CreateLayer(const IEventArg& e = IEventArg::Empty, LayerCreateFlags createFlags = LayerCreateFlags::None) { return (T*)CreateLayer(T::ClassNameStatic(), T::EditorFileNameStatic(), e, createFlags); }
+	ILayer* CreateLayer(const StringRef& className, const StringRef& editorFile, const IEventArg& e = IEventArg::Empty, LayerCreateFlags createFlags = LayerCreateFlags::None);
 
+};
 
 MEDUSA_END;

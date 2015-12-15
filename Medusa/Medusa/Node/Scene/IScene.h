@@ -83,10 +83,7 @@ public:
 	ILayer* ReplaceToLayerByName(const StringRef& className,const StringRef& editorFile, const IEventArg& e = IEventArg::Empty, LayerPopFlags popFlags = LayerPopFlags::None, LayerPushFlags pushFlags = LayerPushFlags::None);
 	ILayer* ReplaceToLayerObject(ILayer* toLayer, LayerPopFlags popFlags = LayerPopFlags::None, LayerPushFlags pushFlags = LayerPushFlags::None);
 
-	template<typename T>
-	T* CreateLayer(const IEventArg& e = IEventArg::Empty, LayerCreateFlags createFlags = LayerCreateFlags::None) { return (T*)CreateLayer(T::ClassNameStatic(), T::EditorFileNameStatic(), e, createFlags); }
-	ILayer* CreateLayer(const StringRef& className, const StringRef& editorFile, const IEventArg& e = IEventArg::Empty, LayerCreateFlags createFlags = LayerCreateFlags::None);
-
+	
 protected:	
 
 	template<typename T>

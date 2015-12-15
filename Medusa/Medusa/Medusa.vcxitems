@@ -784,6 +784,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Node\ItemTemplate\IItemTemplate.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Node\ItemTemplate\LabelItemTemplate.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Node\Layer\ILayer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Node\Layer\LayerFactory.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Node\Layer\NormalLayer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Node\Layout\ILayoutable.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Node\NodeFactory.cpp" />

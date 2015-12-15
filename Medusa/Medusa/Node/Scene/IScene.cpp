@@ -80,24 +80,6 @@ Camera* IScene::GetCamera() const
 
 //////////////////////////////////////////////////////////////////////////
 
-
-ILayer* IScene::CreateLayer(const StringRef& className, const StringRef& editorFile, const IEventArg& e/*=IEventArg::Empty*/, LayerCreateFlags createFlags/*=LayerCreateFlags::None*/)
-{
-	auto* editor=SceneEditorFactory::Instance().CurrentEditor();
-	if (editor!=nullptr)
-	{
-		return editor->CreateLayer(className,editorFile, e);
-	}
-
-	ILayer* layer = LayerFactory::Instance().Create(className, className, e);
-	Log::AssertNotNullFormat(layer, "Cannot create layer by name:{}", className.c_str());
-	layer->Initialize();
-
-	return layer;
-}
-
-
-
 bool IScene::DeleteLayer(StringRef editorFile, LayerDeleteFlags deleteFlags/*=LayerDeleteFlags::None*/)
 {
 	if (deleteFlags.Has(LayerDeleteFlags::Async))
@@ -219,7 +201,7 @@ ILayer* IScene::PushLayerByName(const StringRef& className, const StringRef& edi
 		Log::AssertFormat(layer == nullptr, "Cannot push Layer:{} which is already in stack.", editorFile.c_str());
 	}
 	
-	layer = CreateLayer(className, editorFile, e, createFlags);
+	layer = LayerFactory::Instance().CreateLayer(className, editorFile, e, createFlags);
 	PushLayerObject(layer, pushFlags);
 
 	return layer;
