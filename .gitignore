@@ -1,14 +1,4 @@
-
-
-
-
-
-
-
-
-
-
-
+_git
 /Medusa/packages/
 /Medusa/Debug/
 /Medusa/ipch/
@@ -48,6 +38,10 @@
 /External/zlib/ios/zlib/DerivedData/
 /External/Lzma/ios/Lzma/DerivedData/
 /External/ogg/ios/ogg/DerivedData/
+/External/jpeg/Debug
+/External/jpeg/win/Debug
+/External/jpeg/win/x64/Debug
+/External/png/x86/Release
 
 /Test/UnitTest/Debug/
 /Test/UnitTest/Release/
@@ -157,13 +151,5 @@
 *.DS_Store
 *.xcuserstate
 *.user
-/Medusa/Debug
-/Medusa/Medusa/win/Debug
-/Medusa/MedusaCore/win/Debug
-/Medusa/ipch
 *.opensdf
-/External/jpeg/Debug
-/External/jpeg/win/Debug
-/External/jpeg/win/x64/Debug
-/External/png/x86/Release
 *.opendb
