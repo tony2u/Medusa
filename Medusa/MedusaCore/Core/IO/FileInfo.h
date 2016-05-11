@@ -7,12 +7,13 @@
 #include "Core/String/StringRef.h"
 #include "Core/Pattern/StaticConstructor.h"
 #include "Core/Collection/Dictionary.h"
+#include "Core/Collection/Array.h"
 
 MEDUSA_BEGIN;
 
 class FileInfo
 {
-	MEDUSA_DECLARE_STATIC_CONSTRUCTOR();
+	//MEDUSA_DECLARE_STATIC_CONSTRUCTOR();
 public:
 	FileInfo(StringRef filePath);
 	~FileInfo(void);
@@ -28,16 +29,21 @@ public:
 	bool IsFile() const { return mDirectoryPath.IsEmpty(); }
 	bool IsImageFile()const;
 	bool IsShaderFile()const;
+	bool IsScriptFile()const;
 
-	static StringRef ExtractExtension(StringRef file);
 	static FileType ExtractType(StringRef filePath);
 	bool operator<(const FileInfo& info)const{return mFullPath<info.mFullPath;}
 	static bool IsImageFile(FileType fileType);
+	static bool IsScriptFile(FileType fileType);
+	static bool IsShaderFile(FileType fileType);
+
 	
 private:
 	static FileType CheckFileType(StringRef fileExt);
 	static void OnInitFileExtDict();
 	
+public:
+	static Array<StringRef,(uint)FileType::Count> Extensions;
 private:
 	static Dictionary<StringRef,FileType> mFileExtDict;
 	StackString<16> mFileExtension;

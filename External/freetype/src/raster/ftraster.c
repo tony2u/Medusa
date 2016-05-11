@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    The FreeType glyph rasterizer (body).                                */
 /*                                                                         */
-/*  Copyright 1996-2015 by                                                 */
+/*  Copyright 1996-2016 by                                                 */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -18,7 +18,7 @@
   /*************************************************************************/
   /*                                                                       */
   /* This file can be compiled without the rest of the FreeType engine, by */
-  /* defining the _STANDALONE_ macro when compiling it.  You also need to  */
+  /* defining the STANDALONE_ macro when compiling it.  You also need to   */
   /* put the files `ftimage.h' and `ftmisc.h' into the $(incdir)           */
   /* directory.  Typically, you should do something like                   */
   /*                                                                       */
@@ -27,9 +27,9 @@
   /* - copy `include/freetype/ftimage.h' and `src/raster/ftmisc.h' to your */
   /*   current directory                                                   */
   /*                                                                       */
-  /* - compile `ftraster' with the _STANDALONE_ macro defined, as in       */
+  /* - compile `ftraster' with the STANDALONE_ macro defined, as in        */
   /*                                                                       */
-  /*     cc -c -D_STANDALONE_ ftraster.c                                   */
+  /*     cc -c -DSTANDALONE_ ftraster.c                                    */
   /*                                                                       */
   /* The renderer can be initialized with a call to                        */
   /* `ft_standard_raster.raster_new'; a bitmap can be generated            */
@@ -47,7 +47,7 @@
   /*                                                                       */
   /*************************************************************************/
 
-#ifdef _STANDALONE_
+#ifdef STANDALONE_
 
   /* The size in bytes of the render pool used by the scan-line converter  */
   /* to do all of its work.                                                */
@@ -60,7 +60,7 @@
 #include "ftmisc.h"
 #include "ftimage.h"
 
-#else /* !_STANDALONE_ */
+#else /* !STANDALONE_ */
 
 #include <ft2build.h>
 #include "ftraster.h"
@@ -68,7 +68,7 @@
 
 #include "rastpic.h"
 
-#endif /* !_STANDALONE_ */
+#endif /* !STANDALONE_ */
 
 
   /*************************************************************************/
@@ -173,7 +173,7 @@
 #define FT_COMPONENT  trace_raster
 
 
-#ifdef _STANDALONE_
+#ifdef STANDALONE_
 
   /* Auxiliary macros for token concatenation. */
 #define FT_ERR_XCAT( x, y )  x ## y
@@ -226,7 +226,7 @@
             raster_done_                                            \
          };
 
-#else /* !_STANDALONE_ */
+#else /* !STANDALONE_ */
 
 
 #include FT_INTERNAL_OBJECTS_H
@@ -242,7 +242,7 @@
 #define Raster_Err_Unsupported  Raster_Err_Cannot_Render_Glyph
 
 
-#endif /* !_STANDALONE_ */
+#endif /* !STANDALONE_ */
 
 
 #ifndef FT_MEM_SET
@@ -801,15 +801,14 @@
 
     /* if it is <, simply insert it, ignore if == */
     if ( n >= 0 && y > y_turns[n] )
-      while ( n >= 0 )
+      do
       {
         Int  y2 = (Int)y_turns[n];
 
 
         y_turns[n] = y;
         y = y2;
-        n--;
-      }
+      } while ( --n >= 0 );
 
     if ( n < 0 )
     {
@@ -850,7 +849,7 @@
 
     if ( n > 1 && p )
     {
-      while ( n > 0 )
+      do
       {
         Int  bottom, top;
 
@@ -878,8 +877,7 @@
           return FAILURE;
 
         p = p->link;
-        n--;
-      }
+      } while ( --n );
     }
     else
       ras.fProfile = NULL;
@@ -1250,7 +1248,7 @@
 
     start_arc = arc;
 
-    while ( arc >= start_arc && e <= e2 )
+    do
     {
       ras.joint = FALSE;
 
@@ -1283,7 +1281,7 @@
         }
         arc -= degree;
       }
-    }
+    } while ( arc >= start_arc && e <= e2 );
 
   Fin:
     ras.top  = top;
@@ -2116,7 +2114,7 @@
     while ( current )
     {
       current->X       = *current->offset;
-      current->offset += current->flags & Flow_Up ? 1 : -1;
+      current->offset += ( current->flags & Flow_Up ) ? 1 : -1;
       current->height--;
       current = current->link;
     }
@@ -3043,7 +3041,7 @@
   /****                         a static object.                  *****/
 
 
-#ifdef _STANDALONE_
+#ifdef STANDALONE_
 
 
   static int
@@ -3070,7 +3068,7 @@
   }
 
 
-#else /* !_STANDALONE_ */
+#else /* !STANDALONE_ */
 
 
   static int
@@ -3104,7 +3102,7 @@
   }
 
 
-#endif /* !_STANDALONE_ */
+#endif /* !STANDALONE_ */
 
 
   static void

@@ -93,12 +93,12 @@ bool BlockWriteStream::Seek(intp offset, SeekOrigin direction /*= SeekOrigin::Cu
 	throw std::logic_error("The method or operation is not implemented.");
 }
 
-size_t BlockWriteStream::ReadDataTo(MemoryByteData& outData, DataReadingMode mode/*=DataReadingMode::AlwaysCopy*/)const
+size_t BlockWriteStream::ReadDataTo(MemoryData& outData, DataReadingMode mode/*=DataReadingMode::AlwaysCopy*/)const
 {
 	throw std::logic_error("The method or operation is not implemented.");
 }
 
-size_t BlockWriteStream::WriteData(const MemoryByteData& data, DataReadingMode mode /*= DataReadingMode::AlwaysCopy*/)
+size_t BlockWriteStream::WriteData(const MemoryData& data, DataReadingMode mode /*= DataReadingMode::AlwaysCopy*/)
 {
 	RETURN_ZERO_IF_FALSE(CanWrite());
 
@@ -109,7 +109,7 @@ size_t BlockWriteStream::WriteData(const MemoryByteData& data, DataReadingMode m
 	{
 		size_t bufferLeftLength = mBuffer.LeftLength();
 		size_t writeSize = Math::Min(bufferLeftLength, dataSize);
-		MemoryByteData tempData = MemoryByteData::FromStatic(data.Data(), writeSize);
+		MemoryData tempData = MemoryData::FromStatic(data.Data(), writeSize);
 		writeSize = mBuffer.WriteData(tempData, mode);
 		dataPos += writeSize;
 		dataSize -= writeSize;
@@ -131,7 +131,7 @@ size_t BlockWriteStream::WriteData(const MemoryByteData& data, DataReadingMode m
 	size_t blockCount = dataSize / blockSize;
 	FOR_EACH_SIZE(i, blockCount)
 	{
-		MemoryByteData tempData = MemoryByteData::FromStatic(data.Data() + dataPos, blockSize);
+		MemoryData tempData = MemoryData::FromStatic(data.Data() + dataPos, blockSize);
 		size_t writeSize = WriteBlock(mBlockIndex, tempData);
 		++mBlockIndex;
 
@@ -142,7 +142,7 @@ size_t BlockWriteStream::WriteData(const MemoryByteData& data, DataReadingMode m
 	//write left data
 	if (dataSize > 0)
 	{
-		MemoryByteData tempData = MemoryByteData::FromStatic(data.Data() + dataPos, dataSize);
+		MemoryData tempData = MemoryData::FromStatic(data.Data() + dataPos, dataSize);
 		size_t writeSize = mBuffer.WriteData(tempData, mode);
 		dataPos += writeSize;
 		dataSize -= writeSize;
@@ -208,12 +208,12 @@ bool BlockWriteStream::WriteChar(wchar val)
 		{
 			if (bufferLeftLength > 0)	//< wchar_t
 			{
-				auto tempData = MemoryByteData::FromStatic((byte*)&val, bufferLeftLength);
+				auto tempData = MemoryData::FromStatic((byte*)&val, bufferLeftLength);
 				mBuffer.WriteData(tempData);
 
 				WriteCurrentBlock();
 
-				tempData = MemoryByteData::FromStatic((byte*)&val + bufferLeftLength, sizeof(wchar_t) - bufferLeftLength);
+				tempData = MemoryData::FromStatic((byte*)&val + bufferLeftLength, sizeof(wchar_t) - bufferLeftLength);
 				mBuffer.WriteData(tempData);
 				return true;
 			}
@@ -252,19 +252,27 @@ size_t BlockWriteStream::ReadLineToString(WHeapString& outString, bool includeNe
 size_t BlockWriteStream::WriteString(const StringRef& str, bool withNullTermitated /*= true*/)
 {
 	RETURN_ZERO_IF_FALSE(CanWrite());
-	const byte* buffer = (const byte*)str.c_str();
-	size_t length = str.Length() + (withNullTermitated ? 1 : 0);	//+1 to copy '\0'
-	MemoryByteData data = MemoryByteData::FromStatic(buffer, length);
-	return WriteData(data);
+	MemoryData data = str.ToData().Cast<byte>();
+	size_t size = WriteData(data);
+	if (withNullTermitated)
+	{
+		WriteChar('\0');
+		++size;
+	}
+	return size;
 }
 
 size_t BlockWriteStream::WriteString(const WStringRef& str, bool withNullTermitated /*= true*/)
 {
 	RETURN_ZERO_IF_FALSE(CanWrite());
-	const byte* buffer = (const byte*)str.c_str();
-	size_t length = str.Length() + (withNullTermitated ? 1 : 0);	//+1 to copy '\0'
-	MemoryByteData data = MemoryByteData::FromStatic(buffer, length*sizeof(wchar_t));
-	return WriteData(data);
+	MemoryData data = str.ToData().Cast<byte>();
+	size_t size = WriteData(data);
+	if (withNullTermitated)
+	{
+		WriteChar(L'\0');
+		size += sizeof(wchar_t);
+	}
+	return size;
 }
 
 size_t BlockWriteStream::WriteCurrentBlock(bool force/*=false*/)
@@ -279,7 +287,7 @@ size_t BlockWriteStream::WriteCurrentBlock(bool force/*=false*/)
 		return 0;
 	}
 
-	MemoryByteData data = mBuffer.CurrentBuffer();
+	MemoryData data = mBuffer.CurrentBuffer();
 	size_t resultSize = WriteBlock(mBlockIndex, data);
 	mBuffer.Rewind();
 	return resultSize;

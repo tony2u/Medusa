@@ -10,7 +10,8 @@
 MEDUSA_BEGIN;
 
 NineGridSprite::NineGridSprite(StringRef name/*=StringRef::Empty*/)
-	:INode(name)
+	:INode(name),
+	mTexturePadding(ThicknessF::Zero)
 {
 	SetSizeToContent(SizeToContent::WidthAndHeight);
 }
@@ -26,11 +27,16 @@ bool NineGridSprite::Initialize()
 }
 
 
+void NineGridSprite::EnableNineGrid(bool val)
+{
+	mNineGridEnabled = val;
+}
+
 void NineGridSprite::OnMoveableDirty(MoveableChangedFlags changedFlags)
 {
 	INode::OnMoveableDirty(changedFlags);
 
-	if (changedFlags.Has(MoveableChangedFlags::SizeChanged))
+	if (MEDUSA_FLAG_HAS(changedFlags,MoveableChangedFlags::SizeChanged))
 	{
 		OnUpdateMesh();
 	}
@@ -40,7 +46,7 @@ void NineGridSprite::OnUpdateMesh()
 {
 	TextureNineGridMesh* mesh=(TextureNineGridMesh*)mRenderingObject.Mesh();
 	RETURN_IF_NULL(mesh);
-	mesh->UpdateToNewTargetSize(mSize.To2D(), mRenderingObject.Material()->FirstTexture()->Size());
+	mesh->UpdateToNewTargetSize(mSize.To2D());
 	
 }
 

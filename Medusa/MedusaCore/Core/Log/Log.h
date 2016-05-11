@@ -7,19 +7,12 @@
 #include "Core/Log/ILogger.h"
 #include "Core/Collection/List.h"
 #include "Core/Pattern/Event.h"
-
+#include "LogDefines.h"
 
 MEDUSA_BEGIN;
 
 class Log
 {
-public:
-	enum class Level
-	{
-		None = 0,
-		Error = 1,
-		Info = 2,
-	};
 public:
 	typedef Delegate<void(StringRef text, Action0 callback)> AlertViewDelegate;
 	typedef Delegate<void(WStringRef text, Action0 callback)> WAlertViewDelegate;
@@ -31,8 +24,8 @@ public:
 	static bool Initialize(StringRef name = StringRef::Empty);
 	static bool Uninitialize();
 
-	static Log::Level GetLevel() { return mLevel; }
-	static void SetLevel(Log::Level val) { mLevel = val; }
+	static LogLevel GetLevel() { return mLevel; }
+	static void SetLevel(LogLevel val) { mLevel = val; }
 
 	static void AddLogger(ILogger* logger);
 	static void AddFileLogger(StringRef filePath, StringRef name = StringRef::Empty);
@@ -45,7 +38,7 @@ public:
 	static void FormatInfo(const char* inFormat, const TArgs&... args)
 	{
 		RETURN_IF_NULL(inFormat);
-		RETURN_IF_FALSE(mLevel<=Level::Info);
+		RETURN_IF_FALSE(mLevel<= LogLevel::Info);
 
 		if (!mBufferString.Format(inFormat, args...))
 		{
@@ -63,7 +56,7 @@ public:
 	template<typename... TArgs>
 	static void FormatError(const char* inFormat, const TArgs&... args)
 	{
-		RETURN_IF_FALSE(mLevel <= Level::Error);
+		RETURN_IF_FALSE(mLevel <= LogLevel::Error);
 		RETURN_IF_NULL(inFormat);
 
 		if (!mBufferString.Format(inFormat, args...))
@@ -85,7 +78,7 @@ public:
 	template<typename... TArgs>
 	static void AssertFormat(bool condition, const char* inFormat, const TArgs&... args)
 	{
-		RETURN_IF_FALSE(mLevel <= Level::Error);
+		RETURN_IF_FALSE(mLevel <= LogLevel::Error);
 		RETURN_IF_NULL(inFormat);
 
 		if (!condition)
@@ -120,7 +113,7 @@ public:
 	template<typename... TArgs>
 	static void AssertFailedFormat(const char* inFormat, const TArgs&... args)
 	{
-		RETURN_IF_FALSE(mLevel <= Level::Error);
+		RETURN_IF_FALSE(mLevel <= LogLevel::Error);
 		RETURN_IF_NULL(inFormat);
 
 		if (!mBufferString.Format(inFormat, args...))
@@ -156,7 +149,7 @@ public:
 	template<typename... TArgs>
 	static void AssertNotNullFormat(const void* item, const char* inFormat, const TArgs&... args)
 	{
-		RETURN_IF_FALSE(mLevel <= Level::Error);
+		RETURN_IF_FALSE(mLevel <= LogLevel::Error);
 		RETURN_IF_NULL(inFormat);
 
 		if (item == nullptr)
@@ -193,7 +186,7 @@ public:
 	static void FormatInfo(const wchar_t* inFormat, const TArgs&... args)
 	{
 		RETURN_IF_NULL(inFormat);
-		RETURN_IF_FALSE(mLevel <= Level::Info);
+		RETURN_IF_FALSE(mLevel <= LogLevel::Info);
 
 		if (!mBufferStringW.Format(inFormat, args...))
 		{
@@ -212,7 +205,7 @@ public:
 	template<typename... TArgs>
 	static void FormatError(const wchar_t* inFormat, const TArgs&... args)
 	{
-		RETURN_IF_FALSE(mLevel <= Level::Error);
+		RETURN_IF_FALSE(mLevel <= LogLevel::Error);
 		RETURN_IF_NULL(inFormat);
 
 		if (!mBufferStringW.Format(inFormat, args...))
@@ -235,7 +228,7 @@ public:
 	template<typename... TArgs>
 	static void AssertFormat(bool condition, const wchar_t* inFormat, const TArgs&... args)
 	{
-		RETURN_IF_FALSE(mLevel <= Level::Error);
+		RETURN_IF_FALSE(mLevel <= LogLevel::Error);
 		RETURN_IF_NULL(inFormat);
 
 		if (!condition)
@@ -271,7 +264,7 @@ public:
 	template<typename... TArgs>
 	static void AssertFailedFormat(const wchar_t* inFormat, const TArgs&... args)
 	{
-		RETURN_IF_FALSE(mLevel <= Level::Error);
+		RETURN_IF_FALSE(mLevel <= LogLevel::Error);
 		RETURN_IF_NULL(inFormat);
 
 		if (!mBufferStringW.Format(inFormat, args...))
@@ -307,7 +300,7 @@ public:
 	template<typename... TArgs>
 	static void AssertNotNullFormat(const void* item, const wchar_t* inFormat, const TArgs&... args)
 	{
-		RETURN_IF_FALSE(mLevel <= Level::Error);
+		RETURN_IF_FALSE(mLevel <= LogLevel::Error);
 		RETURN_IF_NULL(inFormat);
 
 		if (item == nullptr)
@@ -346,7 +339,7 @@ private:
 
 	static List<ILogger*> mLoggers;
 	static bool mEnabled;
-	static Level mLevel;
+	static LogLevel mLevel;
 	
 	static HeapString mBufferString;
 	static WHeapString mBufferStringW;

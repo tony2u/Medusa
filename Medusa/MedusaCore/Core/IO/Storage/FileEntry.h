@@ -26,7 +26,7 @@ public:
 	FileEntry(uint id, const StringRef& name);
 
 	bool Initialize(FileStorage* storage, DirectoryEntry* parent);
-	bool IsReadonly()const { return !MEDUSA_HAS_FLAG(mPermission, FilePermission::Write); }
+	bool IsReadonly()const { return !MEDUSA_FLAG_HAS(mPermission, FilePermission::Write); }
 	//SIREN_HEADER_COPY_BEGIN
 public:
 	FileEntry(const FileEntry& other)
@@ -68,7 +68,7 @@ public:
 	SIREN_METHOD_LIST(uint, CoderOffsets);
 //SIREN_HEADER_METHOD_END
 public:
-	MemoryByteData ReadAllData(DataReadingMode mode = DataReadingMode::AlwaysCopy)const;
+	MemoryData ReadAllData(DataReadingMode mode = DataReadingMode::AlwaysCopy)const;
 	const IStream* Read(FileDataType dataType = FileDataType::Binary)const;
 public:
 	StringRef Path() const { return mPath; }
@@ -81,7 +81,7 @@ public:
 	uint ExtractedSize()const;
 	void Print(const StringRef& indent)const;
 	bool Extract(const StringRef& outDir)const;
-	bool IsValid()const { return !MEDUSA_HAS_FLAG(mOperations, EntryOperation::Delete); }
+	bool IsValid()const { return !MEDUSA_FLAG_HAS(mOperations, EntryOperation::Delete); }
 
 	static HeapString ConvertToString(EntryOperation val);
 	static HeapString ConvertToString(FilePermission val);
@@ -102,21 +102,21 @@ protected:
 	FileStorage* mStorage = nullptr;
 	DirectoryEntry* mParent = nullptr;
 	HeapString mPath;
-
 };
 
 //SIREN_HEADER_SCHEMA_BEGIN
 struct FileEntry::Schema
 {
-	SIREN_PROPERTY(0, 0, Optional, FileEntry, HeapString, mName);
-	SIREN_PROPERTY(1, 1, Optional, FileEntry, FilePermission, mPermission);
-	SIREN_PROPERTY(2, 2, Optional, FileEntry, uint, mFirstBlockId);
-	SIREN_PROPERTY(3, 3, Optional, FileEntry, uint, mOriginalSize);
-	SIREN_PROPERTY(4, 4, Optional, FileEntry, uint, mSize);
-	SIREN_PROPERTY(5, 5, Optional, FileEntry, HeapString, mSignature);
-	SIREN_PROPERTY(6, 6, Optional, FileEntry, EntryOperation, mOperations);
-	SIREN_PROPERTY_LIST(7, 7, Optional, FileEntry, uint, mCoderOffsets);
-	SIREN_PROPERTIES_8(void,FileEntry);
-};//SIREN_HEADER_SCHEMA_END
+	SIREN_FIELD(0, 0, Optional, FileEntry, HeapString, mName);
+	SIREN_FIELD(1, 1, Optional, FileEntry, FilePermission, mPermission);
+	SIREN_FIELD(2, 2, Optional, FileEntry, uint, mFirstBlockId);
+	SIREN_FIELD(3, 3, Optional, FileEntry, uint, mOriginalSize);
+	SIREN_FIELD(4, 4, Optional, FileEntry, uint, mSize);
+	SIREN_FIELD(5, 5, Optional, FileEntry, HeapString, mSignature);
+	SIREN_FIELD(6, 6, Optional, FileEntry, EntryOperation, mOperations);
+	SIREN_FIELD_LIST(7, 7, Optional, FileEntry, uint, mCoderOffsets);
+	SIREN_FIELDS_8(void,FileEntry);
+};
+//SIREN_HEADER_SCHEMA_END
 
 MEDUSA_END;

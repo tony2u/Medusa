@@ -8,12 +8,12 @@
 #include "Graphics/Buffer/TexCoordGraphicsBuffer.h"
 #include "Graphics/Buffer/ColorGraphicsBuffer.h"
 #include "Graphics/Buffer/NormalGraphicsBuffer.h"
-#include "Core/Geometry/Quad.h"
+#include "Geometry/Quad.h"
 #include "Node/Sprite/Sprite.h"
-#include "Core/Geometry/Matrix4.h"
+#include "Geometry/Matrix4.h"
 
-#include "Core/Geometry/Vertex/TextureVertex.h"
-#include "Core/Geometry/Vertex/TextureNormalVertex.h"
+#include "Geometry/Vertex/TextureVertex.h"
+#include "Geometry/Vertex/TextureNormalVertex.h"
 
 MEDUSA_BEGIN;
 

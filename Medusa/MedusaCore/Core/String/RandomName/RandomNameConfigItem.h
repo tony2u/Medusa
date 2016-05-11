@@ -49,10 +49,11 @@ protected:
 //SIREN_HEADER_SCHEMA_BEGIN
 struct RandomNameConfigItem::Schema
 {
-	SIREN_PROPERTY(0, 0, Required, RandomNameConfigItem, uint, mPosition);
-	SIREN_PROPERTY(1, 1, Required, RandomNameConfigItem, HeapString, mValue);
-	SIREN_PROPERTIES_2(void,RandomNameConfigItem);
+	SIREN_FIELD(0, 0, Required, RandomNameConfigItem, uint, mPosition);
+	SIREN_FIELD(1, 1, Required, RandomNameConfigItem, HeapString, mValue);
+	SIREN_FIELDS_2(void,RandomNameConfigItem);
 };
+
 //SIREN_HEADER_SCHEMA_END
 
 MEDUSA_END;

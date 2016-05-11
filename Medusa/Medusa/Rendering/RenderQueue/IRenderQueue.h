@@ -3,8 +3,8 @@
 // license that can be found in the LICENSE file.
 #pragma once
 #include "MedusaPreDeclares.h"
-#include "Rendering/RenderableChangedFlags.h"
-#include "Rendering/RenderingFlags.h"
+#include "Rendering/RenderingTypes.h"
+#include "Core/Collection/List.h"
 
 MEDUSA_BEGIN;
 

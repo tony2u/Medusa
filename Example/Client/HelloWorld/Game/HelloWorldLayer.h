@@ -13,7 +13,7 @@ public:
 	HelloWorldLayer(StringRef name=StringRef::Empty,const IEventArg& e=IEventArg::Empty);
 	virtual ~HelloWorldLayer(void);
 	virtual bool Initialize();
-	virtual bool Enter();
+	virtual bool OnEnter();
 private:
 };
 

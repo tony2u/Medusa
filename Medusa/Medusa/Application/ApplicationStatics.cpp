@@ -78,7 +78,9 @@ void ApplicationStatics::Reset()
 
 void ApplicationStatics::UpdateLabels()
 {
-	mRenderQueueChanged |= RenderableChangedFlags::RenderQueueChanged | RenderableChangedFlags::BatchChanged;
+	MEDUSA_FLAG_ADD(mRenderQueueChanged, RenderableChangedFlags::RenderQueueChanged);
+	MEDUSA_FLAG_ADD(mRenderQueueChanged, RenderableChangedFlags::BatchChanged);
+
 	if (IsShowGPU())
 	{
 		if (mGPULabel == nullptr)
@@ -127,7 +129,7 @@ void ApplicationStatics::UpdateLabels()
 	{
 		if (mPerformanceLabel == nullptr)
 		{
-			mPerformanceLabel = NodeFactory::Instance().CreateMultipleLineLabel(FontId("arial22.fnt", 22), "6\n123.4567\n52.3");
+			mPerformanceLabel = NodeFactory::Instance().CreateMultipleLineLabel(FontId("arial22.fnt"), "6\n123.4567\n52.3");
 			mPerformanceLabel->EnableLayout(false);
 			mPerformanceLabel->SetDock(DockPoint::LeftBottom);
 			mPerformanceLabel->SetAnchorPoint(AnchorPoint::LeftBottom);
@@ -199,6 +201,7 @@ void ApplicationStatics::Resize(const Size2F& newSize)
 
 void ApplicationStatics::Update(float dt)
 {
+	RETURN_IF_NULL(mRenderQueue);
 	if (mPerformanceLabel != nullptr)
 	{
 
@@ -265,7 +268,8 @@ void ApplicationStatics::Update(float dt)
 		{
 			mPerformanceLabel->SetString(mPerformanceString);
 			mPerformanceLabel->AddRenderableChangedFlags(RenderableChangedFlags::DataTotalChanged);
-			mRenderQueueChanged |= RenderableChangedFlags::DataTotalChanged;
+			MEDUSA_FLAG_ADD(mRenderQueueChanged, RenderableChangedFlags::DataTotalChanged);
+
 		}
 	}
 
@@ -284,7 +288,7 @@ void ApplicationStatics::Update(float dt)
 			}
 			mDebugLabel->SetString(mDebugString);
 			mDebugLabel->AddRenderableChangedFlags(RenderableChangedFlags::DataTotalChanged);
-			mRenderQueueChanged |= RenderableChangedFlags::DataTotalChanged;
+			MEDUSA_FLAG_ADD(mRenderQueueChanged, RenderableChangedFlags::DataTotalChanged);
 		}
 	}
 
@@ -297,6 +301,8 @@ void ApplicationStatics::Update(float dt)
 
 void ApplicationStatics::Draw(float dt)
 {
+	RETURN_IF_NULL(mRenderQueue);
+
 	mIsDrawingPerformance = true;
 	size_t batchDrawCount = RenderingStatics::Instance().BatchDrawCount();
 	RenderingFlags renderingFlags = RenderingFlags::KeepRenderTarget;
@@ -318,23 +324,23 @@ void ApplicationStatics::SetDebugTouch(const Point2F& pos)
 
 void ApplicationStatics::ShowPerformance(bool val /*= true*/)
 {
-	RETURN_IF_EQUAL(mDebugInfoFlag.IsPerformance(), val);
-	mDebugInfoFlag.SetOrRemoveIf(ApplicationDebugInfoFlags::Performance, val);
+	RETURN_IF_EQUAL(IsShowPerformance(), val);
+	MEDUSA_FLAG_ENABLE(mDebugInfoFlag, ApplicationDebugInfoFlags::Performance, val);
 	mUpdateWatch.Enable(val);
 	UpdateLabels();
 }
 
 void ApplicationStatics::ShowGPU(bool val /*= true*/)
 {
-	RETURN_IF_EQUAL(mDebugInfoFlag.IsGPU(), val);
-	mDebugInfoFlag.SetOrRemoveIf(ApplicationDebugInfoFlags::GPU, val);
+	RETURN_IF_EQUAL(IsShowTouch(), val);
+	MEDUSA_FLAG_ENABLE(mDebugInfoFlag, ApplicationDebugInfoFlags::GPU, val);
 	UpdateLabels();
 }
 
 void ApplicationStatics::ShowTouch(bool val /*= true*/)
 {
-	RETURN_IF_EQUAL(mDebugInfoFlag.IsTouch(), val);
-	mDebugInfoFlag.SetOrRemoveIf(ApplicationDebugInfoFlags::Touch, val);
+	RETURN_IF_EQUAL(IsShowTouch(), val);
+	MEDUSA_FLAG_ENABLE(mDebugInfoFlag, ApplicationDebugInfoFlags::Touch, val);
 	UpdateLabels();
 }
 

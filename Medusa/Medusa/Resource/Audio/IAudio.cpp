@@ -12,13 +12,13 @@ IAudio::IAudio(const FileIdRef& fileId/*=FileId::Empty*/)
 {
 }
 
-IAudio::IAudio(const MemoryByteData& data, const FileIdRef& fileId /*= FileIdRef::Empty*/)
+IAudio::IAudio(const MemoryData& data, const FileIdRef& fileId /*= FileIdRef::Empty*/)
 	: IResource(fileId),mData(data)
 {
 
 }
 
-IAudio::IAudio(MemoryByteData&& data, const FileIdRef& fileId /*= FileIdRef::Empty*/)
+IAudio::IAudio(MemoryData&& data, const FileIdRef& fileId /*= FileIdRef::Empty*/)
 	: IResource(fileId), mData(data)
 {
 
@@ -62,7 +62,7 @@ bool IAudio::Upload()
 	return true;
 }
 
-bool IAudio::Upload(const MemoryByteData& data)
+bool IAudio::Upload(const MemoryData& data)
 {
 	AudioFormat format = AudioDevice::Instance().GetAudioFormat(mChannelCount, mBitsPerSample);
 	GenerateBuffer();

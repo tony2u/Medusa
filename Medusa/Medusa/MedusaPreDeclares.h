@@ -1,13 +1,23 @@
 #pragma once
 #include "Platform/Platform.h"
 MEDUSA_BEGIN;
-class MedusaScript;
+class MedusaModule;
 
 class Application;
 
 class ApplicationStatics;
 
 class FrameAutoStopWatch;
+
+class AppCompatibility;
+
+class AppCompatibilityModule;
+
+class ApplicationSettings;
+
+class IJsonSettings;
+
+class IScriptSettings;
 
 class BaseRenderView;
 
@@ -55,6 +65,64 @@ class OpenALDevice;
 
 class IGame;
 
+class BehaviorConfig;
+
+class BehaviorFactory;
+
+class IActBehavior;
+
+class IBehavior;
+
+struct IfBehavior;
+
+class IPredicateBehavior;
+
+struct SwitchBehavior;
+
+class BrainCache;
+
+class BrainFactory;
+
+class IBrain;
+
+class IBrainBody;
+
+class IBrainMemory;
+
+struct AndPredicate;
+
+struct FalsePredicate;
+
+struct IPredicate;
+
+struct NotPredicate;
+
+struct OrPredicate;
+
+class PredicateConfig;
+
+class PredicateFactory;
+
+struct TruePredicate;
+
+struct XorPredicate;
+
+class IState;
+
+class IStateConnector;
+
+class StateAutoConnector;
+
+class StateEventConnector;
+
+class StateFactory;
+
+class StateMachine;
+
+class StateMachineModel;
+
+class StateMachineModelConfig;
+
 class DropPool;
 
 class DropPoolConditionItem;
@@ -73,25 +141,163 @@ struct DropPoolRandomItemProbalityFunc;
 
 struct DropPoolRandomItemProbalityFuncForPointer;
 
+class UpdatePackageInfo;
+
+class UpdateServer;
+
 class IPlayer;
 
-class IGameClientSettings;
+template<typename T,template<typename T1> class TPoint>
+class AABBBox_t;
 
-class IGameServerSettings;
+class Color3F;
 
-class IJsonGameClientSettings;
+class Color3B;
 
-class IJsonSettings;
+class Color4F;
 
-class IScriptGameClientSettings;
+class Color4B;
 
-class IScriptGameServerSettings;
+template<typename T>
+class Cube;
 
-class IScriptSettings;
+template<typename T>
+class Ellipse;
+
+class Quaternion;
+
+class Matrix3;
+
+class EulerAngle;
+
+class Geometry;
+
+class GeometryAlgorithm;
+
+class GeometryFactory;
+
+template<typename T>
+class Line2;
+
+template<typename T>
+class Line3;
+
+class Matrix2;
+
+class Matrix4;
+
+class Matrix43;
+
+template<typename T>
+class Padding4;
+
+template<typename T>
+class Point2;
+
+template<typename T>
+class Point3;
+
+template<typename T>
+class Point4;
+
+template<typename T>
+class Polygon;
+
+template<typename T>
+class Quad;
+
+template<typename T>
+class Range;
+
+template<typename T>
+class Rect2;
+
+template<typename T>
+class Rotation2;
+
+template<typename T>
+class Rotation3;
+
+template<typename T>
+class Scale2;
+
+template<typename T>
+class Scale3;
+
+struct ScrollDirection;
+
+template<typename T>
+class Segment;
+
+template<typename T>
+class Size2;
+
+template<typename T>
+class Size3;
+
+template<typename T>
+class Thickness;
+
+template<typename T,template<typename T1> class TPoint>
+class Triangle_t;
+
+class Graph;
+
+class GraphCapabilityEdge;
+
+class GraphEdge;
+
+class GraphNode;
+
+class GraphPath;
+
+class IKSolver2D;
+
+struct Bone;
+
+class GridCell;
+
+template<typename TCell, typename TCellCompare >
+class GridMap;
+
+class BoneMoveable;
+
+class DefaultMoveable;
+
+class MatrixMoveable;
+
+class Mover;
+
+class SRTMoveable;
+
+class GuillotineBinPack;
+
+class SkylineBinPack;
+
+struct Skyline;
+
+template<typename TGraph, typename TNode, typename TUserData>
+class DijkstraPathFinder;
+
+class IScrollMathModel;
+
+class SpringScrollMathModel;
+
+class StaticScrollMathModel;
+
+class TransformFactory;
+
+class ShapeVertex;
+
+class TextureNormalVertex;
+
+class TextureVertex;
 
 class GraphicsContext;
 
 struct GraphicsSupportAPI;
+
+class PixelType;
 
 class ResolutionAdapter;
 
@@ -153,6 +359,8 @@ class ProgramRenderState;
 
 class RasterizerRenderState;
 
+class RenderStateFactory;
+
 class RenderStateMachine;
 
 class RenderStateSet;
@@ -162,6 +370,8 @@ class RenderTargetRenderState;
 class SamplerRenderState;
 
 class ScissorRenderState;
+
+class ShaderUniformRenderState;
 
 class BaseRenderStateTreeNode;
 
@@ -251,6 +461,8 @@ class TimelineFactory;
 
 class TranslateTimeline;
 
+class NodeScriptComponent;
+
 class ParallaxComponent;
 
 class ParallaxScrollComponent;
@@ -302,13 +514,11 @@ class StringListDataSource;
 template<typename T>
 class UserDataSource;
 
-class ISceneEditor;
+class INodeEditor;
 
-class SceneEditorFactory;
+class NodeEditorFactory;
 
-class CustomSceneEditor;
-
-class XAMLSceneEditor;
+class TieldLayerEditor;
 
 class IInputHandler;
 
@@ -432,8 +642,6 @@ class ParticleManager;
 
 class ParticleSystem;
 
-class Base2DScene;
-
 class Base3DScene;
 
 class ChangedNodeCollector;
@@ -445,6 +653,8 @@ class SceneFactory;
 class SceneManager;
 
 class SceneSweeper;
+
+class UIScene;
 
 class ISceneGraph;
 
@@ -492,11 +702,11 @@ struct BatchNewerById;
 
 class BatchPool;
 
-class CustomDrawMeshRenderBatch;
-
 class IRenderBatch;
 
 struct IRenderBatchCompareToBatchGroup;
+
+class CustomDrawMeshRenderBatch;
 
 class MultipleRenderBatch;
 
@@ -596,9 +806,11 @@ class IShaderParameter;
 
 class ShaderAttribute;
 
-class ShaderConstant;
+class ShaderUniform;
 
-class ShaderConstantInitializer;
+class ShaderUniformInitializer;
+
+class ShaderUniformValue;
 
 class BasePixelShader;
 
@@ -654,8 +866,6 @@ class SpotLight;
 
 class ITiledLayer;
 
-class ITiledMap;
-
 class TiledAnimationFrame;
 
 class TiledImage;
@@ -677,6 +887,10 @@ class TiledTileLayer;
 struct TiledTileRef;
 
 class TiledTileset;
+
+class TiledTilesetFactory;
+
+class TiledTilesetRef;
 
 class TmxTiledMap;
 
@@ -812,6 +1026,12 @@ class ITexture;
 
 class TextureFactory;
 
+class CocosTextureAtlas;
+
+class MedusaTextureAtlas;
+
+class SpineTextureAtlas;
+
 class TextureAtlas;
 
 class TextureAtlasFactory;
@@ -862,6 +1082,77 @@ class TriggerTimelineModel;
 class VertexTimelineModel;
 
 #pragma region typedef
+typedef Cube<uint32> CubeI;
+typedef Cube<float> CubeF;
+typedef CubeF BoundingBox;
+typedef LazyValue<BoundingBox> LazyBoundingBox;
+typedef Ellipse<int> EllipseI;
+typedef Ellipse<uint> EllipseU;
+typedef Ellipse<float> EllipseF;
+typedef Line2<int> Line2I;
+typedef Line2<float> Line2F;
+typedef Line3<int> Line3I;
+typedef Line3<float> Line3F;
+typedef LazyValue<Matrix3> LazyMatrix3;
+typedef LazyValue<Matrix4> LazyMatrix4;
+typedef LazyValue<Matrix43> LazyMatrix43;
+typedef Padding4<int> Padding4I;
+typedef Padding4<float> Padding4F;
+typedef Point2<int> Point2I;
+typedef Point2<uint> Point2U;
+typedef Point2<float> Point2F;
+typedef Point2I Vector2I;
+typedef Point2F Vector2F;
+typedef Point3<int> Point3I;
+typedef Point3<float> Point3F;
+typedef Point3I Vector3I;
+typedef Point3F Vector3F;
+typedef Point4<int> Point4I;
+typedef Point4<uint> Point4U;
+typedef Point4<float> Point4F;
+typedef Point4I Vector4I;
+typedef Point4U Vector4U;
+typedef Point4F Vector4F;
+typedef Polygon<int> PolygonI;
+typedef Polygon<float> PolygonF;
+typedef Quad<Color4F> QuadColor;
+typedef Quad<Point2<float> > QuadTexCoord;
+typedef Quad<Point3<float> > QuadVertex3;
+typedef Quad<Point2<float> > QuadVertex2;
+typedef Quad<TextureVertex> QuadTextureVertex;
+typedef Quad<TextureNormalVertex> QuadTextureNormalVertex;
+typedef Quad<ShapeVertex> QuadShapeVertex;
+typedef Range<int> RangeI;
+typedef Range<uint32> RangeU;
+typedef Range<size_t> RangeS;
+typedef Range<float> RangeF;
+typedef Rect2<int> Rect2I;
+typedef Rect2<uint> Rect2U;
+typedef Rect2<float> Rect2F;
+typedef Rect2F BoundingBox2;
+typedef LazyValue<BoundingBox2> LazyBoundingBox2;
+typedef Rotation2<float> Rotation2F;
+typedef Rotation3<float> Rotation3F;
+typedef Scale2<float> Scale2F;
+typedef Scale3<int> Scale3I;
+typedef Scale3<float> Scale3F;
+typedef Segment<int> SegmentI;
+typedef Segment<uint32> SegmentU;
+typedef Segment<size_t> SegmentS;
+typedef Segment<float> SegmentF;
+typedef Size2<int> Size2I;
+typedef Size2<uint32> Size2U;
+typedef Size2<float> Size2F;
+typedef Size3<uint32> Size3U;
+typedef Size3<int> Size3I;
+typedef Size3<float> Size3F;
+typedef Thickness<float> ThicknessF;
+typedef Triangle_t<int,Point2> Triangle2I;
+typedef Triangle_t<float,Point2> Triangle2F;
+typedef Triangle_t<int,Point3> Triangle3I;
+typedef Triangle_t<float,Point3> Triangle3F;
+typedef Triangle3I Triangle;
+typedef Triangle3F TriangleF;
 typedef TMoveByAction<INode> MoveByAction;
 typedef TMoveBySpeedAction<INode> MoveBySpeedAction;
 typedef TMoveToAction<INode> MoveToAction;
@@ -927,3 +1218,5 @@ typedef Event<void(INode* sender)> TapFailedEvent;
 typedef Quad<FontCharVertex> FontCharQuad;
 #pragma endregion typedef
 MEDUSA_END;
+//MANUAL_BEGIN
+//MANUAL_END

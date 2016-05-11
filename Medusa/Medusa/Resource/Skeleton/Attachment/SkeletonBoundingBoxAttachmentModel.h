@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 #pragma once
 #include "ISkeletonAttachmentModel.h"
-#include "Core/Geometry/Polygon.h"
+#include "Geometry/Polygon.h"
 
 MEDUSA_BEGIN;
 

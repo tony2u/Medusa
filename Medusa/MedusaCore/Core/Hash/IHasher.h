@@ -27,7 +27,7 @@ public:
 
 
 	template<typename T>
-	void Process(const MemoryData<T>& data)
+	void Process(const TMemoryData<T>& data)
 	{
 		Process((byte*)data.Data(), data.ByteSize());
 	}

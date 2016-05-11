@@ -492,7 +492,7 @@ namespace BindDetail
 			return std::forward<T>(val);
 		}
 
-		template <int N, class TupleT>
+		template <size_t N, class TupleT>
 		inline auto SelectArg(TupleT& tp, placeholder::TPlaceHolder<N>) const-> decltype(std::get<N - 1>(tp))
 		{
 			return std::get<N - 1>(tp);
@@ -512,7 +512,7 @@ namespace BindDetail
 			return DoCall(std::forward_as_tuple(std::forward<TArgs2>(args)...), typename Compile::MakeIndexes<sizeof...(TArgs)>::type());
 		}
 	private:
-		template <class TupleT, int... N>
+		template <class TupleT, size_t... N>
 		inline ResultType DoCall(TupleT&& tp, const Compile::IndexTuple< N... >&)const
 		{
 			return Invoke<FunctorType>(SelectArg(tp, std::get<N>(mArgs))...);
@@ -614,6 +614,8 @@ template <typename TFunc, typename TArg1, typename... TArgs,
 //[PRE_DECLARE_BEGIN]
 typedef Delegate<void()> Action0;
 typedef Delegate<void(void*)> Action1;
+typedef Delegate<bool()> PredicateFunc;
+
 //[PRE_DECLARE_END]
 
 

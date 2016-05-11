@@ -25,7 +25,7 @@ public:
 	virtual size_t GuessResultSize(const IStream& input)const override;
 	virtual CoderFlags Flags()const override { return CoderFlags::Block; }
 protected:
-	virtual size_t OnCode(const MemoryByteData& input, MemoryByteData& output)const override;
+	virtual size_t OnCode(const MemoryData& input, MemoryData& output)const override;
 private:
 	const static byte mDecodeChars[256];
 

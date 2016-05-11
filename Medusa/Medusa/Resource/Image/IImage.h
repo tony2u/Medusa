@@ -3,75 +3,66 @@
 // license that can be found in the LICENSE file.
 #pragma once
 #include "Graphics/Render/Render.h"
-#include "Core/Geometry/Size2.h"
+#include "Geometry/Size2.h"
 #include "Core/IO/FileDefines.h"
 #include "Core/Memory/MemoryData.h"
 #include "Resource/IResource.h"
+#include "Graphics/PixelType.h"
 
 MEDUSA_BEGIN;
 
-class IImage:public IResource
+class IImage :public IResource
 {
 public:
-
-public:
-	IImage(const FileIdRef& fileId=FileIdRef::Empty);
+	IImage(const FileIdRef& fileId , PixelType pixelType);
 	virtual ~IImage(void);
-	virtual ResourceType Type()const{return ResourceType::Image;}
-	static ResourceType ClassGetResourceType(){return ResourceType::Image;}
+	virtual ResourceType Type()const { return ResourceType::Image; }
+	static ResourceType ClassGetResourceType() { return ResourceType::Image; }
 
 
-	virtual ImageFileType ImageType()const=0;
-	bool IsBlend() const { return mIsBlend; }
-	void SetIsBlend(bool val) { mIsBlend = val; }
+	virtual ImageFileType ImageType()const = 0;
 
-	bool HasAlpha()const;
+	bool HasAlpha()const { return mPixelType.HasAlpha(); }
 
-	bool IsPreMultiplyAlpha() const{return mIsPreMultiplyAlpha;}
-	bool IsCompressed() const { return mIsCompressed; }
+	bool IsPreMultiplyAlpha() const { return mIsPreMultiplyAlpha; }
+	bool IsCompressed() const { return mPixelType.IsCompressed(); }
 	uint MipMapCount() const { return mMipMapCount; }
 	uint FaceCount() const { return mFaceCount; }
 
+	PixelType GetPixelType() const { return mPixelType; }
+	void SetPixelType(PixelType val) { mPixelType = val; }
+
 	GraphicsTextureType TextureType() const { return mTextureType; }
+	uint BytesPerComponent() const { return mPixelType.BytesPerComponent(); }
 
-	GraphicsInternalFormat InternalFormat() const { return mInternalFormat; }
-	GraphicsPixelFormat PixelFormat() const { return mPixelFormat; }
-	GraphicsPixelDataType PixelDataType() const { return mPixelDataType; }
-	uint BytesPerComponent() const;
+	const MemoryData& Data() const { return mImageData; }
+	MemoryData& MutableData() { return mImageData; }
 
-	const MemoryByteData& Data() const { return mImageData; }
-	MemoryByteData& MutableData() { return mImageData; }
-
-	size_t ByteSize()const{return mImageData.Size();}
+	size_t ByteSize()const { return mImageData.Size(); }
 	Size2U Size() const { return mImageSize; }
 	bool IsPOTImageSize()const;
 
 	const HeapString& FilePath() const { return mFilePath; }
 	void ReleaseImageData();
-	bool HasImageData()const{return mImageData.IsValid();}
+	bool HasImageData()const { return mImageData.IsValid(); }
 
-	void CopyImage(const Rect2U& rect,const MemoryByteData& imageData,GraphicsPixelFormat pixelFormat,GraphicsPixelDataType srcDataType,int stride=0,bool isFlipY=false,GraphicsPixelConvertMode mode=GraphicsPixelConvertMode::Normal);
-
+	void CopyImage(const Rect2U& rect, const MemoryData& imageData, PixelType srcPixelFormat, int stride = 0, bool isFlipY = false, GraphicsPixelConvertMode mode = GraphicsPixelConvertMode::Normal);
 
 	virtual bool Upload();
-	virtual uint GetTextureDataSize(uint mipLevel)const=0;
+	virtual uint GetTextureDataSize(uint mipLevel)const = 0;
 protected:
 	HeapString mFilePath;
-	
-	GraphicsTextureType mTextureType= GraphicsTextureType::Texture2D;
-	GraphicsInternalFormat mInternalFormat= GraphicsInternalFormat::RGBA;
-	GraphicsPixelFormat mPixelFormat= GraphicsPixelFormat::RGBA;
-	GraphicsPixelDataType mPixelDataType= GraphicsPixelDataType::Byte;
-	
-	Size2U mImageSize;
-	MemoryByteData mImageData;
 
-	uint mMipMapCount=1;
-	uint mFaceCount=1;
-	bool mIsCompressed=false;
-	bool mIsPreMultiplyAlpha=false;
-	bool mIsBlend=false;
-	
+	GraphicsTextureType mTextureType = GraphicsTextureType::Texture2D;
+	PixelType mPixelType;
+
+	Size2U mImageSize;
+	MemoryData mImageData;
+
+	uint mMipMapCount = 1;
+	uint mFaceCount = 1;
+	bool mIsPreMultiplyAlpha = false;
+
 };
 
 MEDUSA_END;

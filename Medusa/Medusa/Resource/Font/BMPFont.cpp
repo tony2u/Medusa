@@ -52,8 +52,7 @@ BMPFont* BMPFont::CreateFromPVR(const FontId& fontId)
 
 	if (fontId.Size() == 0)
 	{
-		resultFont->SetSize(fontHeader->SpaceWidth);
-		resultFont->MutableFontId().SetOriginalSize(fontHeader->SpaceWidth);
+		resultFont->SetOriginalSize(fontHeader->SpaceWidth);
 
 	}
 
@@ -146,10 +145,8 @@ BMPFont* BMPFont::CreateFromBMPBinary(const FontId& fontId, const IStream& strea
 	byte outLineThickness = (byte)stream.ReadChar();
 	HeapString faceName = stream.ReadString();
 
-	FontId resultFontId = fontId;
-	resultFontId.SetOriginalSize(fontSize);
-
-	std::unique_ptr<BMPFont> bmpFont(new BMPFont(resultFontId));
+	std::unique_ptr<BMPFont> bmpFont(new BMPFont(fontId));
+	bmpFont->SetOriginalSize(fontSize);
 	bmpFont->SetIsBold(isBold);
 	bmpFont->SetIsItalic(isItalic);
 	bmpFont->SetPadding(padding);
@@ -189,6 +186,7 @@ BMPFont* BMPFont::CreateFromBMPBinary(const FontId& fontId, const IStream& strea
 	{
 		HeapString pageFileName = stream.ReadString();
 		TextureAtlasPage* page = new TextureAtlasPage(pageFileName);
+		page->SetTexcoordUpSide(false);
 		page->SetId(i);
 		ITexture* texture = page->LoadTexture();
 		
@@ -216,7 +214,7 @@ BMPFont* BMPFont::CreateFromBMPBinary(const FontId& fontId, const IStream& strea
 	{
 		FontChar* fontChar = new FontChar();
 		TextureAtlasRegion* region = new TextureAtlasRegion();
-		region->SetIsTexcoordUpSide(false);
+		
 
 		fontChar->Id = (wchar_t)stream.Read<uint>();
 		region->SetId(fontChar->Id);
@@ -327,10 +325,8 @@ BMPFont* BMPFont::CreateFromBMPText(const FontId& fontId, const IStream& stream)
 	isSuccess = StringParser::TryReadKeyValues(infoLine, "spacing", '=', ',', ' ', spacing.Buffer);
 	isSuccess = StringParser::TryReadKeyValue(infoLine, "outline", '=', ' ', outLineThickness);
 
-	FontId resultFontId = fontId;
-	resultFontId.SetOriginalSize(fontSize);
-
-	std::unique_ptr<BMPFont> bmpFont(new BMPFont(resultFontId));
+	std::unique_ptr<BMPFont> bmpFont(new BMPFont(fontId));
+	bmpFont->SetOriginalSize(fontSize);
 	bmpFont->SetIsBold(isBold == 1);
 	bmpFont->SetIsItalic(isItalic == 1);
 	bmpFont->SetPadding(padding);
@@ -383,6 +379,7 @@ BMPFont* BMPFont::CreateFromBMPText(const FontId& fontId, const IStream& stream)
 		pageFileName.RemoveLast();
 
 		TextureAtlasPage* page = new TextureAtlasPage(pageFileName);
+		page->SetTexcoordUpSide(false);
 		page->SetId(pageId);
 		ITexture* texture = page->LoadTexture();
 
@@ -410,7 +407,7 @@ BMPFont* BMPFont::CreateFromBMPText(const FontId& fontId, const IStream& stream)
 	{
 		FontChar* fontChar = new FontChar();
 		TextureAtlasRegion* region = new TextureAtlasRegion();
-		region->SetIsTexcoordUpSide(false);
+		
 
 		fontChar->SetRegion(region);
 		Rect2U textureRect;
@@ -497,6 +494,8 @@ BMPFont* BMPFont::CreateFromBMPText(const FontId& fontId, const IStream& stream)
 BMPFont* BMPFont::CreateFromSingleTexture(const FontId& fontId, wchar_t firstChar /*= L'0'*/)
 {
 	TextureAtlasPage* page = new TextureAtlasPage(fontId.Name);
+	page->SetTexcoordUpSide(false);
+
 	ITexture* texture = page->LoadTexture();
 
 	if (page == nullptr)
@@ -538,7 +537,7 @@ BMPFont* BMPFont::CreateFromSingleTexture(const FontId& fontId, wchar_t firstCha
 
 		fontChar->HBearing.Y = (int)(bmpFont->Ascender());
 
-		region->SetIsTexcoordUpSide(false);
+		
 		region->SetTextureRect(textureRect);
 		page->AddRegion(region);
 

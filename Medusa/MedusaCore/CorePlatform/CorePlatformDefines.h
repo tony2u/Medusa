@@ -19,12 +19,36 @@
 
 
 
-//Features
 
+
+//Features
+#define MEDUSA_XML
+
+//Script
+#undef MEDUSA_LUA
+#undef MEDUSA_LUA_JIT
+#undef MEDUSA_JS
+
+#define MEDUSA_SCRIPT_LUA 100
+#define MEDUSA_SCRIPT_LUA_JIT 101
+
+#define MEDUSA_SCRIPT_JS 200
+
+#define MEDUSA_SCRIPT MEDUSA_SCRIPT_LUA_JIT
+
+#if MEDUSA_SCRIPT==MEDUSA_SCRIPT_LUA
+#define MEDUSA_LUA MEDUSA_SCRIPT
+
+#elif MEDUSA_SCRIPT==MEDUSA_SCRIPT_LUA_JIT
+#define MEDUSA_LUA MEDUSA_SCRIPT_LUA
+#define MEDUSA_LUA_JIT MEDUSA_SCRIPT
+
+#elif MEDUSA_SCRIPT==MEDUSA_SCRIPT_JS
+#define MEDUSA_JS MEDUSA_SCRIPT
+#endif
 
 //#define MEDUSA_VFP
 //#define MEDUSA_NEON
-#define MEDUSA_SCRIPT
 
 
 
@@ -52,6 +76,7 @@
 #define MEDUSA_WEAK_MULTIPLE_DEFINE
 #define MEDUSA_FORCE_INLINE
 #define MEDUSA_FORCE_NOINLINE
+#define MEDUSA_DEPRECATED
 
 
 
@@ -84,6 +109,10 @@
 
 #undef MEDUSA_FORCE_NOINLINE
 #define MEDUSA_FORCE_NOINLINE __declspec(noinline)
+
+#undef MEDUSA_DEPRECATED
+#define MEDUSA_DEPRECATED __declspec(deprecated)
+
 
 #if defined(MEDUSA_DEBUG) && defined(MEDUSA_MEMORY_LEAK_DETECTED_ENABLED)
 #define MEDUSA_ENABLE_VLD
@@ -152,6 +181,9 @@
 #undef MEDUSA_FORCE_NOINLINE
 #define MEDUSA_FORCE_NOINLINE __attribute__((noinline))
 
+#undef MEDUSA_DEPRECATED
+#define MEDUSA_DEPRECATED __attribute__((deprecated))
+
 #if __x86_64__ || __ppc64__ ||__LP64__
 #define MEDUSA_X64 MEDUSA_BIT_X64
 #define MEDUSA_BIT MEDUSA_X64
@@ -188,6 +220,9 @@
 #undef MEDUSA_FORCE_NOINLINE
 #define MEDUSA_FORCE_NOINLINE __attribute__((noinline))
 
+#undef MEDUSA_DEPRECATED
+#define MEDUSA_DEPRECATED __attribute__((deprecated))
+
 #if __x86_64__ || __ppc64__
 #define MEDUSA_X64 MEDUSA_BIT_X64
 #define MEDUSA_BIT MEDUSA_X64
@@ -220,6 +255,9 @@
 
 #undef MEDUSA_FORCE_NOINLINE
 #define MEDUSA_FORCE_NOINLINE __attribute__((noinline))
+
+#undef MEDUSA_DEPRECATED
+#define MEDUSA_DEPRECATED __attribute__((deprecated))
 
 #if __x86_64__ || __ppc64__
 #define MEDUSA_X64 MEDUSA_BIT_X64
@@ -327,12 +365,35 @@
 #define MEDUSA_CPP14 1
 #endif // __cplusplus>=201402L
 
+
+//ref qualifier to indicate a member function call on right value or left value
+#undef MEDUSA_HAS_REF_QUALIFIER
+#undef MEDUSA_REF_LVALUE
+
+#if defined(__clang__)
+# if __has_feature(cxx_reference_qualified_functions)
+#  define MEDUSA_HAS_REF_QUALIFIER
+# endif
+#elif defined(__GNUC__)
+# define GCC_VERSION (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
+# if GCC_VERSION >= 40801
+#  define MEDUSA_HAS_REF_QUALIFIER
+# endif
+#elif defined(_MSC_VER)
+# if _MSC_VER >= 1900 // since MSVS-14 CTP1
+#  define MEDUSA_HAS_REF_QUALIFIER
+# endif
+#endif
+
+#if defined(MEDUSA_HAS_REF_QUALIFIER)
+# define MEDUSA_REF_LVALUE &
+#else
+# define MEDUSA_REF_LVALUE
+#endif
+
 //////////////////////////////////////////////////////////////////////////
 
 
 //used to debug free,delete
 //#define MEDUSA_MEMORY_DEBUG
 
-
-#define MEDUSA_SCREEN_WIDTH 1600U
-#define MEDUSA_SCREEN_HEIGHT 900U

@@ -4,8 +4,8 @@
 #pragma once
 #include "MedusaPreDeclares.h"
 #include "Core/String/HeapString.h"
-#include "Core/Geometry/Point2.h"
-#include "Core/Geometry/Size2.h"
+#include "Geometry/Point2.h"
+#include "Geometry/Size2.h"
 #include "Core/Pattern/Property/StringPropertySet.h"
 
 
@@ -17,6 +17,7 @@ public:
 	~TiledObject();
 	bool operator<(const TiledObject& obj)const { return mId < obj.mId; }
 	bool operator==(const TiledObject& obj)const { return mId == obj.mId; }
+	bool Parse(const pugi::xml_node& node);
 
 	StringRef Name() const { return mName; }
 	void SetName(const StringRef& val) { mName = val; }

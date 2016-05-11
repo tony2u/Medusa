@@ -31,10 +31,12 @@ uint Environment::GetCPUCount() const
 }
 
 
-Size2U Environment::ScreenSize()const
+bool Environment::GetScreenSize(uint& outWidth, uint& outHeight)const
 {
 	//TODO:init screen size
-	return Size2U::Zero;
+	outWidth = 0;
+	outHeight = 0;
+	return true;
 }
 
 bool Environment::RequireFullScreen() const

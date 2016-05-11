@@ -31,16 +31,18 @@ public:
 	static bool ReadAllTextTo(StringRef filePath, HeapString& outString);
 	static bool ReadAllTextTo(StringRef filePath, WHeapString& outString);
 
-	static bool WriteAllTextTo(StringRef filePath, StringRef str);
-	static bool WriteAllTextTo(StringRef filePath, WStringRef str);
+	static HeapString ReadAllText(StringRef filePath);
+
+	static bool WriteAllText(StringRef filePath, StringRef str);
+	static bool WriteAllText(StringRef filePath, WStringRef str);
 
 
 	static bool ReadAllLines(StringRef filePath, List<HeapString>& outLines, size_t maxCount = 1024, bool isTrim = true, bool ignoreEmptyLine = true);
 
-	static MemoryByteData ReadAllData(StringRef filePath);
-	static bool WriteAllDataTo(MemoryByteData data, StringRef filePath);
+	static MemoryData ReadAllData(StringRef filePath);
+	static bool WriteAllData(StringRef filePath, MemoryData data);
 
-	static MemoryByteData ReadAllDataPriority(StringRef firstPath, StringRef secondPath);
+	static MemoryData ReadAllDataPriority(StringRef firstPath, StringRef secondPath);
 
 	static std::unique_ptr<FileStream> OpenTextReader(StringRef filePath);
 	static std::unique_ptr<FileStream> OpenBinaryReader(StringRef filePath);
@@ -49,8 +51,3 @@ public:
 
 MEDUSA_END;
 
-#ifdef MEDUSA_SCRIPT
-MEDUSA_SCRIPT_BEGIN;
-void RegisterFile(asIScriptEngine* engine);
-MEDUSA_SCRIPT_END;
-#endif

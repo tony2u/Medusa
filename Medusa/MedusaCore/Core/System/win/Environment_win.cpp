@@ -24,20 +24,11 @@ uint Environment::GetCPUCount() const
 	return info.dwNumberOfProcessors;
 }
 
-Size2U Environment::ScreenSize()const
+bool Environment::GetScreenSize(uint& outWidth, uint& outHeight)const
 {
-	if (RequireFullScreen())
-	{
-		int width = GetSystemMetrics(SM_CXSCREEN);
-		int height = GetSystemMetrics(SM_CYSCREEN);
-
-		return Size2U(width, height);
-	}
-	else
-	{
-		return Size2U(MEDUSA_SCREEN_WIDTH, MEDUSA_SCREEN_HEIGHT);
-	}
-	
+	outWidth = GetSystemMetrics(SM_CXSCREEN);
+	outHeight = GetSystemMetrics(SM_CYSCREEN);
+	return true;
 }
 
 bool Environment::RequireFullScreen() const

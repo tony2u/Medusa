@@ -20,10 +20,14 @@ template<size_t TSize, typename TId, typename TBase, typename... TArgs, bool IsP
 class ArrayObjectFactory<TSize, TId, TBase*(TArgs...), IsPoolEnabled>
 {
 public:
+	constexpr static size_t Size = TSize;
+public:
 	typedef TBase* CreateDerivedCallback(TArgs&&...);
 	typedef CreateDerivedCallback* CreatorType;
 	typedef Stack<TBase*> ObjectPool;
 	~ArrayObjectFactory() { Clear(); }
+
+	const CreatorType* Creators() const { return mMap; }
 private:
 	CreatorType mMap[TSize];
 	ObjectPool mPoolMap[TSize];
@@ -46,7 +50,7 @@ public:
 			ObjectPool& objectPool = mPoolMap[id];
 			if (!objectPool.IsEmpty())
 			{
-				return objectPool.Pop();
+				return objectPool.PopCopy();
 			}
 		}
 		CreatorType creator = mMap[id];

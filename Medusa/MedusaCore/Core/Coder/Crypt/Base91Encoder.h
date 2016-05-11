@@ -26,7 +26,7 @@ public:
 	virtual CoderFlags Flags()const override { return CoderFlags::Block; }
 
 protected:
-	virtual size_t OnCode(const MemoryByteData& input, MemoryByteData& output)const override;
+	virtual size_t OnCode(const MemoryData& input, MemoryData& output)const override;
 private:
 	const static char mEncodeChars[91];
 

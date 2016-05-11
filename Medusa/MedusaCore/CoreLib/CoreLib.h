@@ -42,6 +42,7 @@
 #include <cctype>
 #include <cerrno>
 #include <climits>
+#include <chrono>
 
 
 //curl
@@ -89,13 +90,12 @@
 #endif
 
 
-#ifdef MEDUSA_SCRIPT
-
-class CScriptBuilder;
-class asIScriptModule;
-class asIScriptContext;
-class asIScriptEngine;
-class asIScriptObject;
-struct asSMessageInfo;
+#ifdef MEDUSA_XML
+//pre declare
+namespace pugi
+{
+	class xml_node;
+	class xml_document;
+}
 
 #endif

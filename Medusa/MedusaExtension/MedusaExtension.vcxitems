@@ -22,7 +22,21 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Analytics\IAnalyzer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Analytics\TalkingDataAnalyzer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Analytics\UmengAnalyzer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)CocosStudio\BinaryEditor.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)CocosStudio\CocosDefines.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)CocosStudio\JsonEditor.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)CocosStudio\CSParseBinary_generated.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\ImageViewReader.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\INodeReader.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\ButtonReader.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\LayerReader.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\ProjectNodeReader.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\ReaderFactory.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\SceneReader.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\SpriteReader.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\TextReader.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ExtensionLib\android\ExtensionLib_android.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ExtensionLib\Common\flatbuffers.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ExtensionLib\ExtensionLib.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ExtensionLib\ios\ExtensionLib_ios.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ExtensionLib\win\ExtensionLib_win.h" />
@@ -31,7 +45,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)MedusaExtension.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MedusaExtensionPreCompiled.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MedusaExtensionPreDeclares.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)MedusaExtensionScript.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MedusaExtensionModule.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)Analytics\Analytics.cpp" />
@@ -39,11 +53,22 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Analytics\android\UmengAnalyzer_android.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Analytics\win\TalkingDataAnalyzer_win.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Analytics\win\UmengAnalyzer_win.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)CocosStudio\BinaryEditor.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)CocosStudio\JsonEditor.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\ImageViewReader.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\INodeReader.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\ButtonReader.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\LayerReader.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\ProjectNodeReader.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\ReaderFactory.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\SceneReader.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\SpriteReader.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\TextReader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MedusaExtensionPreCompiled.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
       <PrecompiledHeaderFile>MedusaExtensionPreCompiled.h</PrecompiledHeaderFile>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)MedusaExtensionScript.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MedusaExtensionModule.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Analytics\ios\TalkingDataAnalyzer.mm" />

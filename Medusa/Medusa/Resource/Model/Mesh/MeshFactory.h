@@ -4,12 +4,13 @@
 #pragma once
 #include "Core/String/StringRef.h"
 #include "Core/Pattern/Singleton.h"
-#include "Core/Geometry/Rect2.h"
-#include "Core/Geometry/Color4.h"
-#include "Core/Geometry/Thickness.h"
-#include "Core/Geometry/Size2.h"
-#include "Resource/TextureAtlas/TextureAtlasTypes.h"
+#include "Geometry/Rect2.h"
+#include "Geometry/Color4.h"
+#include "Geometry/Thickness.h"
+#include "Geometry/Size2.h"
+#include "Resource/TextureAtlas/TextureAtlasDefines.h"
 #include "Core/Collection/SortedDictionary.h"
+#include "Geometry/GeometryDefines.h"
 
 MEDUSA_BEGIN;
 
@@ -34,11 +35,16 @@ public:
 
 	TextureQuadMesh* CreateTextureQuadMesh(const Size2F& textureSize, const Rect2F& textureRect = Rect2F::Zero, const Color4F& color = Color4F::White);
 	TextureQuadMesh* CreateTextureQuadMesh(const FileIdRef& textureName, const FileMapOrderItem& orderItem, const Rect2F& textureRect = Rect2F::Zero, const Color4F& color = Color4F::White);
+	TextureQuadMesh* CreateTextureQuadMesh(ITexture* texture, const Rect2F& textureRect = Rect2F::Zero, const Color4F& color = Color4F::White);
 
-	TextureQuadMesh* CreateTextureQuadMeshFromAtlasRegion(TextureAtlasRegion* region, const Color4F& color = Color4F::White);
+
+	IMesh* CreateTextureAtlasRegionMesh(TextureAtlasRegion* region, const Color4F& color = Color4F::White);
 
 
-	TextureNineGridMesh* CreateTextureNineGridMesh(const Size2F& targetSize, const Size2F& textureSize, const ThicknessF& padding, const Rect2F& textureRect = Rect2F::Zero, const Color4F& color = Color4F::White);
+
+	TextureNineGridMesh* CreateTextureNineGridMesh(const Size2F& targetSize, const Size2F& textureSize, const ThicknessF& padding, const Rect2F& textureRect = Rect2F::Zero, RotateDirection rotation = RotateDirection::None, const Color4F& color = Color4F::White);
+	
+
 	TextureGeneralMesh* CreateTextureGeneralMesh(ITexture* texture, bool isStatic = false);
 
 

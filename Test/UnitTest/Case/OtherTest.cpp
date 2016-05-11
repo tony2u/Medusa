@@ -70,11 +70,11 @@ void OtherTest::TestFlag()
 
 	watch.Start();
 
-	MoveableChangedFlags flag = MoveableChangedFlags::AnchorChanged;
+	PackageFlags flag = PackageFlags::EncryptFileNames;
 	uint sum = 0;
 	FOR_EACH_SIZE(i, count)
 	{
-		if (flag.Has(MoveableChangedFlags::AnchorChanged))
+		if (flag.Has(PackageFlags::EncryptFileNames))
 		{
 			++sum;
 		}

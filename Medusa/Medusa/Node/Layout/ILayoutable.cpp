@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 #include "MedusaPreCompiled.h"
 #include "ILayoutable.h"
-#include "Core/Geometry/Size3.h"
+#include "Geometry/Size3.h"
 
 MEDUSA_BEGIN;
 
@@ -12,7 +12,7 @@ ILayoutable::ILayoutable( )
 	:mMinSize(Size2F::Zero),
 	mMaxSize(Size2F::Zero),
 	mMargin(ThicknessF::Zero),
-	mPadding(ThicknessF::Zero),
+	mPadding(Padding4F::Zero),
 	mStretchPercent(Scale2F::One),
 	mRelativePosition(Point2F::Zero)
 {
@@ -87,7 +87,7 @@ void ILayoutable::SetStretchPercent(const Scale2F& val)
 }
 
 
-void ILayoutable::SetPadding(const ThicknessF& val)
+void ILayoutable::SetPadding(const Padding4F& val)
 {
 	RETURN_IF_EQUAL(mPadding, val);
 
@@ -101,6 +101,13 @@ void ILayoutable::SetMargin(const ThicknessF& val)
 	RETURN_IF_EQUAL(mMargin, val);
 
 	mMargin = val;
+	OnLayoutChanged(*this, NodeLayoutChangedFlags::ArrangeChanged);
+}
+
+void ILayoutable::SetMarginEdge(MarginEdges val)
+{
+	RETURN_IF_EQUAL(mMarginEdge, val);
+	mMarginEdge = val;
 	OnLayoutChanged(*this, NodeLayoutChangedFlags::ArrangeChanged);
 }
 

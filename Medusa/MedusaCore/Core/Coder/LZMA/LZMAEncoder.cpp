@@ -68,7 +68,7 @@ size_t LZMAEncoder::OnCode(const IStream& input, IStream& output) const
 		for (i = 0; i < 8; i++)
 			header[LZMA_PROPS_SIZE+i] = (Byte)(dataSize >> (8 * i));
 
-		output.WriteData(MemoryByteData::FromStatic(header));
+		output.WriteData(MemoryData::FromStatic(header));
 
 		LZMASeqInStream inStream(input);
 		LZMASeqOutStream outStream(output);

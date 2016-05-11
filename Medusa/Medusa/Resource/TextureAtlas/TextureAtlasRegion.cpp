@@ -12,13 +12,13 @@ MEDUSA_BEGIN;
 
 TextureAtlasRegion::TextureAtlasRegion()
 	:mTextureRect(Rect2U::Zero),
-	mOriginalSize(Size2U::Zero),
-	mOffset(Point2U::Zero),
+	mSourceRect(Rect2U::Zero),
 	mIsRotate(false),
-	mIsFlip(false),
-	mIsTexcoordUpSide(true)
+	mIsFlip(false)
 {
 	mPage = nullptr;
+
+
 }
 
 TextureAtlasRegion::~TextureAtlasRegion()
@@ -26,75 +26,89 @@ TextureAtlasRegion::~TextureAtlasRegion()
 
 }
 
+
+TextureAtlasRegion* TextureAtlasRegion::Clone() const
+{
+	return new TextureAtlasRegion(*this);
+}
+
 void TextureAtlasRegion::SetPage(TextureAtlasPage* val)
 {
 	mPage = val;
-
 }
 
-void TextureAtlasRegion::SetIsTexcoordUpSide(bool val)
-{
-	RETURN_IF_EQUAL(mIsTexcoordUpSide, val);
-	mIsTexcoordUpSide = val;
-
-	if (mPage != nullptr)
-	{
-		UpdateMesh(mPage->Size());
-	}
-}
 
 bool TextureAtlasRegion::UpdateMesh(const Size2U& textureSize)
 {
-	Rect2F quadRect(mOffset.X, mOffset.Y, mTextureRect.Size.Width, mTextureRect.Size.Height);
-	mVertices[0] = quadRect.LeftBottom();
-	mVertices[1] = quadRect.RightBottom();
-	mVertices[2] = quadRect.RightTop();
-	mVertices[3] = quadRect.LeftTop();
-
-	Rect2F texcoord;
-	texcoord.Origin.X = (float)mTextureRect.Origin.X / textureSize.Width;
-	if (mIsTexcoordUpSide)
+	RETURN_FALSE_IF_NULL(mPage);
+	if (IsPolygon())
 	{
-		texcoord.Origin.Y = (float)mTextureRect.Origin.Y / textureSize.Height;
+		//do nothing
 	}
 	else
 	{
-		if (mIsRotate)
-		{
-			texcoord.Origin.Y = 1.f - (float)(mTextureRect.Origin.Y+mTextureRect.Size.Width) / textureSize.Height;
+		mVertices.ForceReserveCount(4);
+		mTexcoords.ForceReserveCount(4);
 
+		Rect2F quadRect(mSourceRect.Origin.X, mSourceRect.Origin.Y, mTextureRect.Size.Width, mTextureRect.Size.Height);
+		mVertices[0] = quadRect.LeftBottom();
+		mVertices[1] = quadRect.RightBottom();
+		mVertices[2] = quadRect.RightTop();
+		mVertices[3] = quadRect.LeftTop();
+
+		Rect2F texcoord;
+		texcoord.Origin.X = (float)mTextureRect.Origin.X / textureSize.Width;
+		if (mPage->IsTexcoordUpSide())
+		{
+			texcoord.Origin.Y = (float)mTextureRect.Origin.Y / textureSize.Height;
 		}
 		else
 		{
-			texcoord.Origin.Y = 1.f - (float)(mTextureRect.Origin.Y + mTextureRect.Size.Height) / textureSize.Height;
+			if (mIsRotate)
+			{
+				texcoord.Origin.Y = 1.f - (float)(mTextureRect.Origin.Y + mTextureRect.Size.Width) / textureSize.Height;
 
+			}
+			else
+			{
+				texcoord.Origin.Y = 1.f - (float)(mTextureRect.Origin.Y + mTextureRect.Size.Height) / textureSize.Height;
+			}
 		}
+
+		if (mIsRotate)
+		{
+			texcoord.Size.Width = (float)mTextureRect.Size.Height / textureSize.Width;
+			texcoord.Size.Height = (float)mTextureRect.Size.Width / textureSize.Height;
+
+			if (mPage->GetRotateDirection() == RotateDirection::CounterClockWise)
+			{
+				//rotate back
+				mTexcoords[0] = texcoord.RightBottom();
+				mTexcoords[1] = texcoord.RightTop();
+				mTexcoords[2] = texcoord.LeftTop();
+				mTexcoords[3] = texcoord.LeftBottom();
+			}
+			else
+			{
+				//clock wise,rotate back
+				mTexcoords[0] = texcoord.LeftTop();
+				mTexcoords[1] = texcoord.LeftBottom();
+				mTexcoords[2] = texcoord.RightBottom();
+				mTexcoords[3] = texcoord.RightTop();
+			}
+		}
+		else
+		{
+			texcoord.Size.Width = (float)mTextureRect.Size.Width / textureSize.Width;
+			texcoord.Size.Height = (float)mTextureRect.Size.Height / textureSize.Height;
+
+			mTexcoords[0] = texcoord.LeftBottom();
+			mTexcoords[1] = texcoord.RightBottom();
+			mTexcoords[2] = texcoord.RightTop();
+			mTexcoords[3] = texcoord.LeftTop();
+		}
+
 	}
-
-	if (mIsRotate)
-	{
-		texcoord.Size.Width = (float)mTextureRect.Size.Height / textureSize.Width;
-		texcoord.Size.Height = (float)mTextureRect.Size.Width / textureSize.Height;
-
-		mTexcoords[0] = texcoord.RightBottom();
-		mTexcoords[1] = texcoord.RightTop();
-		mTexcoords[2] = texcoord.LeftTop();
-		mTexcoords[3] = texcoord.LeftBottom();
-
-	}
-	else
-	{
-		texcoord.Size.Width = (float)mTextureRect.Size.Width / textureSize.Width;
-		texcoord.Size.Height = (float)mTextureRect.Size.Height / textureSize.Height;
-
-		mTexcoords[0] = texcoord.LeftBottom();
-		mTexcoords[1] = texcoord.RightBottom();
-		mTexcoords[2] = texcoord.RightTop();
-		mTexcoords[3] = texcoord.LeftTop();
-	}
-
-
-
 
 	return true;
 
@@ -119,14 +133,23 @@ ITexture* TextureAtlasRegion::Texture() const
 	return mPage->GetTexture();
 }
 
-IMaterial* TextureAtlasRegion::GetMaterial()
+IMaterial* TextureAtlasRegion::CreateMaterial()
 {
 	ITexture* texture = mPage->LoadTexture();
 	return MaterialFactory::Instance().CreateSingleTexture(texture);
 }
 
 
-void TextureAtlasRegion::SetIsRotate(bool val)
+RotateDirection TextureAtlasRegion::GetRotateDirection() const
+{
+	if (mIsRotate)
+	{
+		return mPage->GetRotateDirection();
+	}
+	return RotateDirection::None;
+}
+
+void TextureAtlasRegion::SetRotate(bool val)
 {
 	RETURN_IF_EQUAL(mIsRotate, val);
 	mIsRotate = val;
@@ -141,10 +164,44 @@ void TextureAtlasRegion::SetTextureRect(const Rect2U& val)
 	RETURN_IF_EQUAL(mTextureRect, val);
 	mTextureRect = val;
 
-	if (mPage!=nullptr)
+	if (mPage != nullptr)
 	{
 		UpdateMesh(mPage->Size());
 	}
+}
+
+
+Rect2U TextureAtlasRegion::ResultTextureRect() const
+{
+	auto textureSize= mPage->LoadTexture()->Size();
+	Rect2U result = mTextureRect;
+	if (mIsRotate)
+	{
+		result.Size.Width = mTextureRect.Size.Height;
+		result.Size.Height = mTextureRect.Size.Width;
+	}
+
+
+	if (mPage->IsTexcoordUpSide())
+	{
+		
+	}
+	else
+	{
+		if (mIsRotate)
+		{
+			result.Origin.Y = textureSize.Height - (mTextureRect.Origin.Y + mTextureRect.Size.Width);
+		}
+		else
+		{
+			result.Origin.Y = textureSize.Height - (mTextureRect.Origin.Y + mTextureRect.Size.Height);
+		}
+
+	}
+
+	
+
+	return result;
 }
 
 

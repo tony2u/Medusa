@@ -50,7 +50,7 @@ void BaseSingleBatchRenderQueue::Update(RenderableChangedFlags changedFlag)
 {
 	RETURN_IF_EQUAL(changedFlag, RenderableChangedFlags::None);
 
-	if (changedFlag.IsBatchChanged()||changedFlag.IsRenderQueueChanged())
+	if (MEDUSA_FLAG_HAS(changedFlag, RenderableChangedFlags::BatchChanged)|| MEDUSA_FLAG_HAS(changedFlag, RenderableChangedFlags::RenderQueueChanged))
 	{
 		mBatch->Prepare();
 		if (!mNodes.IsEmpty())
@@ -78,7 +78,7 @@ bool BaseSingleBatchRenderQueue::OnUpdateCommands(RenderingFlags renderingFlags 
 	mCommands.Clear();
 
 	RenderingContext::Instance().ApplyRenderTargetAndCamera(mRenderTarget, mCamera);
-	if (!renderingFlags.Has(RenderingFlags::KeepRenderTarget))
+	if (!MEDUSA_FLAG_HAS(renderingFlags,RenderingFlags::KeepRenderTarget))
 	{
 		LOG_ASSERT_NOT_NULL(mRenderTarget);
 		mRenderTarget->Clear();

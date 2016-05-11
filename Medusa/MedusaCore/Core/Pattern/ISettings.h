@@ -10,43 +10,27 @@ class ISettings
 {
 public:
 	virtual ~ISettings() {}
-	virtual void* GetAddress(const StringRef& name)const = 0;
 
-	bool Contains(const StringRef& name)const
-	{
-		return GetAddress(name) != nullptr;
-	}
+	virtual bool Contains(const StringRef& name)const = 0;
+
+	template<typename T>
+	bool TryGet(const StringRef& name, T& outValue)const;
 
 	template<typename T>
 	T Get(const StringRef& name)const
 	{
-		return *(T*)GetAddress(name);
-	}
-
-	template<typename T>
-	T GetDefault(const StringRef& name, T defaultVal)const
-	{
-		T* p = (T*)GetAddress(name);
-		if (p != nullptr)
-		{
-			return *p;
-		}
+		T defaultVal{};
+		TryGet(name, defaultVal);
 		return defaultVal;
 	}
 
-	/*
 	template<typename T>
-	bool Set(const StringRef& name, T val)
+	T Optional(const StringRef& name, T defaultVal)const
 	{
-	T* p = (T*)GetAddress(name);
-	if (p != nullptr)
-	{
-	*p = val;
-	return true;
+		TryGet(name, defaultVal);
+		return defaultVal;
 	}
-	return false;
-	}
-	*/
+
 };
 
 MEDUSA_END;

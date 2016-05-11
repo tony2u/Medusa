@@ -108,12 +108,12 @@ bool FileCodeWriteStream::SetLength(uintp val)
 }
 
 
-size_t FileCodeWriteStream::ReadDataTo(MemoryByteData& outData, DataReadingMode mode/*=DataReadingMode::AlwaysCopy*/)const
+size_t FileCodeWriteStream::ReadDataTo(MemoryData& outData, DataReadingMode mode/*=DataReadingMode::AlwaysCopy*/)const
 {
 	return mBuffer.ReadDataTo(outData, mode);
 }
 
-size_t FileCodeWriteStream::WriteData(const MemoryByteData& data, DataReadingMode mode /*= DataReadingMode::AlwaysCopy*/)
+size_t FileCodeWriteStream::WriteData(const MemoryData& data, DataReadingMode mode /*= DataReadingMode::AlwaysCopy*/)
 {
 	return mBuffer.WriteData(data, mode);
 }

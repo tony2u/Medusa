@@ -41,7 +41,7 @@ bool SkeletonSkinnedMeshAttachmentModel::Initialize()
 
 RenderingObject SkeletonSkinnedMeshAttachmentModel::GetRenderingObject() const
 {
-	return RenderingObject((IMesh*)&mMesh, mRegion->GetMaterial());
+	return RenderingObject((IMesh*)&mMesh, mRegion->CreateMaterial());
 }
 
 

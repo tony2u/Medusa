@@ -150,7 +150,7 @@ bool BlockReadStream::SetLength(uintp val)
 }
 
 
-size_t BlockReadStream::ReadDataTo(MemoryByteData& outData, DataReadingMode mode/*=DataReadingMode::AlwaysCopy*/)const
+size_t BlockReadStream::ReadDataTo(MemoryData& outData, DataReadingMode mode/*=DataReadingMode::AlwaysCopy*/)const
 {
 	RETURN_ZERO_IF_FALSE(CanRead());
 
@@ -162,7 +162,7 @@ size_t BlockReadStream::ReadDataTo(MemoryByteData& outData, DataReadingMode mode
 	if (bufferLeftLength != 0)
 	{
 		size_t readSize = Math::Min(bufferLeftLength, outSize);
-		MemoryByteData tempData = MemoryByteData::FromStatic(outData.MutableData(), readSize);
+		MemoryData tempData = MemoryData::FromStatic(outData.MutableData(), readSize);
 		readSize = mBuffer.ReadDataTo(tempData, DataReadingMode::AlwaysCopy);
 		outPos += readSize;
 		outSize -= readSize;
@@ -178,7 +178,7 @@ size_t BlockReadStream::ReadDataTo(MemoryByteData& outData, DataReadingMode mode
 		size_t blockCount = outSize / blockSize;
 		FOR_EACH_SIZE(i, blockCount)
 		{
-			MemoryByteData tempData = MemoryByteData::FromStatic(outData.MutableData() + outPos, blockSize);
+			MemoryData tempData = MemoryData::FromStatic(outData.MutableData() + outPos, blockSize);
 			MemoryStream tempStream(tempData);
 			++mBlockIndex;
 			size_t readSize = LoadBlockTo(mBlockIndex, tempStream);
@@ -204,7 +204,7 @@ size_t BlockReadStream::ReadDataTo(MemoryByteData& outData, DataReadingMode mode
 
 		bufferLeftLength = mBufferLength - mBuffer.Position();
 		size_t readSize = Math::Min(bufferLeftLength, outSize);
-		MemoryByteData tempData = MemoryByteData::FromStatic(outData.MutableData() + outPos, readSize);
+		MemoryData tempData = MemoryData::FromStatic(outData.MutableData() + outPos, readSize);
 		readSize = mBuffer.ReadDataTo(tempData, DataReadingMode::AlwaysCopy);
 		outPos += readSize;
 		outSize -= readSize;
@@ -213,7 +213,7 @@ size_t BlockReadStream::ReadDataTo(MemoryByteData& outData, DataReadingMode mode
 	return outPos;
 }
 
-size_t BlockReadStream::WriteData(const MemoryByteData& data, DataReadingMode mode /*= DataReadingMode::AlwaysCopy*/)
+size_t BlockReadStream::WriteData(const MemoryData& data, DataReadingMode mode /*= DataReadingMode::AlwaysCopy*/)
 {
 	throw std::logic_error("The method or operation is not implemented.");
 }
@@ -270,7 +270,7 @@ int BlockReadStream::ReadWChar()const
 {
 	RETURN_OBJECT_IF_FALSE(CanRead(), -1);
 	wchar_t c;
-	MemoryByteData tempData = MemoryByteData::FromStatic((byte*)&c, sizeof(wchar_t));
+	MemoryData tempData = MemoryData::FromStatic((byte*)&c, sizeof(wchar_t));
 	size_t readSize = ReadDataTo(tempData);
 	if (readSize != sizeof(wchar_t))
 	{
@@ -379,7 +379,7 @@ size_t BlockReadStream::ReadStringTo(WHeapString& outString)const
 		{
 			//read left data
 			wchar_t c = 0;
-			MemoryByteData wcharBuffer1 = MemoryByteData::FromStatic((byte*)&c, bufferLeftLength);
+			MemoryData wcharBuffer1 = MemoryData::FromStatic((byte*)&c, bufferLeftLength);
 			mBuffer.ReadDataTo(wcharBuffer1);
 
 			++mBlockIndex;
@@ -390,7 +390,7 @@ size_t BlockReadStream::ReadStringTo(WHeapString& outString)const
 				return totalReadCount;
 			}
 
-			MemoryByteData wcharBuffer2 = MemoryByteData::FromStatic((byte*)&c + bufferLeftLength, sizeof(wchar_t) - bufferLeftLength);
+			MemoryData wcharBuffer2 = MemoryData::FromStatic((byte*)&c + bufferLeftLength, sizeof(wchar_t) - bufferLeftLength);
 			mBuffer.ReadDataTo(wcharBuffer2);
 
 			if (c == L'\0')
@@ -713,7 +713,7 @@ size_t BlockReadStream::ReadLineToString(WHeapString& outString, bool includeNew
 		{
 			//read left data
 			wchar_t c = 0;
-			MemoryByteData wcharBuffer1 = MemoryByteData::FromStatic((byte*)&c, bufferLeftLength);
+			MemoryData wcharBuffer1 = MemoryData::FromStatic((byte*)&c, bufferLeftLength);
 			mBuffer.ReadDataTo(wcharBuffer1);
 
 			++mBlockIndex;
@@ -725,7 +725,7 @@ size_t BlockReadStream::ReadLineToString(WHeapString& outString, bool includeNew
 				return totalReadCount;
 			}
 
-			MemoryByteData wcharBuffer2 = MemoryByteData::FromStatic((byte*)&c + bufferLeftLength, sizeof(wchar_t) - bufferLeftLength);
+			MemoryData wcharBuffer2 = MemoryData::FromStatic((byte*)&c + bufferLeftLength, sizeof(wchar_t) - bufferLeftLength);
 			mBuffer.ReadDataTo(wcharBuffer2);
 
 			if (StdString::ConstValues<wchar_t>::IsNewLine(c))

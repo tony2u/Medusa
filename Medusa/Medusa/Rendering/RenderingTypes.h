@@ -65,18 +65,48 @@ enum class RenderingStrategy
 };
 
 
-enum class RenderingStep { RenderTarget, RenderPass, Material, State, DrawMode, Batch };
+enum class RenderingStep
+{
+	RenderTarget, 
+	RenderPass, 
+	Material, 
+	State, 
+	DrawMode,
+	Batch 
+};
+
+enum class RenderingFlags
+{
+	None = 0,
+	KeepRenderTarget = 1
+};
 
 
 enum class RenderQueueChangedFlags
 {
-	NewNode,
-	MeshChanged,
-	VisibleChanged,
+	None=0,
+	NewNode=1,
+	MeshChanged=2,
+	VisibleChanged=4,
 };
 
+enum class RenderableChangedFlags
+{
+	None = 0,
+	RenderQueueChanged=1, 
+	BatchChanged=2,
+	DataTotalChanged=4,
+	NewVertex=8, 
+	NewNormal=16,
+	NewTexCoord=32, 
+	NewColor=64,
+	NewIndex=128
+};
 
-
-
+enum class RenderPassFlags
+{
+	None = 0,
+	SuppressWorldViewProjectMatrixUniform = 1
+};
 
 MEDUSA_END;

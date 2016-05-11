@@ -73,7 +73,7 @@ void InputManager::Unregister(INode* node)
 void InputManager::UpdateInputPassingRecursively()
 {
 	RETURN_IF_FALSE(mIsDirty);
-	IScene* scene = SceneManager::Instance().RunningScene();
+	IScene* scene = SceneManager::Instance().Current();
 	scene->ResetInputPassing();
 
 	FOR_EACH_COLLECTION(i, mDispatchers)
@@ -107,7 +107,7 @@ bool InputManager::ShowKeyboard(INode* node)
 	BecomeFirstResponder(node);
 
 	UpdateInputPassingRecursively();
-	IScene* scene = SceneManager::Instance().RunningScene();
+	IScene* scene = SceneManager::Instance().Current();
 	RETURN_FALSE_IF_NULL(scene);
 	KeyboardEventArg e;
 	KeyboardWillShowHelper(scene, e);
@@ -123,7 +123,7 @@ bool InputManager::HideKeyboard(INode* node)
 	CancelFirstResponder(node);
 
 	UpdateInputPassingRecursively();
-	IScene* scene = SceneManager::Instance().RunningScene();
+	IScene* scene = SceneManager::Instance().Current();
 	RETURN_FALSE_IF_NULL(scene);
 	KeyboardEventArg e;
 	KeyboardWillHideHelper(scene, e);
@@ -149,7 +149,7 @@ void InputManager::TouchesBegan(TouchEventArg& e)
 	else
 	{
 		UpdateInputPassingRecursively();
-		IScene* scene = SceneManager::Instance().RunningScene();
+		IScene* scene = SceneManager::Instance().Current();
 		RETURN_IF_NULL(scene);
 		TouchesBeganHelper(scene, e);
 	}
@@ -172,7 +172,7 @@ void InputManager::TouchesMoved(TouchEventArg& e)
 	else
 	{
 		UpdateInputPassingRecursively();
-		IScene* scene = SceneManager::Instance().RunningScene();
+		IScene* scene = SceneManager::Instance().Current();
 		RETURN_IF_NULL(scene);
 		TouchesMovedHelper(scene, e);
 	}
@@ -195,7 +195,7 @@ void InputManager::TouchesEnded(TouchEventArg& e)
 	else
 	{
 		UpdateInputPassingRecursively();
-		IScene* scene = SceneManager::Instance().RunningScene();
+		IScene* scene = SceneManager::Instance().Current();
 		RETURN_IF_NULL(scene);
 		TouchesEndedHelper(scene, e);
 		if (e.IsAllTouchEnded())
@@ -222,7 +222,7 @@ void InputManager::TouchesCancelled(TouchEventArg& e)
 	else
 	{
 		UpdateInputPassingRecursively();
-		IScene* scene = SceneManager::Instance().RunningScene();
+		IScene* scene = SceneManager::Instance().Current();
 		RETURN_IF_NULL(scene);
 		TouchesCancelledHelper(scene, e);
 		Reset();
@@ -245,7 +245,7 @@ void InputManager::KeyDown(KeyDownEventArg& e)
 	else
 	{
 		UpdateInputPassingRecursively();
-		IScene* scene = SceneManager::Instance().RunningScene();
+		IScene* scene = SceneManager::Instance().Current();
 		RETURN_IF_NULL(scene);
 		KeyDownHelper(scene, e);
 	}
@@ -266,7 +266,7 @@ void InputManager::KeyUp(KeyUpEventArg& e)
 	else
 	{
 		UpdateInputPassingRecursively();
-		IScene* scene = SceneManager::Instance().RunningScene();
+		IScene* scene = SceneManager::Instance().Current();
 		RETURN_IF_NULL(scene);
 		KeyUpHelper(scene, e);
 	}
@@ -287,7 +287,7 @@ void InputManager::CharInput(CharInputEventArg& e)
 	else
 	{
 		UpdateInputPassingRecursively();
-		IScene* scene = SceneManager::Instance().RunningScene();
+		IScene* scene = SceneManager::Instance().Current();
 		RETURN_IF_NULL(scene);
 		CharInputHelper(scene, e);
 	}
@@ -308,7 +308,7 @@ void InputManager::Scroll(ScrollEventArg& e)
 	else
 	{
 		UpdateInputPassingRecursively();
-		IScene* scene = SceneManager::Instance().RunningScene();
+		IScene* scene = SceneManager::Instance().Current();
 		RETURN_IF_NULL(scene);
 		ScrollHelper(scene, e);
 	}
@@ -506,7 +506,7 @@ void InputManager::TouchesEndedHelper(INode* node, TouchEventArg& e)
 }
 
 
-void InputManager::TryFireEventHelper(INode* node, TouchEventArg& e)
+void InputManager::MockTouchHelper(INode* node, TouchEventArg& e)
 {
 	NodeList& nodeList = node->MutableChildren();
 	size_t count = nodeList.Count();
@@ -518,7 +518,7 @@ void InputManager::TryFireEventHelper(INode* node, TouchEventArg& e)
 
 		if (child->IsInputPassingEnabled())
 		{
-			TryFireEventHelper(child, e);
+			MockTouchHelper(child, e);
 			RETURN_IF_TRUE(e.Handled);
 		}
 		if (child->IsModal())
@@ -533,7 +533,7 @@ void InputManager::TryFireEventHelper(INode* node, TouchEventArg& e)
 		if (dispatcher.HasHandler())
 		{
 			e.UpdateValidActiveTouches(node);
-			dispatcher.TryFireEvent(e);
+			dispatcher.MockTouch(e);
 			RETURN_IF_TRUE(e.Handled);
 		}
 
@@ -549,7 +549,7 @@ void InputManager::TryFireEventHelper(INode* node, TouchEventArg& e)
 		INode* child = nodeList[i];
 		if (child->IsInputPassingEnabled())
 		{
-			TryFireEventHelper(child, e);
+			MockTouchHelper(child, e);
 			RETURN_IF_TRUE(e.Handled);
 		}
 		if (child->IsModal())

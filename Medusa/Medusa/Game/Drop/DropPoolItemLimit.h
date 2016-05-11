@@ -60,11 +60,12 @@ protected:
 //SIREN_HEADER_SCHEMA_BEGIN
 struct DropPoolItemLimit::Schema
 {
-	SIREN_PROPERTY(0, 0, Required, DropPoolItemLimit, uint, mItemId);
-	SIREN_PROPERTY(1, 1, Optional, DropPoolItemLimit, int, mType);
-	SIREN_PROPERTY(2, 2, Required, DropPoolItemLimit, int, mMinCount);
-	SIREN_PROPERTY(3, 3, Required, DropPoolItemLimit, int, mMaxCount);
-	SIREN_PROPERTIES_4(void,DropPoolItemLimit);
-};//SIREN_HEADER_SCHEMA_END
+	SIREN_FIELD(0, 0, Required, DropPoolItemLimit, uint, mItemId);
+	SIREN_FIELD(1, 1, Optional, DropPoolItemLimit, int, mType);
+	SIREN_FIELD(2, 2, Required, DropPoolItemLimit, int, mMinCount);
+	SIREN_FIELD(3, 3, Required, DropPoolItemLimit, int, mMaxCount);
+	SIREN_FIELDS_4(void,DropPoolItemLimit);
+};
+//SIREN_HEADER_SCHEMA_END
 
 MEDUSA_END;

@@ -24,6 +24,7 @@ public:
 	inline void ForceSetCount(size_t val) { mCount = val; }
 	virtual void ReserveSize(size_t size) {}
 	inline bool IsEmpty()const { return mCount == 0; }
+	inline bool empty()const { return mCount == 0; }
 	inline size_t ByteSize() const { return mCount*sizeof(T); }
 public:
 	virtual bool IsLinear() const = 0;

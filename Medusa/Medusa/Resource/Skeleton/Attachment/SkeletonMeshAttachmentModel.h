@@ -3,8 +3,8 @@
 // license that can be found in the LICENSE file.
 #pragma once
 #include "BaseSkeletonTextureAttachmentModel.h"
-#include "Core/Geometry/Point3.h"
-#include "Core/Geometry/Point2.h"
+#include "Geometry/Point3.h"
+#include "Geometry/Point2.h"
 #include "Core/Collection/List.h"
 #include "Resource/Model/Mesh/General/TextureGeneralMesh.h"
 

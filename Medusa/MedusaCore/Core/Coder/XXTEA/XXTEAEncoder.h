@@ -15,7 +15,7 @@ class XXTEAEncoder:public ICoder
 public:
 	XXTEAEncoder() = default;
 	XXTEAEncoder(const IEventArg& e);
-	XXTEAEncoder(const MemoryByteData& key);
+	XXTEAEncoder(const MemoryData& key);
 	~XXTEAEncoder();
 
 public:
@@ -25,9 +25,9 @@ public:
 	virtual CoderFlags Flags()const override{ return CoderFlags::Block; }
 	virtual size_t GuessResultSize(const IStream& input)const override;
 	virtual bool Validate()const override { return mKey.IsValid(); }
-	static MemoryUIntData ToUIntArray(const MemoryByteData& data, bool includeLength);
+	static MemoryUIntData ToUIntArray(const MemoryData& data, bool includeLength);
 protected:
-	virtual size_t OnCode(const MemoryByteData& input, MemoryByteData& output)const override;
+	virtual size_t OnCode(const MemoryData& input, MemoryData& output)const override;
 
 private:
 	void EncryptHelper(MemoryUIntData& v)const;

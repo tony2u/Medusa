@@ -43,7 +43,7 @@ void ImageTexture::ResetDefaultParameters()
 		mPixelStoreState->SetUnpackAlignment(1);
 	}
 
-	if (mImage->PixelDataType()==GraphicsPixelDataType::FloatOES||mImage->PixelDataType()==GraphicsPixelDataType::HalfFloatOES)
+	if (mImage->GetPixelType().DataType()==GraphicsPixelDataType::FloatOES||mImage->GetPixelType().DataType() ==GraphicsPixelDataType::HalfFloatOES)
 	{
 		if (mImage->MipMapCount()==1)
 		{
@@ -84,7 +84,7 @@ void ImageTexture::ResetDefaultParameters()
 
 bool ImageTexture::IsBlend() const
 {
-	return mImage->IsBlend();
+	return mImage->HasAlpha();
 }
 
 Size2U ImageTexture::Size() const

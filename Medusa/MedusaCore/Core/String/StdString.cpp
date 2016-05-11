@@ -69,6 +69,25 @@ namespace StdString
 		MEDUSA_STRING_ALL(str, isupper);
 	}
 
+	bool IsToken(const char* str)
+	{
+		RETURN_FALSE_IF_NULL(str);
+		if (IsDigit(*str))	//not begin with number
+		{
+			return false;
+		}
+		MEDUSA_STRING_ALL(str, IsToken);
+	}
+
+	bool IsToken(const wchar_t* str)
+	{
+		RETURN_FALSE_IF_NULL(str);
+		if (IsDigit(*str))	//not begin with number
+		{
+			return false;
+		}
+		MEDUSA_STRING_ALL(str, IsToken);
+	}
 
 	wchar_t* Reverse(wchar_t* dest)
 	{
@@ -219,6 +238,8 @@ namespace StdString
 	const char ConstValues<char>::FalseStringUppercase[] = "FALSE";
 	const char ConstValues<char>::HexUpperCase[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 	const char ConstValues<char>::HexLowerCase[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
+	const char ConstValues<char>::Numbers[10] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+
 
 
 	//we have to add definition for constexpr,or it'll cause "Undefined symbols" error when linking
@@ -249,6 +270,9 @@ namespace StdString
 	const wchar_t ConstValues<wchar_t>::FalseStringUppercase[] = L"FALSE";
 	const wchar_t ConstValues<wchar_t>::HexUpperCase[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 	const wchar_t ConstValues<wchar_t>::HexLowerCase[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
+	const wchar_t ConstValues<wchar_t>::Numbers[10] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+
+
 
 }
 

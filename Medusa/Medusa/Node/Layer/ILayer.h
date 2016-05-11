@@ -5,6 +5,7 @@
 #include "Node/INode.h"
 #include "Core/Pattern/StaticConstructor.h"
 #include "Core/Command/EventArg/IEventArg.h"
+#include "Core/IO/FileIdRef.h"
 
 
 MEDUSA_BEGIN;
@@ -12,32 +13,39 @@ MEDUSA_BEGIN;
 #define MEDUSA_DECLARE_LAYER_ROOT(className) 													\
 		MEDUSA_DECLARE_RTTI;\
 public:																				\
-	virtual const StringRef& EditorFileName()const{return mEditorFileName;}									\
-	static const StringRef& EditorFileNameStatic(){return mEditorFileName;}									\
+	virtual const FileIdRef& EditorFileName()const{return mEditorFileName;}									\
+	static const FileIdRef& EditorFileNameStatic(){return mEditorFileName;}									\
+	virtual const FileIdRef& ScriptFileName()const{return mScriptFileName;}									\
+	static const FileIdRef& ScriptFileNameStatic(){return mScriptFileName;}									\
 private:																				\
-	const static StringRef mEditorFileName;							\
+	const static FileIdRef mEditorFileName;							\
+	const static FileIdRef mScriptFileName;							\
 	const static StaticConstructor mStaticConstructor;							\
 	static void SelfRegisterStaticCallback();
 
 #define MEDUSA_DECLARE_LAYER(className) 													\
 		MEDUSA_DECLARE_RTTI;\
 public:																				\
-	virtual const StringRef& EditorFileName()const override{return mEditorFileName;}									\
-	static const StringRef& EditorFileNameStatic(){return mEditorFileName;}									\
+	virtual const FileIdRef& EditorFileName()const override{return mEditorFileName;}									\
+	static const FileIdRef& EditorFileNameStatic(){return mEditorFileName;}									\
+	virtual const FileIdRef& ScriptFileName()const override{return mScriptFileName;}									\
+	static const FileIdRef& ScriptFileNameStatic(){return mScriptFileName;}									\
 private:																				\
-	const static StringRef mEditorFileName;							\
+	const static FileIdRef mEditorFileName;							\
+	const static FileIdRef mScriptFileName;							\
 	const static StaticConstructor mStaticConstructor;							\
 	static void SelfRegisterStaticCallback();
 
-#define MEDUSA_IMPLEMENT_LAYER(className,baseClassName,editorFile) 																					 \
+#define MEDUSA_IMPLEMENT_LAYER(className,baseClassName,editorFile,scriptFile) 																					 \
 	MEDUSA_IMPLEMENT_RTTI(className,baseClassName);\
-	const StringRef className::mEditorFileName=editorFile;					 \
+	const FileIdRef className::mEditorFileName=editorFile;					 \
+	const FileIdRef className::mScriptFileName=scriptFile;					 \
 	const StaticConstructor className::mStaticConstructor(SelfRegisterStaticCallback);					 \
 	void className::SelfRegisterStaticCallback(){LayerFactory::Instance().Register<className>(#className);}
 
 class ILayer :public INode
 {
-	MEDUSA_DECLARE_LAYER_ROOT(ILayer);
+	MEDUSA_DECLARE_LAYER(ILayer);
 public:
 	ILayer(StringRef name=StringRef::Empty,const IEventArg& e=IEventArg::Empty);
 	virtual ~ILayer(void);
@@ -47,17 +55,3 @@ public:
 
 MEDUSA_END;
 
-
-
-#ifdef MEDUSA_SCRIPT
-MEDUSA_SCRIPT_BEGIN;
-void RegisterILayer(asIScriptEngine* engine);
-
-template <class T>
-void RegisterILayer_Methods(asIScriptEngine* engine, const char* typeName)
-{
-	RegisterINode_Methods<ILayer>(engine, typeName);
-}
-
-MEDUSA_SCRIPT_END;
-#endif

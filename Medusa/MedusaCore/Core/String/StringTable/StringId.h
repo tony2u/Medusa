@@ -55,10 +55,11 @@ protected:
 //SIREN_HEADER_SCHEMA_BEGIN
 struct StringId::Schema
 {
-	SIREN_PROPERTY(0, 0, Required, StringId, int, mId);
-	SIREN_PROPERTY(1, 1, Required, StringId, int, mCheck1);
-	SIREN_PROPERTY(2, 2, Required, StringId, int, mCheck2);
-	SIREN_PROPERTIES_3(void,StringId);
-};//SIREN_HEADER_SCHEMA_END
+	SIREN_FIELD(0, 0, Required, StringId, int, mId);
+	SIREN_FIELD(1, 1, Required, StringId, int, mCheck1);
+	SIREN_FIELD(2, 2, Required, StringId, int, mCheck2);
+	SIREN_FIELDS_3(void,StringId);
+};
+//SIREN_HEADER_SCHEMA_END
 
 MEDUSA_END;

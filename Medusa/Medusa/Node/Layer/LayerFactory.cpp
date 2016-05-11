@@ -4,22 +4,32 @@
 #pragma  once
 #include "MedusaPreCompiled.h"
 #include "LayerFactory.h"
-#include "Node/Editor/SceneEditorFactory.h"
+#include "Node/Editor/NodeEditorFactory.h"
 #include "Core/Log/Log.h"
 #include "Core/IO/FileIdRef.h"
+#include "Node/Layer/NormalLayer.h"
 
 MEDUSA_BEGIN;
 
-ILayer* LayerFactory::CreateLayer(const StringRef& className, const StringRef& editorFile, const IEventArg& e /*= IEventArg::Empty*/, LayerCreateFlags createFlags /*= LayerCreateFlags::None*/)
+ILayer* LayerFactory::Create(const StringRef& className, const FileIdRef& editorFile, const IEventArg& e /*= IEventArg::Empty*/, LayerCreateFlags createFlags /*= LayerCreateFlags::None*/)
 {
-	auto* editor = SceneEditorFactory::Instance().CurrentEditor();
-	if (editor != nullptr)
+	ILayer* layer = nullptr;
+	if (editorFile.IsValid())
 	{
-		return editor->CreateLayer(className, editorFile, e);
+		layer = (ILayer*)NodeEditorFactory::Instance().Create(className, editorFile, e);
+		RETURN_SELF_IF_NOT_NULL(layer);
 	}
 
-	ILayer* layer =Create(className, className, e);
-	Log::AssertNotNullFormat(layer, "Cannot create layer by name:{}", className.c_str());
+	if (className.IsEmpty())
+	{
+		layer = new NormalLayer(StringRef::Empty, e);
+	}
+	else
+	{
+		layer = BaseType::Create(className, className, e);	//create layer only use name
+	}
+
+	Log::AssertNotNullFormat(layer, "Cannot create layer by name:{}", className);
 	layer->Initialize();
 
 	return layer;

@@ -4,7 +4,7 @@
 #pragma once
 #include "MedusaPreDeclares.h"
 #include "ITiledLayer.h"
-#include "Core/Geometry/Color4.h"
+#include "Geometry/Color4.h"
 #include "Core/Collection/List.h"
 #include "TiledObject.h"
 
@@ -14,8 +14,9 @@ class TiledObjectLayer : public ITiledLayer
 {
 public:
 	TiledObjectLayer();
-	~TiledObjectLayer();
+	virtual ~TiledObjectLayer();
 	virtual TiledLayerType Type()const override { return TiledLayerType::Object; }
+	bool Parse(const pugi::xml_node& node);
 
 	Color4B Color() const { return mColor; }
 	void SetColor(Color4B val) { mColor = val; }

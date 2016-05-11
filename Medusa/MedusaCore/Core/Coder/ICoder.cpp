@@ -9,7 +9,7 @@
 
 MEDUSA_BEGIN;
 
-size_t ICoder::Code(const MemoryByteData& input, MemoryByteData& output) const
+size_t ICoder::Code(const MemoryData& input, MemoryData& output) const
 {
 	return OnCode(input, output);
 }
@@ -23,7 +23,7 @@ size_t ICoder::Code(IStream& input, IStream& output) const
 	}
 
 	CoderFlags flags = Flags();
-	if (input.IsPtrAvailable() &&MEDUSA_HAS_FLAG(flags, CoderFlags::InPlace))
+	if (input.IsPtrAvailable() &&MEDUSA_FLAG_HAS(flags, CoderFlags::InPlace))
 	{
 		auto data = input.ReadToEnd(DataReadingMode::DirectMove);
 		RETURN_ZERO_IF_EMPTY(data);
@@ -50,7 +50,7 @@ size_t ICoder::Code(const IStream& input, IStream& output) const
 		return OnCode(input, output);
 	}
 
-	if (MEDUSA_HAS_FLAG(flags, CoderFlags::Block))
+	if (MEDUSA_FLAG_HAS(flags, CoderFlags::Block))
 	{
 		auto data = input.ReadToEnd(DataReadingMode::DirectMove);
 		RETURN_ZERO_IF_EMPTY(data);
@@ -58,7 +58,7 @@ size_t ICoder::Code(const IStream& input, IStream& output) const
 		if (output.IsPtrAvailable())
 		{
 			RETURN_FALSE_IF_FALSE(output.ReserveLeftSize(resultSize));
-			MemoryByteData destData = MemoryByteData::FromStatic(output.MutablePtr(), resultSize);
+			MemoryData destData = MemoryData::FromStatic(output.MutablePtr(), resultSize);
 			size_t count = OnCode(data, destData);
 			output.Skip(count);
 			return count;
@@ -66,14 +66,14 @@ size_t ICoder::Code(const IStream& input, IStream& output) const
 		else
 		{
 			//create a temp copy
-			MemoryByteData destData = MemoryByteData::Alloc(resultSize);
+			MemoryData destData = MemoryData::Alloc(resultSize);
 			size_t count = OnCode(data, destData);
 			destData.ForceSetSize(count);
 			return output.WriteData(destData);
 		}
 	}
 
-	if (MEDUSA_HAS_FLAG(flags, CoderFlags::Streaming))
+	if (MEDUSA_FLAG_HAS(flags, CoderFlags::Streaming))
 	{
 		return OnCode(input, output);
 	}
@@ -81,7 +81,7 @@ size_t ICoder::Code(const IStream& input, IStream& output) const
 	return 0;
 }
 
-MemoryByteData ICoder::Code(const MemoryByteData& input) const
+MemoryData ICoder::Code(const MemoryData& input) const
 {
 	const MemoryStream inputStream(input);
 	MemoryStream outputStream;
@@ -89,10 +89,10 @@ MemoryByteData ICoder::Code(const MemoryByteData& input) const
 	return outputStream.CurrentBuffer();
 }
 
-MemoryByteData ICoder::Code(MemoryByteData& input) const
+MemoryData ICoder::Code(MemoryData& input) const
 {
 	CoderFlags flags = Flags();
-	if (MEDUSA_HAS_FLAG(flags, CoderFlags::InPlace))
+	if (MEDUSA_FLAG_HAS(flags, CoderFlags::InPlace))
 	{
 		OnCode(input, input);
 		return input;
@@ -104,15 +104,15 @@ MemoryByteData ICoder::Code(MemoryByteData& input) const
 	return outputStream.CurrentBuffer();
 }
 
-MemoryByteData ICoder::Code(const StringRef& input) const
+MemoryData ICoder::Code(const StringRef& input) const
 {
-	const MemoryByteData inputData = MemoryByteData::FromStatic((const byte*)input.c_str(), input.Length());
+	const MemoryData inputData = MemoryData::FromStatic((const byte*)input.c_str(), input.Length());
 	return Code(inputData);
 }
 
-MemoryByteData ICoder::Code(HeapString& input) const
+MemoryData ICoder::Code(HeapString& input) const
 {
-	MemoryByteData inputData = MemoryByteData::FromStatic((const byte*)input.c_str(), input.Length());
+	MemoryData inputData = MemoryData::FromStatic((const byte*)input.c_str(), input.Length());
 	return Code(inputData);
 }
 

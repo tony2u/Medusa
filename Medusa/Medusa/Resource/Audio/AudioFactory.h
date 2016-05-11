@@ -20,9 +20,9 @@ public:
 	virtual bool Initialize();
 	virtual bool Uninitialize();
 
-	IAudio* CreateFromRaw(const FileIdRef& fileId, AudioFileType audioFileType, const MemoryByteData& data,uint sampleCount, uint channelCount, uint samplerRate, uint bitsPerSample, ResourceShareType shareType = ResourceShareType::Share);
+	IAudio* CreateFromRaw(const FileIdRef& fileId, AudioFileType audioFileType, const MemoryData& data,uint sampleCount, uint channelCount, uint samplerRate, uint bitsPerSample, ResourceShareType shareType = ResourceShareType::Share);
 	IAudio* CreateFromFile(const FileIdRef& fileId, ResourceShareType shareType = ResourceShareType::Share);
-	IAudio* CreateFromMemory(const FileIdRef& fileId, const MemoryByteData& data,  ResourceShareType shareType = ResourceShareType::Share);
+	IAudio* CreateFromMemory(const FileIdRef& fileId, const MemoryData& data,  ResourceShareType shareType = ResourceShareType::Share);
 
 };
 

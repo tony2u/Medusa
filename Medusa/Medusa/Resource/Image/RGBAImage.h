@@ -11,7 +11,7 @@ MEDUSA_BEGIN;
 class RGBAImage:public IImage
 {
 public:
-	RGBAImage(const FileIdRef& fileId,Size2U imageSize,GraphicsInternalFormat internalFormat,GraphicsPixelFormat imageFormat,bool isPreMultiplyAlpha);
+	RGBAImage(const FileIdRef& fileId,Size2U imageSize,PixelType pixelType,bool isPreMultiplyAlpha);
 	virtual ~RGBAImage(void);
 	virtual ImageFileType ImageType()const{return ImageFileType::raw;}
 

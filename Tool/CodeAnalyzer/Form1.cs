@@ -23,6 +23,10 @@ namespace CodeAnalyzer
         private string mProjectCorePath;
         private string mProjectExtensionPath;
 
+        private const string mManualBegin = "//MANUAL_BEGIN";
+        private const string mManualEnd = "//MANUAL_END";
+
+
         private void UpdatePaths(string sourcePath)
         {
             mSourcePath = sourcePath;
@@ -51,10 +55,38 @@ namespace CodeAnalyzer
         private void WriteToFile(string path, string str)
         {
             string old = File.ReadAllText(path);
+            string manual=Extract(old, mManualBegin, mManualEnd);
+            str += mManualBegin;
+            str += manual;
+            str += mManualEnd;
+
             if (old != str)
             {
                 File.WriteAllText(path, str);
             }
+        }
+
+        public string Extract(string text, string begin, string end)
+        {
+            if (string.IsNullOrEmpty(text))
+            {
+                return "\n";
+            }
+
+            int index1 = text.IndexOf(begin);
+            if (index1 < 0)
+            {
+                return "\n";
+            }
+
+
+            int index2 = text.IndexOf(end);
+            if (index2 < 0 || index2 < index1)
+            {
+                return "\n";
+            }
+
+            return text.Substring(index1 + begin.Length, index2 - index1 - begin.Length);
         }
 
         public Encoding GetFileEncodeType(string filename)
@@ -676,7 +708,7 @@ namespace CodeAnalyzer
                 }
 
 
-                if ((line.StartsWith("class") || line.StartsWith("struct")) && !line.Contains("\\") && !line.StartsWith("//")
+                if ((line.StartsWith("class ") || line.StartsWith("struct ")) && !line.Contains("\\") && !line.StartsWith("//")
                     && !line.Contains("//[IGNORE_PRE_DECLARE]") && !line.Contains("/*") && !line.Contains("::Schema") && !line.Contains("struct Schema;"))
                 {
                     ClassBlock block = new ClassBlock();
@@ -691,6 +723,15 @@ namespace CodeAnalyzer
                             block.NameSpace = preLine;
                             break;
                         }
+                        if (preLine.StartsWith("//[PRE_DECLARE_NAMESPCAE]")) //custom
+                        {
+                            preLine = preLine.Replace("//[PRE_DECLARE_NAMESPCAE]", string.Empty);
+                            preLine = preLine.Trim();
+                            block.NameSpace = preLine;
+                            break;
+                        }
+
+
                     }
 
                     Stack<string> preLines = new Stack<string>();
@@ -912,8 +953,8 @@ namespace CodeAnalyzer
         private void Form1_Load(object sender, EventArgs e)
         {
             var dir = Environment.CurrentDirectory;
-            int index = dir.IndexOf("Engine");
-            dir = dir.Substring(0, index + 7);
+            int index = dir.IndexOf("Tool\\CodeAnalyzer");
+            dir = dir.Substring(0, index);
             UpdatePaths(dir);
 
 

@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 #pragma once
 #include "Resource/Light/ILight.h"
-#include "Core/Geometry/Matrix4.h"
+#include "Geometry/Matrix4.h"
 
 MEDUSA_BEGIN;
 

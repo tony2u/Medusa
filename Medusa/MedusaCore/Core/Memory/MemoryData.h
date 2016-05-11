@@ -7,23 +7,23 @@
 
 MEDUSA_BEGIN;
 template<typename T>
-class MemoryData
+class TMemoryData
 {
 private:
-	MemoryData(const T* data, size_t size, int* refCount) :mData((T*)data), mSize(size), mRefCount(refCount)
+	TMemoryData(const T* data, size_t size, int* refCount) :mData((T*)data), mSize(size), mRefCount(refCount)
 	{
 		ForceRetain();
 	}
 
 public:
-	MemoryData() :mData(nullptr), mSize(0), mRefCount(nullptr) {}
+	TMemoryData() :mData(nullptr), mSize(0), mRefCount(nullptr) {}
 
-	MemoryData(const MemoryData& data) :mData(data.mData), mSize(data.mSize), mRefCount(data.mRefCount)
+	TMemoryData(const TMemoryData& data) :mData(data.mData), mSize(data.mSize), mRefCount(data.mRefCount)
 	{
 		ForceRetain();
 	}
 
-	MemoryData& operator=(const MemoryData& data)
+	TMemoryData& operator=(const TMemoryData& data)
 	{
 		if (this != &data)
 		{
@@ -36,13 +36,13 @@ public:
 		return *this;
 	}
 
-	MemoryData(MemoryData&& data) :mData(data.mData), mSize(data.mSize), mRefCount(data.mRefCount)
+	TMemoryData(TMemoryData&& data) :mData(data.mData), mSize(data.mSize), mRefCount(data.mRefCount)
 	{
 		data.mData = nullptr;
 		data.mSize = 0;
 		data.mRefCount = nullptr;
 	}
-	MemoryData& operator=(MemoryData&& data)
+	TMemoryData& operator=(TMemoryData&& data)
 	{
 		if (this != &data)
 		{
@@ -59,17 +59,17 @@ public:
 		return *this;
 	}
 
-	bool operator==(const MemoryData& data)const
+	bool operator==(const TMemoryData& data)const
 	{
 		return mData == data.mData&&mSize == data.mSize&&mRefCount == data.mRefCount;
 	}
 
-	bool operator!=(const MemoryData& data)const
+	bool operator!=(const TMemoryData& data)const
 	{
 		return mData != data.mData || mSize != data.mSize || mRefCount != data.mRefCount;
 	}
 
-	~MemoryData()
+	~TMemoryData()
 	{
 		ForceRelease();
 	}
@@ -86,9 +86,9 @@ public:
 	bool IsEmpty()const { return mData == nullptr || mSize == 0; }
 
 	bool IsValid()const { return !IsNull(); }
-	bool IsDataEqual(const MemoryData& data)const { return mData == data.mData; }
+	bool IsDataEqual(const TMemoryData& data)const { return mData == data.mData; }
 
-	bool IsContentEqual(const MemoryData& data)const { return mSize == data.mSize&&Memory::Compare(mData, data.mData, mSize) == 0; }
+	bool IsContentEqual(const TMemoryData& data)const { return mSize == data.mSize&&Memory::Compare(mData, data.mData, mSize) == 0; }
 
 	size_t LengthAsString()const
 	{
@@ -102,89 +102,99 @@ public:
 
 	void ClearZero()
 	{
-		Memory::SetZero(mData, mSize);
+		Memory::ClearZero(mData, mSize);
 	}
 
-	MemoryData Clone()const
+	TMemoryData Clone()const
 	{
 		T* outData = nullptr;
 		if (mData != nullptr)
 		{
-			outData = new T[mSize];
+			outData = Memory::Alloc<T>(mSize);
 			Memory::SafeCopy(outData, mSize, mData, mSize);
 		}
-		return MemoryData(outData, mSize, new int(0));
+		return TMemoryData(outData, mSize, new int(0));
 	}
 
-	MemoryData Sub(size_t offset, size_t count)const
+	TMemoryData Sub(size_t offset, size_t count)const
 	{
 		MEDUSA_ASSERT(offset + count <= mSize, "");
-		return MemoryData(mData + offset, count, mRefCount);
+		return TMemoryData(mData + offset, count, mRefCount);
 	}
 
-	MemoryData Sub(size_t offset)const
+	TMemoryData Sub(size_t offset)const
 	{
 		MEDUSA_ASSERT(offset <= mSize, "");
-		return MemoryData(mData + offset, mSize - offset, mRefCount);
+		return TMemoryData(mData + offset, mSize - offset, mRefCount);
 	}
 
 
 	template<typename T1>
-	MemoryData<T1> Cast()const
+	TMemoryData<T1> Cast()const
 	{
-		return MemoryData<T1>::Share((T1*)mData, mSize*sizeof(T) / sizeof(T1), mRefCount);
+		return TMemoryData<T1>::Share((T1*)mData, mSize*sizeof(T) / sizeof(T1), mRefCount);
 	}
 
-	static MemoryData CopyFrom(const T* buffer, size_t size)
+	static TMemoryData CopyFrom(const T* buffer, size_t size)
 	{
-		T* result = new T[size];
+		T* result = Memory::Alloc<T>(size);
 		Memory::SafeCopy(result, size, buffer, size);
-		return MemoryData(result, size, new int(0));
+		return TMemoryData(result, size, new int(0));
 	}
 
 public:
-	static MemoryData FromStatic(const T* data, size_t size)
+	static TMemoryData FromStatic(const T* data, size_t size)
 	{
-		return MemoryData(data, size, nullptr);
+		return TMemoryData(data, size, nullptr);
 	}
 
 	template<size_t size>
-	static MemoryData FromStatic(const T(&data)[size])
+	static TMemoryData FromStatic(const T(&data)[size])
 	{
-		return MemoryData((T*)data, size, nullptr);
+		return TMemoryData((T*)data, size, nullptr);
 	}
 
-	static MemoryData Take(const T* data, size_t size)
+	static TMemoryData Take(const T* data, size_t size)
 	{
-		return MemoryData(data, size, new int(1));
+		return TMemoryData(data, size, new int(1));
 	}
 
 	template<size_t size>
-	static MemoryData Take(const T(&data)[size])
+	static TMemoryData Take(const T(&data)[size])
 	{
-		return MemoryData((T*)data, size, new int(0));
+		return TMemoryData((T*)data, size, new int(0));
 	}
 
-	static MemoryData Alloc(size_t size)
+	static TMemoryData Alloc(size_t size)
 	{
 		if (size == 0)
 		{
-			return MemoryData::Empty;
+			return TMemoryData::Empty;
 		}
-		T* buffer = new T[size];
-		return MemoryData(buffer, size, new int(0));
+		T* buffer = Memory::Alloc<T>(size);
+		return TMemoryData(buffer, size, new int(0));
 	}
 
-	static MemoryData Share(const T* data, size_t size, int* refCount)
+	static TMemoryData AllocZero(size_t size)
+	{
+		if (size == 0)
+		{
+			return TMemoryData::Empty;
+		}
+		T* buffer = Memory::AllocZero<T>(size);
+		return TMemoryData(buffer, size, new int(0));
+	}
+
+	static TMemoryData Share(const T* data, size_t size, int* refCount)
 	{
 		if (refCount != nullptr)
 		{
 			++*refCount;
 		}
-		return MemoryData(data, size, refCount);
+		return TMemoryData(data, size, refCount);
 	}
 public:
-	void Copy(const MemoryData& val)
+	void Copy(const TMemoryData& val)
 	{
 		Memory::SafeCopy(mData, mSize, val.Data(), val.Size());
 	}
@@ -209,7 +219,7 @@ public:
 			--*mRefCount;
 			if (*mRefCount <= 0)
 			{
-				SAFE_DELETE_ARRAY(mData);
+				SAFE_FREE(mData);
 				mSize = 0;
 				delete mRefCount;
 				mRefCount = nullptr;
@@ -236,20 +246,22 @@ private:
 	size_t mSize = 0;
 	int* mRefCount = nullptr;
 public:
-	const static MemoryData Empty;
+	const static TMemoryData Empty;
 };
 
 template<typename T>
-const MemoryData<T> MemoryData<T>::Empty;
+const TMemoryData<T> TMemoryData<T>::Empty;
 
 //[PRE_DECLARE_BEGIN]
-typedef MemoryData<short> MemoryShortData;
-typedef MemoryData<byte> MemoryByteData;
-typedef MemoryData<char> MemoryCharData;
-typedef MemoryData<wchar_t> MemoryWCharData;
-typedef MemoryData<int> MemoryIntData;
-typedef MemoryData<uint> MemoryUIntData;
-typedef MemoryData<byte> Blob;
+typedef TMemoryData<short> MemoryShortData;
+typedef TMemoryData<byte> MemoryData;
+typedef TMemoryData<char> MemoryCharData;
+typedef TMemoryData<wchar_t> MemoryWCharData;
+typedef TMemoryData<int> MemoryIntData;
+typedef TMemoryData<uint> MemoryUIntData;
+typedef TMemoryData<float> MemoryFloatData;
+
+typedef TMemoryData<byte> Blob;
 //[PRE_DECLARE_END]
 
 

@@ -8,7 +8,6 @@
 #include "Core/String/StackString.h"
 #include "Core/Pattern/Singleton.h"
 #include "Core/System/PublishTarget.h"
-#include "Core/Geometry/Size2.h"
 
 MEDUSA_BEGIN;
 
@@ -35,7 +34,7 @@ public:
 
 	uint GetCPUCount()const;
 	bool RequireFullScreen()const;
-	Size2U ScreenSize()const;
+	bool GetScreenSize(uint& outWidth,uint& outHeight)const;
 	CPUArchitectures Architecture()const;
 
 	PublishDevices Device()const;

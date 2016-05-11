@@ -4,14 +4,16 @@
 #pragma  once
 #include "Core/Pattern/Object/MapObjectFactory.h"
 #include "Core/String/StringRef.h"
+#include "Core/Command/EventArg/IEventArg.h"
 #include "MedusaPreDeclares.h"
+#include "Node/Scene/IScene.h"
 
 MEDUSA_BEGIN;
 
 class SceneFactory :public MapObjectFactory < StringRef, IScene*(const StringRef&, const IEventArg&) >
 {
 public:
-	using MapObjectFactory<StringRef, IScene*(const StringRef&, const IEventArg&)>::Create;
+	using BaseType = MapObjectFactory<StringRef, IScene*(const StringRef&, const IEventArg&)>;
 private:
 	SceneFactory() {}
 	~SceneFactory() {}
@@ -22,12 +24,10 @@ public:
 		return factory;
 	}
 
+	
 	template<typename T>
-	T* Create(const IEventArg& e = IEventArg::Empty)
-	{
-		return (T*)Create(T::ClassNameStatic(), T::ClassNameStatic(), e);
-	}
-
+	T* Create(const IEventArg& e = IEventArg::Empty) { return (T*)Create(T::ClassNameStatic(), T::EditorFileNameStatic(), e); }
+	IScene* Create(const StringRef& className, const FileIdRef& editorFile, const IEventArg& e = IEventArg::Empty);
 };
 
 

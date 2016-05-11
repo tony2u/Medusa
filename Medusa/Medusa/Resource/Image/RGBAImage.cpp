@@ -3,33 +3,26 @@
 // license that can be found in the LICENSE file.
 #include "MedusaPreCompiled.h"
 #include "RGBAImage.h"
-#include "Core/Geometry/Color4.h"
+#include "Geometry/Color4.h"
 #include "Rendering/RenderingStatics.h"
 
 MEDUSA_BEGIN;
 
-RGBAImage::RGBAImage(const FileIdRef& fileId,Size2U imageSize,GraphicsInternalFormat internalFormat,GraphicsPixelFormat imageFormat,bool isPreMultiplyAlpha ):IImage(fileId)
+RGBAImage::RGBAImage(const FileIdRef& fileId,Size2U imageSize, PixelType pixelType,bool isPreMultiplyAlpha )
+	:IImage(fileId,pixelType)
 {
 	mImageSize=imageSize;
-	mInternalFormat=internalFormat;
-	mPixelFormat=imageFormat;
-	mPixelDataType=GraphicsPixelDataType::Byte;
-	
 	mIsPreMultiplyAlpha=isPreMultiplyAlpha;
-	mIsCompressed=false;
 
 	if (!HasAlpha())
 	{
 		mIsPreMultiplyAlpha=false;
 	}
-	else
-	{
-		mIsBlend=true;
-	}
+	
 
 	uint bytesPerComponent=BytesPerComponent();
 	uint imageDataSize=mImageSize.Width*mImageSize.Height*bytesPerComponent;
-	mImageData=MemoryByteData::Alloc(imageDataSize);
+	mImageData=MemoryData::AllocZero(imageDataSize);
 	RenderingStatics::Instance().IncreaseTextureMemorySize(imageDataSize);
 }
 

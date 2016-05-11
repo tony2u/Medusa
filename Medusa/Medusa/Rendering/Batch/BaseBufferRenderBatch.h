@@ -3,7 +3,6 @@
 // license that can be found in the LICENSE file.
 #pragma  once
 #include "Rendering/Batch/IRenderBatch.h"
-#include "Rendering/RenderableChangedFlags.h"
 #include "Graphics/Buffer/VertexGraphicsBuffer.h"
 #include "Graphics/Buffer/IndexGraphicsBuffer.h"
 #include "Graphics/Buffer/TexCoordGraphicsBuffer.h"

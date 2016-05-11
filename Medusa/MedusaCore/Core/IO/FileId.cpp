@@ -4,6 +4,7 @@
 #include "MedusaCorePreCompiled.h"
 #include "FileId.h"
 #include "Core/IO/Path.h"
+#include "Core/IO/FileInfo.h"
 
 
 MEDUSA_BEGIN;
@@ -58,11 +59,22 @@ HeapString FileId::ToString(const PublishTarget& tag /*= PublishTarget::MatchAll
 	return ToRef().ToString(tag);
 }
 
+bool FileId::IsPath() const
+{
+	return Path::IsPath(Name);
+}
+
+FileType FileId::Type() const
+{
+	return FileInfo::ExtractType(Name);
+}
+
+
 const FileId FileId::Empty;
 
 SIREN_METADATA(FileId, 6);
-SIREN_PROPERTY_METADATA_STRUCT(0, FileId, Name, 4);
-SIREN_PROPERTY_METADATA(1, FileId, Order, 5,0);
+SIREN_FIELD_METADATA_STRUCT(0, FileId, Name, 4);
+SIREN_FIELD_METADATA(1, FileId, Order, 5, 0, false);
 
 MEDUSA_END;
 

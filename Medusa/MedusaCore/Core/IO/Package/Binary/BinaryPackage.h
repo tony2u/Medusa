@@ -63,8 +63,8 @@ public:
 	virtual PackageFlags Flags() const override{ return mHeader.Flag(); }
 	virtual void SetFlags(PackageFlags val) override{ mHeader.SetFlag(val); }
 
-	virtual void SetKey(const MemoryByteData& val)override;
-	virtual bool ValidateKey(const MemoryByteData& val)const override;
+	virtual void SetKey(const MemoryData& val)override;
+	virtual bool ValidateKey(const MemoryData& val)const override;
 	
 protected:
 	virtual bool OnCreateDirectory(const StringRef& dir)override;

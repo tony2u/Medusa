@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 #pragma  once
 #include "Graphics/GraphicsTypes.h"
-#include "Core/Geometry/Size2.h"
+#include "Geometry/Size2.h"
 
 MEDUSA_BEGIN;
 class RenderBuffer

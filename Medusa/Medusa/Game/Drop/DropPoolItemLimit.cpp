@@ -1,4 +1,4 @@
-// Copyright (c) 2015 fjz13. All rights reserved.
+﻿// Copyright (c) 2015 fjz13. All rights reserved.
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 #include "MedusaPreCompiled.h"
@@ -26,10 +26,10 @@ DropPoolItemLimit::~DropPoolItemLimit()
 
 //SIREN_BODY_METADATA_BEGIN
 SIREN_METADATA(DropPoolItemLimit, 17);
-SIREN_PROPERTY_METADATA(0, DropPoolItemLimit, ItemId, 6, 0);
-SIREN_PROPERTY_METADATA(1, DropPoolItemLimit, Type, 4, 0);
-SIREN_PROPERTY_METADATA(2, DropPoolItemLimit, MinCount, 8, 0);
-SIREN_PROPERTY_METADATA(3, DropPoolItemLimit, MaxCount, 8, 0);
+SIREN_FIELD_METADATA(0, DropPoolItemLimit, ItemId, 6, 0, false);
+SIREN_FIELD_METADATA(1, DropPoolItemLimit, Type, 4, 0, true);
+SIREN_FIELD_METADATA(2, DropPoolItemLimit, MinCount, 8, 0, false);
+SIREN_FIELD_METADATA(3, DropPoolItemLimit, MaxCount, 8, 0, false);
 //SIREN_BODY_METADATA_END
 
 MEDUSA_END;

@@ -5,9 +5,14 @@
 #include "Node/Input/IInputHandler.h"
 #include "Core/Collection/Dictionary.h"
 #include "Core/Collection/Array.h"
-#include "Core/Geometry/ScrollDirection.h"
+#include "Geometry/ScrollDirection.h"
 
 MEDUSA_BEGIN;
+
+/*
+TODO: add action binding(multiple key to one action)
+add axis binding
+*/
 
 class InputDispatcher:public IInputHandler
 {
@@ -19,7 +24,7 @@ public:
 	virtual void TouchesMoved(TouchEventArg& e);
 	virtual void TouchesEnded(TouchEventArg& e);
 	virtual void TouchesCancelled(TouchEventArg& e);
-	virtual void TryFireEvent(TouchEventArg& e);
+	virtual void MockTouch(TouchEventArg& e);
 
 	virtual void KeyDown(KeyDownEventArg& e);
 	virtual void KeyUp(KeyUpEventArg& e);
@@ -85,14 +90,39 @@ public:
 	bool RemoveAllKeyboardHandler();
 
 	INode* Node() const { return mNode; }
-private:
-	IInputHandler* FindFocusHandler()const;
-	void IncreaseHandlerCount();
-	void DecreaseHandlerCount();
+
+	InputBehaviors Behaviors() const { return mBehaviors; }
+	void SetBehaviors(InputBehaviors val) { mBehaviors = val; }
+	void AddBehaviors(InputBehaviors val) { MEDUSA_FLAG_ADD(mBehaviors, val); }
+
+public:
+	void Bind(StringRef handlerName,const NodeInputDelegate& handler );
+	NodeInputEvent& Bind(StringRef handlerName);
+
+	void Monitor(InputEventType type, StringRef handlerName);
+	List<HeapString>& Monitor(InputEventType type);
+	bool IsMonitoring()const;
+
+	bool FireEvent(InputEventType type,INode* node=nullptr,IEventArg* e=nullptr)const;
+	bool FireScriptBinding(InputEventType type, INode* node = nullptr, IEventArg* e = nullptr)const;
 
 private:
-	INode* mNode;
-	Array<IInputHandler*,(size_t)InputType::Size> mHandlers;
+	IInputHandler* FindFocusHandler()const;
+	IInputHandler* FindHandler(InputType type)const;
+
+	void IncreaseHandlerCount();
+	void DecreaseHandlerCount();
+	bool FireEventHelper(InputEventType type,StringRef handlerName, INode* node = nullptr, IEventArg* e = nullptr)const;
+	bool FireScriptBindingHelper(InputEventType type, StringRef handlerName,INode* node = nullptr, IEventArg* e = nullptr)const;
+
+private:
+	INode* mNode=nullptr;
+	Array<IInputHandler*,(size_t)InputType::Count> mHandlers;
+	InputBehaviors mBehaviors = InputBehaviors::None;	//used to override self behaviors
+
+	Dictionary<InputEventType, List<HeapString>,DefaultHashCoder<InputEventType>,NoHashCoder<List<HeapString>>,EqualCompare<InputEventType>,NoCompare<List<HeapString>>> mEventMonitors;
+	Dictionary<HeapString, NodeInputEvent> mEventBindings;
+
 };
 
 

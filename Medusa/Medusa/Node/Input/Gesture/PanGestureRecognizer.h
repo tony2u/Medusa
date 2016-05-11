@@ -10,7 +10,7 @@ class PanGestureRecognizer:public IGestureRecognizer
 {
     
 public:
-	PanGestureRecognizer(INode* node, float minDistance,GestureFlags flags=GestureFlags::None);
+	PanGestureRecognizer(INode* node, float minDistance);
 	virtual ~PanGestureRecognizer(void);
 	virtual InputType GetInputType()const{return InputType::Pan;}
 

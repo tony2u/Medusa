@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 #pragma once
 #include "MedusaPreDeclares.h"		  
-#include "Core/Geometry/Size2.h"
+#include "Geometry/Size2.h"
 #include "Core/String/HeapString.h"
 #include "Core/Pattern/IInitializable.h"
 #include "Core/Pattern/RTTI/RTTIObject.h"

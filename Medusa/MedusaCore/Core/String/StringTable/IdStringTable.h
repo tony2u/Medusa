@@ -46,9 +46,10 @@ protected:
 //SIREN_HEADER_SCHEMA_BEGIN
 struct IdStringTable::Schema
 {
-	SIREN_PROPERTY_DICTIONARY(0, 0, Required, IdStringTable, StringId, HeapString, mItems);
-	SIREN_PROPERTIES_1(void,IdStringTable);
+	SIREN_FIELD_DICTIONARY(0, 0, Required, IdStringTable, StringId, HeapString, mItems);
+	SIREN_FIELDS_1(void,IdStringTable);
 };
+
 //SIREN_HEADER_SCHEMA_END
 
 MEDUSA_END;

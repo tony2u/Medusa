@@ -4,7 +4,7 @@
 #pragma once
 #include "Core/Pattern/Component/IComponent.h"
 #include "Core/Pattern/TuplePattern.h"
-#include "Core/Geometry/Point3.h"
+#include "Geometry/Point3.h"
 #include "Core/Collection/Dictionary.h"
 MEDUSA_BEGIN;
 

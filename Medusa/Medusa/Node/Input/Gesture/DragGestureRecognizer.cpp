@@ -6,8 +6,8 @@
 #include "Node/Input/EventArg/TouchEventArg.h"
 
 MEDUSA_BEGIN;
-DragGestureRecognizer::DragGestureRecognizer( INode* node, float minDistance,GestureFlags flags/*=GestureFlags::None*/) 
-	:IGestureRecognizer(node,flags)
+DragGestureRecognizer::DragGestureRecognizer( INode* node, float minDistance) 
+	:IGestureRecognizer(node)
 {
 	Reset();
 	mMinDistance = minDistance;
@@ -22,13 +22,14 @@ DragGestureRecognizer::~DragGestureRecognizer(void)
 
 void DragGestureRecognizer::TouchesBegan( TouchEventArg& e )
 {
+	IInputHandler::TouchesBegan(e);
 	switch(mState)
 	{
-	case GestureState::None:
+	case InputState::None:
 		if (e.IsValid())
 		{
 			mBeganTouch=e.FirstValidActiveTouch();
-            SetState(GestureState::Begin);
+            SetState(InputState::Begin);
 			DragBeganGestureEventArg dragBeganGestureEventArg(this,mBeganTouch);
 			OnDragBegan(mNode,dragBeganGestureEventArg);
 			e.Handled=dragBeganGestureEventArg.Handled;
@@ -42,12 +43,13 @@ void DragGestureRecognizer::TouchesBegan( TouchEventArg& e )
 
 void DragGestureRecognizer::TouchesMoved( TouchEventArg& e )
 {
+	IInputHandler::TouchesMoved(e);
 	switch(mState)
 	{
-	case GestureState::None:
+	case InputState::None:
 		break;
-	case GestureState::Begin:
-	case GestureState::Recognizing:
+	case InputState::Begin:
+	case InputState::Recognizing:
         {
 			Touch* nextTouch=e.FindValidActiveTouchById(mBeganTouch.Id);
 			if (nextTouch!=nullptr)
@@ -56,7 +58,7 @@ void DragGestureRecognizer::TouchesMoved( TouchEventArg& e )
 				if (movement.Length() > mMinDistance)
 				{
 					// Valid
-					SetState(GestureState::Valid);
+					SetState(InputState::Valid);
 
 					DragingGestureEventArg dragingGestureEventArg(this,*nextTouch,movement);
 					OnDraging(mNode,dragingGestureEventArg);
@@ -67,14 +69,14 @@ void DragGestureRecognizer::TouchesMoved( TouchEventArg& e )
 				else
 				{
 					// Recognizing
-					SetState(GestureState::Recognizing);
+					SetState(InputState::Recognizing);
 				}
 
 			}
            
         }
         break;
-	case GestureState::Valid:
+	case InputState::Valid:
 		{
 			Touch* validTouch=e.FindValidActiveTouchById(mBeganTouch.Id);
 			if (validTouch!=nullptr)
@@ -95,19 +97,20 @@ void DragGestureRecognizer::TouchesMoved( TouchEventArg& e )
 
 void DragGestureRecognizer::TouchesEnded( TouchEventArg& e )
 {
+	IInputHandler::TouchesEnded(e);
 	switch(mState)
 	{
-	case GestureState::None:
+	case InputState::None:
 		{
-			SetState(GestureState::Failed);
+			SetState(InputState::Failed);
 			DragFailedGestureEventArg dragFailedGestureEventArg(this);
 			OnDragFailed(mNode,dragFailedGestureEventArg);
             Reset();
 		}
 		break;
-	case GestureState::Begin:
-	case GestureState::Recognizing:
-	case GestureState::Valid:
+	case InputState::Begin:
+	case InputState::Recognizing:
+	case InputState::Valid:
 		{
 			Touch* validTouch=e.FindValidActiveTouchById(mBeganTouch.Id);
 			if (validTouch!=nullptr)
@@ -127,6 +130,7 @@ void DragGestureRecognizer::TouchesEnded( TouchEventArg& e )
 
 void DragGestureRecognizer::TouchesCancelled( TouchEventArg& e )
 {
+	IInputHandler::TouchesCancelled(e);
 	Reset();
 }
 
@@ -134,7 +138,7 @@ bool DragGestureRecognizer::IsValid() const
 {
 	switch(mState)
 	{
-	case GestureState::Valid:
+	case InputState::Valid:
 		return true;
 	default:
 		return false;
@@ -143,7 +147,7 @@ bool DragGestureRecognizer::IsValid() const
 
 void DragGestureRecognizer::Reset()
 {
-	SetState( GestureState::None);
+	SetState( InputState::None);
 	mBeganTouch=Touch::Zero;
 }
 

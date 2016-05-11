@@ -4,12 +4,12 @@
 #include "MedusaPreCompiled.h"
 #include "Graphics/State/ScissorRenderState.h"
 #include "Graphics/Render/Render.h"
-#include "Resource/Effect/Shader/Parameter/ShaderConstant.h"
+#include "Resource/Effect/Shader/Parameter/ShaderUniform.h"
 #include "Rendering/RenderingContext.h"
 #include "Resource/Effect/IEffect.h"
 #include "Resource/ResourceNames.h"
 #include "Graphics/ResolutionAdapter.h"
-#include "Core/Geometry/Matrix4.h"
+#include "Geometry/Matrix4.h"
 MEDUSA_BEGIN;
 
 ScissorRenderState::ScissorRenderState(const Rect2F& scissorBox/*=Rect2F::Zero*/, bool isScissorEnabled/*=false*/)

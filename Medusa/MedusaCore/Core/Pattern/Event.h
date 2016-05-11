@@ -25,6 +25,16 @@ public:
 		assert(this != &other);
 		mItems = std::move(other.mItems); return*this;
 	}
+
+	bool operator==(const Event& val) const noexcept
+	{
+		return false;	//disable compare
+	}
+
+	bool operator!=(const Event& val) const noexcept
+	{
+		return true;//disable compare
+	}
 public:
 	template<typename ...TArgs>
 	void Invoke(TArgs&&... args)const
@@ -50,6 +60,9 @@ public:
 	{
 		Invoke(std::forward<TArgs>(args)...);
 	}
+
+	const ContainerType& Items()const { return mItems; }
+	ContainerType& MutableItems(){ return mItems; }
 
 	void Clear()
 	{

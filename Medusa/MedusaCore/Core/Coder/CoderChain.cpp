@@ -12,7 +12,7 @@
 
 MEDUSA_BEGIN;
 
-CoderChain::CoderChain(CoderList coders, const MemoryByteData& key)
+CoderChain::CoderChain(CoderList coders, const MemoryData& key)
 {
 	Initialize(coders, key);
 }
@@ -115,7 +115,7 @@ bool CoderChain::RequireKey(uint64 coders)
 	return false;
 }
 
-bool CoderChain::Initialize(CoderList coders, const MemoryByteData& key)
+bool CoderChain::Initialize(CoderList coders, const MemoryData& key)
 {
 	if (mCoders == coders&&mKey.IsContentEqual(key))
 	{
@@ -147,7 +147,7 @@ bool CoderChain::InitializeHelper()
 			}
 
 			coders <<= 8;
-			UserDataEventArg<MemoryByteData> e(mKey);
+			UserDataEventArg<MemoryData> e(mKey);
 			ICoder* coder = CoderFactory::Instance().Create((CoderType)coderByte, e);
 			if (coder == nullptr)
 			{
@@ -180,7 +180,7 @@ bool CoderChain::InitializeHelper()
 
 			coderByte += (byte)CoderType::Decoder_Begin;
 
-			UserDataEventArg<MemoryByteData> e(mKey);
+			UserDataEventArg<MemoryData> e(mKey);
 			ICoder* coder = CoderFactory::Instance().Create((CoderType)coderByte, e);
 			if (coder == nullptr)
 			{
@@ -202,7 +202,7 @@ bool CoderChain::InitializeHelper()
 bool CoderChain::Uninitialize()
 {
 	mCoders = 0;
-	mKey = MemoryByteData::Empty;
+	mKey = MemoryData::Empty;
 	SAFE_DELETE_COLLECTION(mEncoders);
 	SAFE_DELETE_COLLECTION(mDecoders);
 
@@ -231,7 +231,7 @@ bool CoderChain::Validate() const
 	return true;
 }
 
-void CoderChain::SetKey(const MemoryByteData& val)
+void CoderChain::SetKey(const MemoryData& val)
 {
 	if (mKey.IsContentEqual(val))
 	{
@@ -251,12 +251,12 @@ size_t CoderChain::Encode(const IStream& input, IStream& output) const
 	return OnCode(mEncoders, input, output);
 }
 
-size_t CoderChain::Encode(const MemoryByteData& input, MemoryByteData& output) const
+size_t CoderChain::Encode(const MemoryData& input, MemoryData& output) const
 {
 	return OnCode(mEncoders, input, output);
 }
 
-size_t CoderChain::Decode(const MemoryByteData& input, MemoryByteData& output) const
+size_t CoderChain::Decode(const MemoryData& input, MemoryData& output) const
 {
 	return OnCode(mDecoders, input, output);
 
@@ -362,7 +362,7 @@ size_t CoderChain::OnCode(const List<ICoder*>& coders, const IStream& input, ISt
 	return 0;
 }
 
-size_t CoderChain::OnCode(const List<ICoder*>& coders, const MemoryByteData& input, MemoryByteData& output)
+size_t CoderChain::OnCode(const List<ICoder*>& coders, const MemoryData& input, MemoryData& output)
 {
 	const MemoryStream inputStream(input);
 	MemoryStream outputStream(output);
@@ -370,7 +370,7 @@ size_t CoderChain::OnCode(const List<ICoder*>& coders, const MemoryByteData& inp
 	return OnCode(coders, inputStream, outputStream);
 }
 
-size_t CoderChain::OnCode(const List<ICoder*>& coders, MemoryByteData& input, MemoryByteData& output)
+size_t CoderChain::OnCode(const List<ICoder*>& coders, MemoryData& input, MemoryData& output)
 {
 	MemoryStream inputStream(input);
 	MemoryStream outputStream(output);

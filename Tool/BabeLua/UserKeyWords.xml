@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--You must restart visual studio for the changes to take effect-->
+<Keywords>
+	<!--support at most 15 groups-->
+	<User r="163" g="73" b="164">
+		<word>_M</word>
+	</User>
+	<User r="64" g="128" b="128">
+		<word>class</word>
+		<word>globalclass</word>
+		<word>import</word>
+		<word>using</word>
+	</User>
+</Keywords>

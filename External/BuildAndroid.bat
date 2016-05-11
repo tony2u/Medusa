@@ -1,13 +1,13 @@
-::AngelScript
-"C:\Program Files (x86)\MSBuild\14.0\Bin\msbuild" AngelScript\android\AngelScript.vcxproj /p:Configuration=Debug;Platform=x86;OutDir=..\..\..\Medusa\MedusaCore\CoreLib\Bin\android\x86\
-"C:\Program Files (x86)\MSBuild\14.0\Bin\msbuild" AngelScript\android\AngelScript.vcxproj /p:Configuration=Release;Platform=x86;OutDir=..\..\..\Medusa\MedusaCore\CoreLib\Bin\android\x86\
-"C:\Program Files (x86)\MSBuild\14.0\Bin\msbuild" AngelScript\android\AngelScript.vcxproj /p:Configuration=Debug;Platform=ARM;OutDir=..\..\..\Medusa\MedusaCore\CoreLib\Bin\android\ARM\
-"C:\Program Files (x86)\MSBuild\14.0\Bin\msbuild" AngelScript\android\AngelScript.vcxproj /p:Configuration=Release;Platform=ARM;OutDir=..\..\..\Medusa\MedusaCore\CoreLib\Bin\android\ARM\
-rmdir /s /q AngelScript\android\x86
-rmdir /s /q AngelScript\android\ARM
-rmdir /s /q AngelScript\x86
-rmdir /s /q AngelScript\ARM
-
+::lua
+"C:\Program Files (x86)\MSBuild\14.0\Bin\msbuild" lua\android\lua.vcxproj /p:Configuration=Debug;Platform=x86;OutDir=..\..\..\Medusa\MedusaCore\CoreLib\Bin\android\x86\
+"C:\Program Files (x86)\MSBuild\14.0\Bin\msbuild" lua\android\lua.vcxproj /p:Configuration=Release;Platform=x86;OutDir=..\..\..\Medusa\MedusaCore\CoreLib\Bin\android\x86\
+"C:\Program Files (x86)\MSBuild\14.0\Bin\msbuild" lua\android\lua.vcxproj /p:Configuration=Debug;Platform=ARM;OutDir=..\..\..\Medusa\MedusaCore\CoreLib\Bin\android\ARM\
+"C:\Program Files (x86)\MSBuild\14.0\Bin\msbuild" lua\android\lua.vcxproj /p:Configuration=Release;Platform=ARM;OutDir=..\..\..\Medusa\MedusaCore\CoreLib\Bin\android\ARM\
+rmdir /s /q lua\android\x86
+rmdir /s /q lua\android\ARM
+rmdir /s /q lua\x86
+rmdir /s /q lua\ARM
+pause
 
 ::curl
 "C:\Program Files (x86)\MSBuild\14.0\Bin\msbuild" curl\android\curl.vcxproj /p:Configuration=Debug;Platform=x86;OutDir=..\..\..\Medusa\MedusaCore\CoreLib\Bin\android\x86\

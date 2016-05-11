@@ -11,7 +11,7 @@ MEDUSA_BEGIN;
 
 
 HashStream::HashStream(IStream& stream, HasherType hasher, Delegate<void(StringRef)> onComplete/* = nullptr*/)
-	: mSourceStream(&stream),mIsSourceReadonly(false),mOnComplete(onComplete)
+	: mSourceStream(&stream), mIsSourceReadonly(false), mOnComplete(onComplete)
 {
 	mHasher = HasherFactory::Instance().Create(hasher);
 	Log::AssertNotNullFormat(mHasher, "Cannot create hasher:{}", hasher);
@@ -66,7 +66,7 @@ uintp HashStream::Length() const
 
 bool HashStream::CanRead() const
 {
-	if (MEDUSA_HAS_FLAG(Operations(), StreamDataOperation::Read))
+	if (MEDUSA_FLAG_HAS(Operations(), StreamDataOperation::Read))
 	{
 		return mSourceStream->CanRead();
 	}
@@ -75,7 +75,7 @@ bool HashStream::CanRead() const
 
 bool HashStream::CanWrite() const
 {
-	if (MEDUSA_HAS_FLAG(Operations(), StreamDataOperation::Write))
+	if (MEDUSA_FLAG_HAS(Operations(), StreamDataOperation::Write))
 	{
 		return mSourceStream->CanWrite();
 	}
@@ -84,7 +84,7 @@ bool HashStream::CanWrite() const
 
 StreamDataOperation HashStream::Operations() const
 {
-	return mIsSourceReadonly ? MEDUSA_AND_FLAG(StreamDataOperation::ReadSeek, mSourceStream->Operations()) : mSourceStream->Operations();
+	return mIsSourceReadonly ? MEDUSA_FLAG_AND(StreamDataOperation::ReadSeek, mSourceStream->Operations()) : mSourceStream->Operations();
 }
 
 bool HashStream::Flush()
@@ -117,7 +117,7 @@ bool HashStream::SetLength(uintp val)
 }
 
 
-size_t HashStream::ReadDataTo(MemoryByteData& outData, DataReadingMode mode/*=DataReadingMode::AlwaysCopy*/)const
+size_t HashStream::ReadDataTo(MemoryData& outData, DataReadingMode mode/*=DataReadingMode::AlwaysCopy*/)const
 {
 	size_t count = mSourceStream->ReadDataTo(outData, mode);
 	mHasher->Process(outData);
@@ -125,7 +125,7 @@ size_t HashStream::ReadDataTo(MemoryByteData& outData, DataReadingMode mode/*=Da
 
 }
 
-size_t HashStream::WriteData(const MemoryByteData& data, DataReadingMode mode /*= DataReadingMode::AlwaysCopy*/)
+size_t HashStream::WriteData(const MemoryData& data, DataReadingMode mode /*= DataReadingMode::AlwaysCopy*/)
 {
 	mHasher->Process(data);
 	return mSourceStream->WriteData(data, mode);
@@ -222,13 +222,12 @@ size_t HashStream::ReadLineToString(WHeapString& outString, bool includeNewLine/
 size_t HashStream::WriteString(const StringRef& str, bool withNullTermitated /*= true*/)
 {
 	RETURN_ZERO_IF_FALSE(CanWrite());
-	MemoryByteData data = str.ToData().Cast<byte>();
+	MemoryData data = str.ToData().Cast<byte>();
 
 	size_t size = WriteData(data);
 	if (withNullTermitated)
 	{
-		WriteChar('\0');
-		++size;
+		size += WriteChar('\0') ? sizeof(char) : 0;
 	}
 	return size;
 }
@@ -236,12 +235,11 @@ size_t HashStream::WriteString(const StringRef& str, bool withNullTermitated /*=
 size_t HashStream::WriteString(const WStringRef& str, bool withNullTermitated /*= true*/)
 {
 	RETURN_ZERO_IF_FALSE(CanWrite());
-	MemoryByteData data = str.ToData().Cast<byte>();
+	MemoryData data = str.ToData().Cast<byte>();
 	size_t size = WriteData(data);
 	if (withNullTermitated)
 	{
-		WriteChar('\0');
-		++size;
+		size += WriteChar(L'\0') ? sizeof(wchar_t) : 0;
 	}
 	return size;
 }

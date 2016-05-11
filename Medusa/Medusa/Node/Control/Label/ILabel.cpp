@@ -70,7 +70,7 @@ const FontId& ILabel::GetFontId() const
 	{
 		return mFont->GetFontId();
 	}
-	return FontId::Default;
+	return FontId::Empty;
 }
 
 bool ILabel::SetFontId(const FontId& val)

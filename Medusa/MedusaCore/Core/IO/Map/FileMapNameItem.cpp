@@ -32,7 +32,7 @@ const FileMapOrderItem* FileMapNameItem::Find(uint order) const
 		}
 	}
 
-	return mItems.TryGetValueWithFailed(order, nullptr);
+	return mItems.GetOptional(order, nullptr);
 }
 
 FileMapOrderItem* FileMapNameItem::Find(uint order)
@@ -45,7 +45,7 @@ FileMapOrderItem* FileMapNameItem::Find(uint order)
 		}
 	}
 
-	return mItems.TryGetValueWithFailed(order, nullptr);
+	return mItems.GetOptional(order, nullptr);
 }
 
 FileMapOrderItem* FileMapNameItem::FindOrCreate(uint order)
@@ -69,7 +69,7 @@ FileMapOrderItem* FileMapNameItem::FindOrCreate(uint order)
 FileMapOrderItem* FileMapNameItem::Remove(uint order)
 {
 	RETURN_NULL_IF_NULL(mFirstItem);
-	FileMapOrderItem* orderItem = mItems.TryGetValueWithFailed(order, nullptr);
+	FileMapOrderItem* orderItem = mItems.GetOptional(order, nullptr);
 	RETURN_NULL_IF_NULL(orderItem);
 	mItems.RemoveKey(order);
 	if (mFirstItem == orderItem)

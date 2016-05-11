@@ -8,7 +8,7 @@ MEDUSA_BEGIN;
 class RotationGestureRecognizer:public IGestureRecognizer
 {
 public:
-	RotationGestureRecognizer(INode* node,GestureFlags flags=GestureFlags::None):IGestureRecognizer(node,flags){}
+	RotationGestureRecognizer(INode* node):IGestureRecognizer(node){}
 	virtual ~RotationGestureRecognizer(void);
 	virtual InputType GetInputType()const{return InputType::Rotation;}
 

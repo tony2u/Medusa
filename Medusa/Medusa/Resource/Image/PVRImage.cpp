@@ -5,7 +5,7 @@
 #include "PVRImage.h"
 #include "Core/Log/Log.h"
 #include "Core/IO/FileSystem.h"
-#include "Core/Geometry/Size3.h"
+#include "Geometry/Size3.h"
 #include "Graphics/Render/RenderExtensionNames.h"
 #include "Core/Memory/MemoryData.h"
 #include "Graphics/GraphicsContext.h"
@@ -13,8 +13,8 @@
 
 MEDUSA_BEGIN;
 
-PVRImage::PVRImage( const FileIdRef& fileId,const PVRImageHeader& header,MetaDataBlockMap* metaBlocks,MemoryByteData imageData,bool isCopyImageData,bool isCompressed )
-	:IImage(fileId),mHeader(header),mMetaDataBlocks(metaBlocks)
+PVRImage::PVRImage( const FileIdRef& fileId,const PVRImageHeader& header,MetaDataBlockMap* metaBlocks,MemoryData imageData,bool isCopyImageData, PixelType pixelType)
+	:IImage(fileId, pixelType),mHeader(header),mMetaDataBlocks(metaBlocks)
 {
 	mImageSize.Width=mHeader.Width;
 	mImageSize.Height=mHeader.Height;
@@ -30,9 +30,8 @@ PVRImage::PVRImage( const FileIdRef& fileId,const PVRImageHeader& header,MetaDat
 		mImageData=imageData;
 	}
 
-	mHeader.GetGraphicFormats(mInternalFormat,mPixelFormat,mPixelDataType);
+	mPixelType=mHeader.GetGraphicFormats();
 	mIsPreMultiplyAlpha=mHeader.Flags==PVRFlags::Premultiplied;
-	mIsCompressed=isCompressed;
 
 	if (mFaceCount>1)
 	{
@@ -63,12 +62,12 @@ bool PVRImage::Upload()
 
 PVRImageMetaDataBlock* PVRImage::GetMetaBlock( uint fourCC,uint key ) const
 {
-	Dictionary<uint,PVRImageMetaDataBlock*>* resultList=mMetaDataBlocks->TryGetValueWithFailed(fourCC,nullptr);
+	Dictionary<uint,PVRImageMetaDataBlock*>* resultList=mMetaDataBlocks->GetOptional(fourCC,nullptr);
 	if(resultList!=nullptr)
 	{
 		if((resultList)->ContainsKey(key))
 		{
-			return (resultList)->GetValue(key);
+			return (resultList)->Get(key);
 		}
 	}
 	return nullptr;
@@ -76,11 +75,14 @@ PVRImageMetaDataBlock* PVRImage::GetMetaBlock( uint fourCC,uint key ) const
 
 PVRImage* PVRImage::CreateFromFile( const FileIdRef& fileId )
 {
-	MemoryByteData fileData= FileSystem::Instance().ReadAllData(fileId);
-	return CreateFromMemory(fileId,fileData);
+	const auto* fileEntry = FileSystem::Instance().Find(fileId);
+	RETURN_NULL_IF_NULL(fileEntry);
+	MemoryData data = fileEntry->ReadAllData();
+
+	return CreateFromMemory(fileId, *fileEntry,data);
 }
 
-PVRImage* PVRImage::CreateFromMemory( const FileIdRef& fileId,MemoryByteData data )
+PVRImage* PVRImage::CreateFromMemory( const FileIdRef& fileId, const FileEntry& fileEntry,MemoryData data )
 {
 	if (data.IsNull())
 	{
@@ -98,17 +100,17 @@ PVRImage* PVRImage::CreateFromMemory( const FileIdRef& fileId,MemoryByteData dat
 	}
 	else if(header->Version==PVRVersionIdentifier::ReversePVR3)
 	{
-		header->Flags=(PVRFlags)Utility::SwapUInt32((uint)header->Flags);
+		header->Flags=(PVRFlags)Utility::SwapUInt((uint)header->Flags);
 		header->PixelFormat=Utility::SwapUInt64(header->PixelFormat);
-		header->ColourSpace=(PVRColourSpace)Utility::SwapUInt32((uint)header->ColourSpace);
-		header->ChannelType=(PVRChannelType)Utility::SwapUInt32((uint)header->ChannelType);
-		header->Height=Utility::SwapUInt32(header->Height);
-		header->Width=Utility::SwapUInt32(header->Width);
-		header->Depth=Utility::SwapUInt32(header->Depth);
-		header->SurfaceCount=Utility::SwapUInt32(header->SurfaceCount);
-		header->FaceCount=Utility::SwapUInt32(header->FaceCount);
-		header->MIPMapCount=Utility::SwapUInt32(header->MIPMapCount);
-		header->MetaDataSize=Utility::SwapUInt32(header->MetaDataSize);
+		header->ColourSpace=(PVRColourSpace)Utility::SwapUInt((uint)header->ColourSpace);
+		header->ChannelType=(PVRChannelType)Utility::SwapUInt((uint)header->ChannelType);
+		header->Height=Utility::SwapUInt(header->Height);
+		header->Width=Utility::SwapUInt(header->Width);
+		header->Depth=Utility::SwapUInt(header->Depth);
+		header->SurfaceCount=Utility::SwapUInt(header->SurfaceCount);
+		header->FaceCount=Utility::SwapUInt(header->FaceCount);
+		header->MIPMapCount=Utility::SwapUInt(header->MIPMapCount);
+		header->MetaDataSize=Utility::SwapUInt(header->MetaDataSize);
 		headerAndMetaSize=sizeof(PVRImageHeader)+header->MetaDataSize;
 
 
@@ -138,7 +140,7 @@ PVRImage* PVRImage::CreateFromMemory( const FileIdRef& fileId,MemoryByteData dat
 	}
 
 	//Read data
-	MemoryByteData fileTextureData=MemoryByteData::FromStatic(data.Data()+headerAndMetaSize,(uint)header->GetTextureDataSize());
+	MemoryData fileTextureData=MemoryData::FromStatic(data.Data()+headerAndMetaSize,(uint)header->GetTextureDataSize());
 	//read meta block
 	Dictionary<uint,Dictionary<uint,PVRImageMetaDataBlock*>*>* metaBlocks=new Dictionary<uint,Dictionary<uint,PVRImageMetaDataBlock*>*>();
 	byte* metaData=(byte*)data.Data()+sizeof(PVRImageHeader);
@@ -161,7 +163,7 @@ PVRImage* PVRImage::CreateFromMemory( const FileIdRef& fileId,MemoryByteData dat
 		Dictionary<uint,PVRImageMetaDataBlock*>* innerBlocks=nullptr;
 		if(metaBlocks->ContainsKey(block->DevFourCC))
 		{
-			innerBlocks=metaBlocks->GetValue(block->DevFourCC);
+			innerBlocks=metaBlocks->Get(block->DevFourCC);
 		}
 		else
 		{
@@ -181,21 +183,18 @@ PVRImage* PVRImage::CreateFromMemory( const FileIdRef& fileId,MemoryByteData dat
 	}
 
 	//check if need to soft decompress
-	MemoryByteData resultTextureData;
-	GraphicsInternalFormat internalFormat;
-	GraphicsPixelFormat pixelFormat;
-	GraphicsPixelDataType pixelDataType;
-	header->GetGraphicFormats(internalFormat,pixelFormat,pixelDataType);
+	MemoryData resultTextureData;
+	PixelType pixelType= header->GetGraphicFormats();
 
-	bool isCompressed=false;
+	
 	bool isCopyImageData=true;
 
 
-	if (internalFormat!=(GraphicsInternalFormat)0)
+	if (pixelType.InternalFormat() !=GraphicsInternalFormat::None)
 	{
-		if ((uint)pixelFormat==0&&pixelDataType.ToInt()==0)	//compressed format
+		if (pixelType.IsCompressed())	//compressed format
 		{
-			switch (internalFormat)
+			switch (pixelType.InternalFormat())
 			{
 			case GraphicsInternalFormat::Compressed_RGB_PVRTC_4BPPV1_IMG:
 			case GraphicsInternalFormat::Compressed_RGB_PVRTC_2BPPV1_IMG:
@@ -206,7 +205,7 @@ PVRImage* PVRImage::CreateFromMemory( const FileIdRef& fileId,MemoryByteData dat
 					//compressed
 					if (isPVRTCSupported)
 					{
-						isCompressed=true;
+						
 						resultTextureData=fileTextureData;
 						isCopyImageData=true;
 					}
@@ -215,21 +214,19 @@ PVRImage* PVRImage::CreateFromMemory( const FileIdRef& fileId,MemoryByteData dat
 						//try to decompress it
 						Log::Info("PVRTC not supported. Converting to RGBA8888 instead.");
 
-						bool is2bppPVRTC=internalFormat==GraphicsInternalFormat::Compressed_RGB_PVRTC_2BPPV1_IMG||internalFormat==GraphicsInternalFormat::Compressed_RGBA_PVRTC_2BPPV1_IMG;
-						//change texture format
-						//pixelFormat=GraphicsPixelFormat::RGBA;
-						//internalFormat=GraphicsInternalFormat::RGBA;
-						pixelDataType=GraphicsPixelDataType::Byte;
+						bool is2bppPVRTC= pixelType.InternalFormat() ==GraphicsInternalFormat::Compressed_RGB_PVRTC_2BPPV1_IMG|| pixelType.InternalFormat() ==GraphicsInternalFormat::Compressed_RGBA_PVRTC_2BPPV1_IMG;
+					
 
 						//Create a near-identical texture header for the decompressed header.
 						PVRImageHeader decompressedHeader=*header;
 						decompressedHeader.ChannelType=PVRChannelType::UnsignedByteNorm;
 						decompressedHeader.ColourSpace=PVRColourSpace::LinearRGB;
 						decompressedHeader.PixelFormat=PVRT_PIXEL_ID_4('r','g','b','a',8,8,8,8);
+						pixelType = PixelType::RGBA8888;
 
 						//Allocate enough memory for the decompressed data. OGLES1, so only decompress one surface/face.
 						uint decompressedDataSize=decompressedHeader.GetTextureDataSize(Math::UIntMaxValue,false,false);
-						MemoryByteData decompressedData=MemoryByteData::Alloc(decompressedDataSize);
+						MemoryData decompressedData=MemoryData::Alloc(decompressedDataSize);
 
 						byte* tempCompressedData = fileTextureData.MutableData();
 						byte* tempDecompressData = decompressedData.MutableData();
@@ -257,9 +254,11 @@ PVRImage* PVRImage::CreateFromMemory( const FileIdRef& fileId,MemoryByteData dat
 						}
 
 						*header=decompressedHeader;
-						isCompressed=false;
+						
 						resultTextureData=decompressedData;
 						isCopyImageData=false;
+
+						
 					}
 				}
 				break;
@@ -270,7 +269,7 @@ PVRImage* PVRImage::CreateFromMemory( const FileIdRef& fileId,MemoryByteData dat
 
 					if (isPVRTC2Supported)
 					{
-						isCompressed=true;
+						
 						resultTextureData=fileTextureData;
 						isCopyImageData=true;
 					}
@@ -287,7 +286,7 @@ PVRImage* PVRImage::CreateFromMemory( const FileIdRef& fileId,MemoryByteData dat
 
 					if (isETCSupported)
 					{
-						isCompressed=true;
+						
 						isCopyImageData=true;
 						resultTextureData=fileTextureData;
 					}
@@ -296,19 +295,15 @@ PVRImage* PVRImage::CreateFromMemory( const FileIdRef& fileId,MemoryByteData dat
 						//try to decompress it
 						Log::Info("ETC not supported. Converting to RGBA8888 instead.\n");
 
-						//change texture format
-						//pixelFormat=GraphicsPixelFormat::RGBA;
-						//internalFormat=GraphicsInternalFormat::RGBA;
-						pixelDataType=GraphicsPixelDataType::Byte;
-
 						//Create a near-identical texture header for the decompressed header.
 						PVRImageHeader decompressedHeader=*header;
 						decompressedHeader.ChannelType=PVRChannelType::UnsignedByteNorm;
 						decompressedHeader.ColourSpace=PVRColourSpace::LinearRGB;
 						decompressedHeader.PixelFormat=PVRT_PIXEL_ID_4('r','g','b','a',8,8,8,8);
+						pixelType = PixelType::RGBA8888;
 
 						//Allocate enough memory for the decompressed data. OGLES1, so only decompress one surface/face.
-						MemoryByteData decompressedData;
+						MemoryData decompressedData;
 						decompressedData.ForceSetSize(decompressedHeader.GetTextureDataSize(Math::UIntMaxValue,false,false));
 						decompressedData.ForceSetData(new byte[decompressedData.Size()]);
 						char* tempCompressedData=(char*)fileTextureData.Data();
@@ -337,7 +332,7 @@ PVRImage* PVRImage::CreateFromMemory( const FileIdRef& fileId,MemoryByteData dat
 						}
 
 						*header=decompressedHeader;
-						isCompressed=false;
+						
 						resultTextureData=decompressedData;
 						isCopyImageData=false;
 					}
@@ -350,7 +345,7 @@ PVRImage* PVRImage::CreateFromMemory( const FileIdRef& fileId,MemoryByteData dat
 		}
 		else
 		{
-			if (pixelFormat==GraphicsPixelFormat::BGRA)
+			if (pixelType.Format()==GraphicsPixelFormat::BGRA)
 			{
 #ifdef MEDUSA_IOS
 				//internalFormat=GraphicsInternalFormat::RGBA;
@@ -363,7 +358,7 @@ PVRImage* PVRImage::CreateFromMemory( const FileIdRef& fileId,MemoryByteData dat
 				}
 			}
 
-			if (pixelDataType==GraphicsPixelDataType::HalfFloatOES)
+			if (pixelType.DataType() ==GraphicsPixelDataType::HalfFloatOES)
 			{
 				bool isFloat16Supported=Render::Instance().IsExtensionSupported(RenderExtensionNames::OES_texture_half_float);
 
@@ -374,7 +369,7 @@ PVRImage* PVRImage::CreateFromMemory( const FileIdRef& fileId,MemoryByteData dat
 				}
 			}
 
-			if (pixelDataType==GraphicsPixelDataType::FloatOES)
+			if (pixelType.DataType() ==GraphicsPixelDataType::FloatOES)
 			{
 				bool isFloat32Supported=Render::Instance().IsExtensionSupported(RenderExtensionNames::OES_texture_float.c_str());
 				if (!isFloat32Supported)
@@ -404,7 +399,7 @@ PVRImage* PVRImage::CreateFromMemory( const FileIdRef& fileId,MemoryByteData dat
 		return nullptr;
 	}
 
-	return new PVRImage(fileId,*header,metaBlocks,resultTextureData,isCopyImageData,isCompressed);
+	return new PVRImage(fileId,*header,metaBlocks,resultTextureData,isCopyImageData,pixelType);
 }
 
 uint PVRImage::GetTextureDataSize( uint mipLevel ) const
@@ -616,13 +611,8 @@ uint PVRImageHeader::GetChannelSize() const
 	}
 }
 
-void PVRImageHeader::GetGraphicFormats( GraphicsInternalFormat& outInternalFormat,GraphicsPixelFormat& outPixelFormat,GraphicsPixelDataType& outPixelType ) const
+PixelType PVRImageHeader::GetGraphicFormats() const
 {
-	outInternalFormat=(GraphicsInternalFormat)0;
-	outPixelFormat=(GraphicsPixelFormat)0;
-	outPixelType.ForceSet(0);
-
-
 	uint64 pixelFormatHighPart=MEDUSA_UINT64_HIGH(PixelFormat);
 	uint pixelFormatLowPart=MEDUSA_LOW_UINT(PixelFormat);
 
@@ -631,30 +621,23 @@ void PVRImageHeader::GetGraphicFormats( GraphicsInternalFormat& outInternalForma
 		switch((PVRPixelFormat)pixelFormatLowPart)
 		{
 		case PVRPixelFormat::PVRTCI_2bpp_RGB:
-			outInternalFormat=GraphicsInternalFormat::Compressed_RGB_PVRTC_2BPPV1_IMG;
-			return;
+			return PixelType::PVRTC2RGB;
 		case PVRPixelFormat::PVRTCI_2bpp_RGBA:
-			outInternalFormat=GraphicsInternalFormat::Compressed_RGBA_PVRTC_2BPPV1_IMG;
-			return;
+			return PixelType::PVRTC2RGBA;
 		case PVRPixelFormat::PVRTCI_4bpp_RGB:
-			outInternalFormat=GraphicsInternalFormat::Compressed_RGB_PVRTC_4BPPV1_IMG;
-			return;
+			return PixelType::PVRTC4RGB;
 		case PVRPixelFormat::PVRTCI_4bpp_RGBA:
-			outInternalFormat=GraphicsInternalFormat::Compressed_RGBA_PVRTC_4BPPV1_IMG;
-			return;
+			return PixelType::PVRTC4RGBA;
 		case PVRPixelFormat::PVRTCII_2bpp:
-			outInternalFormat=GraphicsInternalFormat::Compressed_RGBA_PVRTC_2BPPV2_IMG;
-			return;
+			return PixelType::PVRTC2RGBA_2;
 		case PVRPixelFormat::PVRTCII_4bpp:
-			outInternalFormat=GraphicsInternalFormat::Compressed_RGBA_PVRTC_2BPPV2_IMG;
-			return;
+			return PixelType::PVRTC4RGBA_2;
 #ifdef MEDUSA_IOS
 		case PVRPixelFormat::ETC1:
-			outInternalFormat=GraphicsInternalFormat::Compressed_ETC1_RGB8_OES;
-			return;
+			return PixelType::ETC;
 #endif
 		default:
-			return;
+			return PixelType::None;
 		}
 	}
 	else
@@ -666,93 +649,49 @@ void PVRImageHeader::GetGraphicFormats( GraphicsInternalFormat& outInternalForma
 				switch(PixelFormat)
 				{
 				case PVRT_PIXEL_ID_4('r','g','b','a',16,16,16,16):
-					outPixelType=GraphicsPixelDataType::HalfFloatOES;
-					outInternalFormat=GraphicsInternalFormat::RGBA;
-					outPixelFormat=GraphicsPixelFormat::RGBA;
-					return;
+					return PixelType::RGBA16161616;
 				case PVRT_PIXEL_ID_3('r','g','b',16,16,16):
-					outPixelType=GraphicsPixelDataType::HalfFloatOES;
-					outInternalFormat=GraphicsInternalFormat::RGB;
-					outPixelFormat=GraphicsPixelFormat::RGB;
-					return;
+					return PixelType::RGB161616;
 				case PVRT_PIXEL_ID_2('l','a',16,16):
-					outPixelType=GraphicsPixelDataType::HalfFloatOES;
-					outInternalFormat=GraphicsInternalFormat::LuminanceAlpha;
-					outPixelFormat=GraphicsPixelFormat::LuminanceAlpha;
-					return;
+					return PixelType::IA1616;
 				case PVRT_PIXEL_ID_1('l',16):
-					outPixelType=GraphicsPixelDataType::HalfFloatOES;
-					outInternalFormat=GraphicsInternalFormat::Luminance;
-					outPixelFormat=GraphicsPixelFormat::Luminance;
-					return;
+					return PixelType::I16;
 				case PVRT_PIXEL_ID_1('a',16):
-					outPixelType=GraphicsPixelDataType::HalfFloatOES;
-					outInternalFormat=GraphicsInternalFormat::Alpha;
-					outPixelFormat=GraphicsPixelFormat::Alpha;
-					return;
+					return PixelType::A16;
 				case PVRT_PIXEL_ID_4('r','g','b','a',32,32,32,32):
-					outPixelType=GraphicsPixelDataType::FloatOES;
-					outInternalFormat=GraphicsInternalFormat::RGBA;
-					outPixelFormat=GraphicsPixelFormat::RGBA;
-					return;
+					return PixelType::RGBA32323232;
 				case PVRT_PIXEL_ID_3('r','g','b',32,32,32):
-					outPixelType=GraphicsPixelDataType::FloatOES;
-					outInternalFormat=GraphicsInternalFormat::RGB;
-					outPixelFormat=GraphicsPixelFormat::RGB;
-					return;
+					return PixelType::RGB323232;
 				case PVRT_PIXEL_ID_2('l','a',32,32):
-					outPixelType=GraphicsPixelDataType::FloatOES;
-					outInternalFormat=GraphicsInternalFormat::LuminanceAlpha;
-					outPixelFormat=GraphicsPixelFormat::LuminanceAlpha;
-					return;
+					return PixelType::IA3232;
 				case PVRT_PIXEL_ID_1('l',32):
-					outPixelType=GraphicsPixelDataType::FloatOES;
-					outInternalFormat=GraphicsInternalFormat::Luminance;
-					outPixelFormat=GraphicsPixelFormat::Luminance;
-					return;
+					return PixelType::I32;
 				case PVRT_PIXEL_ID_1('a',32):
-					outPixelType=GraphicsPixelDataType::FloatOES;
-					outInternalFormat=GraphicsInternalFormat::Alpha;
-					outPixelFormat=GraphicsPixelFormat::Alpha;
-					return;
+					return PixelType::A32;
 				default:
-					return;
+					break;
 				}
 
 			}
 			break;
 		case PVRChannelType::UnsignedByteNorm:
 			{
-				outPixelType=GraphicsPixelDataType::Byte;
 				switch(PixelFormat)
 				{
 				case PVRT_PIXEL_ID_4('r','g','b','a',8,8,8,8):
-					outInternalFormat=GraphicsInternalFormat::RGBA;
-					outPixelFormat=GraphicsPixelFormat::RGBA;
-					return;
+					return PixelType::RGBA8888;
 				case PVRT_PIXEL_ID_3('r','g','b',8,8,8):
-					outInternalFormat=GraphicsInternalFormat::RGB;
-					outPixelFormat=GraphicsPixelFormat::RGB;
-					return;
+					return PixelType::RGB888;
 				case PVRT_PIXEL_ID_2('l','a',8,8):
-					outInternalFormat=GraphicsInternalFormat::LuminanceAlpha;
-					outPixelFormat=GraphicsPixelFormat::LuminanceAlpha;
-					return;
+					return PixelType::IA88;
 				case PVRT_PIXEL_ID_1('l',8):
-					outInternalFormat=GraphicsInternalFormat::Luminance;
-					outPixelFormat=GraphicsPixelFormat::Luminance;
-					return;
+					return PixelType::I8;
 				case PVRT_PIXEL_ID_1('a',8):
-					outInternalFormat=GraphicsInternalFormat::Alpha;
-					outPixelFormat=GraphicsPixelFormat::Alpha;
-					return;
+					return PixelType::A8;
 				case PVRT_PIXEL_ID_4('b','g','r','a',8,8,8,8):
-					outInternalFormat=GraphicsInternalFormat::BGRA;
-					outPixelFormat=GraphicsPixelFormat::BGRA;
-					return;
-
+					return PixelType::BGRA8888;
 				default:
-					return;
+					break;
 				}
 			}
 			break;
@@ -761,30 +700,22 @@ void PVRImageHeader::GetGraphicFormats( GraphicsInternalFormat& outInternalForma
 				switch(PixelFormat)
 				{
 				case PVRT_PIXEL_ID_4('r','g','b','a',4,4,4,4):
-					outPixelType=GraphicsPixelDataType::UnsignedShort4444;
-					outInternalFormat=GraphicsInternalFormat::RGBA;
-					outPixelFormat=GraphicsPixelFormat::RGBA;
-					return;
+					return PixelType::RGBA4444;
 				case PVRT_PIXEL_ID_4('r','g','b','a',5,5,5,1):
-					outPixelType=GraphicsPixelDataType::UnsignedShort5551;
-					outInternalFormat=GraphicsInternalFormat::RGBA;
-					outPixelFormat=GraphicsPixelFormat::RGBA;
-					return;
+					return PixelType::RGBA5551;
 				case PVRT_PIXEL_ID_3('r','g','b',5,6,5):
-					outPixelType=GraphicsPixelDataType::UnsignedShort565;
-					outInternalFormat=GraphicsInternalFormat::RGB;
-					outPixelFormat=GraphicsPixelFormat::RGB;
-					return;
+					return PixelType::RGB565;
 				default:
-					return;
+					break;
 				}
 			}
 			break;
 		default:
-			return;
+			break;
 		}
-
 	}
+
+	return PixelType::None;
 	
 }
 

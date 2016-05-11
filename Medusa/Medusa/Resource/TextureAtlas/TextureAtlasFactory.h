@@ -7,16 +7,18 @@
 #include "Resource/TextureAtlas/TextureAtlas.h"
 #include "Core/Pattern/Delegate.h"
 #include "Graphics/GraphicsTypes.h"
-#include "TextureAtlasTypes.h"
+#include "TextureAtlasDefines.h"
+#include "Core/Pattern/Object/ArrayObjectFactory.h"
+#include "Core/Pattern/Object/MapObjectFactory.h"
+
 
 MEDUSA_BEGIN;
 
-
-
 class TextureAtlasFactory :public Singleton<TextureAtlasFactory>, public BaseResourceFactory < TextureAtlas >
 {
-	friend class Singleton < TextureAtlasFactory > ;
-	typedef Delegate<TextureAtlasPage*(const FileIdRef& fileId)> PageCreater;
+	friend class Singleton < TextureAtlasFactory >;
+	using FormatObjectFactory = ArrayObjectFactory<(size_t)TextureAtlasType::Count, size_t, TextureAtlas*(const FileIdRef& fileId)>;
+
 public:
 	TextureAtlasFactory();
 	~TextureAtlasFactory();
@@ -26,27 +28,19 @@ public:
 public:
 	TextureAtlas* CreateEmpty(const FileIdRef& fileId, ResourceShareType shareType = ResourceShareType::Share);
 
-	TextureAtlas* Create(const FileIdRef& fileId, TextureAtlasFileFormat fileFormat = TextureAtlasFileFormat::Spine, uint atlasPageCount = 1, ResourceShareType shareType = ResourceShareType::Share);
-	TextureAtlasRegion* CreateAtlasRegion(StringRef regionName,const FileIdRef& atlasFileId, TextureAtlasFileFormat fileFormat = TextureAtlasFileFormat::Spine,  uint atlasPageCount = 1);
-	TextureAtlasRegion* CreateAtlasRegion(int regionId, const FileIdRef& atlasFileId, TextureAtlasFileFormat fileFormat = TextureAtlasFileFormat::Spine, uint atlasPageCount = 1);
+	TextureAtlas* Create(const FileIdRef& fileId, TextureAtlasType fileFormat = TextureAtlasType::None, ResourceShareType shareType = ResourceShareType::Share);
+	TextureAtlas* CreateTiledAtlas(const FileIdRef& textureFileId, const Size2U textureSize, const Size2U& tileSize, ResourceShareType shareType = ResourceShareType::Share);
 
+	TextureAtlasRegion* CreateAtlasRegion(StringRef regionName, const FileIdRef& atlasFileId, TextureAtlasType fileFormat = TextureAtlasType::None);
+	TextureAtlasRegion* CreateAtlasRegion(int regionId, const FileIdRef& atlasFileId, TextureAtlasType fileFormat = TextureAtlasType::None);
 
+	static TextureAtlasType TryGetAtlasType(const StringRef& fileName);
 private:
-	static TextureAtlasPage* CreateSpineAtlasPage(const FileIdRef& fileId);
-	static TextureAtlasRegion* CreateSpineAtlasRegion(const IStream& stream);
-
-	PageCreater mPageCreater[(uint)TextureAtlasFileFormat::Count];
-private:
-	static bool ReadLineToValues(const IStream& stream, const StringRef& name, HeapString& outLine, List<HeapString>& outValues);
-	static GraphicsInternalFormat ToImageFormat(const StringRef& val);
-	static GraphicsTextureMagFilter ToMagFilter(const StringRef& val);
-	static GraphicsTextureMinFilter ToMinFilter(const StringRef& val);
-	static GraphicsTextureWrapMode ToWrapS(const StringRef& val);
-	static GraphicsTextureWrapMode ToWrapT(const StringRef& val);
-
-
-
 	
+private:
+	FormatObjectFactory mObjectFactory;
+
+
 };
 
 MEDUSA_END;

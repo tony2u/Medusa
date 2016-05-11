@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "freetype", "freetype.vcxitems", "{45D41ACC-2C3C-43D2-BC10-02AA73FFC7C7}"
 EndProject
@@ -11,16 +11,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "android", "android", "{50A1
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ios", "ios", "{51CE13A5-0420-49F5-982C-45151CE74CB8}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "freetype", "android\freetype.vcxproj", "{6C5AA792-610D-42F6-A1F8-21EA87B7F446}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "freetype.Android", "android\freetype.vcxproj", "{6A1E6149-EAC6-40B0-8D0F-472596746F1E}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "freetype", "ios\freetype.vcxproj", "{E88A294B-94AD-4DD2-BF0E-13262DEC53D4}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "freetype.IOS", "ios\freetype.vcxproj", "{E88A294B-94AD-4DD2-BF0E-13262DEC53D4}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "freetype", "win\freetype.vcxproj", "{A569B5A2-F368-470D-9709-FDD0F2CF0FAF}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "freetype", "win\freetype.vcxproj", "{4C9DBB41-3BB0-48E2-8B5E-8255E3A09721}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		freetype.vcxitems*{a569b5a2-f368-470d-9709-fdd0f2cf0faf}*SharedItemsImports = 4
-		freetype.vcxitems*{6c5aa792-610d-42f6-a1f8-21ea87b7f446}*SharedItemsImports = 4
+		freetype.vcxitems*{6a1e6149-eac6-40b0-8d0f-472596746f1e}*SharedItemsImports = 4
+		freetype.vcxitems*{4c9dbb41-3bb0-48e2-8b5e-8255e3a09721}*SharedItemsImports = 4
 		freetype.vcxitems*{45d41acc-2c3c-43d2-bc10-02aa73ffc7c7}*SharedItemsImports = 9
 		freetype.vcxitems*{e88a294b-94ad-4dd2-bf0e-13262dec53d4}*SharedItemsImports = 4
 	EndGlobalSection
@@ -33,43 +33,41 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{6C5AA792-610D-42F6-A1F8-21EA87B7F446}.Debug|ARM.ActiveCfg = Debug|ARM
-		{6C5AA792-610D-42F6-A1F8-21EA87B7F446}.Debug|ARM.Build.0 = Debug|ARM
-		{6C5AA792-610D-42F6-A1F8-21EA87B7F446}.Debug|x64.ActiveCfg = Debug|x86
-		{6C5AA792-610D-42F6-A1F8-21EA87B7F446}.Debug|x86.ActiveCfg = Debug|x86
-		{6C5AA792-610D-42F6-A1F8-21EA87B7F446}.Debug|x86.Build.0 = Debug|x86
-		{6C5AA792-610D-42F6-A1F8-21EA87B7F446}.Release|ARM.ActiveCfg = Release|ARM
-		{6C5AA792-610D-42F6-A1F8-21EA87B7F446}.Release|ARM.Build.0 = Release|ARM
-		{6C5AA792-610D-42F6-A1F8-21EA87B7F446}.Release|x64.ActiveCfg = Release|x86
-		{6C5AA792-610D-42F6-A1F8-21EA87B7F446}.Release|x86.ActiveCfg = Release|x86
-		{6C5AA792-610D-42F6-A1F8-21EA87B7F446}.Release|x86.Build.0 = Release|x86
+		{6A1E6149-EAC6-40B0-8D0F-472596746F1E}.Debug|ARM.ActiveCfg = Debug|ARM
+		{6A1E6149-EAC6-40B0-8D0F-472596746F1E}.Debug|ARM.Build.0 = Debug|ARM
+		{6A1E6149-EAC6-40B0-8D0F-472596746F1E}.Debug|x64.ActiveCfg = Debug|x86
+		{6A1E6149-EAC6-40B0-8D0F-472596746F1E}.Debug|x86.ActiveCfg = Debug|x86
+		{6A1E6149-EAC6-40B0-8D0F-472596746F1E}.Release|ARM.ActiveCfg = Release|ARM
+		{6A1E6149-EAC6-40B0-8D0F-472596746F1E}.Release|ARM.Build.0 = Release|ARM
+		{6A1E6149-EAC6-40B0-8D0F-472596746F1E}.Release|x64.ActiveCfg = Release|x86
+		{6A1E6149-EAC6-40B0-8D0F-472596746F1E}.Release|x86.ActiveCfg = Release|x86
+		{6A1E6149-EAC6-40B0-8D0F-472596746F1E}.Release|x86.Build.0 = Release|x86
 		{E88A294B-94AD-4DD2-BF0E-13262DEC53D4}.Debug|ARM.ActiveCfg = Debug|ARM
 		{E88A294B-94AD-4DD2-BF0E-13262DEC53D4}.Debug|ARM.Build.0 = Debug|ARM
 		{E88A294B-94AD-4DD2-BF0E-13262DEC53D4}.Debug|x64.ActiveCfg = Debug|x86
 		{E88A294B-94AD-4DD2-BF0E-13262DEC53D4}.Debug|x86.ActiveCfg = Debug|x86
-		{E88A294B-94AD-4DD2-BF0E-13262DEC53D4}.Debug|x86.Build.0 = Debug|x86
 		{E88A294B-94AD-4DD2-BF0E-13262DEC53D4}.Release|ARM.ActiveCfg = Release|ARM
 		{E88A294B-94AD-4DD2-BF0E-13262DEC53D4}.Release|ARM.Build.0 = Release|ARM
 		{E88A294B-94AD-4DD2-BF0E-13262DEC53D4}.Release|x64.ActiveCfg = Release|x86
 		{E88A294B-94AD-4DD2-BF0E-13262DEC53D4}.Release|x86.ActiveCfg = Release|x86
 		{E88A294B-94AD-4DD2-BF0E-13262DEC53D4}.Release|x86.Build.0 = Release|x86
-		{A569B5A2-F368-470D-9709-FDD0F2CF0FAF}.Debug|ARM.ActiveCfg = Debug|Win32
-		{A569B5A2-F368-470D-9709-FDD0F2CF0FAF}.Debug|x64.ActiveCfg = Debug|x64
-		{A569B5A2-F368-470D-9709-FDD0F2CF0FAF}.Debug|x64.Build.0 = Debug|x64
-		{A569B5A2-F368-470D-9709-FDD0F2CF0FAF}.Debug|x86.ActiveCfg = Debug|Win32
-		{A569B5A2-F368-470D-9709-FDD0F2CF0FAF}.Debug|x86.Build.0 = Debug|Win32
-		{A569B5A2-F368-470D-9709-FDD0F2CF0FAF}.Release|ARM.ActiveCfg = Release|Win32
-		{A569B5A2-F368-470D-9709-FDD0F2CF0FAF}.Release|x64.ActiveCfg = Release|x64
-		{A569B5A2-F368-470D-9709-FDD0F2CF0FAF}.Release|x64.Build.0 = Release|x64
-		{A569B5A2-F368-470D-9709-FDD0F2CF0FAF}.Release|x86.ActiveCfg = Release|Win32
-		{A569B5A2-F368-470D-9709-FDD0F2CF0FAF}.Release|x86.Build.0 = Release|Win32
+		{4C9DBB41-3BB0-48E2-8B5E-8255E3A09721}.Debug|ARM.ActiveCfg = Debug|Win32
+		{4C9DBB41-3BB0-48E2-8B5E-8255E3A09721}.Debug|x64.ActiveCfg = Debug|x64
+		{4C9DBB41-3BB0-48E2-8B5E-8255E3A09721}.Debug|x64.Build.0 = Debug|x64
+		{4C9DBB41-3BB0-48E2-8B5E-8255E3A09721}.Debug|x86.ActiveCfg = Debug|Win32
+		{4C9DBB41-3BB0-48E2-8B5E-8255E3A09721}.Debug|x86.Build.0 = Debug|Win32
+		{4C9DBB41-3BB0-48E2-8B5E-8255E3A09721}.Release|ARM.ActiveCfg = Release|Win32
+		{4C9DBB41-3BB0-48E2-8B5E-8255E3A09721}.Release|x64.ActiveCfg = Release|x64
+		{4C9DBB41-3BB0-48E2-8B5E-8255E3A09721}.Release|x64.Build.0 = Release|x64
+		{4C9DBB41-3BB0-48E2-8B5E-8255E3A09721}.Release|x86.ActiveCfg = Release|Win32
+		{4C9DBB41-3BB0-48E2-8B5E-8255E3A09721}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{6C5AA792-610D-42F6-A1F8-21EA87B7F446} = {50A1E1B9-60F6-461D-8F0F-D74615B42AA6}
+		{6A1E6149-EAC6-40B0-8D0F-472596746F1E} = {50A1E1B9-60F6-461D-8F0F-D74615B42AA6}
 		{E88A294B-94AD-4DD2-BF0E-13262DEC53D4} = {51CE13A5-0420-49F5-982C-45151CE74CB8}
-		{A569B5A2-F368-470D-9709-FDD0F2CF0FAF} = {EAC460BF-9B7F-49F0-9ABB-852DDB76662A}
+		{4C9DBB41-3BB0-48E2-8B5E-8255E3A09721} = {EAC460BF-9B7F-49F0-9ABB-852DDB76662A}
 	EndGlobalSection
 EndGlobal

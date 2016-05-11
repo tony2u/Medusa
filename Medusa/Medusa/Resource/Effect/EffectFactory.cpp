@@ -39,8 +39,13 @@ bool EffectFactory::Uninitialize()
 
 IEffect* EffectFactory::CreateFromFile( const FileIdRef& fileId ,ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
-	IEffect* effect=Find(fileId);
-	RETURN_SELF_IF_NOT_NULL(effect);
+	IEffect* effect = nullptr;
+	if (shareType != ResourceShareType::None)
+	{
+		effect = Find(fileId);
+		RETURN_SELF_IF_NOT_NULL(effect);
+	}
+	
 
 	switch(FileInfo::ExtractType(fileId.Name))
 	{
@@ -64,8 +69,12 @@ IEffect* EffectFactory::CreateFromFile( const FileIdRef& fileId ,ResourceShareTy
 IEffect* EffectFactory::CreateEmpty( const FileIdRef& fileId ,ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
 	
-	IEffect* effect=Find(fileId);
-	RETURN_SELF_IF_NOT_NULL(effect);
+	IEffect* effect = nullptr;
+	if (shareType != ResourceShareType::None)
+	{
+		effect = Find(fileId);
+		RETURN_SELF_IF_NOT_NULL(effect);
+	}
 
 
 	effect=new IEffect(fileId);
@@ -88,8 +97,12 @@ IEffect* EffectFactory::CreateSinglePassDefault( const FileIdRef& fileId ,Resour
 
 IEffect* EffectFactory::CreateSinglePass( const FileIdRef& fileId,const FileIdRef& passFileId ,ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
-	IEffect* effect=Find(fileId);
-	RETURN_SELF_IF_NOT_NULL(effect);
+	IEffect* effect = nullptr;
+	if (shareType != ResourceShareType::None)
+	{
+		effect = Find(fileId);
+		RETURN_SELF_IF_NOT_NULL(effect);
+	}
 
 	IRenderPass* pass=RenderPassFactory::Instance().CreateRenderPass(fileId);
 	if (pass!=nullptr)
@@ -103,8 +116,12 @@ IEffect* EffectFactory::CreateSinglePass( const FileIdRef& fileId,const FileIdRe
 
 IEffect* EffectFactory::CreateSinglePass(const FileIdRef& fileId,IRenderPass* renderPass,ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
-	IEffect* effect=Find(fileId);
-	RETURN_SELF_IF_NOT_NULL(effect);
+	IEffect* effect = nullptr;
+	if (shareType != ResourceShareType::None)
+	{
+		effect = Find(fileId);
+		RETURN_SELF_IF_NOT_NULL(effect);
+	}
 
 	effect= CreateEmpty(fileId,shareType);
 	RETURN_NULL_IF_NULL(effect);
@@ -115,8 +132,12 @@ IEffect* EffectFactory::CreateSinglePass(const FileIdRef& fileId,IRenderPass* re
 
 IEffect* EffectFactory::CreateMultiplePasses( const FileIdRef& fileId,const List<FileIdRef>& renderPasses ,ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
-	IEffect* effect=Find(fileId);
-	RETURN_SELF_IF_NOT_NULL(effect);
+	IEffect* effect = nullptr;
+	if (shareType != ResourceShareType::None)
+	{
+		effect = Find(fileId);
+		RETURN_SELF_IF_NOT_NULL(effect);
+	}
 
 	List<IRenderPass*> passes;
 	FOR_EACH_COLLECTION(i,renderPasses)
@@ -135,8 +156,12 @@ IEffect* EffectFactory::CreateMultiplePasses( const FileIdRef& fileId,const List
 
 IEffect* EffectFactory::CreateMultiplePasses( const FileIdRef& fileId,List<IRenderPass*>& renderPasses ,ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
-	IEffect* effect=Find(fileId);
-	RETURN_SELF_IF_NOT_NULL(effect);
+	IEffect* effect = nullptr;
+	if (shareType != ResourceShareType::None)
+	{
+		effect = Find(fileId);
+		RETURN_SELF_IF_NOT_NULL(effect);
+	}
 
 
 	effect= CreateEmpty(fileId,shareType);

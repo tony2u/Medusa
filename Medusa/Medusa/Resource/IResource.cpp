@@ -3,12 +3,14 @@
 // license that can be found in the LICENSE file.
 #include "MedusaPreCompiled.h"
 #include "Resource/IResource.h"
+#include "Core/Pattern/AutoIncreaseId.h"
 
 MEDUSA_BEGIN;
 
 
 IResource::IResource(const FileIdRef& fileId) :mFileId(fileId)
 {
+	mId = AutoIncreaseId<IResource>::New();
 }
 
 MEDUSA_END;

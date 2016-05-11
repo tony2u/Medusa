@@ -6,35 +6,49 @@
 #include "Node/Scene/SceneGraph/ISceneGraph.h"
 #include "Core/Collection/Stack.h"
 #include "Core/Command/EventArg/IEventArg.h"
-
-#include "Node/Layer/LayerCreateFlags.h"
-#include "Node/Layer/LayerDeleteFlags.h"
-#include "Node/Layer/LayerPushFlags.h"
-#include "Node/Layer/LayerPopFlags.h"
 #include "Node/NodeStatus.h"
-#include "Core/Collection/LinkedList.h"
-
+#include "Core/IO/FileIdRef.h"
+#include "Node/NodeDefines.h"
 
 MEDUSA_BEGIN;
 
-#define MEDUSA_DECLARE_SCENE 													\
+#define MEDUSA_DECLARE_SCENE_ROOT(className) 													\
 		MEDUSA_DECLARE_RTTI;\
+public:																				\
+	virtual const FileIdRef& EditorFileName()const{return mEditorFileName;}									\
+	static const FileIdRef& EditorFileNameStatic(){return mEditorFileName;}									\
+	virtual const FileIdRef& ScriptFileName()const{return mScriptFileName;}									\
+	static const FileIdRef& ScriptFileNameStatic(){return mScriptFileName;}									\
 private:																				\
+	const static FileIdRef mEditorFileName;							\
+	const static FileIdRef mScriptFileName;							\
 	const static StaticConstructor mStaticConstructor;							\
 	static void SelfRegisterStaticCallback();
 
-#define MEDUSA_IMPLEMENT_SCENE(className,baseClassName) 																					 \
+#define MEDUSA_DECLARE_SCENE(className) 													\
+		MEDUSA_DECLARE_RTTI;\
+public:																				\
+	virtual const FileIdRef& EditorFileName()const override{return mEditorFileName;}									\
+	static const FileIdRef& EditorFileNameStatic(){return mEditorFileName;}									\
+	virtual const FileIdRef& ScriptFileName()const override{return mScriptFileName;}									\
+	static const FileIdRef& ScriptFileNameStatic(){return mScriptFileName;}									\
+private:																				\
+	const static FileIdRef mEditorFileName;							\
+	const static FileIdRef mScriptFileName;							\
+	const static StaticConstructor mStaticConstructor;							\
+	static void SelfRegisterStaticCallback();
+
+#define MEDUSA_IMPLEMENT_SCENE(className,baseClassName,editorFile,scriptFile) 																					 \
 	MEDUSA_IMPLEMENT_RTTI(className,baseClassName);\
+	const FileIdRef className::mEditorFileName=editorFile;					 \
+const FileIdRef className::mScriptFileName=scriptFile;					 \
 	const StaticConstructor className::mStaticConstructor(SelfRegisterStaticCallback);					 \
 	void className::SelfRegisterStaticCallback(){SceneFactory::Instance().Register<className>(#className);}
 
 
 class IScene :public INode
 {
-	MEDUSA_DECLARE_RTTI;
-public:
-	typedef LinkedList<INode*> TempUpdateNodeList;
-
+	MEDUSA_DECLARE_SCENE(IScene);
 public:
 	IScene(const StringRef& name = StringRef::Empty, const IEventArg& e = IEventArg::Empty);
 	virtual ~IScene(void);
@@ -66,30 +80,33 @@ public://Stack
 	ILayer* CurrentLayer()const;
 
 	template<typename T>
-	T* PushLayer(LayerPushFlags pushFlags = LayerPushFlags::None, const IEventArg& e = IEventArg::Empty) { return (T*)PushLayerByName(T::ClassNameStatic(),T::EditorFileNameStatic(), e, pushFlags); }
+	T* PushLayer(LayerPushFlags pushFlags = LayerPushFlags::None, const IEventArg& e = IEventArg::Empty) { return (T*)PushLayerEx(T::ClassNameStatic(), T::EditorFileNameStatic(), T::ScriptFileNameStatic(), pushFlags,e); }
 
 	ILayer* PopLayer(LayerPopFlags popFlags = LayerPopFlags::None);
 	void PopAllLayer(LayerPopFlags popFlags = LayerPopFlags::IgnorePrevLayer);
 
 	template<typename T>
-	T* ReplaceToLayer(LayerPopFlags popFlags = LayerPopFlags::None, LayerPushFlags pushFlags = LayerPushFlags::None, const IEventArg& e = IEventArg::Empty) { return (T*)ReplaceToLayerByName(T::ClassNameStatic(),T::EditorFileNameStatic(),e, popFlags, pushFlags); }
+	T* ReplaceToLayer(LayerPopFlags popFlags = LayerPopFlags::None, LayerPushFlags pushFlags = LayerPushFlags::None, const IEventArg& e = IEventArg::Empty) { return (T*)ReplaceToLayerEx(T::ClassNameStatic(), T::EditorFileNameStatic(), T::ScriptFileNameStatic(), popFlags, pushFlags,e); }
 
 	template<typename T>
-	T* FindLayer() { return (T*)FindChild(T::EditorFileNameStatic()); }
+	T* FindLayer() { return (T*)FindChild(T::ClassNameStatic().Name); }
 public:
-	ILayer* PushLayerByName(const StringRef& className, const StringRef& editorFile, const IEventArg& e = IEventArg::Empty, LayerPushFlags pushFlags = LayerPushFlags::None);
-	void PushLayerObject(ILayer* layer, LayerPushFlags pushFlags = LayerPushFlags::None);
+	ILayer* PushLayer(const StringRef& className, LayerPushFlags pushFlags = LayerPushFlags::None, const IEventArg& e = IEventArg::Empty);
+	ILayer* ReplaceToLayer(const StringRef& className, LayerPopFlags popFlags = LayerPopFlags::None, LayerPushFlags pushFlags = LayerPushFlags::None, const IEventArg& e = IEventArg::Empty);
 
-	ILayer* ReplaceToLayerByName(const StringRef& className,const StringRef& editorFile, const IEventArg& e = IEventArg::Empty, LayerPopFlags popFlags = LayerPopFlags::None, LayerPushFlags pushFlags = LayerPushFlags::None);
-	ILayer* ReplaceToLayerObject(ILayer* toLayer, LayerPopFlags popFlags = LayerPopFlags::None, LayerPushFlags pushFlags = LayerPushFlags::None);
+	ILayer* PushLayerEx(const StringRef& className, const FileIdRef& editorFile = FileIdRef::Empty, const FileIdRef& scriptFile = FileIdRef::Empty, LayerPushFlags pushFlags = LayerPushFlags::None, const IEventArg& e = IEventArg::Empty);
+	ILayer* ReplaceToLayerEx(const StringRef& className, const FileIdRef& editorFile = FileIdRef::Empty, const FileIdRef& scriptFile = FileIdRef::Empty, LayerPopFlags popFlags = LayerPopFlags::None, LayerPushFlags pushFlags = LayerPushFlags::None, const IEventArg& e = IEventArg::Empty);
 
-	
-protected:	
+
+	void PushLayer(ILayer* layer, LayerPushFlags pushFlags = LayerPushFlags::None);
+	ILayer* ReplaceToLayer(ILayer* toLayer, LayerPopFlags popFlags = LayerPopFlags::None, LayerPushFlags pushFlags = LayerPushFlags::None);
+
+protected:
 
 	template<typename T>
-	void DeleteLayer(LayerDeleteFlags deleteFlags = LayerDeleteFlags::None) { DeleteLayer(T::EditorFileNameStatic()); }
+	void DeleteLayer(LayerDeleteFlags deleteFlags = LayerDeleteFlags::None) { DeleteLayer(T::ClassNameStatic().Name); }
 	void DeleteLayers(const List<StringRef>& names, LayerDeleteFlags deleteFlags = LayerDeleteFlags::None);
-	bool DeleteLayer(StringRef editorFile, LayerDeleteFlags deleteFlags = LayerDeleteFlags::None);
+	bool DeleteLayer(StringRef name, LayerDeleteFlags deleteFlags = LayerDeleteFlags::None);
 	bool DeleteLayer(ILayer* layer, LayerDeleteFlags deleteFlags = LayerDeleteFlags::None);
 
 private:
@@ -113,23 +130,7 @@ protected:
 	List<INode*> mVisitNodes;
 	bool mIsVisitQueueChanged;
 
-	size_t mTotalNodeCount;
 #pragma endregion Update
 };
 
 MEDUSA_END;
-
-
-#ifdef MEDUSA_SCRIPT
-MEDUSA_SCRIPT_BEGIN;
-void RegisterIScene(asIScriptEngine* engine);
-
-template <class T>
-void RegisterIScene_Methods(asIScriptEngine* engine, const char* typeName)
-{
-	RegisterINode_Methods<IScene>(engine, typeName);
-
-}
-
-MEDUSA_SCRIPT_END;
-#endif

@@ -36,8 +36,13 @@ bool MaterialFactory::Uninitialize()
 IMaterial* MaterialFactory::CreateSingleTexture(const FileIdRef& textureFileId, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
 	RETURN_NULL_IF_FALSE(textureFileId.IsValid());
-	IMaterial* result = Find(textureFileId);
-	RETURN_SELF_IF_NOT_NULL(result);
+	IMaterial* result = nullptr;
+	if (shareType!=ResourceShareType::None)
+	{
+		result = Find(textureFileId);
+		RETURN_SELF_IF_NOT_NULL(result);
+	}
+	
 	ITexture* texture = TextureFactory::Instance().CreateFromFile(textureFileId, ShaderSamplerNames::Texture);
 	IEffect* effect = EffectFactory::Instance().CreateSinglePassDefault(RenderPassNames::Texture);
 	result = new IMaterial(texture, effect, GraphicsDrawMode::Triangles, textureFileId);
@@ -48,8 +53,13 @@ IMaterial* MaterialFactory::CreateSingleTexture(const FileIdRef& textureFileId, 
 IMaterial* MaterialFactory::CreateSingleTexture(ITexture* texture, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
 	RETURN_NULL_IF_NULL(texture);
-	IMaterial* result = Find(texture->GetFileId());
-	RETURN_SELF_IF_NOT_NULL(result);
+	IMaterial* result = nullptr;
+	if (shareType != ResourceShareType::None)
+	{
+		result = Find(texture->GetFileId());
+		RETURN_SELF_IF_NOT_NULL(result);
+	}
+
 	IEffect* effect = EffectFactory::Instance().CreateSinglePassDefault(RenderPassNames::Texture);
 	result = new IMaterial(texture, effect, GraphicsDrawMode::Triangles, texture->GetFileId());
 
@@ -60,8 +70,12 @@ IMaterial* MaterialFactory::CreateSingleTexture(ITexture* texture, ResourceShare
 
 IMaterial* MaterialFactory::CreateCustom(const FileIdRef& fileId, ITexture* texture, IEffect* effect, GraphicsDrawMode drawMode, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
-	IMaterial* result = Find(fileId);
-	RETURN_SELF_IF_NOT_NULL(result);
+	IMaterial* result = nullptr;
+	if (shareType != ResourceShareType::None)
+	{
+		result = Find(fileId);
+		RETURN_SELF_IF_NOT_NULL(result);
+	}
 	result = new IMaterial(texture,effect,drawMode,fileId);
 
 	Add(result, shareType);
@@ -71,8 +85,12 @@ IMaterial* MaterialFactory::CreateCustom(const FileIdRef& fileId, ITexture* text
 
 IMaterial* MaterialFactory::CreateEmpty(const FileIdRef& fileId, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
-	IMaterial* result = Find(fileId);
-	RETURN_SELF_IF_NOT_NULL(result);
+	IMaterial* result = nullptr;
+	if (shareType != ResourceShareType::None)
+	{
+		result = Find(fileId);
+		RETURN_SELF_IF_NOT_NULL(result);
+	}
 
 	result = new IMaterial(nullptr,nullptr,GraphicsDrawMode::Triangles,fileId);
 	Add(result, shareType);
@@ -81,8 +99,12 @@ IMaterial* MaterialFactory::CreateEmpty(const FileIdRef& fileId, ResourceShareTy
 
 IMaterial* MaterialFactory::CreateShape(const FileIdRef& fileId, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
-	IMaterial* result = Find(fileId);
-	RETURN_SELF_IF_NOT_NULL(result);
+	IMaterial* result = nullptr;
+	if (shareType != ResourceShareType::None)
+	{
+		result = Find(fileId);
+		RETURN_SELF_IF_NOT_NULL(result);
+	}
 
 	IEffect* effect = EffectFactory::Instance().CreateSinglePassDefault(RenderPassNames::Shape);
 	result = new IMaterial(nullptr, effect, GraphicsDrawMode::Triangles, fileId);

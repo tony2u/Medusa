@@ -4,7 +4,7 @@
 #include "MedusaPreCompiled.h"
 #include "ListBox.h"
 #include "Node/DataSource/IListDataSource.h"
-#include "Core/Math/Model/IScrollMathModel.h"
+#include "Geometry/Scroll/IScrollMathModel.h"
 #include "Core/Log/Log.h"
 #include "Node/Input/Gesture/SwipeGestureRecognizer.h"
 #include "Node/Input/Gesture/EventArg/SwipeBeginGestureEventArg.h"
@@ -691,7 +691,7 @@ void ListBox::RecycleItemNode(ListBoxItem& item)
 		}
 		else
 		{
-			nodeQueue=mMultipleTypeItemCache.TryGetValueWithFailed(item.Type,nullptr);
+			nodeQueue=mMultipleTypeItemCache.GetOptional(item.Type,nullptr);
 			if (nodeQueue==nullptr)
 			{
 				nodeQueue=new Queue<INode*>();
@@ -723,7 +723,7 @@ void ListBox::CreateItemNode(ListBoxItem& item)
 		}
 		else
 		{
-			nodeQueue=mMultipleTypeItemCache.TryGetValueWithFailed(item.Type,nullptr);
+			nodeQueue=mMultipleTypeItemCache.GetOptional(item.Type,nullptr);
 		}
 
 		if (nodeQueue!=nullptr&&!nodeQueue->IsEmpty())

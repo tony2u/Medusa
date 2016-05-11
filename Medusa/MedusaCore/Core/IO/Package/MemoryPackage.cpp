@@ -47,7 +47,7 @@ bool MemoryPackage::OnRemoveDirectory(DirectoryEntry& dir)
 const IStream* MemoryPackage::OnReadFile(const FileEntry& file, FileDataType dataType /*= FileDataType::Binary*/) const
 {
 	UN_USED(dataType);
-	MemoryStream* memoryStream = mMemoryStreamDict.TryGetValueWithFailed(&file, nullptr);
+	MemoryStream* memoryStream = mMemoryStreamDict.GetOptional(&file, nullptr);
 	RETURN_NULL_IF_NULL(memoryStream);
 
 	memoryStream->Rewind();
@@ -59,7 +59,7 @@ const IStream* MemoryPackage::OnReadFile(const FileEntry& file, FileDataType dat
 IStream* MemoryPackage::OnWriteFile(FileEntry& file, FileOpenMode openMode /*= FileOpenMode::ReadOnly*/, FileDataType dataType /*= FileDataType::Binary*/)
 {
 	UN_USED(dataType);
-	MemoryStream* memoryStream = mMemoryStreamDict.TryGetValueWithFailed(&file, nullptr);
+	MemoryStream* memoryStream = mMemoryStreamDict.GetOptional(&file, nullptr);
 	if (memoryStream == nullptr)
 	{
 		if (openMode == FileOpenMode::ReadOnly)
@@ -78,12 +78,12 @@ IStream* MemoryPackage::OnWriteFile(FileEntry& file, FileOpenMode openMode /*= F
 
 bool MemoryPackage::OnRemoveFile(FileEntry& file)
 {
-	MemoryStream* stream = mMemoryStreamDict.RemoveKeyWithValueReturned(&file, nullptr);
+	MemoryStream* stream = mMemoryStreamDict.RemoveKeyOptional(&file, nullptr);
 	RETURN_TRUE_IF_NULL(stream);
 	return true;
 }
 
-FileEntry* MemoryPackage::RegisterMemory(const MemoryByteData& data, const FileIdRef& fileId)
+FileEntry* MemoryPackage::RegisterMemory(const MemoryData& data, const FileIdRef& fileId)
 {
 	FileEntry* fileEntry = SaveFile(data, fileId.Name, nullptr, DataReadingMode::DirectMove);
 	if (fileEntry != nullptr)

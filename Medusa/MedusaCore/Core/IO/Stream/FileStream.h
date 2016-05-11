@@ -55,8 +55,8 @@ public:
 	virtual uintp Length()const override;
 	virtual uintp Position()const override;
 
-	virtual size_t ReadDataTo(MemoryByteData& outData, DataReadingMode mode = DataReadingMode::AlwaysCopy)const override;
-	virtual size_t WriteData(const MemoryByteData& data, DataReadingMode mode = DataReadingMode::AlwaysCopy) override;
+	virtual size_t ReadDataTo(MemoryData& outData, DataReadingMode mode = DataReadingMode::AlwaysCopy)const override;
+	virtual size_t WriteData(const MemoryData& data, DataReadingMode mode = DataReadingMode::AlwaysCopy) override;
 
 	virtual int PeekChar()const override;
 	virtual int PeekWChar()const override;

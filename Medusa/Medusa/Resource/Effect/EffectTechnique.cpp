@@ -93,7 +93,7 @@ IRenderPass* EffectTechnique::GetPassByIndex( uint index )
 
 IRenderPass* EffectTechnique::GetPassByName( StringRef name )
 {
-	return mRenderPassDict.TryGetValueWithFailed(name,nullptr);
+	return mRenderPassDict.GetOptional(name,nullptr);
 }
 
 void EffectTechnique::UpdateFlags()
@@ -102,7 +102,7 @@ void EffectTechnique::UpdateFlags()
 	FOR_EACH_COLLECTION(i,mRenderPasses)
 	{
 		const IRenderPass* pass=*i;
-		mFlags|=pass->Flags();
+		MEDUSA_FLAG_ADD(mFlags,pass->Flags());
 	}
 }
 

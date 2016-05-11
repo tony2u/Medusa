@@ -40,10 +40,11 @@ protected:
 //SIREN_HEADER_SCHEMA_BEGIN
 struct FuckyStringNode::Schema
 {
-	SIREN_PROPERTY(0, 0, Required, FuckyStringNode, int, mChar);
-	SIREN_PROPERTY(1, 1, Required, FuckyStringNode, bool, mIsFucky);
-	SIREN_PROPERTY_DICTIONARY(2, 2, Required, FuckyStringNode, int, FuckyStringNode*, mChilds);
-	SIREN_PROPERTIES_3(void,FuckyStringNode);
-};//SIREN_HEADER_SCHEMA_END
+	SIREN_FIELD(0, 0, Required, FuckyStringNode, int, mChar);
+	SIREN_FIELD(1, 1, Required, FuckyStringNode, bool, mIsFucky);
+	SIREN_FIELD_DICTIONARY(2, 2, Required, FuckyStringNode, int, FuckyStringNode*, mChilds);
+	SIREN_FIELDS_3(void,FuckyStringNode);
+};
+//SIREN_HEADER_SCHEMA_END
 
 MEDUSA_END;

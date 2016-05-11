@@ -7,6 +7,6 @@
 MEDUSA_BEGIN;
 
 MEDUSA_IMPLEMENT_RTTI_ROOT(IEventArg);
-const IEventArg IEventArg::Empty;
+IEventArg IEventArg::Empty;
 
 MEDUSA_END;

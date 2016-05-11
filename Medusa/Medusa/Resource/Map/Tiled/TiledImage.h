@@ -4,8 +4,8 @@
 #pragma once
 #include "MedusaPreDeclares.h"
 #include "Core/String/HeapString.h"
-#include "Core/Geometry/Size2.h"
-#include "Core/Geometry/Color4.h"
+#include "Geometry/Size2.h"
+#include "Geometry/Color4.h"
 #include "Core/IO/FileDefines.h"
 #include "Core/Memory/MemoryData.h"
 
@@ -29,16 +29,26 @@ public:
 	FileType EmbeddedFileType() const { return mEmbeddedFileType; }
 	void SetEmbeddedFileType(FileType val) { mEmbeddedFileType = val; }
 
-	const MemoryByteData& EmbeddedImageData() const { return mEmbeddedImageData; }
-	void SetEmbeddedImageData(const MemoryByteData& val) { mEmbeddedImageData = val; }
+	const MemoryData& EmbeddedImageData() const { return mEmbeddedImageData; }
+	void SetEmbeddedImageData(const MemoryData& val) { mEmbeddedImageData = val; }
+
+	bool Parse(const pugi::xml_node& node);
+
+	bool LoadTiledTexture(Size2I tileSize);
+	ITexture* LoadSeparateTexture()const;
+
+	TextureAtlasPage* TexturePage() const { return mTexturePage; }
+
 private:
 	HeapString mSource;
 	Size2I mSize;
 	Color4B mTransparentColor;
 
 	FileType mEmbeddedFileType;
-	MemoryByteData mEmbeddedImageData;
+	MemoryData mEmbeddedImageData;
 	
+	TextureAtlasPage* mTexturePage=nullptr;
+
 };
 
 MEDUSA_END;

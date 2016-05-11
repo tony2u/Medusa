@@ -8,7 +8,7 @@
 #include "Rendering/RenderingContext.h"
 #include "Resource/Effect/IEffect.h"
 #include "Resource/ResourceNames.h"
-#include "Resource/Effect/Shader/Parameter/ShaderConstant.h"
+#include "Resource/Effect/Shader/Parameter/ShaderUniform.h"
 #include "Graphics/State/RenderStateMachine.h"
 #include "Resource/Effect/Pass/Program/BaseProgramRenderPass.h"
 
@@ -43,7 +43,7 @@ void ITexture::Apply()
 		BaseProgramRenderPass* pass = RenderingContext::Instance().ProgramRenderPass();
 		if (pass != nullptr)
 		{
-			ShaderConstant* sampler = pass->GetConstant(mSamplerName);
+			ShaderUniform* sampler = pass->FindUniform(mSamplerName);
 			if (sampler != nullptr)
 			{
 				sampler->Invalidate();

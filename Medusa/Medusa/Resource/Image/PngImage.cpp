@@ -50,20 +50,20 @@ void PngFreeCallback(png_structp png_ptr, png_voidp data)
 
 void PngErrorCallback(png_structp png_ptr, png_const_charp error_message)
 {
-	FileIdRef* fileId = (FileIdRef*)(png_ptr->error_ptr);
-	Log::FormatInfo("PngImage {} Error:{}", fileId->Name.c_str(), error_message);
+	FileEntry* fileEntry = (FileEntry*)(png_ptr->error_ptr);
+	Log::FormatInfo("PngImage {} Error:{}", fileEntry->Name(), error_message);
 
 }
 
 void PngWarningCallback(png_structp png_ptr, png_const_charp error_message)
 {
-	FileIdRef* fileId = (FileIdRef*)(png_ptr->error_ptr);
-	Log::FormatInfo("PngImage {} Warning:{}", fileId->Name.c_str(), error_message);
+	FileEntry* fileEntry = (FileEntry*)(png_ptr->error_ptr);
+	Log::FormatInfo("PngImage {} Warning:{}", fileEntry->Name(), error_message);
 }
 
 
-PngImage::PngImage(const FileIdRef& fileId,Size2U imageSize,GraphicsInternalFormat internalFormat,GraphicsPixelFormat imageFormat,bool isPreMultiplyAlpha )
-	:RGBAImage(fileId,imageSize,internalFormat,imageFormat,isPreMultiplyAlpha)
+PngImage::PngImage(const FileIdRef& fileId,Size2U imageSize, PixelType pixelType,bool isPreMultiplyAlpha )
+	:RGBAImage(fileId,imageSize,pixelType,isPreMultiplyAlpha)
 {
 
 }
@@ -75,15 +75,17 @@ PngImage::~PngImage(void)
 
 PngImage* PngImage::CreateFromFile( const FileIdRef& fileId )
 {
-	MemoryByteData data=FileSystem::Instance().ReadAllData(fileId);
+	const auto* fileEntry = FileSystem::Instance().Find(fileId);
+	RETURN_NULL_IF_NULL(fileEntry);
+	MemoryData data = fileEntry->ReadAllData();
 	if (data.IsNull())
 	{
 		return nullptr;
 	}
-	return CreateFromMemory(fileId,data);
+	return CreateFromMemory(fileId, *fileEntry,data);
 }
 
-PngImage* PngImage::CreateFromMemory(const FileIdRef& fileId, MemoryByteData data )
+PngImage* PngImage::CreateFromMemory(const FileIdRef& fileId,const FileEntry& fileEntry, MemoryData data )
 {
 	MEDUSA_ASSERT(data.Size()>8,"");
 
@@ -93,10 +95,10 @@ PngImage* PngImage::CreateFromMemory(const FileIdRef& fileId, MemoryByteData dat
 	MEDUSA_ASSERT_ZERO(png_sig_cmp(header,0,8),"");
 
 #ifdef MEDUSA_PNG_USER_MEM_SUPPORTED
-	png_structp png_ptr=png_create_read_struct_2(PNG_LIBPNG_VER_STRING,(png_voidp)&fileId,nullptr,nullptr,nullptr,PngMallocCallback,PngFreeCallback);
+	png_structp png_ptr=png_create_read_struct_2(PNG_LIBPNG_VER_STRING,(png_voidp)&fileEntry,nullptr,nullptr,nullptr,PngMallocCallback,PngFreeCallback);
 
 #else
-	png_structp png_ptr=png_create_read_struct(PNG_LIBPNG_VER_STRING,(png_voidp)&fileId,PngErrorCallback,PngWarningCallback);
+	png_structp png_ptr=png_create_read_struct(PNG_LIBPNG_VER_STRING,(png_voidp)&fileEntry,PngErrorCallback,PngWarningCallback);
 #endif
 
 	MEDUSA_ASSERT_NOT_NULL(png_ptr,"");
@@ -169,35 +171,27 @@ PngImage* PngImage::CreateFromMemory(const FileIdRef& fileId, MemoryByteData dat
 	//bit_depth = png_get_bit_depth(png_ptr, info_ptr);
 	colorType = png_get_color_type(png_ptr, info_ptr);
 
-	GraphicsPixelFormat imageFormat;
-	GraphicsInternalFormat internalFormat;
+	PixelType pixelType = PixelType::None;
 	switch (colorType)
 	{
 	case PNG_COLOR_TYPE_GRAY:
-		imageFormat=GraphicsPixelFormat::Luminance;
-		internalFormat=GraphicsInternalFormat::Luminance;
+		pixelType = PixelType::I8;
 		break;
 	case PNG_COLOR_TYPE_GRAY_ALPHA:
-		imageFormat=GraphicsPixelFormat::LuminanceAlpha;
-		internalFormat=GraphicsInternalFormat::LuminanceAlpha;
+		pixelType = PixelType::IA88;
 		break;
 	case PNG_COLOR_TYPE_RGB:
-		imageFormat=GraphicsPixelFormat::RGB;
-		internalFormat=GraphicsInternalFormat::RGB;
-
+		pixelType = PixelType::RGB888;
 		break;
 	case PNG_COLOR_TYPE_RGB_ALPHA:
-		imageFormat=GraphicsPixelFormat::RGBA;
-		internalFormat=GraphicsInternalFormat::RGBA;
+		pixelType = PixelType::RGBA8888;
 		break;
 	default:
-            //TODO: assert error
-            imageFormat=GraphicsPixelFormat::RGBA;
-            internalFormat=GraphicsInternalFormat::RGBA;
+		pixelType = PixelType::RGBA8888;
 		break;
 	}
 
-	PngImage* result=new PngImage(fileId,Size2U(width,height),internalFormat,imageFormat,false);
+	PngImage* result=new PngImage(fileId,Size2U(width,height), pixelType,false);
 	MEDUSA_ASSERT_NOT_NULL(result,"");
 	byte* imageData=result->MutableData().MutableData();
 	png_bytepp rowPointers=new png_bytep[height];

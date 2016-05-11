@@ -159,7 +159,7 @@ HeapString Path::Combine(StringRef path1, StringRef path2, StringRef path3, Stri
 {
 	if (path1.IsEmpty())
 	{
-		return Combine(path2, path3,path4);
+		return Combine(path2, path3, path4);
 	}
 	if (path2.IsEmpty())
 	{
@@ -185,7 +185,7 @@ HeapString Path::Combine(StringRef path1, StringRef path2, StringRef path3)
 {
 	if (path1.IsEmpty())
 	{
-		return Combine(path2,path3);
+		return Combine(path2, path3);
 	}
 	if (path2.IsEmpty())
 	{
@@ -321,7 +321,7 @@ StringRef Path::GetFileName(StringRef path)
 			if (IsDirectorySeparator(ch) || (ch == VolumeSeparatorChar))
 			{
 				++num2;
-				return path.SubString(num2 , length - num2);
+				return path.SubString(num2, length - num2);
 			}
 		}
 	}
@@ -391,7 +391,7 @@ bool Path::HasExtension(StringRef path)
 
 bool Path::Split(const StringRef& path, List<HeapString>& outPaths)
 {
-	return StringParser::Split(path, StringRef("/\\"), outPaths);
+	return StringParser::Split(path, "/\\", outPaths);
 
 }
 
@@ -403,7 +403,7 @@ bool Path::IsPath(const StringRef& path)
 
 bool Path::IsDirectory(const StringRef& path)
 {
-	return !HasExtension(path);
+	return (path.EndWith('/') || path.EndWith('\\')) || !HasExtension(path);
 }
 
 bool Path::IsFile(const StringRef& path)

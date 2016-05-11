@@ -29,6 +29,13 @@ bool RenderPassFactory::Initialize()
 	RegisterRenderPassDescription(RenderPassNames::POD, VertexShaderFiles::POD, PixelShaderFiles::POD);
 	RegisterRenderPassDescription(RenderPassNames::Shape, VertexShaderFiles::Shape, PixelShaderFiles::Shape);
 
+	RegisterRenderPassDescription(RenderPassNames::Label_TTF_Text, VertexShaderFiles::Texture, PixelShaderFiles::Label_TTF_Text);
+	RegisterRenderPassDescription(RenderPassNames::Label_TTF_Outline, VertexShaderFiles::Texture, PixelShaderFiles::Label_TTF_Outline);
+	RegisterRenderPassDescription(RenderPassNames::Label_TTF_OutlineText, VertexShaderFiles::Texture, PixelShaderFiles::Label_TTF_OutlineText);
+
+
+
+
 	return true;
 }
 
@@ -42,7 +49,7 @@ bool RenderPassFactory::Uninitialize()
 
 RenderPassDescription* RenderPassFactory::GetRenderPassDescription(StringRef name)
 {
-	return mRenderPassDescriptions.TryGetValueWithFailed(name, nullptr);
+	return mRenderPassDescriptions.GetOptional(name, nullptr);
 }
 
 void RenderPassFactory::RegisterRenderPassDescription(StringRef name, const FileIdRef& vertexShaderFile, const FileIdRef& pixelShaderFile, int index/*=0*/, const List<HeapString>* defines/*=nullptr*/)
@@ -52,7 +59,7 @@ void RenderPassFactory::RegisterRenderPassDescription(StringRef name, const File
 
 bool RenderPassFactory::UnregisterRenderPassDescription(StringRef name)
 {
-	RenderPassDescription* description = mRenderPassDescriptions.TryGetValueWithFailed(name, nullptr);
+	RenderPassDescription* description = mRenderPassDescriptions.GetOptional(name, nullptr);
 	if (description != nullptr)
 	{
 		mRenderPassDescriptions.RemoveKey(name);
@@ -78,8 +85,12 @@ IRenderPass* RenderPassFactory::CreateRenderPass(const FileIdRef& fileId, const 
 
 IRenderPass* RenderPassFactory::CreateRenderPass(const FileIdRef& fileId, IShader* vertexShader, IShader* pixelShader, int index/*=0*/, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
-	IRenderPass* pass = Find(fileId);
-	RETURN_SELF_IF_NOT_NULL(pass);
+	IRenderPass* pass = nullptr;
+	if (shareType != ResourceShareType::None)
+	{
+		pass = Find(fileId);
+		RETURN_SELF_IF_NOT_NULL(pass);
+	}
 
 	pass = RenderPassCreater::Instance().Create(fileId.Name, fileId, vertexShader, pixelShader, index);
 	if (pass == nullptr)
@@ -100,8 +111,12 @@ IRenderPass* RenderPassFactory::CreateRenderPass(const FileIdRef& fileId, IShade
 
 IRenderPass* RenderPassFactory::CreateRenderPass(const FileIdRef& fileId, const List<HeapString>* defines/*=nullptr*/, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
-	IRenderPass* pass = Find(fileId);
-	RETURN_SELF_IF_NOT_NULL(pass);
+	IRenderPass* pass = nullptr;
+	if (shareType != ResourceShareType::None)
+	{
+		pass = Find(fileId);
+		RETURN_SELF_IF_NOT_NULL(pass);
+	}
 
 	RenderPassDescription* description = GetRenderPassDescription(fileId.Name);
 	RETURN_NULL_IF_NULL(description);

@@ -4,7 +4,7 @@
 #pragma once
 #include "Graphics/GraphicsTypes.h"
 #include "Graphics/State/BaseBufferRenderState.h"
-#include "Core/Geometry/Range.h"
+#include "Geometry/Range.h"
 #include "Core/Pattern/IInitializable.h"
 #include "BufferObjectChangeFlags.h"
 

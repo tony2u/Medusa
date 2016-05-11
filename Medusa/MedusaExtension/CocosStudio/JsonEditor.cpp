@@ -1,0 +1,135 @@
+#include "MedusaExtensionPreCompiled.h"
+#include "CocosStudio/JsonEditor.h"
+#include "Core/IO/FileSystem.h"
+#include "CocosStudio/Reader/ReaderFactory.h"
+#include "CocosStudio/Reader/SceneReader.h"
+#include "Node/Scene/IScene.h"
+#include "Node/Layer/ILayer.h"
+
+MEDUSA_COCOS_BEGIN;
+
+JsonEditor::JsonEditor()
+{
+
+}
+
+JsonEditor::~JsonEditor()
+{
+
+}
+
+INode* JsonEditor::Create(const StringRef& className, const FileIdRef& editorFile, const IEventArg& e /*= IEventArg::Empty*/)
+{
+	auto data = FileSystem::Instance().ReadAllData(editorFile);
+
+	rapidjson::Document root;
+	const char* beginDoc = (const char*)data.Data();
+	root.Parse<rapidjson::kParseStopWhenDoneFlag>(beginDoc);
+	if (root.HasParseError())
+	{
+		rapidjson::ParseErrorCode errorCode = root.GetParseError();
+		Log::AssertFailedFormat("Invalid json format:{}. ErrorCode:{}", editorFile.Name, errorCode);
+		return nullptr;
+	}
+	return NodeWithJsonRoot(className, root);
+}
+
+INode* JsonEditor::NodeWithJsonRoot(const StringRef& className, const rapidjson::Value& root)
+{
+	StringRef type = root.GetString("Type", nullptr);
+	StringRef readerName = GetReaderName(type, root);
+	auto reader = ReaderFactory::Instance().Create(readerName);
+	RETURN_NULL_IF_NULL(reader);
+
+	INode* node = reader->CreateNodeWithJson(*this, root, className);
+	RETURN_NULL_IF_NULL(node);
+
+	const rapidjson::Value& nodeCentent = root["Content"]["Content"];
+	//const rapidjson::Value& nodeAnimation = nodeCentent["Animation"];
+	//const rapidjson::Value& nodeAnimationList = nodeCentent["AnimationList"];
+	const rapidjson::Value& nodeObjectData = nodeCentent["ObjectData"];
+	const rapidjson::Value& nodeSizeNode = nodeObjectData["Size"];
+	Size2F nodeSize;
+	nodeSize.Width = nodeSizeNode.Get("X",0.f);
+	nodeSize.Height = nodeSizeNode.Get("Y",0.f);
+	node->SetSize(nodeSize);
+
+	const rapidjson::Value* childrenArray = nodeObjectData.GetMember("Children");
+	if (childrenArray!=nullptr)
+	{
+		for (auto& subNodeTree : *childrenArray)
+		{
+			auto child = NodeWithJson(subNodeTree);
+			if (node->IsA<IScene>()&&child->IsA<ILayer>())
+			{
+				((IScene*)node)->PushLayer((ILayer*)child);
+			}
+			else
+			{
+				node->AddChild(child);
+			}
+		}
+	}
+	
+
+	return node;
+}
+
+
+INode* JsonEditor::NodeWithJson(const rapidjson::Value& jsonNode)
+{
+	StringRef type = jsonNode.GetString("ctype", nullptr);
+	StringRef readerName = GetReaderName(type,jsonNode);
+	auto reader = ReaderFactory::Instance().Create(readerName);
+	RETURN_NULL_IF_NULL(reader);
+
+	INode* node = reader->CreateNodeWithJson(*this, jsonNode);
+	RETURN_NULL_IF_NULL(node);
+
+	const rapidjson::Value* childrenArray = jsonNode.GetMember("Children");
+	if (childrenArray != nullptr)
+	{
+		for (auto& subNodeTree : *childrenArray)
+		{
+			auto child = NodeWithJson(subNodeTree);
+			node->AddChild(child);
+		}
+	}
+
+	return node;
+}
+
+StringRef JsonEditor::GetReaderName(const StringRef& name, const rapidjson::Value& nodeTree)
+{
+	if (name == "Scene")
+	{
+		return "SceneReader";
+	}
+	else if (name == "Layer")
+	{
+		return "LayerReader";
+	}
+	else if (name == "SpriteObjectData")
+	{
+		return "SpriteReader";
+	}
+	else if (name == "ProjectNodeObjectData")
+	{
+		return "ProjectNodeReader";
+	}
+	else if (name == "TextObjectData")
+	{
+		return "TextReader";
+	}
+	else if (name == "ButtonObjectData")
+	{
+		return "ButtonReader";
+	}
+
+
+	Log::AssertFailedFormat("Invalid name:{}", name);
+
+	return StringRef::Empty;
+}
+
+MEDUSA_COCOS_END;

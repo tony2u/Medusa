@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 #include "MedusaPreCompiled.h"
 #include "IdentityTimelineModel.h"
-#include "Core/Geometry/Matrix4.h"
+#include "Geometry/Matrix4.h"
 
 MEDUSA_BEGIN;
 

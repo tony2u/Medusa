@@ -38,6 +38,9 @@ public:
 	bool operator!=(const FileIdRef& fileId)const { return Name != fileId.Name || Order != fileId.Order; }
 
 	bool IsValid()const { return !Name.IsEmpty(); }
+	bool IsEmpty()const { return Name.IsEmpty(); }
+	bool IsPath()const;
+
 	void Reset() { Name.Clear(); Order = 0; }
 
 	FileIdRef ToRef()const { return FileIdRef(Name, Order); }
@@ -49,7 +52,17 @@ public:
 	}
 
 	static FileId ParseFrom(const StringRef& name);
+
+	template<typename TChar>
+	THeapString<TChar> ToString(const TChar* formatBegin = nullptr, const TChar* formatEnd = nullptr)const
+	{
+		HeapString str = ToString(PublishTarget::MatchAll);
+		return StringParser::ToStringT<TChar>(str);
+	}
+
+
 	HeapString ToString(const PublishTarget& tag = PublishTarget::MatchAll)const;
+	FileType Type()const;
 
 public:
 	HeapString Name;
@@ -59,10 +72,70 @@ public:
 
 struct FileId::Schema
 {
-	SIREN_PROPERTY(0, 0, Required, FileId, HeapString, Name);
-	SIREN_PROPERTY(1, 1, Optional, FileId, uint, Order);
-	SIREN_PROPERTIES_2(void, FileId);
+	SIREN_FIELD(0, 0, Required, FileId, HeapString, Name);
+	SIREN_FIELD(1, 1, Optional, FileId, uint, Order);
+	SIREN_FIELDS_2(void, FileId);
 };
 
 
 MEDUSA_END;
+
+
+#ifdef MEDUSA_LUA
+#include "Core/Lua/LuaState.h"
+MEDUSA_BEGIN;
+
+template <>
+struct LuaTypeMapping <FileId>//[IGNORE_PRE_DECLARE]
+{
+	static void Push(lua_State* L, const FileId& val)
+	{
+		LuaStack s(L);
+		if (val.Order != 0)
+		{
+			s.NewTable(0, 2);
+			s.Rawset("Name", val.Name);
+			s.Rawset("Order", val.Order);
+		}
+		else
+		{
+			s.Push(val.Name);
+		}
+
+	}
+
+	static FileId Get(lua_State* L, int index)
+	{
+		FileId result;
+		LuaStack s(L);
+		if (s.IsTable(index))
+		{
+			s.RawGetField(index);
+			result.Name = s.Get<StringRef>("Name");
+			result.Order = s.Get<uint>("Order");
+			s.Pop(1);
+		}
+		else
+		{
+			result.Name = s.RawgetAt<StringRef>(index);
+		}
+
+		return result;
+	}
+
+	static FileId Optional(lua_State* L, int index, const FileId& def)
+	{
+		return lua_isnoneornil(L, index) ? def : Get(L, index);
+	}
+
+	static bool TryGet(lua_State* L, int index, FileId& outValue)
+	{
+		RETURN_FALSE_IF(lua_isnoneornil(L, index));
+		outValue = Get(L, index);
+		return true;
+	}
+};
+MEDUSA_END;
+
+#endif
+

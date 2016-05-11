@@ -14,6 +14,9 @@
 #include "Application/FrameAutoStopWatch.h"
 #include "Rendering/RenderQueue/IRenderQueue.h"
 #include "SceneSweeper.h"
+#include "Core/IO/Path.h"
+#include "Core/IO/FileInfo.h"
+#include "Node/Editor/NodeEditorFactory.h"
 
 MEDUSA_BEGIN;
 
@@ -36,7 +39,7 @@ bool SceneManager::Initialize(bool disableThreading /*= false*/)
 	mIsSceneChanged = false;
 	mDisableThreading = disableThreading;
 
-	
+
 
 	return true;
 }
@@ -48,7 +51,7 @@ bool SceneManager::Uninitialize()
 }
 
 
-void SceneManager::PushScene(IScene* scene, ScenePushFlags pushFlag /*= ScenePushFlags::None*/)
+void SceneManager::Push(IScene* scene, ScenePushFlags pushFlag /*= ScenePushFlags::None*/)
 {
 #ifdef MEDUSA_SAFE_CHECK
 	if (mScenes.Contains(scene))
@@ -58,10 +61,10 @@ void SceneManager::PushScene(IScene* scene, ScenePushFlags pushFlag /*= ScenePus
 	}
 #endif
 
-	IScene* originalScene = RunningScene();
+	IScene* originalScene = Current();
 	if (originalScene != nullptr)
 	{
-		if (pushFlag.Has(ScenePushFlags::HideAllPrevScenes))
+		if (MEDUSA_FLAG_HAS(pushFlag,ScenePushFlags::HideAllPrevScenes))
 		{
 			FOR_EACH_COLLECTION(i, mScenes)
 			{
@@ -75,34 +78,34 @@ void SceneManager::PushScene(IScene* scene, ScenePushFlags pushFlag /*= ScenePus
 			}
 		}
 
-		if (!pushFlag.Has(ScenePushFlags::ShowPrevScene))
+		if (!MEDUSA_FLAG_HAS(pushFlag,ScenePushFlags::ShowPrevScene))
 		{
 			originalScene->SetVisible(false);
 			originalScene->ExitRecursively();
 		}
-		originalScene->EnableInput(pushFlag.Has(ScenePushFlags::ShowPrevScene));
+		originalScene->EnableInput(MEDUSA_FLAG_HAS(pushFlag,ScenePushFlags::ShowPrevScene));
 	}
 
 	mScenes.Push(scene);
 	scene->SetVisible(true);
 	scene->EnterRecursively();
 
-	if (!pushFlag.Has(ScenePushFlags::SuppressUpdateLogic))
+	if (!MEDUSA_FLAG_HAS(pushFlag,ScenePushFlags::SuppressUpdateLogic))
 	{
 		scene->UpdateLogicRecursively();
 	}
 
-	scene->EnableInput(!pushFlag.Has(ScenePushFlags::DisableTouch));
+	scene->EnableInput(!MEDUSA_FLAG_HAS(pushFlag,ScenePushFlags::DisableTouch));
 
 	mIsSceneChanged = true;
 }
 
-IScene* SceneManager::PopScene(ScenePopFlags popFlag /*= ScenePopFlags::None*/)
+IScene* SceneManager::Pop(ScenePopFlags popFlag /*= ScenePopFlags::None*/)
 {
-	IScene* scene = RunningScene();
+	IScene* scene = Current();
 	Log::AssertNotNull(scene, "Scene stack should not be empty when pop.");
 
-	if (!popFlag.Has(ScenePopFlags::ShowCurrentScene) || popFlag.Has(ScenePopFlags::DeleteCurrentScene) || popFlag.Has(ScenePopFlags::DeleteCurrentSceneAsync))
+	if (!MEDUSA_FLAG_HAS(popFlag,ScenePopFlags::ShowCurrentScene) || MEDUSA_FLAG_HAS(popFlag,ScenePopFlags::DeleteCurrentScene) || MEDUSA_FLAG_HAS(popFlag,ScenePopFlags::DeleteCurrentSceneAsync))
 	{
 		scene->SetVisible(false);
 		scene->ExitRecursively();
@@ -112,20 +115,20 @@ IScene* SceneManager::PopScene(ScenePopFlags popFlag /*= ScenePopFlags::None*/)
 	mScenes.Pop();
 	mIsSceneChanged = true;
 
-	if (popFlag.Has(ScenePopFlags::DeleteCurrentScene) || popFlag.Has(ScenePopFlags::DeleteCurrentSceneAsync))
+	if (MEDUSA_FLAG_HAS(popFlag,ScenePopFlags::DeleteCurrentScene) || MEDUSA_FLAG_HAS(popFlag,ScenePopFlags::DeleteCurrentSceneAsync))
 	{
-		DeleteScene(scene, popFlag.Has(ScenePopFlags::DeleteCurrentSceneAsync));
+		DeleteScene(scene, MEDUSA_FLAG_HAS(popFlag,ScenePopFlags::DeleteCurrentSceneAsync));
 		scene = nullptr;
 	}
 
-	if (!popFlag.Has(ScenePopFlags::IgnorePrevScene))
+	if (!MEDUSA_FLAG_HAS(popFlag,ScenePopFlags::IgnorePrevScene))
 	{
-		IScene* prevScene = RunningScene();
+		IScene* prevScene = Current();
 		if (prevScene != nullptr)
 		{
 			prevScene->SetVisible(true);
-			prevScene->EnableInput(!popFlag.Has(ScenePopFlags::DisableTouch));
-			if (!popFlag.Has(ScenePopFlags::SuppressUpdateLogic))
+			prevScene->EnableInput(!MEDUSA_FLAG_HAS(popFlag,ScenePopFlags::DisableTouch));
+			if (!MEDUSA_FLAG_HAS(popFlag,ScenePopFlags::SuppressUpdateLogic))
 			{
 				prevScene->UpdateLogicRecursively();
 			}
@@ -135,10 +138,10 @@ IScene* SceneManager::PopScene(ScenePopFlags popFlag /*= ScenePopFlags::None*/)
 	return scene;
 }
 
-IScene* SceneManager::ReplaceToScene(IScene* scene, ScenePopFlags popFlag /*= ScenePopFlags::None*/, ScenePushFlags pushFlag /*= ScenePushFlags::None*/)
+IScene* SceneManager::ReplaceTo(IScene* scene, ScenePopFlags popFlag /*= ScenePopFlags::None*/, ScenePushFlags pushFlag /*= ScenePushFlags::None*/)
 {
-	IScene* prevScene = PopScene(popFlag);
-	PushScene(scene, pushFlag);
+	IScene* prevScene = Pop(popFlag);
+	Push(scene, pushFlag);
 	return prevScene;
 }
 
@@ -158,23 +161,57 @@ bool SceneManager::DeleteScene(IScene* scene, bool isAsync /*= false*/)
 	}
 }
 
-IScene* SceneManager::PushSceneByName(const StringRef& className, ScenePushFlags pushFlag /*= ScenePushFlags::None*/, const IEventArg& e /*= IEventArg::Empty*/)
+IScene* SceneManager::Push(const StringRef& className, ScenePushFlags pushFlag /*= ScenePushFlags::None*/, const IEventArg& e /*= IEventArg::Empty*/)
 {
-	IScene* scene = SceneFactory::Instance().Create(className, className, e);
-	scene->Initialize();
-	PushScene(scene, pushFlag);
+	if (Path::HasExtension(className))	//means a file
+	{
+		FileType fileType = FileInfo::ExtractType(className);
+		if (FileInfo::IsScriptFile(fileType))
+		{
+			return PushEx(StringRef::Empty, StringRef::Empty, className, pushFlag, e);
+		}
+		else
+		{
+			auto editor = NodeEditorFactory::Instance().FindEditor(fileType);
+			if (editor != nullptr)
+			{
+				return PushEx(StringRef::Empty, className, StringRef::Empty, pushFlag, e);
+			}
+			Log::AssertFailedFormat("Cannot support scene editor file:{}", className);
+			return nullptr;
+		}
+	}
+	else
+	{
+		return PushEx(className,StringRef::Empty, StringRef::Empty, pushFlag, e);
+	}
+
+}
+
+
+IScene* SceneManager::PushEx(const StringRef& className, const FileIdRef& editorFile /*= FileIdRef::Empty*/, const FileIdRef& scriptFile /*= FileIdRef::Empty*/, ScenePushFlags pushFlag /*= ScenePushFlags::None*/, const IEventArg& e /*= IEventArg::Empty*/)
+{
+	IScene* scene = SceneFactory::Instance().Create(className, editorFile, e);
+	if (!scriptFile.IsEmpty())
+	{
+		scene->AddScriptFile(scriptFile);
+	}
+
+	Push(scene, pushFlag);
 	return scene;
 }
 
-IScene* SceneManager::ReplaceSceneByName(const StringRef& className, ScenePopFlags popFlag /*= ScenePopFlags::None*/, ScenePushFlags pushFlag /*= ScenePushFlags::None*/, const IEventArg& e /*= IEventArg::Empty*/)
+IScene* SceneManager::ReplaceTo(const StringRef& className, ScenePopFlags popFlag /*= ScenePopFlags::None*/, ScenePushFlags pushFlag /*= ScenePushFlags::None*/, const IEventArg& e /*= IEventArg::Empty*/)
 {
-	IScene* scene = SceneFactory::Instance().Create(className, className, e);
-	scene->Initialize();
-
-	ReplaceToScene(scene, popFlag, pushFlag);
-	return scene;
+	Pop(popFlag);
+	return Push(className, pushFlag, e);
 }
 
+IScene* SceneManager::ReplaceToEx(const StringRef& className, const FileIdRef& editorFile /*= FileIdRef::Empty*/, const FileIdRef& scriptFile /*= FileIdRef::Empty*/, ScenePopFlags popFlag /*= ScenePopFlags::None*/, ScenePushFlags pushFlag /*= ScenePushFlags::None*/, const IEventArg& e /*= IEventArg::Empty*/)
+{
+	Pop(popFlag);
+	return PushEx(className, editorFile, scriptFile, pushFlag, e);
+}
 
 void SceneManager::ShowActivityIndicator()
 {
@@ -289,7 +326,7 @@ void SceneManager::Draw(float dt)
 
 }
 
-IScene* SceneManager::RunningScene() const
+IScene* SceneManager::Current() const
 {
 	RETURN_NULL_IF_EMPTY(mScenes);
 	return mScenes.Top();

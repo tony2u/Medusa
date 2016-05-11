@@ -25,10 +25,10 @@ DropPoolGroup::~DropPoolGroup()
 
 //SIREN_BODY_METADATA_BEGIN
 SIREN_METADATA(DropPoolGroup, 13);
-SIREN_PROPERTY_METADATA(0, DropPoolGroup, PreventDuplicate, 16, false);
-SIREN_PROPERTY_METADATA(1, DropPoolGroup, MinTimes, 8, 1);
-SIREN_PROPERTY_METADATA(2, DropPoolGroup, MaxTimes, 8, 1);
-SIREN_PROPERTY_METADATA_STRUCT(3, DropPoolGroup, Items, 5);
+SIREN_FIELD_METADATA(0, DropPoolGroup, PreventDuplicate, 16, false, false);
+SIREN_FIELD_METADATA(1, DropPoolGroup, MinTimes, 8, 1, true);
+SIREN_FIELD_METADATA(2, DropPoolGroup, MaxTimes, 8, 1, true);
+SIREN_FIELD_METADATA_STRUCT(3, DropPoolGroup, Items, 5);
 //SIREN_BODY_METADATA_END
 
 MEDUSA_END;

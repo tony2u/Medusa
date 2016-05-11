@@ -7,17 +7,18 @@
 #include "Resource/Camera/Camera.h"
 #include "Graphics/ResolutionAdapter.h"
 #include "Resource/RenderTarget/RenderTargetFactory.h"
-#include "Node/Editor/SceneEditorFactory.h"
+#include "Node/Editor/NodeEditorFactory.h"
 #include "Core/Command/Processor/MainCommandProcessor.h"
 #include "Node/Layer/ILayer.h"
 #include "Core/Log/Log.h"
 #include "Node/Layer/LayerFactory.h"
-#include "Core/Script/ScriptDefines.h"
 #include "Node/Scene/SceneFactory.h"
 #include "Application/ApplicationStatics.h"
 #include "Core/Pattern/IVisitor.h"
 #include "Resource/Model/Mesh/IMesh.h"
 #include "Node/NodeSweeper.h"
+#include "Core/IO/Path.h"
+#include "Core/IO/FileInfo.h"
 
 MEDUSA_BEGIN;
 
@@ -80,11 +81,11 @@ Camera* IScene::GetCamera() const
 
 //////////////////////////////////////////////////////////////////////////
 
-bool IScene::DeleteLayer(StringRef editorFile, LayerDeleteFlags deleteFlags/*=LayerDeleteFlags::None*/)
+bool IScene::DeleteLayer(StringRef name, LayerDeleteFlags deleteFlags/*=LayerDeleteFlags::None*/)
 {
-	if (deleteFlags.Has(LayerDeleteFlags::Async))
+	if (MEDUSA_FLAG_HAS(deleteFlags,LayerDeleteFlags::Async))
 	{
-		INode* layer = FindChild(editorFile);
+		INode* layer = FindChild(name);
 		if (layer != nullptr)
 		{
 			NodeSweeper::Instance().Add(layer);
@@ -93,7 +94,7 @@ bool IScene::DeleteLayer(StringRef editorFile, LayerDeleteFlags deleteFlags/*=La
 	}
 	else
 	{
-		return DeleteChild(editorFile);
+		return DeleteChild(name);
 	}
 
 }
@@ -101,7 +102,7 @@ bool IScene::DeleteLayer(StringRef editorFile, LayerDeleteFlags deleteFlags/*=La
 
 bool IScene::DeleteLayer(ILayer* layer, LayerDeleteFlags deleteFlags /*= LayerDeleteFlags::None*/)
 {
-	if (deleteFlags.Has(LayerDeleteFlags::Async))
+	if (MEDUSA_FLAG_HAS(deleteFlags,LayerDeleteFlags::Async))
 	{
 		NodeSweeper::Instance().Add(layer);
 		return layer != nullptr;
@@ -130,7 +131,7 @@ ILayer* IScene::CurrentLayer() const
 
 
 
-void IScene::PushLayerObject(ILayer* layer, LayerPushFlags pushFlags/*=LayerPushFlags::None*/)
+void IScene::PushLayer(ILayer* layer, LayerPushFlags pushFlags/*=LayerPushFlags::None*/)
 {
 	Log::Assert(layer != nullptr, "thisLayer should not be null.");
     RETURN_IF_NULL(layer);
@@ -142,7 +143,7 @@ void IScene::PushLayerObject(ILayer* layer, LayerPushFlags pushFlags/*=LayerPush
 	}
 #endif
 
-	if (pushFlags.Has(LayerPushFlags::SaveStatusBeforePush))
+	if (MEDUSA_FLAG_HAS(pushFlags,LayerPushFlags::SaveStatusBeforePush))
 	{
 		OnSaveStatus();
 	}
@@ -151,7 +152,7 @@ void IScene::PushLayerObject(ILayer* layer, LayerPushFlags pushFlags/*=LayerPush
 	ILayer* originalLayer = CurrentLayer();
 	if (originalLayer != nullptr)
 	{
-		if (pushFlags.Has(LayerPushFlags::HideAllPrevLayers))
+		if (MEDUSA_FLAG_HAS(pushFlags,LayerPushFlags::HideAllPrevLayers))
 		{
 			FOR_EACH_COLLECTION(i, mNodes)
 			{
@@ -165,12 +166,12 @@ void IScene::PushLayerObject(ILayer* layer, LayerPushFlags pushFlags/*=LayerPush
 			}
 		}
 
-		if (!pushFlags.Has(LayerPushFlags::ShowPrevLayer))
+		if (!MEDUSA_FLAG_HAS(pushFlags,LayerPushFlags::ShowPrevLayer))
 		{
 			originalLayer->SetVisible(false);
 			originalLayer->ExitRecursively();
 		}
-		originalLayer->EnableInput(pushFlags.Has(LayerPushFlags::ShowPrevLayer));
+		originalLayer->EnableInput(MEDUSA_FLAG_HAS(pushFlags,LayerPushFlags::ShowPrevLayer));
 	}
 
 	AddChild(layer);
@@ -178,31 +179,53 @@ void IScene::PushLayerObject(ILayer* layer, LayerPushFlags pushFlags/*=LayerPush
 	layer->SetVisible(true);
 	layer->EnterRecursively();
 
-	if (!pushFlags.Has(LayerPushFlags::SuppressUpdateLogic))
+	if (!MEDUSA_FLAG_HAS(pushFlags,LayerPushFlags::SuppressUpdateLogic))
 	{
 		layer->UpdateLogicRecursively();
 	}
 
-	layer->EnableInput(!pushFlags.Has(LayerPushFlags::DisableTouch));
+	layer->EnableInput(!MEDUSA_FLAG_HAS(pushFlags,LayerPushFlags::DisableTouch));
 }
 
-ILayer* IScene::PushLayerByName(const StringRef& className, const StringRef& editorFile, const IEventArg& e/*=IEventArg::Empty*/, LayerPushFlags pushFlags/*=LayerPushFlags::None*/)
+ILayer* IScene::PushLayer(const StringRef& className, LayerPushFlags pushFlags/*=LayerPushFlags::None*/, const IEventArg& e/*=IEventArg::Empty*/)
 {
-	LayerCreateFlags createFlags;
-	if (pushFlags.Has(LayerPushFlags::AlwaysCreate))
+
+	if (Path::HasExtension(className))	//means a file
 	{
-		createFlags = LayerCreateFlags::AlwaysCreate;
+		FileType fileType = FileInfo::ExtractType(className);
+		if (FileInfo::IsScriptFile(fileType))
+		{
+			return PushLayerEx(StringRef::Empty, StringRef::Empty, className, pushFlags, e);
+		}
+		else
+		{
+			auto editor = NodeEditorFactory::Instance().FindEditor(fileType);
+			if (editor != nullptr)
+			{
+				return PushLayerEx(StringRef::Empty, className, StringRef::Empty, pushFlags, e);
+			}
+			Log::AssertFailedFormat("Cannot support scene editor file:{}", className);
+			return nullptr;
+		}
+	}
+	else
+	{
+		return PushLayerEx(className, StringRef::Empty, StringRef::Empty, pushFlags, e);
 	}
 
-	ILayer* layer = nullptr;
-	if (!editorFile.IsEmpty())
-	{
-		layer = (ILayer*)FindChild(editorFile);
-		Log::AssertFormat(layer == nullptr, "Cannot push Layer:{} which is already in stack.", editorFile.c_str());
-	}
 	
-	layer = LayerFactory::Instance().CreateLayer(className, editorFile, e, createFlags);
-	PushLayerObject(layer, pushFlags);
+}
+
+
+ILayer* IScene::PushLayerEx(const StringRef& className, const FileIdRef& editorFile /*= FileIdRef::Empty*/, const FileIdRef& scriptFile /*= FileIdRef::Empty*/, LayerPushFlags pushFlags/*=LayerPushFlags::None*/, const IEventArg& e/*=IEventArg::Empty*/)
+{
+	auto layer = LayerFactory::Instance().Create(className, editorFile, e);
+	if (!scriptFile.IsEmpty())
+	{
+		layer->AddScriptFile(scriptFile);
+	}
+
+	PushLayer(layer, pushFlags);
 
 	return layer;
 }
@@ -212,7 +235,7 @@ ILayer* IScene::PopLayer(LayerPopFlags popFlags/*=LayerPopFlags::None*/)
 	ILayer* layer = CurrentLayer();
 	Log::AssertNotNull(layer, "Layer stack should not be empty when pop.");
 
-	if (!popFlags.Has(LayerPopFlags::ShowCurrentLayer) || popFlags.Has(LayerPopFlags::DeleteCurrentLayer) || popFlags.Has(LayerPopFlags::DeleteCurrentLayerAsync))
+	if (!MEDUSA_FLAG_HAS(popFlags,LayerPopFlags::ShowCurrentLayer) || MEDUSA_FLAG_HAS(popFlags,LayerPopFlags::DeleteCurrentLayer) || MEDUSA_FLAG_HAS(popFlags,LayerPopFlags::DeleteCurrentLayerAsync))
 	{
 		layer->SetVisible(false);
 		layer->ExitRecursively();
@@ -221,10 +244,10 @@ ILayer* IScene::PopLayer(LayerPopFlags popFlags/*=LayerPopFlags::None*/)
 
 	RemoveChild(layer);
 
-	if (popFlags.Has(LayerPopFlags::DeleteCurrentLayer) || popFlags.Has(LayerPopFlags::DeleteCurrentLayerAsync))
+	if (MEDUSA_FLAG_HAS(popFlags,LayerPopFlags::DeleteCurrentLayer) || MEDUSA_FLAG_HAS(popFlags,LayerPopFlags::DeleteCurrentLayerAsync))
 	{
-		LayerDeleteFlags deleteFlags;
-		if (popFlags.Has(LayerPopFlags::DeleteCurrentLayerAsync))
+		LayerDeleteFlags deleteFlags=LayerDeleteFlags::None;
+		if (MEDUSA_FLAG_HAS(popFlags,LayerPopFlags::DeleteCurrentLayerAsync))
 		{
 			deleteFlags = LayerDeleteFlags::Async;
 		}
@@ -233,21 +256,21 @@ ILayer* IScene::PopLayer(LayerPopFlags popFlags/*=LayerPopFlags::None*/)
 		layer = nullptr;
 	}
 
-	if (!popFlags.Has(LayerPopFlags::IgnorePrevLayer))
+	if (!MEDUSA_FLAG_HAS(popFlags,LayerPopFlags::IgnorePrevLayer))
 	{
 		ILayer* prevLayer = CurrentLayer();
 		if (prevLayer != nullptr)
 		{
 			prevLayer->SetVisible(true);
-			prevLayer->EnableInput(!popFlags.Has(LayerPopFlags::DisableTouch));
-			if (!popFlags.Has(LayerPopFlags::SuppressUpdateLogic))
+			prevLayer->EnableInput(!MEDUSA_FLAG_HAS(popFlags,LayerPopFlags::DisableTouch));
+			if (!MEDUSA_FLAG_HAS(popFlags,LayerPopFlags::SuppressUpdateLogic))
 			{
 				prevLayer->UpdateLogicRecursively();
 			}
 		}
 	}
 
-	if (popFlags.Has(LayerPopFlags::RestoreStatusAfterPop))
+	if (MEDUSA_FLAG_HAS(popFlags,LayerPopFlags::RestoreStatusAfterPop))
 	{
 		OnRestoreStatus();
 	}
@@ -264,16 +287,22 @@ void IScene::PopAllLayer(LayerPopFlags popFlags/*=LayerPopFlags::IgnorePrevLayer
 }
 
 
-ILayer* IScene::ReplaceToLayerByName(const StringRef& className, const StringRef& editorFile, const IEventArg& e/*=IEventArg::Empty*/, LayerPopFlags popFlags/*=LayerPopFlags::None*/, LayerPushFlags pushFlags/*=LayerPushFlags::None*/)
+ILayer* IScene::ReplaceToLayer(const StringRef& className,  LayerPopFlags popFlags/*=LayerPopFlags::None*/, LayerPushFlags pushFlags/*=LayerPushFlags::None*/, const IEventArg& e/*=IEventArg::Empty*/)
 {
 	PopLayer(popFlags);
-	return PushLayerByName(className,editorFile, e, pushFlags);
+	return PushLayer(className, pushFlags,e);
 }
 
-ILayer* IScene::ReplaceToLayerObject(ILayer* toLayer, LayerPopFlags popFlags/*=LayerPopFlags::None*/, LayerPushFlags pushFlags/*=LayerPushFlags::None*/)
+ILayer* IScene::ReplaceToLayerEx(const StringRef& className, const FileIdRef& editorFile /*= FileIdRef::Empty*/, const FileIdRef& scriptFile /*= FileIdRef::Empty*/, LayerPopFlags popFlags/*=LayerPopFlags::None*/, LayerPushFlags pushFlags/*=LayerPushFlags::None*/, const IEventArg& e/*=IEventArg::Empty*/)
+{
+	PopLayer(popFlags);
+	return PushLayerEx(className, editorFile, scriptFile, pushFlags,e);
+}
+
+ILayer* IScene::ReplaceToLayer(ILayer* toLayer, LayerPopFlags popFlags/*=LayerPopFlags::None*/, LayerPushFlags pushFlags/*=LayerPushFlags::None*/)
 {
 	ILayer* prevLayer = PopLayer(popFlags);
-	PushLayerObject(toLayer, pushFlags);
+	PushLayer(toLayer, pushFlags);
 	return prevLayer;
 }
 
@@ -292,7 +321,7 @@ void IScene::OnRestoreStatus()
 	FOR_EACH_COLLECTION(i, mNodes)
 	{
 		INode* layer = *i;
-		NodeStatus* statusPtr = mLayerStatusDict.TryGetValue(layer->Name());
+		NodeStatus* statusPtr = mLayerStatusDict.TryGet(layer->Name());
 		if (statusPtr != nullptr)
 		{
 			layer->SetVisible(statusPtr->IsVisible);
@@ -344,7 +373,9 @@ bool IScene::VisitScene(IVisitor < INode* >& visitor, RenderableChangedFlags& ou
 		mVisitNodes.Clear();
 		AddNodeRecursivelyToVisitQueue(this);
 		mIsVisitQueueChanged = false;
-		outFlag|=(RenderableChangedFlags::RenderQueueChanged | RenderableChangedFlags::BatchChanged | RenderableChangedFlags::DataTotalChanged);
+		MEDUSA_FLAG_ADD(outFlag, RenderableChangedFlags::RenderQueueChanged);
+		MEDUSA_FLAG_ADD(outFlag, RenderableChangedFlags::BatchChanged);
+		MEDUSA_FLAG_ADD(outFlag, RenderableChangedFlags::DataTotalChanged);
 	}
 
 	RETURN_TRUE_IF_EMPTY(mVisitNodes);
@@ -367,25 +398,25 @@ void IScene::VisitRecursively(IVisitor < INode* >& visitor, RenderableChangedFla
 	if (IsWorldMatrixDirty())
 	{
 		ForceSetWorldMatrix(LocalMatrix());
-		nodeFlag |= NodeVisitFlags::ForceUpdateWorldMatrix;
+		MEDUSA_FLAG_ADD(nodeFlag, NodeVisitFlags::ForceUpdateWorldMatrix);
 	}
 
 	if (IsWorldColorDirty())
 	{
 		SetWorldColor(Color());
-		nodeFlag |= NodeVisitFlags::ForceUpdateWorldColor;
+		MEDUSA_FLAG_ADD(nodeFlag, NodeVisitFlags::ForceUpdateWorldColor);
 	}
 
 	if (IsWorldRenderStateDirty())
 	{
-		MEDUSA_ADD_FLAG(renderStateFlag, mWorldRenderState.DirtyFlag());
+		MEDUSA_FLAG_ADD(renderStateFlag, mWorldRenderState.DirtyFlag());
 		//renderStateFlag |= mWorldRenderState.DirtyFlag();
 		ForceUpdateRenderState(renderStateFlag);
 
 	}
 
 	visitor.Visit(this);
-	outFlag |= mChangedFlag;
+	MEDUSA_FLAG_ADD(outFlag, mChangedFlag);
 
 	//update child
 	size_t size = mNodes.Count();
@@ -405,31 +436,6 @@ void IScene::VisitRecursively(IVisitor < INode* >& visitor, RenderableChangedFla
 
 #pragma endregion Update
 
-MEDUSA_IMPLEMENT_RTTI(IScene, INode);
-
-
-
-
+MEDUSA_IMPLEMENT_SCENE(IScene, INode,StringRef::Empty,StringRef::Empty);
 
 MEDUSA_END;
-
-#ifdef MEDUSA_SCRIPT
-#include "CoreLib/Common/angelscript.h"
-
-MEDUSA_SCRIPT_BEGIN;
-
-void RegisterIScene(asIScriptEngine* engine)
-{
-	int r2;
-	r2 = engine->RegisterObjectType(MACRO_TO_STRING(IScene), sizeof(IScene), asOBJ_REF | asOBJ_NOCOUNT); MEDUSA_ASSERT_SILENT(r2 >= 0);
-	MEDUSA_SCRIPT_REGISTER_NODE_NEW_DELETE(engine, IScene);
-
-	MEDUSA_SCRIPT_REGISTER_CAST_BASE_DERIVED(engine, INode, IScene);
-
-
-	RegisterIScene_Methods<IScene>(engine, MACRO_TO_STRING(IScene));
-
-}
-
-MEDUSA_SCRIPT_END;
-#endif

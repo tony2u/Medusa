@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 #pragma once
 #include "Node/Panel/IPanel.h"
-#include "Core/Geometry/ScrollDirection.h"
+#include "Geometry/ScrollDirection.h"
 MEDUSA_BEGIN;
 
 
@@ -24,7 +24,7 @@ public:
 	virtual ~ScrollPanel(void);
 	virtual PanelType GetPanelType()const override{return PanelType::Scroll;}
 public:
-	virtual bool Update(float dt,NodeUpdateFlags flag = NodeUpdateFlags::None)override;
+	virtual bool OnUpdate(float dt,NodeUpdateFlags flag = NodeUpdateFlags::None)override;
 
 	virtual void ScrollTo(Point2F offset);
 	virtual void ScrollBy(Point2F offset);

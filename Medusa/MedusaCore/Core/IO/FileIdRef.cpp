@@ -3,6 +3,9 @@
 // license that can be found in the LICENSE file.
 #include "MedusaCorePreCompiled.h"
 #include "FileIdRef.h"
+#include "Core/IO/Path.h"
+#include "Core/IO/FileInfo.h"
+
 MEDUSA_BEGIN;
 
 bool FileIdRef::operator<(const FileIdRef& fileId) const
@@ -17,6 +20,11 @@ bool FileIdRef::operator<(const FileIdRef& fileId) const
 	}
 
 	return false;
+}
+
+bool FileIdRef::IsPath() const
+{
+	return Path::IsPath(Name);
 }
 
 HeapString FileIdRef::ToString(const PublishTarget& tag /*= PublishTarget::MatchAll*/) const
@@ -56,6 +64,11 @@ HeapString FileIdRef::ToString(const PublishTarget& tag /*= PublishTarget::Match
 	
 	str.Append(Name.c_str() + index);
 	return str;
+}
+
+FileType FileIdRef::Type() const
+{
+	return FileInfo::ExtractType(Name);
 }
 
 const FileIdRef FileIdRef::Empty;

@@ -4,8 +4,8 @@
 #pragma once
 #include "Core/Collection/List.h"
 #include "Core/String/HeapString.h"
-#include "Core/Geometry/Color4.h"
-#include "Core/Geometry/Moveable/BoneMoveable.h"
+#include "Geometry/Color4.h"
+#include "Geometry/Moveable/BoneMoveable.h"
 
 MEDUSA_BEGIN;
 

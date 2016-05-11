@@ -9,7 +9,8 @@
 
 
 MEDUSA_BEGIN;
-PinchGestureRecognizer::PinchGestureRecognizer( INode* node,GestureFlags flags/*=GestureFlags::None*/ ) :IGestureRecognizer(node,flags)
+PinchGestureRecognizer::PinchGestureRecognizer( INode* node) 
+	:IGestureRecognizer(node)
 {
 	Reset();
 }
@@ -21,24 +22,25 @@ PinchGestureRecognizer::~PinchGestureRecognizer(void)
 
 void PinchGestureRecognizer::TouchesBegan(TouchEventArg& e)
 {
+	IInputHandler::TouchesBegan(e);
 	switch(mState)
 	{
-	case GestureState::None:
-	case GestureState::Recognizing:
+	case InputState::None:
+	case InputState::Recognizing:
 		mTouchEventArg.MergeValidActiveTouches(e);
 		if (mTouchEventArg.ValidTouchActiveCount()<2)
 		{
-			SetState(GestureState::Recognizing);
+			SetState(InputState::Recognizing);
 		}
 		else
 		{
-			SetState(GestureState::Begin);
+			SetState(InputState::Begin);
 			const List<Touch>& touches=mTouchEventArg.ValidActiveTouches();
 			mPinchEndDistance = mPinchBeginDistance = Point2F::Distance(touches[0].Pos,touches[1].Pos);
 		}
 		break;
-	case GestureState::Begin:
-	case GestureState::Valid:
+	case InputState::Begin:
+	case InputState::Valid:
 		
 		break;
 	default:
@@ -51,16 +53,17 @@ void PinchGestureRecognizer::TouchesBegan(TouchEventArg& e)
 
 void PinchGestureRecognizer::TouchesMoved( TouchEventArg& e )
 {
+	IInputHandler::TouchesMoved(e);
 	switch(mState)
 	{
-	case GestureState::None:
+	case InputState::None:
 		break;
-	case GestureState::Begin:
-	case GestureState::Valid:
+	case InputState::Begin:
+	case InputState::Valid:
 		{
 			mTouchEventArg.MoveValidActiveTouches(e);
 
-			SetState(GestureState::Valid);
+			SetState(InputState::Valid);
 			mPinchBeginDistance = mPinchEndDistance;
 			const List<Touch>& touches=mTouchEventArg.ValidActiveTouches();
 			mPinchEndDistance = Point2F::Distance(touches[0].Pos,touches[1].Pos);
@@ -87,27 +90,28 @@ void PinchGestureRecognizer::TouchesMoved( TouchEventArg& e )
 
 void PinchGestureRecognizer::TouchesEnded( TouchEventArg& e )
 {
+	IInputHandler::TouchesEnded(e);
 	mTouchEventArg.RemoveValidActiveTouches(e);
 	switch(mState)
 	{
-	case GestureState::None:
-	case GestureState::Recognizing:
+	case InputState::None:
+	case InputState::Recognizing:
 		{
-			mState=GestureState::Failed;
+			mState=InputState::Failed;
 			Reset();
 		}
 		break;
-	case GestureState::Begin:
-	case GestureState::Valid:
+	case InputState::Begin:
+	case InputState::Valid:
 		{
 			if (mTouchEventArg.ValidTouchActiveCount() == 0)
 			{
-				SetState(GestureState::End);
+				SetState(InputState::End);
 				Reset();
 			}
 			else if (mTouchEventArg.ValidTouchActiveCount() == 1)
 			{
-				SetState(GestureState::Recognizing);
+				SetState(InputState::Recognizing);
 			}
 		}
 		break;
@@ -120,7 +124,8 @@ void PinchGestureRecognizer::TouchesEnded( TouchEventArg& e )
 
 void PinchGestureRecognizer::TouchesCancelled( TouchEventArg& e )
 {
-	mState=GestureState::None;
+	IInputHandler::TouchesCancelled(e);
+	mState=InputState::None;
 	Reset();
 }
 
@@ -128,7 +133,7 @@ bool PinchGestureRecognizer::IsValid() const
 {
 	switch(mState)
 	{
-	case GestureState::Valid:
+	case InputState::Valid:
 		return true;
 	default:
 		return false;
@@ -137,7 +142,7 @@ bool PinchGestureRecognizer::IsValid() const
 
 void PinchGestureRecognizer::Reset()
 {
-	SetState(GestureState::None);
+	SetState(InputState::None);
 	mPinchEndDistance = 0.f;
 	mPinchBeginDistance = 0.f;
 	mTouchEventArg.Clear();

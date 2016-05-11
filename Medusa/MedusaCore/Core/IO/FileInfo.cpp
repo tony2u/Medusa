@@ -4,57 +4,48 @@
 #include "MedusaCorePreCompiled.h"
 #include "FileInfo.h"
 #include "Core/IO/Path.h"
+#include "FileDefines.h"
 
 MEDUSA_BEGIN;
-
-StringRef FileInfo::ExtractExtension(StringRef file)
-{
-	intp index= file.LastIndexOf('.');
-	if (index>0)
-	{
-		return file.SubString(index);
-	}
-	return StringRef::Empty;
-}
 
 
 FileType FileInfo::ExtractType(StringRef filePath)
 {
-	StringRef ext=ExtractExtension(filePath);
+	StringRef ext = Path::GetExtension(filePath);
 	return CheckFileType(ext);
 }
 
 
-FileInfo::FileInfo(StringRef filePath):mFullPath(filePath)
+FileInfo::FileInfo(StringRef filePath) :mFullPath(filePath)
 {
-	MEDUSA_ASSERT_NOT_EMPTY(mFullPath,"");
+	MEDUSA_ASSERT_NOT_EMPTY(mFullPath, "");
 
-	intp index=mFullPath.LastIndexOf('.');
-	if (index>0)
+	intp index = mFullPath.LastIndexOf('.');
+	if (index > 0)
 	{
-		size_t length=(size_t)(mFullPath.Length()-index);
-		filePath.CopyTo(mFileExtension.MutableBuffer(),mFileExtension.Size(),(size_t)(index),length);
+		size_t length = (size_t)(mFullPath.Length() - index);
+		filePath.CopyTo(mFileExtension.MutableBuffer(), mFileExtension.Size(), (size_t)(index), length);
 		mFileExtension.ForceSetLength(length);
-		mFileType=CheckFileType(mFileExtension);
+		mFileType = CheckFileType(mFileExtension);
 
 
-		intp index2= filePath.LastIndexOfAny(Path::DirectorySeparatorChars);
-		if (index2>0)
+		intp index2 = filePath.LastIndexOfAny(Path::DirectorySeparatorChars);
+		if (index2 > 0)
 		{
-			mFullName= mFullPath.SubString(index2+1);
-			mName=mFullPath.SubString(index2+1,index-index2-1);
-			mDirectoryPath=mFullPath.SubString(0,index2);
+			mFullName = mFullPath.SubString(index2 + 1);
+			mName = mFullPath.SubString(index2 + 1, index - index2 - 1);
+			mDirectoryPath = mFullPath.SubString(0, index2);
 		}
 		else
 		{
-			mFullName=mFullPath;
-			mName=mFullPath;
+			mFullName = mFullPath;
+			mName = mFullPath;
 		}
 	}
 	else
 	{
 		mFileType = FileType::Unknown;
-		mDirectoryPath=mFullPath;
+		mDirectoryPath = mFullPath;
 
 		intp index2 = filePath.LastIndexOfAny(Path::DirectorySeparatorChars);
 		if (index2 > 0)
@@ -75,17 +66,26 @@ FileInfo::~FileInfo(void)
 {
 }
 
-FileType FileInfo::CheckFileType( StringRef fileExt )
+FileType FileInfo::CheckFileType(StringRef fileExt)
 {
+	const static StaticConstructor mStaticConstructor(OnInitFileExtDict);
+
 	if (fileExt.IsEmpty())
 	{
 		return FileType::Unknown;
 	}
 
-	fileExt=fileExt.SubString(1);	//remove '.' at head
+	FileType* fileType = mFileExtDict.TryGet(fileExt);
+	if (fileType != nullptr)
+	{
+		return *fileType;
+	}
 
-	FileType* fileType= mFileExtDict.TryGetValue(fileExt);
-	if (fileType!=nullptr)
+	//find lower
+	StackString<32> upperExt = fileExt;
+	upperExt.ToLower();
+	fileType = mFileExtDict.TryGet(upperExt);
+	if (fileType != nullptr)
 	{
 		return *fileType;
 	}
@@ -99,9 +99,14 @@ bool FileInfo::IsImageFile()const
 	return IsImageFile(mFileType);
 }
 
+bool FileInfo::IsScriptFile()const
+{
+	return IsScriptFile(mFileType);
+}
+
 bool FileInfo::IsImageFile(FileType fileType)
 {
-	switch(fileType)
+	switch (fileType)
 	{
 	case FileType::jpeg:
 	case FileType::png:
@@ -113,82 +118,92 @@ bool FileInfo::IsImageFile(FileType fileType)
 
 	}
 }
-
-
-bool FileInfo::IsShaderFile()const
+bool FileInfo::IsScriptFile(FileType fileType)
 {
-	switch(mFileType)
+	switch (fileType)
+	{
+	case FileType::lua:
+		return true;
+	default:
+		return false;
+
+	}
+}
+
+bool FileInfo::IsShaderFile(FileType fileType)
+{
+	switch (fileType)
 	{
 	case FileType::fsh:
 	case FileType::vsh:
 		return true;
 	default:
 		return false;
+
 	}
 }
 
+
+bool FileInfo::IsShaderFile()const
+{
+	return IsShaderFile(mFileType);
+}
+
+
+
 void FileInfo::OnInitFileExtDict()
 {
-	mFileExtDict.Add("png",FileType::png);
-	mFileExtDict.Add("jpeg",FileType::jpeg);
-	mFileExtDict.Add("gif",FileType::gif);
-	mFileExtDict.Add("pvr",FileType::pvr);
+	Extensions.SetAll(nullptr);
+	Extensions[(uint)FileType::png] = FileExtensions::png;
+	Extensions[(uint)FileType::jpeg] = FileExtensions::jpeg;
+	Extensions[(uint)FileType::gif] = FileExtensions::gif;
+	Extensions[(uint)FileType::pvr] = FileExtensions::pvr;
 
-	mFileExtDict.Add("pcm", FileType::pcm);
-	mFileExtDict.Add("wav", FileType::wav);
-	mFileExtDict.Add("ogg", FileType::ogg);
+	Extensions[(uint)FileType::pcm] = FileExtensions::pcm;
+	Extensions[(uint)FileType::wav] = FileExtensions::wav;
+	Extensions[(uint)FileType::ogg] = FileExtensions::ogg;
 
-	mFileExtDict.Add("fsh",FileType::fsh);
-	mFileExtDict.Add("vsh",FileType::vsh);
-	mFileExtDict.Add("pod",FileType::pod);
-	mFileExtDict.Add("pfx",FileType::pfx);
-	mFileExtDict.Add("ttf",FileType::ttf);
-	mFileExtDict.Add("fnt",FileType::fnt);
-	mFileExtDict.Add("json", FileType::json);
-	mFileExtDict.Add("xml", FileType::xml);
-	mFileExtDict.Add("bin", FileType::bin);
-	mFileExtDict.Add("atlas", FileType::atlas);
-	mFileExtDict.Add("mpf", FileType::mpf);
+	Extensions[(uint)FileType::fsh] = FileExtensions::fsh;
+	Extensions[(uint)FileType::vsh] = FileExtensions::vsh;
+	Extensions[(uint)FileType::pod] = FileExtensions::pod;
+	Extensions[(uint)FileType::pfx] = FileExtensions::pfx;
+	Extensions[(uint)FileType::ttf] = FileExtensions::ttf;
+	Extensions[(uint)FileType::fnt] = FileExtensions::fnt;
+	Extensions[(uint)FileType::json] = FileExtensions::json;
+	Extensions[(uint)FileType::xml] = FileExtensions::xml;
+	Extensions[(uint)FileType::bin] = FileExtensions::bin;
+	Extensions[(uint)FileType::atlas] = FileExtensions::atlas;
+	Extensions[(uint)FileType::zip] = FileExtensions::zip;
+	Extensions[(uint)FileType::tmx] = FileExtensions::tmx;
+	Extensions[(uint)FileType::xaml] = FileExtensions::xaml;
+	Extensions[(uint)FileType::plist] = FileExtensions::plist;
+	Extensions[(uint)FileType::bplist] = FileExtensions::bplist;
+	Extensions[(uint)FileType::matlas] = FileExtensions::matlas;
+	Extensions[(uint)FileType::mpk] = FileExtensions::mpk;
+	Extensions[(uint)FileType::mp] = FileExtensions::mp;
+	Extensions[(uint)FileType::mpb] = FileExtensions::mpb;
+	Extensions[(uint)FileType::csb] = FileExtensions::csb;
+	Extensions[(uint)FileType::lua] = FileExtensions::lua;
 
+	FOR_EACH_SIZE(i, Extensions.Size)
+	{
+		StringRef ext = Extensions[i];
+		if (ext != nullptr)
+		{
+			FileType type = (FileType)i;
+			mFileExtDict.Add(ext, type);
+		}
+	}
 
-	mFileExtDict.Add("zip", FileType::zip);
-	mFileExtDict.Add("mpk", FileType::mpk);
-
-	//others
-	mFileExtDict.Add("jpg",FileType::jpeg);
-
-	//Uppercase
-	mFileExtDict.Add("PNG", FileType::png);
-	mFileExtDict.Add("JPEG", FileType::jpeg);
-	mFileExtDict.Add("GIF", FileType::gif);
-	mFileExtDict.Add("PVR", FileType::pvr);
-
-	mFileExtDict.Add("PCM", FileType::pcm);
-	mFileExtDict.Add("WAV", FileType::wav);
-	mFileExtDict.Add("OGG", FileType::ogg);
-
-	mFileExtDict.Add("FSH", FileType::fsh);
-	mFileExtDict.Add("VSH", FileType::vsh);
-	mFileExtDict.Add("POD", FileType::pod);
-	mFileExtDict.Add("PFX", FileType::pfx);
-	mFileExtDict.Add("TTF", FileType::ttf);
-	mFileExtDict.Add("FNT", FileType::fnt);
-	mFileExtDict.Add("JSON", FileType::json);
-	mFileExtDict.Add("XML", FileType::xml);
-	mFileExtDict.Add("BIN", FileType::bin);
-	mFileExtDict.Add("ATLAS", FileType::atlas);
-	mFileExtDict.Add("MPF", FileType::mpf);
-
-	mFileExtDict.Add("ZIP", FileType::zip);
-	mFileExtDict.Add("MPK", FileType::mpk);
-
-	//others
-	mFileExtDict.Add("JPG", FileType::jpeg);
+	//alias
+	mFileExtDict.Add(FileExtensions::jpg, FileType::jpeg);
 
 }
 
-Dictionary<StringRef,FileType> FileInfo::mFileExtDict;
+Array<StringRef, (uint)FileType::Count> FileInfo::Extensions;
 
-MEDUSA_IMPLEMENT_STATIC_CONSTRUCTOR(FileInfo,OnInitFileExtDict);
+Dictionary<StringRef, FileType> FileInfo::mFileExtDict;
+
+//MEDUSA_IMPLEMENT_STATIC_CONSTRUCTOR(FileInfo, OnInitFileExtDict);
 
 MEDUSA_END;

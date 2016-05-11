@@ -60,7 +60,7 @@ size_t LZMADecoder::GuessResultSize(const IStream& input) const
 }
 
 
-size_t LZMADecoder::OnCode(const MemoryByteData& input, MemoryByteData& output) const
+size_t LZMADecoder::OnCode(const MemoryData& input, MemoryData& output) const
 {
 	RETURN_ZERO_IF_EMPTY(input);
 	const byte* inBuffer = input.Data();

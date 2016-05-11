@@ -28,7 +28,7 @@ public:
 //SIREN_HEADER_METHOD_END
 	bool Initialize(const FileIdRef& fileId, uint format = 0);
 
-	virtual bool LoadFromData(StringRef path, const MemoryByteData& data, uint format = 0)override;
+	virtual bool LoadFromData(const FileIdRef& fileId, const MemoryData& data, uint format = 0)override;
 	virtual void Unload()override;
 
 	HeapString GetRandomName3(uint seed = 0)const;
@@ -43,8 +43,9 @@ protected:
 //SIREN_HEADER_SCHEMA_BEGIN
 struct RandomNameConfig::Schema
 {
-	SIREN_PROPERTY_LIST(0, 0, Required, RandomNameConfig, RandomNameConfigItem, mItems);
-	SIREN_PROPERTIES_1(void,RandomNameConfig);
-};//SIREN_HEADER_SCHEMA_END
+	SIREN_FIELD_LIST(0, 0, Required, RandomNameConfig, RandomNameConfigItem, mItems);
+	SIREN_FIELDS_1(void,RandomNameConfig);
+};
+//SIREN_HEADER_SCHEMA_END
 
 MEDUSA_END;

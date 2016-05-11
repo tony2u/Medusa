@@ -26,7 +26,7 @@ public:
 		mWorldMatrix=mMatrix.Value();
 		mMeshModelNode.UpdateWorldMatrixRecursively(mWorldMatrix.OldValue());
 	}
-	virtual INode* CreateCloneInstance()
+	virtual INode* Instantiate(InstantiateMode mode = InstantiateMode::None)const
 	{
 		INode* result=mMeshModelNode.Mesh().CreateCloneInstance();
 		if (result!=nullptr)
@@ -41,11 +41,7 @@ public:
 		}
 		return result;
 	}
-	virtual INode* CreateReferenceInstance()
-	{
-		//TODO: add ref
-		return nullptr;
-	}
+	
 protected:
 	MeshModelNode<TMesh> mMeshModelNode;
 	TMaterial* mMaterial;

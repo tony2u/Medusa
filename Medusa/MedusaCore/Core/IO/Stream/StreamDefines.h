@@ -36,6 +36,7 @@ enum class StreamType
 {
 	File,
 	Memory,
+	String,
 	Span,
 	Hash,
 	Buffer,

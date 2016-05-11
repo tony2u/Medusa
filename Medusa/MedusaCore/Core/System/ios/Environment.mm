@@ -84,11 +84,13 @@ uint Environment::GetCPUCount() const
 	//return get_nprocs();
 }
 
-Size2U Environment::ScreenSize()const
+bool Environment::GetScreenSize(uint& outWidth, uint& outHeight)const
 {
     float scale=[[UIScreen mainScreen] scale];
 	auto size= [[UIScreen mainScreen] bounds].size;
-	return Size2U((uint)(size.width*scale),(uint)(size.height*scale));
+	outWidth=(uint)(size.width*scale);
+	outHeight=(uint)(size.height*scale);
+	return true;
 }
 
 bool Environment::RequireFullScreen() const

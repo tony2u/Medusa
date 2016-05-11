@@ -14,12 +14,15 @@
 #include "Core/IO/FileId.h"
 #include "Core/IO/Map/FileMapTagItem.h"
 #include "Core/IO/Map/FileMapOrderItem.h"
+#include "Core/IO/File.h"
 
 
 MEDUSA_BEGIN;
 
 FileSystem::FileSystem()
+	:IModule("FileSystem")
 {
+	this->Retain();		//retain self
 	mCurrentTag = PublishTarget::MatchAll;
 
 	//read only memory package
@@ -36,78 +39,64 @@ FileSystem::~FileSystem()
 
 bool FileSystem::Uninitialize()
 {
+	
+	return true;
+}
+
+bool FileSystem::OnLoad(IEventArg& e /*= IEventArg::Empty*/)
+{
+	return Initialize(mCoders, mCoderKey);
+}
+
+bool FileSystem::OnUnload(IEventArg& e /*= IEventArg::Empty*/)
+{
 	SAFE_DELETE_DICTIONARY_VALUE(mTagItems);
 	SAFE_DELETE_COLLECTION(mPackages);
 
 	mMemoryPackage = nullptr;
+	mReadDirPackage = nullptr;
+	mWriteDirPackage = nullptr;
+
 	mPackages.Clear();
 	mCurrentTag = PublishTarget::MatchAll;
 	mSortedTagItems.Clear();
 	mValidTagList.Clear();
+
 	return true;
 }
 
-bool FileSystem::Initialize(CoderList coder/*=0*/, const MemoryByteData& key /*= MemoryByteData::Empty*/)
+bool FileSystem::OnReload(IEventArg& e /*= IEventArg::Empty*/)
 {
-	return Initialize(coder, coder,key);
+	return true;
 }
 
-bool FileSystem::Initialize(CoderList readonlyPathCoder, CoderList writablePathCoder, const MemoryByteData& key /*= MemoryByteData::Empty*/)
+bool FileSystem::Initialize()
+{
+	return Initialize(mCoders, mCoderKey);
+}
+
+bool FileSystem::Initialize(CoderList coder, const MemoryData& key)
+{
+	return Initialize(coder, coder, key);
+}
+
+
+bool FileSystem::Initialize(CoderList readonlyPathCoder, CoderList writablePathCoder, const MemoryData& key /*= MemoryByteData::Empty*/)
 {
 	//read only path
 	StringRef readonlyPath = System::Instance().ReadonlyPath();
-
-	IPackage* readonlyDirectoryPackage = new DirectoryPackage(readonlyPath, PackagePriority::App, 0, true);
-	readonlyDirectoryPackage->SetKey(key);
-	readonlyDirectoryPackage->SetFlags(PackageFlags::Readonly);
-	readonlyDirectoryPackage->SetCoders(readonlyPathCoder);
-	readonlyDirectoryPackage->Initialize();
-	mPackages.Add(readonlyDirectoryPackage);
-
-	//read only package
-	List<HeapString> outFiles;
-	Directory::GetFiles(readonlyPath, outFiles, true);
-	for (HeapString& file : outFiles)
-	{
-		FileType fileType = FileInfo::ExtractType(file);
-		if (PackageFactory::IsPackage(fileType))
-		{
-			IPackage* package = PackageFactory::Create(fileType, file, PackagePriority::App, 0);
-			package->SetKey(key);
-			package->Initialize();
-			mPackages.Add(package); 
-		}
-	}
+	mReadDirPackage = AddDirectory(readonlyPath, PackageFlags::Readonly, PackagePriority::App, readonlyPathCoder, key, false);
 
 	//writable path
 	StringRef writablePath = System::Instance().WritablePath();
-	IPackage* writableDirectoryPackage = new DirectoryPackage(writablePath, PackagePriority::Downloaded, 0, true);
-	writableDirectoryPackage->SetFlags(PackageFlags::None);
-	writableDirectoryPackage->SetCoders(writablePathCoder);
-	writableDirectoryPackage->SetKey(key);
-	writableDirectoryPackage->Initialize();
-	mPackages.Add(writableDirectoryPackage);
-	//writable package
-
-	outFiles.Clear();
-	Directory::GetFiles(writablePath, outFiles, true);
-	for (HeapString& file : outFiles)
-	{
-		FileType fileType = FileInfo::ExtractType(file);
-		if (PackageFactory::IsPackage(fileType))
-		{
-			IPackage* package = PackageFactory::Create(fileType, file, PackagePriority::Downloaded, 0);
-			package->SetKey(key);
-			package->Initialize();
-			mPackages.Add(package);
-		}
-	}
+	mWriteDirPackage = AddDirectory(writablePath, PackageFlags::None, PackagePriority::Downloaded, writablePathCoder, key, false);
 
 	ReloadTagItems();
 	ApplyTagHelper(PublishTarget::MatchAll);
 
 	return true;
 }
+
 
 #pragma region Package
 
@@ -133,6 +122,48 @@ IPackage* FileSystem::FindPackageMutable(const StringRef& name)
 		}
 	}
 	return nullptr;
+}
+
+
+DirectoryPackage* FileSystem::AddDirectory(const StringRef& path,
+	PackageFlags flags /*= PackageFlags::Readonly*/,
+	PackagePriority priority /*= PackagePriority::App*/,
+	CoderList coder/*=0*/,
+	const MemoryData& key /*= MemoryByteData::Empty*/,
+	bool reloadTagItems /*= true*/)
+{
+	DirectoryPackage* package = new DirectoryPackage(path, priority, 0, true);
+	package->SetKey(key);
+	package->SetFlags(flags);
+	package->SetCoders(coder);
+	package->Initialize();
+	mPackages.Add(package);
+
+	List<HeapString> outFiles;
+	Directory::GetFiles(path, outFiles, true);
+	for (HeapString& file : outFiles)
+	{
+		FileType fileType = FileInfo::ExtractType(file);
+		if (PackageFactory::IsPackage(fileType))
+		{
+			IPackage* childPackage = PackageFactory::Create(fileType, file, priority, 0);
+			childPackage->SetKey(key);
+			if (childPackage->Initialize())
+			{
+				mPackages.Add(childPackage);
+			}
+			else
+			{
+				SAFE_DELETE(childPackage);
+			}
+		}
+	}
+
+	if (reloadTagItems)
+	{
+		ReloadTagItems();
+	}
+	return package;
 }
 
 void FileSystem::AddPackage(IPackage* package)
@@ -169,6 +200,8 @@ void FileSystem::ApplyTag(const PublishTarget& tag)
 	ApplyTagHelper(tag);
 }
 
+
+
 void FileSystem::ApplyTagHelper(const PublishTarget& tag)
 {
 	mCurrentTag = tag;
@@ -188,7 +221,7 @@ void FileSystem::ApplyTagHelper(const PublishTarget& tag)
 #pragma endregion Package
 
 
-const FileEntry* FileSystem::FindFile(const FileIdRef& fileId) const
+const FileEntry* FileSystem::Find(const FileIdRef& fileId) const
 {
 	for (const auto* tagItem : mValidTagList)
 	{
@@ -201,7 +234,7 @@ const FileEntry* FileSystem::FindFile(const FileIdRef& fileId) const
 	return nullptr;
 }
 
-FileEntry* FileSystem::FindFile(const FileIdRef& fileId)
+FileEntry* FileSystem::Find(const FileIdRef& fileId)
 {
 	for (auto* tagItem : mValidTagList)
 	{
@@ -214,35 +247,157 @@ FileEntry* FileSystem::FindFile(const FileIdRef& fileId)
 	return nullptr;
 }
 
-const IStream* FileSystem::ReadFile(const FileIdRef& fileId, FileDataType dataType /*= FileDataType::Binary*/) const
+bool FileSystem::AssertExists(const FileIdRef& fileId) const
 {
-	auto fileEntry = FindFile(fileId);
+	if (Find(fileId) != nullptr)
+	{
+		return true;
+	}
+
+	Log::AssertFailedFormat("Cannot find {}", fileId);
+	return false;
+}
+
+FileIdRef FileSystem::ExistsOr(const FileIdRef& fileId, const FileIdRef& optional) const
+{
+	return Exists(fileId) ? fileId : optional;
+}
+
+StringRef FileSystem::ExistsOr(const StringRef& fileId, const StringRef& optional) const
+{
+	return Exists(fileId) ? fileId : optional;
+}
+
+
+const IStream* FileSystem::Read(const FileIdRef& fileId, FileDataType dataType /*= FileDataType::Binary*/) const
+{
+	if (fileId.IsPath())
+	{
+		std::unique_ptr<FileStream> steam(new FileStream());
+		HeapString path = System::Instance().GetWritablePath(fileId.Name);
+		if (steam->Open(path, FileOpenMode::ReadOnly, dataType))
+		{
+			return steam.release();
+		}
+
+		path = System::Instance().GetReadonlyPath(fileId.Name);
+		if (steam->Open(path, FileOpenMode::ReadOnly, dataType))
+		{
+			return steam.release();
+		}
+
+
+		return nullptr;
+	}
+
+	auto fileEntry = Find(fileId);
 	RETURN_NULL_IF_NULL(fileEntry);
 	return fileEntry->Read(dataType);
 }
 
-MemoryByteData FileSystem::ReadAllData(const FileIdRef& fileId, DataReadingMode mode /*= DataReadingMode::AlwaysCopy*/) const
+MemoryData FileSystem::ReadAllData(const FileIdRef& fileId, DataReadingMode mode /*= DataReadingMode::AlwaysCopy*/) const
 {
-	auto fileEntry = FindFile(fileId);
+	if (fileId.IsPath())
+	{
+		HeapString path = System::Instance().GetWritablePath(fileId.Name);
+		MemoryData data = File::ReadAllData(path);
+		if (data.IsValid())
+		{
+			return data;
+		}
+
+		path = System::Instance().GetReadonlyPath(fileId.Name);
+		return File::ReadAllData(path);
+	}
+
+	auto fileEntry = Find(fileId);
 	if (fileEntry != nullptr)
 	{
 		return ReadAllData(*fileEntry, mode);
 	}
 
-	return MemoryByteData::Empty;
+	return MemoryData::Empty;
 }
 
 
-MemoryByteData FileSystem::ReadAllData(const FileEntry& fileEntry, DataReadingMode mode /*= DataReadingMode::AlwaysCopy*/) const
+MemoryData FileSystem::ReadAllData(const FileEntry& fileEntry, DataReadingMode mode /*= DataReadingMode::AlwaysCopy*/) const
 {
 	return fileEntry.ReadAllData(mode);
 }
 
-MemoryByteData FileSystem::ReadAllData(const FileMapOrderItem& orderItem, DataReadingMode mode /*= DataReadingMode::AlwaysCopy*/) const
+MemoryData FileSystem::ReadAllData(const FileMapOrderItem& orderItem, DataReadingMode mode /*= DataReadingMode::AlwaysCopy*/) const
 {
 	return orderItem.GetFileEntry()->ReadAllData(mode);
 }
 
+
+HeapString FileSystem::ReadAllText(const FileIdRef& fileId) const
+{
+	if (fileId.IsPath())
+	{
+		HeapString path = System::Instance().GetWritablePath(fileId.Name);
+		HeapString str = File::ReadAllText(path);
+		if (!str.IsEmpty())
+		{
+			return str;
+		}
+
+		path = System::Instance().GetReadonlyPath(fileId.Name);
+		return File::ReadAllText(path);
+	}
+
+
+	auto data = ReadAllData(fileId);
+	data.ForceRetain();	//avoid to release after transfer to str
+	HeapString str(data.Cast<char>());
+	return str;
+}
+
+
+HeapString FileSystem::ReadAllText(const FileEntry& fileEntry) const
+{
+	auto data = ReadAllData(fileEntry);
+	data.ForceRetain();	//avoid to release after transfer to str
+	HeapString str(data.Cast<char>());
+	return str;
+}
+
+HeapString FileSystem::ReadAllText(const FileMapOrderItem& orderItem) const
+{
+	auto data = ReadAllData(orderItem);
+	data.ForceRetain();	//avoid to release after transfer to str
+	HeapString str(data.Cast<char>());
+	return str;
+}
+
+
+HeapString FileSystem::GetRealPath(const FileIdRef& fileId) const
+{
+	if (fileId.IsPath())
+	{
+		HeapString path = System::Instance().GetWritablePath(fileId.Name);
+		if (File::Exists(path))
+		{
+			return path;
+		}
+
+		path = System::Instance().GetReadonlyPath(fileId.Name);
+		if (File::Exists(path))
+		{
+			return path;
+		}
+
+		return HeapString::Empty;
+	}
+
+	auto fileEntry = Find(fileId);
+	if (fileEntry != nullptr&&fileEntry->FirstBlockId() == Math::UIntMaxValue&&fileEntry->Storage()->Coders() == 0)
+	{
+		return fileEntry->Path();
+	}
+
+	return HeapString::Empty;
+}
 
 #pragma region Map
 
@@ -309,17 +464,17 @@ bool FileSystem::ContainsOrderItem(const FileIdRef& fileId) const
 
 const FileMapTagItem* FileSystem::FindTagItem(const PublishTarget& tag) const
 {
-	return mTagItems.TryGetValueWithFailed(tag.Tag(), nullptr);
+	return mTagItems.GetOptional(tag.Tag(), nullptr);
 }
 
 FileMapTagItem* FileSystem::FindTagItem(const PublishTarget& tag)
 {
-	return mTagItems.TryGetValueWithFailed(tag.Tag(), nullptr);
+	return mTagItems.GetOptional(tag.Tag(), nullptr);
 }
 
 FileMapTagItem* FileSystem::FindOrCreateTagItem(const PublishTarget& tag)
 {
-	FileMapTagItem* item = mTagItems.TryGetValueWithFailed(tag.Tag(), nullptr);
+	FileMapTagItem* item = mTagItems.GetOptional(tag.Tag(), nullptr);
 	if (item == nullptr)
 	{
 		item = new FileMapTagItem(tag);
@@ -364,6 +519,77 @@ bool FileSystem::TryGetOrderItems(StringRef name, List<FileMapOrderItem*>& outOr
 	return false;
 }
 
+
+bool FileSystem::TryGetOrderItemsWithExtension(StringRef ext, List<const FileMapOrderItem*>& outOrderItems) const
+{
+	for (const auto* tagItem : mValidTagList)
+	{
+		for (const auto& nameItemPair : tagItem->Items())
+		{
+			const FileMapNameItem* nameItem = nameItemPair.Value;
+			if (nameItem->Name().EndWith(ext))
+			{
+				for (auto& orderItem : nameItem->Items())
+				{
+					outOrderItems.Add(orderItem.Value);
+				}
+			}
+		}
+	}
+	return true;
+}
+
+bool FileSystem::TryGetOrderItemsWithExtension(StringRef ext, List<FileMapOrderItem*>& outOrderItems)
+{
+	for (const auto* tagItem : mValidTagList)
+	{
+		for (auto& nameItemPair : tagItem->Items())
+		{
+			FileMapNameItem* nameItem = nameItemPair.Value;
+			if (nameItem->Name().EndWith(ext))
+			{
+				for (auto& orderItem : nameItem->Items())
+				{
+					outOrderItems.Add(orderItem.Value);
+				}
+			}
+		}
+	}
+	return true;
+}
+
+bool FileSystem::TryGetNameItemsWithExtension(StringRef ext, List<const FileMapNameItem*>& outItems)const
+{
+	for (const auto* tagItem : mValidTagList)
+	{
+		for (const auto& nameItemPair : tagItem->Items())
+		{
+			const FileMapNameItem* nameItem = nameItemPair.Value;
+			if (nameItem->Name().EndWith(ext))
+			{
+				outItems.Add(nameItem);
+			}
+		}
+	}
+	return true;
+}
+
+bool FileSystem::TryGetNameItemsWithExtension(StringRef ext, List<FileMapNameItem*>& outItems)
+{
+	for (const auto* tagItem : mValidTagList)
+	{
+		for (auto& nameItemPair : tagItem->Items())
+		{
+			FileMapNameItem* nameItem = nameItemPair.Value;
+			if (nameItem->Name().EndWith(ext))
+			{
+				outItems.Add(nameItem);
+			}
+		}
+	}
+	return true;
+}
+
 void FileSystem::ReloadTagItems()
 {
 	SAFE_DELETE_DICTIONARY_VALUE(mTagItems);
@@ -385,11 +611,10 @@ void FileSystem::ReloadTagItems()
 }
 
 
-
-FileMapOrderItem* FileSystem::MapFile(FileEntry& fileEntry, bool tryReload/*=false*/)
+FileMapOrderItem* FileSystem::MapFileReference(const StringRef& fileName, FileEntry& targetFileEntry, void* region /*= nullptr*/, bool tryReload /*= false*/)
 {
-	FileId fileId = FileId::ParseFrom(fileEntry.Name());
-	PublishTarget tag = PublishTarget::Parse(fileEntry.Name());
+	FileId fileId = FileId::ParseFrom(fileName);
+	PublishTarget tag = PublishTarget::Parse(fileName);
 	bool isTagChanged = false;
 	auto* tagItem = FindTagItem(tag);
 	if (tagItem == nullptr)
@@ -401,13 +626,18 @@ FileMapOrderItem* FileSystem::MapFile(FileEntry& fileEntry, bool tryReload/*=fal
 	}
 
 	auto orderItem = tagItem->FindOrCreateOrderItem(fileId);
-	orderItem->AddFileEntry(fileEntry);
+	orderItem->AddFileEntry(targetFileEntry, region);
 
 	if (tryReload&&isTagChanged)
 	{
 		ApplyTagHelper(mCurrentTag);
 	}
 	return orderItem;
+}
+
+FileMapOrderItem* FileSystem::MapFile(FileEntry& fileEntry, bool tryReload/*=false*/)
+{
+	return MapFileReference(fileEntry.Name(), fileEntry, nullptr, tryReload);
 }
 
 bool FileSystem::UnmapFile(const FileEntry& fileEntry, bool tryReload/*=false*/)

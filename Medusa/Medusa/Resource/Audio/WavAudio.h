@@ -14,7 +14,7 @@ public:
 	virtual AudioFileType AudioType()const override { return AudioFileType::wav; }
 
 	static WavAudio* CreateFromFile(const FileIdRef& fileId);
-	static WavAudio* CreateFromMemory(const FileIdRef& fileId,MemoryByteData data);
+	static WavAudio* CreateFromMemory(const FileIdRef& fileId,MemoryData data);
 
 };
 

@@ -3,8 +3,8 @@
 // license that can be found in the LICENSE file.
 #pragma once
 #include "MedusaPreDeclares.h"
-#include "Core/Geometry/Scale3.h"
-#include "Core/Geometry/Point3.h"
+#include "Geometry/Scale3.h"
+#include "Geometry/Point3.h"
 #include "PODAnimiationFlags.h"
 
 MEDUSA_BEGIN;

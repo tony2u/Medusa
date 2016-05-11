@@ -28,8 +28,8 @@ public:
 
 	virtual bool Seek(intp offset, SeekOrigin direction = SeekOrigin::Current)const override;
 
-	virtual size_t ReadDataTo(MemoryByteData& outData, DataReadingMode mode = DataReadingMode::AlwaysCopy)const override;
-	virtual size_t WriteData(const MemoryByteData& data, DataReadingMode mode = DataReadingMode::AlwaysCopy) override;
+	virtual size_t ReadDataTo(MemoryData& outData, DataReadingMode mode = DataReadingMode::AlwaysCopy)const override;
+	virtual size_t WriteData(const MemoryData& data, DataReadingMode mode = DataReadingMode::AlwaysCopy) override;
 
 	virtual int PeekChar()const override;
 	virtual int PeekWChar()const override;
@@ -51,7 +51,7 @@ public:
 	virtual StreamDataOperation Operations()const override { return StreamDataOperation::Write; }
 protected:
 	size_t WriteCurrentBlock(bool force=false);
-	virtual size_t WriteBlock(uint blockIndex,const MemoryByteData& data)=0;
+	virtual size_t WriteBlock(uint blockIndex,const MemoryData& data)=0;
 protected:
 	IStream* mSourceStream;
 	mutable MemoryStream mBuffer;

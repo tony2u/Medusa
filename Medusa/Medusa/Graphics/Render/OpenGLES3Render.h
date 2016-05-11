@@ -27,13 +27,13 @@ public:
 
 #pragma region Texture
 public:
-	virtual void LoadTexture3D(GraphicsTextureTarget textureTarget, int level, GraphicsInternalFormat internalformat, const Size3U& size, int border, GraphicsPixelFormat format, GraphicsPixelDataType type, const void *pixels)const override;
-	virtual void LoadSubTexture3D(GraphicsTextureTarget textureTarget, int level, const CubeI& rect, GraphicsPixelFormat format, GraphicsPixelDataType type, const void *pixels)const override;
+	virtual void LoadTexture3D(GraphicsTextureTarget textureTarget, int level, PixelType pixelType, const Size3U& size, int border, const void *pixels)const override;
+	virtual void LoadSubTexture3D(GraphicsTextureTarget textureTarget, int level, const CubeI& rect, PixelType pixelType, const void *pixels)const override;
 	virtual void CopySubTexture3D(GraphicsTextureTarget textureTarget, int level, const Point3I& offset, const Rect2I& rect)const override;
-	virtual void LoadCompressedTexture3D(GraphicsTextureTarget textureTarget, int level, GraphicsInternalFormat internalformat, const Size3U& size, int border, uint imageSize, const void *pixels)const override;
-	virtual void LoadCompressedSubTexture3D(GraphicsTextureTarget textureTarget, int level, GraphicsInternalFormat internalformat, const CubeI& rect, uint imageSize, const void *pixels)const override;
-	virtual void SetTextureStorage2D(GraphicsTextureTarget textureTarget, uint level, GraphicsInternalFormat internalformat, const Size2U& size)const override;
-	virtual void SetTextureStorage3D(GraphicsTextureTarget textureTarget, uint level, GraphicsInternalFormat internalformat, const Size3U& size)const override;
+	virtual void LoadCompressedTexture3D(GraphicsTextureTarget textureTarget, int level, PixelType pixelType, const Size3U& size, int border, uint imageSize, const void *pixels)const override;
+	virtual void LoadCompressedSubTexture3D(GraphicsTextureTarget textureTarget, int level, PixelType pixelType, const CubeI& rect, uint imageSize, const void *pixels)const override;
+	virtual void SetTextureStorage2D(GraphicsTextureTarget textureTarget, uint level, PixelType pixelType, const Size2U& size)const override;
+	virtual void SetTextureStorage3D(GraphicsTextureTarget textureTarget, uint level, PixelType pixelType, const Size3U& size)const override;
 #pragma endregion Texture
 
 #pragma region Query

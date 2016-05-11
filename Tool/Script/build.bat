@@ -1,1 +1,0 @@
-AngelScriptBuilder config.cfg UI Bin Source\*.as

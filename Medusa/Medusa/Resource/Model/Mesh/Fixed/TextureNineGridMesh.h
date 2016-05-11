@@ -4,13 +4,13 @@
 #pragma once
 #include "MedusaPreDeclares.h"
 #include "Resource/Model/Mesh/IMesh.h"
-#include "Core/Geometry/Point2.h"
-#include "Core/Geometry/Point3.h"
-#include "Core/Geometry/Color4.h"
+#include "Geometry/Point2.h"
+#include "Geometry/Point3.h"
+#include "Geometry/Color4.h"
 #include "Graphics/GraphicsTypes.h"
 #include "Core/Collection/Array.h"
-#include "Core/Geometry/Rect2.h"
-#include "Core/Geometry/Thickness.h"
+#include "Geometry/Rect2.h"
+#include "Geometry/Thickness.h"
 
 
 MEDUSA_BEGIN;
@@ -45,8 +45,11 @@ public:
 	void SetColor(uint i, const Color4F& val);
 	void SetColorAll(const Color4F& val);
 
-	void Initialize(const Size2F& targetSize, const Size2F& textureSize, const ThicknessF& padding, const Rect2F& textureRect = Rect2F::Zero, const Color4F& color = Color4F::White);
-	void UpdateToNewTargetSize(const Size2F& targetSize, const Size2F& textureSize);
+	void Initialize(const Size2F& targetSize, const Size2F& textureSize, const ThicknessF& padding, const Rect2F& textureRect = Rect2F::Zero, RotateDirection rotation = RotateDirection::None, const Color4F& color = Color4F::White);
+
+	void UpdateToNewTargetSize(const Size2F& targetSize);
+	void UpdateToNewTextureSize(const Size2F& textureSize, RotateDirection rotation = RotateDirection::None);
+	
 
 
 

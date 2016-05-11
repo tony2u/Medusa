@@ -64,11 +64,11 @@ protected:
 
 struct Version::Schema
 {
-	SIREN_PROPERTY(0, 0, Required, Version, uint, mMajor);
-	SIREN_PROPERTY(1, 1, Required, Version, uint, mMinor);
-	SIREN_PROPERTY(2, 2, Optional, Version, uint, mRevision);
-	SIREN_PROPERTY(3, 3, Optional, Version, uint, mBuild);
-	SIREN_PROPERTIES_4(void, Version);
+	SIREN_FIELD(0, 0, Required, Version, uint, mMajor);
+	SIREN_FIELD(1, 1, Required, Version, uint, mMinor);
+	SIREN_FIELD(2, 2, Optional, Version, uint, mRevision);
+	SIREN_FIELD(3, 3, Optional, Version, uint, mBuild);
+	SIREN_FIELDS_4(void, Version);
 };
 
 

@@ -25,6 +25,6 @@ bool Base3DScene::Initialize()
 	return true;
 }
 
-MEDUSA_IMPLEMENT_RTTI(Base3DScene, IScene);
+MEDUSA_IMPLEMENT_SCENE(Base3DScene, IScene,StringRef::Empty, StringRef::Empty);
 
 MEDUSA_END;

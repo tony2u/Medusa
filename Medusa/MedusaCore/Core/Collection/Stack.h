@@ -242,20 +242,27 @@ public:
 		this->mCount = mItems.Count();
 	}
 
-	TReferenceType Pop()
+	T PopCopy()
 	{
 		MEDUSA_ASSERT_NOT_EMPTY(mItems, "Empty");
-		TReferenceType last = mItems.Last();
+		T last = mItems.Last();
 		mItems.RemoveLast();
 		this->mCount = mItems.Count();
 		return last;
+	}
+
+	void Pop()
+	{
+		MEDUSA_ASSERT_NOT_EMPTY(mItems, "Empty");
+		mItems.RemoveLast();
+		this->mCount = mItems.Count();
 	}
 
 	bool Replace(TParameterType val, TReferenceType outOriginal)
 	{
 		if (!mItems.IsEmpty())
 		{
-			outOriginal = Pop();
+			outOriginal = PopCopy();
 			Push(val);
 			return true;
 		}
@@ -285,7 +292,7 @@ public:
 		{
 			return val;
 		}
-		TReferenceType last = mItems.Last();
+		T last = mItems.Last();
 		mItems.RemoveLast();
 		this->mCount = mItems.Count();
 		return last;
@@ -337,6 +344,14 @@ public:
 		mItems.RemoveIndexes(indexes);
 		this->mCount = mItems.Count();
 	}
+
+	TReferenceType NewAdd()
+	{
+		TReferenceType item = mItems.NewAdd();
+		this->mCount = mItems.Count();
+		return item;
+	}
+
 
 protected:
 	ContainerType mItems;

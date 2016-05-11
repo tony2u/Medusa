@@ -5,10 +5,10 @@
 #include "MedusaPreDeclares.h"
 #include "Core/Collection/List.h"
 #include "Core/Pattern/VaryValue.h"
-#include "Core/Geometry/Color4.h"
+#include "Geometry/Color4.h"
 #include "Core/Pattern/VaryValue.h"
 #include "Node/INode.h"
-#include "Core/Geometry/Point3.h"
+#include "Geometry/Point3.h"
 
 MEDUSA_BEGIN;
 

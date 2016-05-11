@@ -6,14 +6,14 @@
 
 USING_MEDUSA;
 
-class HelloWorldScene:public Base2DScene
+class HelloWorldScene:public UIScene
 {
-	MEDUSA_DECLARE_SCENE;
+	MEDUSA_DECLARE_SCENE(HelloWorldScene);
 public:
 	HelloWorldScene(StringRef name=StringRef::Empty, const IEventArg& e = IEventArg::Empty);
 	virtual ~HelloWorldScene(void);
 	virtual bool Initialize();
-	virtual bool Enter();
+	virtual bool OnEnter();
 
 };
 

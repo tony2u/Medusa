@@ -79,7 +79,7 @@ void Log::EnableLogHeader(bool val)
 
 void Log::Info(const char* inString)
 {
-	RETURN_IF_FALSE(mLevel <= Level::Info);
+	RETURN_IF_FALSE(mLevel <= LogLevel::Info);
 	RETURN_IF_NULL(inString);
 
 	FOR_EACH_COLLECTION(i, mLoggers)
@@ -91,7 +91,7 @@ void Log::Info(const char* inString)
 
 void Log::Error(const char* inString)
 {
-	RETURN_IF_FALSE(mLevel <= Level::Error);
+	RETURN_IF_FALSE(mLevel <= LogLevel::Error);
 	RETURN_IF_NULL(inString);
 
 	FOR_EACH_COLLECTION(i, mLoggers)
@@ -105,7 +105,7 @@ void Log::Error(const char* inString)
 
 void Log::Assert(bool condition, StringRef inString)
 {
-	RETURN_IF_FALSE(mLevel <= Level::Error);
+	RETURN_IF_FALSE(mLevel <= LogLevel::Error);
 
 	if (!condition)
 	{
@@ -128,7 +128,7 @@ void Log::Assert(bool condition, StringRef inString)
 
 void Log::AssertFailed(StringRef inString)
 {
-	RETURN_IF_FALSE(mLevel <= Level::Error);
+	RETURN_IF_FALSE(mLevel <= LogLevel::Error);
 
 	FOR_EACH_COLLECTION(i, mLoggers)
 	{
@@ -147,7 +147,7 @@ void Log::AssertFailed(StringRef inString)
 
 void Log::AssertNotNull(const void* item, StringRef paramName)
 {
-	RETURN_IF_FALSE(mLevel <= Level::Error);
+	RETURN_IF_FALSE(mLevel <= LogLevel::Error);
 
 	if (item == nullptr)
 	{
@@ -181,7 +181,7 @@ void Log::AssertNotNull(const void* item, StringRef paramName)
 
 void Log::Info(const wchar_t* inString)
 {
-	RETURN_IF_FALSE(mLevel <= Level::Info);
+	RETURN_IF_FALSE(mLevel <= LogLevel::Info);
 	RETURN_IF_NULL(inString);
 
 	FOR_EACH_COLLECTION(i, mLoggers)
@@ -193,7 +193,7 @@ void Log::Info(const wchar_t* inString)
 
 void Log::Error(const wchar_t* inString)
 {
-	RETURN_IF_FALSE(mLevel <= Level::Error);
+	RETURN_IF_FALSE(mLevel <= LogLevel::Error);
 	RETURN_IF_NULL(inString);
 
 
@@ -207,7 +207,7 @@ void Log::Error(const wchar_t* inString)
 
 void Log::Assert(bool condition, WStringRef inString)
 {
-	RETURN_IF_FALSE(mLevel <= Level::Error);
+	RETURN_IF_FALSE(mLevel <= LogLevel::Error);
 
 	if (!condition)
 	{
@@ -229,7 +229,7 @@ void Log::Assert(bool condition, WStringRef inString)
 
 void Log::AssertFailed(WStringRef inString)
 {
-	RETURN_IF_FALSE(mLevel <= Level::Error);
+	RETURN_IF_FALSE(mLevel <= LogLevel::Error);
 
 	FOR_EACH_COLLECTION(i, mLoggers)
 	{
@@ -248,7 +248,7 @@ void Log::AssertFailed(WStringRef inString)
 
 void Log::AssertNotNull(const void* item, WStringRef paramName)
 {
-	RETURN_IF_FALSE(mLevel <= Level::Error);
+	RETURN_IF_FALSE(mLevel <= LogLevel::Error);
 
 	if (item == nullptr)
 	{
@@ -402,7 +402,7 @@ Event<void(WStringRef text, Action0 callback)> Log::WAlertViewEvent;
 Event<void(StringRef text, Action0 callback)> Log::AlertViewEvent;
 
 bool Log::mEnabled = true;
-Log::Level Log::mLevel = Log::Level::Error;
+LogLevel Log::mLevel = LogLevel::Info;
 
 
 HeapString Log::mBufferString;
@@ -410,5 +410,7 @@ WHeapString Log::mBufferStringW;
 
 
 List<ILogger*> Log::mLoggers;
+
+#undef  DEFAULT_LOGGER
 
 MEDUSA_END;

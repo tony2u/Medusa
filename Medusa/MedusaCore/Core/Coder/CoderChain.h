@@ -14,7 +14,7 @@ class CoderChain
 public:
 	const static CoderChain Empty;
 
-	CoderChain(CoderList coders, const MemoryByteData& key);
+	CoderChain(CoderList coders, const MemoryData& key);
 	CoderChain() {}
 	~CoderChain();
 	CoderChain(const CoderChain& other);
@@ -22,7 +22,7 @@ public:
 	CoderChain(CoderChain&& other);
 	CoderChain& operator=(CoderChain&& other);
 
-	bool Initialize(CoderList coders, const MemoryByteData& key);
+	bool Initialize(CoderList coders, const MemoryData& key);
 	bool Uninitialize();
 
 	CoderList Coders() const { return mCoders; }
@@ -30,18 +30,18 @@ public:
 	bool HasCoders()const { return mCoders != 0; }
 	bool Validate()const;
 
-	const MemoryByteData& Key() const { return mKey; }
-	void SetKey(const MemoryByteData& val);
+	const MemoryData& Key() const { return mKey; }
+	void SetKey(const MemoryData& val);
 
 
 	size_t Encode(IStream& input, IStream& output)const;
 	size_t Encode(const IStream& input, IStream& output)const;
 
-	size_t Encode(const MemoryByteData& input, MemoryByteData& output)const;
+	size_t Encode(const MemoryData& input, MemoryData& output)const;
 
 	size_t Decode(IStream& input, IStream& output)const;
 	size_t Decode(const IStream& input, IStream& output)const;
-	size_t Decode(const MemoryByteData& input, MemoryByteData& output)const;
+	size_t Decode(const MemoryData& input, MemoryData& output)const;
 
 	static uint64 AddCoders(uint64 coders, CoderType coderType);
 	static bool RequireKey(uint64 coders);
@@ -50,13 +50,13 @@ protected:
 
 	static size_t OnCode(const List<ICoder*>& coders, IStream& input, IStream& output);
 	static size_t OnCode(const List<ICoder*>& coders, const IStream& input, IStream& output);
-	static size_t OnCode(const List<ICoder*>& coders, const MemoryByteData& input, MemoryByteData& output);
-	static size_t OnCode(const List<ICoder*>& coders, MemoryByteData& input, MemoryByteData& output);
+	static size_t OnCode(const List<ICoder*>& coders, const MemoryData& input, MemoryData& output);
+	static size_t OnCode(const List<ICoder*>& coders, MemoryData& input, MemoryData& output);
 
 
 protected:
 	CoderList mCoders = 0;
-	MemoryByteData mKey;
+	MemoryData mKey;
 
 	List<ICoder*> mEncoders;
 	List<ICoder*> mDecoders;

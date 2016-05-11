@@ -50,7 +50,7 @@ private:
 	void TouchesMovedHelper(INode* node,TouchEventArg& e);
 	void TouchesEndedHelper(INode* node,TouchEventArg& e);
 	void TouchesCancelledHelper(INode* node,TouchEventArg& e);
-	void TryFireEventHelper(INode* node,TouchEventArg& e);
+	void MockTouchHelper(INode* node,TouchEventArg& e);
 	
 	void KeyDownHelper(INode* node,KeyDownEventArg& e);
 	void KeyUpHelper(INode* node,KeyUpEventArg& e);
@@ -63,7 +63,7 @@ private:
 	void KeyboardHidedHelper(INode* node, KeyboardEventArg& e);
 
 private:
-	INode* mFirstResponder;
+	INode* mFirstResponder=nullptr;
 
 	HashSet<INode*> mDispatchers;
 	bool mIsDirty;

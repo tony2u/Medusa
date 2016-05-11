@@ -31,7 +31,7 @@ void CollectionTest::TestDictionary()
 	FOR_EACH_SIZE(i,count)
 	{
 		int j=rand()%size;
-		int* p= dicItems.TryGetValue(strs[j]);
+		int* p= dicItems.TryGet(strs[j]);
 		if (*p!=j)
 		{
 			break;

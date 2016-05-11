@@ -89,7 +89,7 @@ void TextureQuadMesh::Initialize(const Rect2F& quadRect, const Rect2F& texcoord,
 	SetColorAll(color);
 }
 
-void TextureQuadMesh::Initialize(const Array<Point3F, 4>& vertices, const Array<Point2F, 4>& texcoords, const Color4F& color /*= Color4F::White*/)
+void TextureQuadMesh::Initialize(const List<Point3F>& vertices, const List<Point2F>& texcoords, const Color4F& color /*= Color4F::White*/)
 {
 	mSize.Width = vertices[1].X - vertices[0].X;
 	mSize.Height = vertices[3].Y - vertices[0].Y;
@@ -223,14 +223,14 @@ void TextureQuadMesh::SetColorAll(const Color4F& val)
 
 }
 
-void TextureQuadMesh::SetVertices(const Array<Point3F, 4>& val)
+void TextureQuadMesh::SetVertices(const List<Point3F>& val)
 {
 	mVertices = val;
 	OnVertexChanged();
 
 }
 
-void TextureQuadMesh::SetTexcoords(const Array<Point2F, 4>& val)
+void TextureQuadMesh::SetTexcoords(const List<Point2F>& val)
 {
 	mTexcoords = val;
 	OnTexcoordChanged();

@@ -62,7 +62,7 @@ public:
 
 	FileStorage* Storage() const { return mStorage; }
 	void SetStorage(FileStorage* val) { mStorage = val; }
-	bool IsValid()const { return !MEDUSA_HAS_FLAG(mOperations, EntryOperation::Delete); }
+	bool IsValid()const { return !MEDUSA_FLAG_HAS(mOperations, EntryOperation::Delete); }
 	bool HasFile()const { return !mFiles.IsEmpty(); }
 	bool HasFileRecursively()const;
 
@@ -79,7 +79,7 @@ public:
 	bool RemoveAllFiles();
 	bool RemoveFile(const StringRef& name);
 
-	FileEntry* SaveFile(const StringRef& path, const MemoryByteData& data);
+	FileEntry* SaveFile(const StringRef& path, const MemoryData& data);
 
 	bool SearchFilesToRemove(const StringRef& searchPath, bool isRecursively = true);
 	bool SearchFilesToExtract(const StringRef& searchPath, bool isRecursively = true, const StringRef& outDir = StringRef::Empty)const;
@@ -129,11 +129,12 @@ protected:
 //SIREN_HEADER_SCHEMA_BEGIN
 struct DirectoryEntry::Schema
 {
-	SIREN_PROPERTY(0, 0, Optional, DirectoryEntry, HeapString, mName);
-	SIREN_PROPERTY(1, 1, Optional, DirectoryEntry, EntryOperation, mOperations);
-	SIREN_PROPERTY_LIST(2, 2, Optional, DirectoryEntry, DirectoryEntry*, mDirs);
-	SIREN_PROPERTY_LIST(3, 3, Optional, DirectoryEntry, FileEntry*, mFiles);
-	SIREN_PROPERTIES_4(void,DirectoryEntry);
-};//SIREN_HEADER_SCHEMA_END
+	SIREN_FIELD(0, 0, Optional, DirectoryEntry, HeapString, mName);
+	SIREN_FIELD(1, 1, Optional, DirectoryEntry, EntryOperation, mOperations);
+	SIREN_FIELD_LIST(2, 2, Optional, DirectoryEntry, DirectoryEntry*, mDirs);
+	SIREN_FIELD_LIST(3, 3, Optional, DirectoryEntry, FileEntry*, mFiles);
+	SIREN_FIELDS_4(void,DirectoryEntry);
+};
+//SIREN_HEADER_SCHEMA_END
 
 MEDUSA_END;

@@ -19,16 +19,19 @@ IMEHandler::~IMEHandler(void)
 
 void IMEHandler::KeyDown(KeyDownEventArg& e)
 {
+	IInputHandler::KeyDown(e);
 	OnKeyDown(mNode, e);
 }
 
 void IMEHandler::KeyUp(KeyUpEventArg& e)
 {
+	IInputHandler::KeyUp(e);
 	OnKeyUp(mNode, e);
 }
 
 void IMEHandler::CharInput(CharInputEventArg& e)
 {
+	IInputHandler::CharInput(e);
 	OnCharInput(mNode, e);
 }
 

@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 #pragma once
 #include "Resource/Timeline/ITimelineModel.h"
-#include "Core/Geometry/Scale3.h"
+#include "Geometry/Scale3.h"
 
 MEDUSA_BEGIN;
 

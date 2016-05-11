@@ -350,10 +350,18 @@ namespace Medusa
 #define MEDUSA_UINT64_LOW(x)    ((((uint64)(x)) & 0xffffffffull))
 #define MEDUSA_UINT64_HIGH(x)    ((((uint64)(x)) & 0xffffffff00000000ull))
 
-#define MEDUSA_HAS_FLAG(x,y) (((uint)x&(uint)y)==(uint)y)
-#define MEDUSA_AND_FLAG(x,y) static_cast<decltype(x)>((uint)x & (uint)y)
-#define MEDUSA_OR_FLAG(x,y) static_cast<decltype(x)>((uint)x | (uint)y)
-#define MEDUSA_ADD_FLAG(x,y) ((uint&)x |= (uint)y)
+#define MEDUSA_FLAG_HAS(flags,val) (((uint)flags&(uint)val)==(uint)val)
+#define MEDUSA_FLAG_AND(flags,val) static_cast<decltype(flags)>((uint)flags & (uint)val)
+#define MEDUSA_FLAG_OR(flags,val) static_cast<decltype(flags)>((uint)flags | (uint)val)
+#define MEDUSA_FLAG_AND_NOT(flags,val) static_cast<decltype(flags)>((uint)flags & ~(uint)val)
+
+#define MEDUSA_FLAG_RETURN_ENABLE(flags,val,cond) (cond)?(MEDUSA_FLAG_AND(flags,val)):(MEDUSA_FLAG_AND_NOT(flags,val))
+
+#define MEDUSA_FLAG_ADD(flags,val) ((uint&)flags |= (uint)val)
+#define MEDUSA_FLAG_REMOVE(flags,val) ((uint&)flags &= ~(uint)val)
+#define MEDUSA_FLAG_ENABLE(flags,val,cond) if(cond){MEDUSA_FLAG_ADD(flags,val);}else{MEDUSA_FLAG_REMOVE(flags,val);}
+
+
 
 #define MEDUSA_BEGIN namespace Medusa{
 #define MEDUSA_END }
@@ -363,9 +371,8 @@ namespace Medusa
 #define MEDUSA_CONTENT_BEGIN namespace Medusa{namespace Content{
 #define MEDUSA_CONTENT_END }}
 
-#define MEDUSA_SCRIPT_BEGIN namespace Medusa{namespace Script{
-#define MEDUSA_SCRIPT_END }}
-
+#define MEDUSA_SCRIPT_BINDING_BEGIN namespace Medusa{namespace ScriptBinding{
+#define MEDUSA_SCRIPT_BINDING_END }}
 
 #define USING_MEDUSA using namespace Medusa
 

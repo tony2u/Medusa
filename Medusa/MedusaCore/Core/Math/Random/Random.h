@@ -27,7 +27,7 @@ public:
 	byte NextByte() { return (byte)(Rand() % 256); }
 	bool NextBool() { return Rand() % 2 == 0; }
 	bool NextBool(float prob) { return (float)Rand() <= prob*Max; }
-	void NextBytes(MemoryByteData& outData);
+	void NextBytes(MemoryData& outData);
 
 	void SetSeed(int val) { mSeed = val; }
 	void SetSeedFromTick();

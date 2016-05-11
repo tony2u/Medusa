@@ -40,7 +40,7 @@ size_t Base91Encoder::GuessResultSize(const IStream& input) const
 	return input.LeftLength() * 4;	//make sure has enough space to store
 }
 
-size_t Base91Encoder::OnCode(const MemoryByteData& input, MemoryByteData& output) const
+size_t Base91Encoder::OnCode(const MemoryData& input, MemoryData& output) const
 {
 	RETURN_ZERO_IF_EMPTY(input);
 

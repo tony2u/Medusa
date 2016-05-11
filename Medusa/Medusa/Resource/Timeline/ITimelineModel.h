@@ -5,7 +5,7 @@
 #include "MedusaPreDeclares.h"
 #include "Core/String/StringRef.h"
 #include "Resource/IResource.h"
-#include "Core/Geometry/Size2.h"
+#include "Geometry/Size2.h"
 #include "Core/Pattern/TuplePattern.h"
 #include "Core/Collection/SortedList.h"
 #include "Core/Collection/Array.h"

@@ -53,7 +53,7 @@ bool FeatureRenderState::Equals(const IRenderState& state) const
 
 void FeatureRenderState::Enable(GraphicsFeatures feature, bool val)
 {
-	bool* origin = mFeatures.TryGetValue((uint)feature);
+	bool* origin = mFeatures.TryGet((uint)feature);
 	if (origin!=NULL)
 	{
 		if (*origin==val)

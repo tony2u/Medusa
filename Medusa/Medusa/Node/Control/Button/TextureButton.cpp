@@ -10,23 +10,30 @@
 MEDUSA_BEGIN;
 
 
-TextureButton::TextureButton(StringRef name,
-							 const FileIdRef& normalTextureName,
-							 const FileIdRef& selectedTextureName/*=FileId::Empty*/,
-							 const FileIdRef& disabledTextureName/*=FileId::Empty*/,
-							 const FileIdRef& disabledSelectedTextureName/*=FileId::Empty*/)
-							 :IButton(name),
-							 mNormalTextureName(normalTextureName),
-							 mSelectedTextureName(selectedTextureName),
-							 mDisabledTextureName(disabledTextureName),
-							 mDisabledSelectedTextureName(disabledSelectedTextureName)
+Medusa::TextureButton::TextureButton(StringRef name, 
+							const FileIdRef& normalTextureName, 
+							const FileIdRef& selectedTextureName /*= FileIdRef::Empty*/, 
+							const FileIdRef& disabledTextureName /*= FileIdRef::Empty*/, 
+							const FileIdRef& disabledSelectedTextureName /*= FileIdRef::Empty*/, 
+							bool isEnableNineGrid /*= false*/, 
+							const Size2F& targetSize /*= Size2F::Zero*/, 
+							const ThicknessF& padding /*= ThicknessF::Zero*/)
+							:IButton(name),
+							mNormalTextureName(normalTextureName),
+							mSelectedTextureName(selectedTextureName),
+							mDisabledTextureName(disabledTextureName),
+							mDisabledSelectedTextureName(disabledSelectedTextureName),
+							mIsEnableNineGrid(isEnableNineGrid),
+							mTargetSize(targetSize),
+							mPadding(padding)
 {
 
 }
 
+
 TextureButton::~TextureButton(void)
 {
-
+	 
 }
 
 bool TextureButton::Initialize()
@@ -107,8 +114,7 @@ void TextureButton::OnUpdateMesh()
 
 void TextureButton::SetImage(const FileIdRef& image)
 {
-	auto renderingObject = RenderingObjectFactory::Instance().CreateFromTexture(image);
-
+	auto renderingObject = mIsEnableNineGrid ? RenderingObjectFactory::Instance().CreateNineGridTexture(mTargetSize, image, mPadding) : RenderingObjectFactory::Instance().CreateFromTexture(image);
 	SetRenderingObject(renderingObject);
 	Size2U textureSize = renderingObject.Material()->FirstTexture()->Size();
 	SetSize(textureSize);

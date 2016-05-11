@@ -39,8 +39,9 @@ protected:
 //SIREN_HEADER_SCHEMA_BEGIN
 struct DropPoolConfig::Schema
 {
-	SIREN_PROPERTY_DICTIONARY(0, 0, Required, DropPoolConfig, uint, DropPool, mItems);
-	SIREN_PROPERTIES_1(void,DropPoolConfig);
-};//SIREN_HEADER_SCHEMA_END
+	SIREN_FIELD_DICTIONARY(0, 0, Required, DropPoolConfig, uint, DropPool, mItems);
+	SIREN_FIELDS_1(void,DropPoolConfig);
+};
+//SIREN_HEADER_SCHEMA_END
 
 MEDUSA_END;

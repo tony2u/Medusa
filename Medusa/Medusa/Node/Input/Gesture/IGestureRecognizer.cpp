@@ -3,14 +3,14 @@
 // license that can be found in the LICENSE file.
 #include "MedusaPreCompiled.h"
 #include "Node/Input/Gesture/IGestureRecognizer.h"
-#include "Core/Geometry/Point3.h"
+#include "Geometry/Point3.h"
 #include "Node/INode.h"
 
 
 MEDUSA_BEGIN;
 
-IGestureRecognizer::IGestureRecognizer( INode* node ,GestureFlags flags/*=GestureFlags::None*/,const FileIdRef& audioEffect/*=FileId::Empty*/) 
-	:IInputHandler(node),mState(GestureState::None),mFlags(flags),mAudioEffect(audioEffect)
+IGestureRecognizer::IGestureRecognizer( INode* node) 
+	:IInputHandler(node)
 {
 
 }
@@ -18,17 +18,6 @@ IGestureRecognizer::~IGestureRecognizer(void)
 {
 }
 
-void IGestureRecognizer::SetIsDisabled( bool val )
-{
-	if(val)
-	{
-		mState=GestureState::Disabled;
-	}
-	else
-	{
-		mState=GestureState::None;
-	}
-}
 
 bool IGestureRecognizer::IsValidTouch( const Touch& touch ) const
 {
@@ -66,13 +55,6 @@ bool IGestureRecognizer::HasValidTouch( const List<Touch>& touches ) const
 	}
 
 	return false;
-}
-
-void IGestureRecognizer::SetState( GestureState state )
-{
-	RETURN_IF_EQUAL(mState, state);
-	StateChangedEvent(mState,state);
-	mState = state;
 }
 
 

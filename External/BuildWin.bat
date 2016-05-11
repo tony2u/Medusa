@@ -1,16 +1,31 @@
-::AngelScript
-"C:\Program Files (x86)\MSBuild\14.0\Bin\msbuild" AngelScript\win\AngelScript.vcxproj /p:Configuration=Debug;Platform=Win32;OutDir=..\..\..\Medusa\MedusaCore\CoreLib\Bin\win\x86\
-"C:\Program Files (x86)\MSBuild\14.0\Bin\msbuild" AngelScript\win\AngelScript.vcxproj /p:Configuration=Release;Platform=Win32;OutDir=..\..\..\Medusa\MedusaCore\CoreLib\Bin\win\x86\
-"C:\Program Files (x86)\MSBuild\14.0\Bin\msbuild" AngelScript\win\AngelScript.vcxproj /p:Configuration=Debug;Platform=x64;OutDir=..\..\..\Medusa\MedusaCore\CoreLib\Bin\win\x64\
-"C:\Program Files (x86)\MSBuild\14.0\Bin\msbuild" AngelScript\win\AngelScript.vcxproj /p:Configuration=Release;Platform=x64;OutDir=..\..\..\Medusa\MedusaCore\CoreLib\Bin\win\x64\
+::lua
+"C:\Program Files (x86)\MSBuild\14.0\Bin\msbuild" lua\win\lua.vcxproj /p:Configuration=Debug;Platform=Win32;OutDir=..\..\..\Medusa\MedusaCore\CoreLib\Bin\win\x86\
+"C:\Program Files (x86)\MSBuild\14.0\Bin\msbuild" lua\win\lua.vcxproj /p:Configuration=Release;Platform=Win32;OutDir=..\..\..\Medusa\MedusaCore\CoreLib\Bin\win\x86\
+"C:\Program Files (x86)\MSBuild\14.0\Bin\msbuild" lua\win\lua.vcxproj /p:Configuration=Debug;Platform=x64;OutDir=..\..\..\Medusa\MedusaCore\CoreLib\Bin\win\x64\
+"C:\Program Files (x86)\MSBuild\14.0\Bin\msbuild" lua\win\lua.vcxproj /p:Configuration=Release;Platform=x64;OutDir=..\..\..\Medusa\MedusaCore\CoreLib\Bin\win\x64\
 pause
-rmdir /s /q AngelScript\win\Debug
-rmdir /s /q AngelScript\win\Release
-rmdir /s /q AngelScript\win\x64
-rmdir /s /q AngelScript\Debug
-rmdir /s /q AngelScript\Release
-rmdir /s /q AngelScript\x64
+rmdir /s /q lua\win\Debug
+rmdir /s /q lua\win\Release
+rmdir /s /q lua\win\x64
+rmdir /s /q lua\Debug
+rmdir /s /q lua\Release
+rmdir /s /q lua\x64
 pause
+
+::luajit
+"C:\Program Files (x86)\MSBuild\14.0\Bin\msbuild" luajit\win\luajit.vcxproj /p:Configuration=Debug;Platform=Win32;OutDir=..\..\..\Medusa\MedusaCore\CoreLib\Bin\win\x86\
+"C:\Program Files (x86)\MSBuild\14.0\Bin\msbuild" luajit\win\luajit.vcxproj /p:Configuration=Release;Platform=Win32;OutDir=..\..\..\Medusa\MedusaCore\CoreLib\Bin\win\x86\
+"C:\Program Files (x86)\MSBuild\14.0\Bin\msbuild" luajit\win\luajit.vcxproj /p:Configuration=Debug;Platform=x64;OutDir=..\..\..\Medusa\MedusaCore\CoreLib\Bin\win\x64\
+"C:\Program Files (x86)\MSBuild\14.0\Bin\msbuild" luajit\win\luajit.vcxproj /p:Configuration=Release;Platform=x64;OutDir=..\..\..\Medusa\MedusaCore\CoreLib\Bin\win\x64\
+pause
+rmdir /s /q luajit\win\Debug
+rmdir /s /q luajit\win\Release
+rmdir /s /q luajit\win\x64
+rmdir /s /q luajit\Debug
+rmdir /s /q luajit\Release
+rmdir /s /q luajit\x64
+pause
+
 
 ::curl
 "C:\Program Files (x86)\MSBuild\14.0\Bin\msbuild" curl\win\curl.vcxproj /p:Configuration=Debug;Platform=Win32;OutDir=..\..\..\Medusa\MedusaCore\CoreLib\Bin\win\x86\
@@ -133,3 +148,4 @@ rmdir /s /q freetype\win\x64
 rmdir /s /q freetype\Debug
 rmdir /s /q freetype\Release
 rmdir /s /q freetype\x64
+

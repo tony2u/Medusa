@@ -8,16 +8,15 @@
 #include "Core/Pattern/IUpdatable.h"
 #include "Core/Pattern/StaticConstructor.h"
 #include "Core/String/HeapString.h"
-//#include "Core/IO/Updater/FileUpdaterMessageType.h"
-#include "Core/Config/AppCompatibility.h"
-#include "GameFeatures.h"
+#include "Core/Module/IModule.h"
+
 
 MEDUSA_BEGIN;
 /*
 To support file updating,so we need to support file reloading
 Reloading need to release previous res and load new res
 */
-class IGame:public IInitializable,public DefaultRunnable,public IUpdatable
+class IGame :public IModule, public DefaultRunnable, public IUpdatable
 {
 public:
 	IGame(void);
@@ -26,61 +25,12 @@ public:
 	virtual bool Uninitialize()override;
 
 	virtual bool Start()override;
-
-	virtual bool Load();
-
 	virtual bool Update(float dt)override;
 
 	StringRef Name() const { return mName; }
 	void SetName(StringRef val) { mName = val; }
-	virtual const IGameClientSettings* BaseSettings() const { return mSettings; }
-	virtual const IPlayer* BasePlayer() const { return mPlayer; }
-	GameFeatures Features() const { return mFeatures; }
-
-protected:
-	virtual void OnSetupGraphicsContext();
-
-	virtual bool OnPrepareFileSystem();
-	virtual bool OnPrepareSettings() { return true; }
-
-	virtual bool OnLoadSettings() { return true; }
-	virtual bool OnLoadFileSystem();
-
-#pragma region Script
-	virtual bool OnRegisterScriptTypes();
-
-	virtual bool OnLoadInternalScripts();
-	virtual bool OnUnloadInternalScripts();
-	virtual bool OnBuildInternalScripts();
-	virtual bool OnCreateInternalScriptObjects();
-
-	virtual bool OnLoadExternalScripts();
-	virtual bool OnUnloadExternalScripts();
-	virtual bool OnBuildExternalScripts();
-	virtual bool OnCreateExternalScriptObjects();
-#pragma endregion Script
-
-	virtual bool OnLoadFileUpdater();
-
-
-	virtual bool OnLoadPlayer() { return true; }
-	virtual void OnCheckCompatibility();
-
-	virtual bool OnLoadCustomConfigs() { return true; }
-
-	/*virtual void OnShowFileUpdaterMessage(FileUpdater* sender, FileUpdaterMessageType message);*/
-	virtual void OnMessageDebugInfo(const StringRef& debugInfo);
-
-	virtual void OnInitializeCompleted();
-	virtual void OnLoadCompleted();
-
-
 protected:
 	HeapString mName;
-	IGameClientSettings* mSettings;
-	IPlayer* mPlayer;
-	GameFeatures mFeatures;
-	AppCompatibility mCompatibility;
 };
 
 

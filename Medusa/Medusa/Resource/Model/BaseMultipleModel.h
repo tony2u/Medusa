@@ -79,9 +79,6 @@ public:
 		mMeshNodes.AppendRange(meshes);
 	}
 
-	virtual INode* CreateCloneInstance()=0;
-	virtual INode* CreateReferenceInstance()=0;
-
 protected:
 	List<IMeshModelNode*> mMeshNodes;
 	List<TMaterial*> mMaterials;

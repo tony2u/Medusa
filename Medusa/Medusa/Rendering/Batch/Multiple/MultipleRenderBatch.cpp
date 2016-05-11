@@ -44,7 +44,7 @@ bool MultipleRenderBatch::Update()
 			if (originalBatch == this)
 			{
 				RenderableChangedFlags changeFlag = node->RenderableChangedFlag();
-				if (changeFlag.IsZero())
+				if (changeFlag==RenderableChangedFlags::None)
 				{
 					const SegmentU& originalVertexSegment = node->VertexSegment();
 					const SegmentU& originalIndexSegment = node->IndexSegment();
@@ -52,7 +52,7 @@ bool MultipleRenderBatch::Update()
 					if (refVertexIndex != originalVertexSegment.Position || originalVertexSegment.Length != mesh->VertexCount()
 						|| refIndexIndex != originalIndexSegment.Position || originalIndexSegment.Length != mesh->IndexCount())
 					{
-						changeFlag |= RenderableChangedFlags::DataTotalChanged;
+						MEDUSA_FLAG_ADD(changeFlag, RenderableChangedFlags::DataTotalChanged);
 						isInterrupted = true;
 					}
 					else
@@ -77,7 +77,7 @@ bool MultipleRenderBatch::Update()
 				}
 #endif
 
-				if (changeFlag.IsDataTotalChanged())
+				if (MEDUSA_FLAG_HAS(changeFlag,RenderableChangedFlags::DataTotalChanged))
 				{
 					AddNodeToBuffer(refVertexIndex, refIndexIndex, *node);
 				}

@@ -97,7 +97,7 @@ PublishTarget PublishTarget::Parse(StringRef fileName)
 	FOR_EACH_COLLECTION(i, outResults)
 	{
 		const HeapString& str = *i;
-		int* tempTag = mTagDict.TryGetValue(str);
+		int* tempTag = mTagDict.TryGet(str);
 		if (tempTag != nullptr)
 		{
 			resultTag |= *tempTag;
@@ -154,9 +154,9 @@ const PublishTarget PublishTarget::MatchAll(PublishVersions::All, PublishDevices
 MEDUSA_IMPLEMENT_STATIC_CONSTRUCTOR(PublishTarget, InitializeDict);
 
 SIREN_METADATA(PublishTarget, 13);
-SIREN_PROPERTY_METADATA(0, PublishTarget, Version, 7, 0);
-SIREN_PROPERTY_METADATA(1, PublishTarget, Device, 6, 0);
-SIREN_PROPERTY_METADATA(2, PublishTarget, Language, 8, 0);
+SIREN_FIELD_METADATA(0, PublishTarget, Version, 7, 0,false);
+SIREN_FIELD_METADATA(1, PublishTarget, Device, 6, 0,false);
+SIREN_FIELD_METADATA(2, PublishTarget, Language, 8, 0,false);
 
 
 

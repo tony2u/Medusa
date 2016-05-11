@@ -4,7 +4,7 @@
 #pragma once
 #include "MedusaPreDeclares.h"
 #include "Core/String/StringRef.h"
-#include "Core/Geometry/Size2.h"
+#include "Geometry/Size2.h"
 #include "Graphics/GraphicsTypes.h"
 #include "Graphics/State/SamplerRenderState.h"
 #include "Graphics/State/PixelStoreRenderState.h"

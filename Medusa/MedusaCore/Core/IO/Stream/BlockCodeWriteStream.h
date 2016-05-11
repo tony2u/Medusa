@@ -20,7 +20,7 @@ public:
 public:
 	virtual uintp Length()const;
 protected:
-	virtual size_t WriteBlock(uint blockIndex, const MemoryByteData& data);
+	virtual size_t WriteBlock(uint blockIndex, const MemoryData& data);
 	void WriteOffset(size_t dataSize);
 protected:
 	const CoderChain* mCoderChain;

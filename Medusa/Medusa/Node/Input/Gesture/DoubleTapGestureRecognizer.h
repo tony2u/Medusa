@@ -12,7 +12,7 @@ MEDUSA_BEGIN;
 class DoubleTapGestureRecognizer:public IGestureRecognizer
 {
 public:
-	DoubleTapGestureRecognizer(INode* node,float maxDuration=0.25f,GestureFlags flags=GestureFlags::None);
+	DoubleTapGestureRecognizer(INode* node,float maxDuration=0.25f);
 	virtual ~DoubleTapGestureRecognizer(void);
 	virtual InputType GetInputType()const{return InputType::DoubleTap;}
 
@@ -20,7 +20,7 @@ public:
 	virtual void TouchesMoved(TouchEventArg& e);
 	virtual void TouchesEnded(TouchEventArg& e);
 	virtual void TouchesCancelled(TouchEventArg& e);
-	virtual void TryFireEvent(TouchEventArg& e);
+	virtual void MockTouch(TouchEventArg& e);
 
 	virtual bool IsValid()const;
 	virtual void Reset();

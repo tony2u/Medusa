@@ -7,7 +7,6 @@
 #include "Graphics/GraphicsTypes.h"
 #include "Graphics/State/RenderStateMachine.h"
 #include "Core/Collection/Linq.h"
-#include "Core/Pattern/AutoIncreaseId.h"
 #include "Resource/Effect/IEffect.h"
 
 MEDUSA_BEGIN;
@@ -18,7 +17,7 @@ IMaterial::IMaterial(ITexture* texture /*= nullptr*/, IEffect* effect /*= nullpt
 	mEffect(effect),
 	mDrawMode(drawMode)
 {
-	mId = AutoIncreaseId<IMaterial>::New();
+	
 	SAFE_RETAIN(mEffect);
 
 	if(texture!=nullptr)
@@ -63,7 +62,7 @@ ITexture* IMaterial::FirstTexture()const
 
 ITexture* IMaterial::FindTextureBySampler(StringRef smaplerName)
 {
-	return mTextureSamplerDict.TryGetValueWithFailed(smaplerName, nullptr);
+	return mTextureSamplerDict.GetOptional(smaplerName, nullptr);
 }
 
 void IMaterial::Apply()const

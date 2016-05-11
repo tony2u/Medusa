@@ -74,10 +74,10 @@ private:
 
 struct PublishTarget::Schema
 {
-	SIREN_PROPERTY(0, 0, Optional, PublishTarget, PublishVersions, Version);
-	SIREN_PROPERTY(1, 1, Optional, PublishTarget, PublishDevices, Device);
-	SIREN_PROPERTY(2, 2, Optional, PublishTarget, PublishLanguages, Language);
-	SIREN_PROPERTIES_3(void, PublishTarget);
+	SIREN_FIELD(0, 0, Optional, PublishTarget, PublishVersions, Version);
+	SIREN_FIELD(1, 1, Optional, PublishTarget, PublishDevices, Device);
+	SIREN_FIELD(2, 2, Optional, PublishTarget, PublishLanguages, Language);
+	SIREN_FIELDS_3(void, PublishTarget);
 };
 
 

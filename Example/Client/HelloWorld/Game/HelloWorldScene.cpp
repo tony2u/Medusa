@@ -4,7 +4,8 @@
 #include "HelloWorldScene.h"
 #include "HelloWorldLayer.h"
 
-HelloWorldScene::HelloWorldScene(StringRef name/*=StringRef::Empty*/, const IEventArg& e /*= IEventArg::Empty*/):Base2DScene(name,e)
+HelloWorldScene::HelloWorldScene(StringRef name/*=StringRef::Empty*/, const IEventArg& e /*= IEventArg::Empty*/)
+	:UIScene(name,e)
 {
 	
 	
@@ -17,15 +18,15 @@ HelloWorldScene::~HelloWorldScene(void)
 
 bool HelloWorldScene::Initialize()
 {
-	RETURN_FALSE_IF_FALSE(Base2DScene::Initialize());
+	RETURN_FALSE_IF_FALSE(UIScene::Initialize());
 	return true;
 }
 
 
-bool HelloWorldScene::Enter()
+bool HelloWorldScene::OnEnter()
 {
 	PushLayer<HelloWorldLayer>();
 	return true;
 }
 
-MEDUSA_IMPLEMENT_SCENE(HelloWorldScene, Base2DScene);
+MEDUSA_IMPLEMENT_SCENE(HelloWorldScene, UIScene,StringRef::Empty, StringRef::Empty);

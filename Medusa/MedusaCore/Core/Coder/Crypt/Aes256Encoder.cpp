@@ -86,7 +86,7 @@ const unsigned char Aes256Encoder::sbox[256] =
 };
 
 
-Aes256Encoder::Aes256Encoder(const MemoryByteData& key, Random* random /*= nullptr*/)
+Aes256Encoder::Aes256Encoder(const MemoryData& key, Random* random /*= nullptr*/)
 	: mRandom(random),
 	mKey(key.Clone())
 {
@@ -95,7 +95,7 @@ Aes256Encoder::Aes256Encoder(const MemoryByteData& key, Random* random /*= nullp
 }
 
 Aes256Encoder::Aes256Encoder(const IEventArg& e)
-	:Aes256Encoder(((const UserDataEventArg<MemoryByteData>&)e).Data(), &Random::Global())
+	:Aes256Encoder(((const UserDataEventArg<MemoryData>&)e).Data(), &Random::Global())
 {
 }
 
@@ -117,14 +117,14 @@ size_t Aes256Encoder::GuessResultSize(const IStream& input) const
 	return outputLength;
 }
 
-size_t Aes256Encoder::OnCode(const MemoryByteData& input, MemoryByteData& output) const
+size_t Aes256Encoder::OnCode(const MemoryData& input, MemoryData& output) const
 {
 	MemoryStream inputStream(input);
 	MemoryStream outputStream(output);
 
 	size_t inputLength = input.Size();
 
-	MemoryByteData salt = MemoryByteData::Alloc(KeyMaxSize - mKey.Size());
+	MemoryData salt = MemoryData::Alloc(KeyMaxSize - mKey.Size());
 	salt.ClearZero();
 
 	// Generate salt
@@ -133,7 +133,7 @@ size_t Aes256Encoder::OnCode(const MemoryByteData& input, MemoryByteData& output
 		mRandom->NextBytes(salt);
 	}
 
-	MemoryByteData rkey = MemoryByteData::Alloc(KeyMaxSize);
+	MemoryData rkey = MemoryData::Alloc(KeyMaxSize);
 
 	// Calculate padding
 	size_t padding = 0;
@@ -150,7 +150,7 @@ size_t Aes256Encoder::OnCode(const MemoryByteData& input, MemoryByteData& output
 	byte buffer[3 * BlockSize];
 	size_t bufferPos = 0;
 
-	MemoryByteData bufferData = MemoryByteData::FromStatic(buffer, BlockSize);
+	MemoryData bufferData = MemoryData::FromStatic(buffer, BlockSize);
 	while (!inputStream.IsEnd())
 	{
 		bufferPos += inputStream.ReadDataTo(bufferData);
@@ -175,7 +175,7 @@ size_t Aes256Encoder::OnCode(const MemoryByteData& input, MemoryByteData& output
 	return outputStream.Position();
 }
 
-void Aes256Encoder::Encrypt(MemoryByteData& rkey, const MemoryByteData& key,const MemoryByteData& salt, unsigned char* buffer)
+void Aes256Encoder::Encrypt(MemoryData& rkey, const MemoryData& key,const MemoryData& salt, unsigned char* buffer)
 {
 	unsigned char i, rcon;
 
@@ -233,7 +233,7 @@ void Aes256Encoder::sub_bytes(unsigned char* buffer)
 		buffer[i] = sbox[buffer[i]];
 }
 
-void Aes256Encoder::copy_key(MemoryByteData& rkey, const MemoryByteData& key, const MemoryByteData& salt)
+void Aes256Encoder::copy_key(MemoryData& rkey, const MemoryData& key, const MemoryData& salt)
 {
 	Memory::SafeCopy(rkey.MutableData(), key.Size(), key.Data(), key.Size());
 	Memory::SafeCopy(rkey.MutableData() + key.Size(), salt.Size(), salt.Data(), salt.Size());

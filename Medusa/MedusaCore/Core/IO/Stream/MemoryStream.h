@@ -10,8 +10,8 @@ class MemoryStream :public IStream
 {
 public:
 	MemoryStream(size_t capacity = 0,bool isExpandable=true);
-	MemoryStream(MemoryByteData& data);
-	MemoryStream(const MemoryByteData& data);
+	MemoryStream(MemoryData& data);
+	MemoryStream(const MemoryData& data);
 
 	virtual ~MemoryStream(void);
 	virtual StreamType Type()const  override{ return StreamType::Memory; }
@@ -21,17 +21,17 @@ public:
 	MemoryStream& operator=(MemoryStream&& other);
 
 	static MemoryStream Create(size_t capacity = 0, bool isExpandable = true);
-	static MemoryStream OpenRead(const MemoryByteData& data);
-	static MemoryStream OpenReadWrite(MemoryByteData& data);
+	static MemoryStream OpenRead(const MemoryData& data);
+	static MemoryStream OpenReadWrite(MemoryData& data);
 
 public:
-	const MemoryByteData& Buffer() const { return mData; }
-	MemoryByteData& MutableBuffer(){ return mData; }
+	const MemoryData& Buffer() const { return mData; }
+	MemoryData& MutableBuffer(){ return mData; }
 
-	void SetBuffer(const MemoryByteData& val) { mData = val; }
+	void SetBuffer(const MemoryData& val) { mData = val; }
 
-	MemoryByteData CurrentBuffer() const { return mData.Sub(0, mPos); }
-	MemoryByteData LeftBuffer() const { return mData.Sub(mPos, (size_t)LeftLength()); }
+	MemoryData CurrentBuffer() const { return mData.Sub(0, mPos); }
+	MemoryData LeftBuffer() const { return mData.Sub(mPos, (size_t)LeftLength()); }
 
 	size_t ReleaseToString(HeapString& outString);
 
@@ -52,8 +52,8 @@ public:
 	virtual uintp Length()const  override{ return mData.Size(); }
 	virtual uintp Position()const  override{ return mPos; }
 
-	virtual size_t ReadDataTo(MemoryByteData& outData, DataReadingMode mode = DataReadingMode::AlwaysCopy)const override;
-	virtual size_t WriteData(const MemoryByteData& data, DataReadingMode mode = DataReadingMode::AlwaysCopy) override;
+	virtual size_t ReadDataTo(MemoryData& outData, DataReadingMode mode = DataReadingMode::AlwaysCopy)const override;
+	virtual size_t WriteData(const MemoryData& data, DataReadingMode mode = DataReadingMode::AlwaysCopy) override;
 
 	virtual int PeekChar()const override;
 	virtual int PeekWChar()const override;
@@ -79,7 +79,7 @@ private:
 	bool CanGrow()const;
 	bool Resize(size_t size);
 private:
-	MemoryByteData mData;
+	MemoryData mData;
 	mutable size_t mPos;
 	StreamDataOperation mSupportedOperation;
 };

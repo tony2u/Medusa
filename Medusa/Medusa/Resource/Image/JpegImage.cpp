@@ -41,8 +41,8 @@ void FreePoolCallback(j_common_ptr cinfo, int pool_ids)
 }
 
 
-JpegImage::JpegImage(const FileIdRef& fileId,Size2U imageSize,GraphicsInternalFormat internalFormat,GraphicsPixelFormat imageFormat,bool isPreMultiplyAlpha )
-	:RGBAImage(fileId,imageSize,internalFormat,imageFormat,isPreMultiplyAlpha)
+JpegImage::JpegImage(const FileIdRef& fileId,Size2U imageSize, PixelType pixelType,bool isPreMultiplyAlpha )
+	:RGBAImage(fileId,imageSize,pixelType,isPreMultiplyAlpha)
 {
 	
 }
@@ -55,11 +55,14 @@ JpegImage::~JpegImage(void)
 
 JpegImage* JpegImage::CreateFromFile( const FileIdRef& fileId ) 
 {
-	MemoryByteData data=FileSystem::Instance().ReadAllData(fileId);
-	return CreateFromMemory(fileId,data);
+	const auto* fileEntry = FileSystem::Instance().Find(fileId);
+	RETURN_NULL_IF_NULL(fileEntry);
+	MemoryData data = fileEntry->ReadAllData();
+
+	return CreateFromMemory(fileId, *fileEntry,data);
 }
 
-JpegImage* JpegImage::CreateFromMemory(const FileIdRef& fileId, MemoryByteData data ) 
+JpegImage* JpegImage::CreateFromMemory(const FileIdRef& fileId, const FileEntry& fileEntry, MemoryData data )
 {
 	RETURN_NULL_IF_EMPTY(data);
 	jpeg_decompress_struct cinfo;
@@ -99,7 +102,7 @@ JpegImage* JpegImage::CreateFromMemory(const FileIdRef& fileId, MemoryByteData d
 	short width=(short)cinfo.image_width;
 	short height = (short)cinfo.image_height;
 
-	JpegImage* result=new JpegImage(fileId,Size2U(width,height),GraphicsInternalFormat::RGB,GraphicsPixelFormat::RGB,false);
+	JpegImage* result=new JpegImage(fileId,Size2U(width,height),PixelType::RGB888,false);
 	MEDUSA_ASSERT_NOT_NULL(result,"");
 	byte* imageData=result->MutableData().MutableData();
 

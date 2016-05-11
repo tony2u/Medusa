@@ -130,7 +130,7 @@
 xcopy /Y /Q "$(ProjectDir)..\CoreLib\Bin\win\x86\*.pdb" "$(OutDir)"</Command>
     </PostBuildEvent>
     <Lib>
-      <AdditionalDependencies>AngelScript_d.lib;curl_d.lib;Lzma_d.lib;unzip_d.lib;zlib_d.lib;lz4_d.lib</AdditionalDependencies>
+      <AdditionalDependencies>curl_d.lib;Lzma_d.lib;unzip_d.lib;zlib_d.lib;lz4_d.lib;lua51.lib</AdditionalDependencies>
     </Lib>
     <Lib>
       <AdditionalLibraryDirectories>..\CoreLib\Bin\win\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -178,7 +178,7 @@ xcopy /Y /Q "$(ProjectDir)..\CoreLib\Bin\win\x86\*.pdb" "$(OutDir)"</Command>
 xcopy /Y /Q "$(ProjectDir)..\CoreLib\Bin\win\x64\*.pdb" "$(OutDir)"</Command>
     </PostBuildEvent>
     <Lib>
-      <AdditionalDependencies>AngelScript_d.lib;curl_d.lib;Lzma_d.lib;unzip_d.lib;zlib_d.lib;lz4_d.lib</AdditionalDependencies>
+      <AdditionalDependencies>curl_d.lib;Lzma_d.lib;unzip_d.lib;zlib_d.lib;lz4_d.lib</AdditionalDependencies>
     </Lib>
     <Lib>
       <AdditionalLibraryDirectories>..\CoreLib\Bin\win\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -205,7 +205,7 @@ xcopy /Y /Q "$(ProjectDir)..\CoreLib\Bin\win\x64\*.pdb" "$(OutDir)"</Command>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
     </ClCompile>
     <Lib>
-      <AdditionalDependencies>AngelScript.lib;curl.lib;Lzma.lib;unzip.lib;zlib.lib;lz4.lib</AdditionalDependencies>
+      <AdditionalDependencies>curl.lib;Lzma.lib;unzip.lib;zlib.lib;lz4.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\CoreLib\Bin\win\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
     <PostBuildEvent>
@@ -229,7 +229,7 @@ xcopy /Y /Q "$(ProjectDir)..\CoreLib\Bin\win\x64\*.pdb" "$(OutDir)"</Command>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
     </ClCompile>
     <Lib>
-      <AdditionalDependencies>AngelScript.lib;curl.lib;Lzma.lib;unzip.lib;zlib.lib;lz4.lib</AdditionalDependencies>
+      <AdditionalDependencies>curl.lib;Lzma.lib;unzip.lib;zlib.lib;lz4.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\CoreLib\Bin\win\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
     <PostBuildEvent>

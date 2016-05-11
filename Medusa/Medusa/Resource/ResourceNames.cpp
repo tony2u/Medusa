@@ -15,6 +15,10 @@ namespace RenderPassNames
 	const StringRef POD = "POD.pass";
 	const StringRef Shape = "Shape.pass";
 
+	const StringRef Label_TTF_Text = "Label_TTF_Text.pass";
+	const StringRef Label_TTF_Outline = "Label_TTF_Outline.pass";
+	const StringRef Label_TTF_OutlineText = "Label_TTF_OutlineText.pass";
+
 
 	//BEGIN_AUTO_GENERATE_RENDER_PASS_NAMES_CPP
 
@@ -29,12 +33,6 @@ namespace VertexShaderFiles
 	const FileIdRef POD = "POD.vsh";
 	const FileIdRef Shape = "Shape.vsh";
 
-
-
-
-
-
-
 	//END_AUTO_GENERATE_VERTEX_SHADER_NAMES_CPP
 
 }
@@ -47,10 +45,9 @@ namespace PixelShaderFiles
 	const FileIdRef Color = "Color.fsh";
 	const FileIdRef POD = "POD.fsh";
 	const FileIdRef Shape = "Shape.fsh";
-
-
-
-
+	const FileIdRef Label_TTF_Text = "Label_TTF_Text.fsh";
+	const FileIdRef Label_TTF_Outline = "Label_TTF_Outline.fsh";
+	const FileIdRef Label_TTF_OutlineText = "Label_TTF_OutlineText.fsh";
 
 
 
@@ -58,7 +55,7 @@ namespace PixelShaderFiles
 }
 
 
-namespace ShaderConstantNames
+namespace ShaderUniformNames
 {
 	const StringRef AlphaTest = "uAlphaTest";
 
@@ -68,7 +65,8 @@ namespace ShaderConstantNames
 	const StringRef WorldMatrix = "uWorldMatrix";
 	const StringRef WorldViewMatrixIT = "uWorldViewMatrixIT";
 
-
+	const StringRef TextColor = "uTextColor";
+	const StringRef OutlineColor = "uOutlineColor";
 
 
 }

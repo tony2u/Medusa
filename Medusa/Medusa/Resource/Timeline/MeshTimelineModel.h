@@ -4,7 +4,7 @@
 #pragma once
 #include "Resource/Timeline/ITimelineModel.h"
 #include "Core/IO/FileId.h"
-#include "Core/Geometry/Rect2.h"
+#include "Geometry/Rect2.h"
 #include "Core/Collection/SortedDictionary.h"
 MEDUSA_BEGIN;
 

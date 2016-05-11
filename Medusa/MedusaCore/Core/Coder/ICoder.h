@@ -24,19 +24,19 @@ public:
 	virtual size_t GuessResultSize(const IStream& input)const { return 0; }	//0 means not support guessing
 	virtual bool Validate()const { return true; }
 
-	size_t Code(const MemoryByteData& input, MemoryByteData& output)const;
+	size_t Code(const MemoryData& input, MemoryData& output)const;
 	size_t Code(IStream& input, IStream& output)const;
 	size_t Code(const IStream& input, IStream& output)const;
 
 public:
-	MemoryByteData Code(MemoryByteData& input)const;
-	MemoryByteData Code(const MemoryByteData& input)const;
+	MemoryData Code(MemoryData& input)const;
+	MemoryData Code(const MemoryData& input)const;
 
-	MemoryByteData Code(const StringRef& input)const;
-	MemoryByteData Code(HeapString& input)const;
+	MemoryData Code(const StringRef& input)const;
+	MemoryData Code(HeapString& input)const;
 
 protected:
-	virtual size_t OnCode(const MemoryByteData& input, MemoryByteData& output)const { return 0; }
+	virtual size_t OnCode(const MemoryData& input, MemoryData& output)const { return 0; }
 	virtual size_t OnCode(const IStream& input, IStream& output)const { return 0; }
 
 

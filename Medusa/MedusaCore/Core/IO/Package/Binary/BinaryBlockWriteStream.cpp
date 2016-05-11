@@ -93,7 +93,7 @@ uintp BinaryBlockWriteStream::Length() const
 	return Math::Max((uintp)mFileEntry->OriginalSize(), pos);
 }
 
-size_t BinaryBlockWriteStream::WriteBlock(uint blockIndex, const MemoryByteData& data)
+size_t BinaryBlockWriteStream::WriteBlock(uint blockIndex, const MemoryData& data)
 {
 	BinaryPackageBlockHeader* blockHeader = nullptr;
 	if (blockIndex < mBlockHeaders.Count())
@@ -128,9 +128,9 @@ size_t BinaryBlockWriteStream::WriteBlock(uint blockIndex, const MemoryByteData&
 	if (blockHeader->LeftSize != 0)
 	{
 		//write salt data
-		if (mPackage->Header().Flag().IsWriteSaltData())
+		if (MEDUSA_FLAG_HAS(mPackage->Header().Flag(),PackageFlags::WriteSaltData))
 		{
-			MemoryByteData randomData = MemoryByteData::Alloc(blockHeader->LeftSize);
+			MemoryData randomData = MemoryData::Alloc(blockHeader->LeftSize);
 			mPackage->mRandom.NextBytes(randomData);
 			mSourceStream->WriteData(randomData);
 		}

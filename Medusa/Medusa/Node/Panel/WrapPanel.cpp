@@ -26,8 +26,8 @@ bool WrapPanel::ArrangeChildren(const Rect2F& limitRect/*=Rect2F::Zero*/, NodeLa
 	Rect2F leftRect = limitRect;
 	leftRect.Origin.X += mPadding.Left;
 	leftRect.Size.Width -= mPadding.Left + mPadding.Right;
-	leftRect.Origin.Y += mPadding.Bottom;
-	leftRect.Size.Height -= mPadding.Bottom + mPadding.Top;
+	leftRect.Origin.Y += mPadding.Down;
+	leftRect.Size.Height -= mPadding.Down + mPadding.Up;
 
 	Point2F origin = Point2F::Zero;
 	Rect2F itemRect = Rect2F::Zero;

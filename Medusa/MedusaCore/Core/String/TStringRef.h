@@ -44,7 +44,7 @@ public:
 	{
 	}
 
-	TStringRef(const MemoryData<T>& data)
+	explicit TStringRef(const TMemoryData<T>& data)
 	{
 		mBuffer = (const T*)data.Data();
 		mLength = data.LengthAsString();
@@ -95,6 +95,17 @@ public:
 		}
 
 		return TStringRef(mBuffer + index, length);
+	}
+
+	TStringRef SubStringTo(size_t index, T nextChar)const
+	{
+		intp nextIndex = IndexOf(nextChar, index);
+		if (nextIndex<0)
+		{
+			return SubString(index);
+		}
+
+		return SubString(index, nextIndex - index);
 	}
 
 	THeapString<T> operator+(const TStringRef<T>& inString) const;
@@ -178,7 +189,12 @@ public:
 	}
 	intp IndexOf(T inFindChar, intp index)const
 	{
-		const T* p = StdString::FindFirstChar(mBuffer + index, inFindChar);
+		intp length = Length();
+		if (index >= length)
+		{
+			return -1;
+		}
+		const T* p = StdString::FindFirstChar(mBuffer + index, Length() - index, inFindChar);
 		if (p == nullptr)
 		{
 			return -1;
@@ -193,7 +209,13 @@ public:
 
 	intp IndexOf(const TStringRef& inString, intp index)const
 	{
-		const T* p = StdString::FindString(mBuffer + index, inString.Buffer());
+		intp length = Length();
+		if (index >= length)
+		{
+			return -1;
+		}
+
+		const T* p = StdString::FindString(mBuffer + index, Length() - index, inString.c_str(), inString.Length());
 		if (p == nullptr)
 		{
 			return -1;
@@ -207,7 +229,13 @@ public:
 	}
 	intp IndexOfAny(const TStringRef& inString, intp index)const
 	{
-		const T* p = StdString::FindCharAny(mBuffer + index, inString.Buffer());
+		intp length = Length();
+		if (index >= length)
+		{
+			return -1;
+		}
+
+		const T* p = StdString::FindCharAny(mBuffer + index, Length() - index, inString.c_str(), inString.Length());
 		if (p == nullptr)
 		{
 			return -1;
@@ -236,58 +264,64 @@ public:
 
 	intp LastIndexOf(T inFindChar)const
 	{
-		return LastIndexOf(inFindChar, 0);
+		RETURN_OBJECT_IF_TRUE(IsEmpty(), -1);
+		return LastIndexOf(inFindChar, 0, Length() - 1);
 	}
-	intp LastIndexOf(T inFindChar, intp index)const
+	intp LastIndexOf(T inFindChar, intp beginIndex, intp endIndex)const
 	{
 		RETURN_OBJECT_IF_TRUE(IsEmpty(), -1);
-		if (IsLengthAvailable())
+
+		size_t length = Length();
+		if (beginIndex > (intp)length - 1)
 		{
-			size_t length = Length();
-			for (const T* p = mBuffer + length - 1; p >= mBuffer + index; --p)
-			{
-				if (*p == inFindChar)
-				{
-					return p - mBuffer - index;
-				}
-			}
 			return -1;
 		}
-		else
-		{
-			const T* p = StdString::FindLastChar(mBuffer + index, inFindChar);
-			if (p == nullptr)
-			{
-				return -1;
-			}
 
-			return p - mBuffer;
+		if (endIndex < beginIndex)
+		{
+			return -1;
 		}
 
+		for (const T* p = mBuffer + endIndex; p >= mBuffer + beginIndex; --p)
+		{
+			if (*p == inFindChar)
+			{
+				return p - mBuffer - beginIndex;
+			}
+		}
+		return -1;
 
 	}
 	intp LastIndexOf(const TStringRef& inString)const
 	{
-		return LastIndexOf(inString, 0);
+		RETURN_OBJECT_IF_TRUE(IsEmpty(), -1);
+		return LastIndexOf(inString, 0, Length() - 1);
 	}
-	intp LastIndexOf(const TStringRef& inString, intp index)const
+
+	intp LastIndexOf(const TStringRef& inString, intp beginIndex, intp endIndex)const
 	{
 		RETURN_OBJECT_IF_TRUE(IsEmpty(), -1);
 		size_t length = inString.Length();
-		if (length > Length() - index)
+		if (length > Length() - beginIndex)
 		{
 			return -1;
 		}
 
-		intp endIndex = length - 1;
+		if (endIndex < beginIndex)
+		{
+			return -1;
+		}
+
+
+		intp findEndIndex = length - 1;
 		const T* inBuffer = inString.Buffer();
 
 		intp j, ti;
-		for (intp i = mLength - 1; i >= index; i--)
+		for (intp i = endIndex; i >= beginIndex; i--)
 		{
-			if (inBuffer[endIndex] == mBuffer[i])
+			if (inBuffer[findEndIndex] == mBuffer[i])
 			{
-				for (j = endIndex, ti = i; j >= 0 && ti >= 0; --j, --ti)
+				for (j = findEndIndex, ti = i; j >= 0 && ti >= 0; --j, --ti)
 				{
 					if (inBuffer[j] != mBuffer[ti])
 					{
@@ -295,28 +329,31 @@ public:
 					}
 				}
 				++j;
-				if (j == 0 && i - ti == endIndex + 1)
+				if (j == 0 && i - ti == findEndIndex + 1)
 				{
-					return (i - endIndex);
+					return (i - findEndIndex);
 				}
 			}
 		}
 		return -1;
 	}
+
 	intp LastIndexOfAny(const TStringRef& inString)const
 	{
-		return LastIndexOfAny(inString, 0);
+		RETURN_OBJECT_IF_TRUE(IsEmpty(), -1);
+		return LastIndexOfAny(inString, 0, Length() - 1);
 	}
-	intp LastIndexOfAny(const TStringRef& inString, intp index)const
+
+	intp LastIndexOfAny(const TStringRef& inString, intp beginIndex, intp endIndex)const
 	{
 		RETURN_OBJECT_IF_TRUE(IsEmpty(), -1);
 		intp length = Length();
-		if (length == 0 || index < 0 || index >= length)
+		if (length == 0 || beginIndex < 0 || beginIndex >= length || endIndex < beginIndex)
 		{
 			return -1;
 		}
 
-		for (intp i = length - 1; i >= index; --i)
+		for (intp i = endIndex; i >= beginIndex; --i)
 		{
 			if (inString.Contains(mBuffer[i]))
 			{
@@ -498,6 +535,18 @@ public:
 		outResult = StdString::ToInt(mBuffer, &endPtr, radix);
 		return endPtr != mBuffer;
 	}
+	bool TryParseUInt(ulong& outResult)const
+	{
+		return TryParseUInt(outResult, 10);
+	}
+	bool TryParseUInt(ulong& outResult, int radix)const
+	{
+		RETURN_FALSE_IF(IsEmpty());
+		T* endPtr;
+		outResult = StdString::ToUInt(mBuffer, &endPtr, radix);
+		return endPtr != mBuffer;
+	}
+
 	double ToDouble()const
 	{
 		return StdString::ToDouble(mBuffer, nullptr);
@@ -539,18 +588,21 @@ public:
 	{
 		RETURN_ZERO_IF(IsEmpty());
 		size_t length = inString.Length();
+		size_t srcLength = Length();
 
-		if (length > Length())
+		if (length > srcLength)
 		{
 			return 0;
 		}
 
 		size_t count = 0;
 		const T* p = mBuffer;
+		const T* end = mBuffer + srcLength;
 
 		while ((*p) != 0)
 		{
-			p = StdString::FindString(p, inString.Buffer());
+			srcLength = end - p;
+			p = StdString::FindString(p, srcLength, inString.Buffer(), inString.Length());
 			if (p != nullptr)
 			{
 				count++;
@@ -588,6 +640,57 @@ public:
 
 		Memory::SafeCopy(outBuffer, outBufferSize, mBuffer + beginIndex, length);
 	}
+
+	TStringRef<T> TrimAll()const
+	{
+		return TrimBegin().TrimEnd();
+	}
+
+	TStringRef<T> TrimBegin()const
+	{
+		RETURN_SELF_IF_EMPTY(*this);
+		const T* p = mBuffer;
+		const T* end = mBuffer + Length();
+
+		TStringRef<T> trimChars = StdString::ConstValues<T>::TrimChars;
+
+		while (p != end)
+		{
+			if (trimChars.Contains(*p))
+			{
+				++p;
+			}
+			else
+			{
+				break;
+			}
+		}
+
+		return TStringRef<T>(p, Length() + mBuffer - p);
+	}
+
+	TStringRef<T> TrimEnd()const
+	{
+		RETURN_SELF_IF_EMPTY(*this);
+		const T* p = mBuffer + Length() - 1;
+		const T* begin = mBuffer - 1;
+		TStringRef<T> trimChars = StdString::ConstValues<T>::TrimChars;
+
+		while (p != begin)
+		{
+			if (trimChars.Contains(*p))
+			{
+				--p;
+			}
+			else
+			{
+				break;
+			}
+		}
+
+		return TStringRef<T>(mBuffer, p - mBuffer + 1);
+	}
+
 	/*
 		void Split(const TStringRef& delimiter,List<THeapString<T> >& outResults )const
 		{
@@ -622,7 +725,12 @@ public:
 
 	bool IsEmpty()const
 	{
-		return mBuffer == nullptr || *mBuffer == 0;
+		return mBuffer == nullptr || *mBuffer == 0 || mLength == 0;
+	}
+
+	bool IsNullTermitated()const
+	{
+		return !IsEmpty() && mBuffer[Length()] == '\0';
 	}
 
 	bool IsRefEqualsTo(const TStringRef& other)const
@@ -645,13 +753,13 @@ public:
 		return mLength;
 	}
 
-	intp HashCode()const { return (intp)HashUtility::HashString(mBuffer); }
+	intp HashCode()const { return (intp)HashUtility::HashString(mBuffer, mBuffer + Length()); }
 	const T* Buffer()const { return mBuffer; }
 	const T* c_str()const { return mBuffer; }
 	void ForceSetBuffer(const T* buffer) { mBuffer = buffer; }
 	void ForceSetLength(size_t length) { mLength = length; }
 	void ForceUpdateLength() { mLength = Math::UIntMaxValue; }
-	MemoryData<T> ToData()const { return MemoryData<T>::FromStatic(mBuffer, Length()); }
+	TMemoryData<T> ToData()const { return TMemoryData<T>::FromStatic(mBuffer, Length()); }
 
 
 private:
@@ -674,9 +782,3 @@ typedef TStringRef<wchar_t> WStringRef;
 
 
 MEDUSA_END;
-
-#ifdef MEDUSA_SCRIPT
-MEDUSA_SCRIPT_BEGIN;
-void RegisterStringRef(asIScriptEngine* engine);
-MEDUSA_SCRIPT_END;
-#endif

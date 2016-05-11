@@ -4,12 +4,12 @@
 #pragma once
 #include "MedusaPreDeclares.h"
 #include "Resource/Model/Mesh/IMesh.h"
-#include "Core/Geometry/Point2.h"
-#include "Core/Geometry/Point3.h"
-#include "Core/Geometry/Color4.h"
+#include "Geometry/Point2.h"
+#include "Geometry/Point3.h"
+#include "Geometry/Color4.h"
 #include "Graphics/GraphicsTypes.h"
 #include "Core/Collection/Array.h"
-#include "Core/Geometry/Rect2.h"
+#include "Geometry/Rect2.h"
 
 MEDUSA_BEGIN;
 
@@ -35,8 +35,8 @@ public:
 	Array<Point2F, 4>& MutableTexcoords() { return mTexcoords; }
 
 
-	void SetVertices(const Array<Point3F, 4>& val);
-	void SetTexcoords(const Array<Point2F, 4>& val);
+	void SetVertices(const List<Point3F>& val);
+	void SetTexcoords(const List<Point2F>& val);
 
 
 	void SetVertex(uint i, const Point3F& val);
@@ -50,7 +50,7 @@ public:
 
 	void Initialize(const Size2U& textureSize, const Rect2F& textureRect = Rect2F::Zero, const Color4F& color = Color4F::White);
 	void Initialize(const Rect2F& quadRect, const Rect2F& texcoord, const Color4F& color = Color4F::White);
-	void Initialize(const Array<Point3F, 4>& vertices, const Array<Point2F, 4>& texcoords, const Color4F& color = Color4F::White);
+	void Initialize(const List<Point3F>& vertices, const List<Point2F>& texcoords, const Color4F& color = Color4F::White);
 
 	virtual INode* CreateCloneInstance()const;
 	bool CopyFrom(const TextureQuadMesh& val);

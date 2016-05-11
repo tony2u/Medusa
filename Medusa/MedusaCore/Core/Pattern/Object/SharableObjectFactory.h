@@ -20,7 +20,7 @@ public:
 	TItem* Create()
 	{
 		const RTTIClass* rttiClass = &TItem::ClassStatic();
-		T* item=mItems.TryGetValueWithFailed(rttiClass, nullptr);
+		T* item=mItems.GetOptional(rttiClass, nullptr);
 		if (item!=nullptr)
 		{
 			return (TItem*)item;

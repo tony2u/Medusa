@@ -29,16 +29,16 @@ FileMapTagItem::~FileMapTagItem()
 
 const FileMapNameItem* FileMapTagItem::Find(StringRef name) const
 {
-	return mItems.TryGetValueWithFailed(name, nullptr);
+	return mItems.GetOptional(name, nullptr);
 }
 FileMapNameItem* FileMapTagItem::Find(StringRef name)
 {
-	return mItems.TryGetValueWithFailed(name, nullptr);
+	return mItems.GetOptional(name, nullptr);
 }
 
 FileMapNameItem* FileMapTagItem::FindOrCreate(StringRef name)
 {
-	FileMapNameItem* item= mItems.TryGetValueWithFailed(name, nullptr);
+	FileMapNameItem* item= mItems.GetOptional(name, nullptr);
 	if (item==nullptr)
 	{
 		item = new FileMapNameItem(name);
@@ -52,14 +52,14 @@ FileMapNameItem* FileMapTagItem::FindOrCreate(StringRef name)
 
 const FileMapOrderItem* FileMapTagItem::FindOrderItem(const FileIdRef& fileId) const
 {
-	const FileMapNameItem* nameItem = mItems.TryGetValueWithFailed(fileId.Name, nullptr);
+	const FileMapNameItem* nameItem = mItems.GetOptional(fileId.Name, nullptr);
 	RETURN_NULL_IF_NULL(nameItem);
 	return nameItem->Find((uint)fileId.Order);
 }
 
 FileMapOrderItem* FileMapTagItem::FindOrderItem(const FileIdRef& fileId)
 {
-	FileMapNameItem* nameItem = mItems.TryGetValueWithFailed(fileId.Name, nullptr);
+	FileMapNameItem* nameItem = mItems.GetOptional(fileId.Name, nullptr);
 	RETURN_NULL_IF_NULL(nameItem);
 	return nameItem->Find((uint)fileId.Order);
 }
@@ -74,7 +74,7 @@ FileMapOrderItem* FileMapTagItem::FindOrCreateOrderItem(const FileIdRef& fileId)
 
 bool FileMapTagItem::ContainsOrderItem(const FileIdRef& fileId) const
 {
-	const FileMapNameItem* nameItem = mItems.TryGetValueWithFailed(fileId.Name, nullptr);
+	const FileMapNameItem* nameItem = mItems.GetOptional(fileId.Name, nullptr);
 	RETURN_FALSE_IF_NULL(nameItem);
 	return nameItem->Contains((uint)fileId.Order);
 }
@@ -104,7 +104,7 @@ FileMapNameItem* FileMapTagItem::Add(const StringRef& name)
 bool FileMapTagItem::RemoveOrderItems(const FileEntry& fileEntry)
 {
 	FileId fileId = FileId::ParseFrom(fileEntry.Name());
-	FileMapNameItem* nameItem=mItems.TryGetValueWithFailed(fileId.Name, nullptr);
+	FileMapNameItem* nameItem=mItems.GetOptional(fileId.Name, nullptr);
 	if (nameItem->RemoveOrderItems(fileEntry))
 	{
 		if (!nameItem->IsEmpty())

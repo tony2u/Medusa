@@ -3,9 +3,9 @@
 // license that can be found in the LICENSE file.
 #pragma once
 #include "MedusaPreDeclares.h"
-#include "Core/Geometry/Quad.h"
-#include "Core/Geometry/Point2.h"
-#include "Core/Geometry/Point3.h"
+#include "Geometry/Quad.h"
+#include "Geometry/Point2.h"
+#include "Geometry/Point3.h"
 
 MEDUSA_BEGIN;
 

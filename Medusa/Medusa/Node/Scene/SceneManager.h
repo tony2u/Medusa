@@ -8,15 +8,14 @@
 #include "Core/Command/EventArg/IEventArg.h"
 #include "Core/Task/FrameTaskStage.h"
 #include "Node/Scene/ChangedNodeCollector.h"
-#include "Node/Scene/ScenePushFlags.h"
-#include "Node/Scene/ScenePopFlags.h"
+#include "Core/IO/FileIdRef.h"
 
 MEDUSA_BEGIN;
 
 class SceneManager :public Singleton < SceneManager >
 {
 	friend class SceneSweeper;
-	friend class Singleton < SceneManager > ;
+	friend class Singleton < SceneManager >;
 	SceneManager(void);
 	~SceneManager(void);
 public:
@@ -30,23 +29,26 @@ public:
 	void Draw(float dt);
 public:
 	template<typename T>
-	T* PushScene(ScenePushFlags pushFlag = ScenePushFlags::None, const IEventArg& e = IEventArg::Empty) { return (T*)PushSceneByName(T::ClassNameStatic(), pushFlag, e); }
+	T* Push(ScenePushFlags pushFlag = ScenePushFlags::None, const IEventArg& e = IEventArg::Empty) { return (T*)PushEx(T::ClassNameStatic(), T::EditorFileNameStatic(), T::ScriptFileNameStatic(), pushFlag, e); }
 
 	template<typename T>
-	T* ReplaceToScene(ScenePopFlags popFlag = ScenePopFlags::None, ScenePushFlags pushFlag = ScenePushFlags::None, const IEventArg& e = IEventArg::Empty) { return (T*)ReplaceSceneByName(T::ClassNameStatic(), popFlag, pushFlag, e); }
+	T* ReplaceTo(ScenePopFlags popFlag = ScenePopFlags::None, ScenePushFlags pushFlag = ScenePushFlags::None, const IEventArg& e = IEventArg::Empty) { return (T*)ReplaceToEx(T::ClassNameStatic(), T::EditorFileNameStatic(), T::ScriptFileNameStatic(), popFlag, pushFlag, e); }
 
-	IScene* PopScene(ScenePopFlags popFlag = ScenePopFlags::None);
+	IScene* Pop(ScenePopFlags popFlag = ScenePopFlags::None);
 public:
-	IScene* PushSceneByName(const StringRef& className, ScenePushFlags pushFlag = ScenePushFlags::None, const IEventArg& e = IEventArg::Empty);
-	IScene* ReplaceSceneByName(const StringRef& className, ScenePopFlags popFlag = ScenePopFlags::None, ScenePushFlags pushFlag = ScenePushFlags::None, const IEventArg& e = IEventArg::Empty);
-public:
-	IScene* RunningScene()const;
+	IScene* Push(const StringRef& className, ScenePushFlags pushFlag = ScenePushFlags::None, const IEventArg& e = IEventArg::Empty);
+	IScene* ReplaceTo(const StringRef& className, ScenePopFlags popFlag = ScenePopFlags::None, ScenePushFlags pushFlag = ScenePushFlags::None, const IEventArg& e = IEventArg::Empty);
 
-	IScene* ReplaceToScene(IScene* scene, ScenePopFlags popFlag = ScenePopFlags::None, ScenePushFlags pushFlag = ScenePushFlags::None);
-	bool IsSingleScene()const { return mScenes.Count() == 1; }
+	IScene* PushEx(const StringRef& className, const FileIdRef& editorFile = FileIdRef::Empty, const FileIdRef& scriptFile = FileIdRef::Empty, ScenePushFlags pushFlag = ScenePushFlags::None, const IEventArg& e = IEventArg::Empty);
+	IScene* ReplaceToEx(const StringRef& className, const FileIdRef& editorFile = FileIdRef::Empty, const FileIdRef& scriptFile = FileIdRef::Empty, ScenePopFlags popFlag = ScenePopFlags::None, ScenePushFlags pushFlag = ScenePushFlags::None, const IEventArg& e = IEventArg::Empty);
+public:
+	IScene* Current()const;
+
+	IScene* ReplaceTo(IScene* scene, ScenePopFlags popFlag = ScenePopFlags::None, ScenePushFlags pushFlag = ScenePushFlags::None);
+	bool IsSingle()const { return mScenes.Count() == 1; }
 	const SceneStack& Scenes() const { return mScenes; }
 	SceneStack& MutableScenes() { return mScenes; }
-	void PushScene(IScene* scene, ScenePushFlags pushFlag = ScenePushFlags::None);
+	void Push(IScene* scene, ScenePushFlags pushFlag = ScenePushFlags::None);
 
 protected:
 	bool DeleteScene(IScene* scene, bool isAsync = false);

@@ -36,7 +36,7 @@ protected:
 	virtual IStream* OnWriteFile(FileEntry& file, FileOpenMode openMode = FileOpenMode::ReadOnly, FileDataType dataType = FileDataType::Binary) override;
 	virtual bool OnRemoveFile(FileEntry& file) override;
 private:
-	FileEntry* RegisterMemory(const MemoryByteData& data, const FileIdRef& fileId);
+	FileEntry* RegisterMemory(const MemoryData& data, const FileIdRef& fileId);
 
 protected:
 	PackageFlags mFlags;

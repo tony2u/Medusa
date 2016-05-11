@@ -3,6 +3,7 @@
 // license that can be found in the LICENSE file.
 #pragma once
 #include "Core/Action/BaseInfiniteAction.h"
+
 MEDUSA_BEGIN;
 
 template<typename T>
@@ -10,7 +11,7 @@ class IncreaseAction :public BaseInfiniteAction
 {
 public:
 	IncreaseAction(T* data, T min, T max, T speed)
-		:mData(data), mRange(min, max), mSpeed(speed)
+		:mData(data), mMin(min), mMax(max), mSpeed(speed)
 	{
 
 	}
@@ -20,17 +21,17 @@ public:
 	{
 		RETURN_FALSE_IF_FALSE(BaseInfiniteAction::Update(dt, blend));
 		*mData += mSpeed*dt*blend;
-		*mData = Math::Clamp(*mData, mRange.Min, mRange.Max);
+		*mData = Math::Clamp(*mData, mMin, mMax);
 		return true;
 	}
 
 	virtual IncreaseAction* Clone()const override
 	{
-		return new IncreaseAction(mData, mRange.Min, mRange.Max, mSpeed);
+		return new IncreaseAction(mData, mMin, mMax, mSpeed);
 	}
 	virtual IncreaseAction* Reverse()const override
 	{
-		return new IncreaseAction(mData, mRange.Min, mRange.Max, -mSpeed);
+		return new IncreaseAction(mData, mMin, mMax, -mSpeed);
 	}
 
 	static IncreaseAction* Create(T* data, T min, T max, T speed)
@@ -38,7 +39,8 @@ public:
 		return new IncreaseAction(data, min, max, speed);
 	}
 private:
-	Range<T> mRange;
+	T mMin;
+	T mMax;
 	T* mData;
 	T mSpeed;
 };

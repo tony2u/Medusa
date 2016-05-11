@@ -28,7 +28,7 @@ PFXEffect* PFXEffect::CreateFromFile( const FileIdRef& fileId )
 	return nullptr;
 }
 
-PFXEffect* PFXEffect::CreateFromData( const FileIdRef& fileId,MemoryByteData data )
+PFXEffect* PFXEffect::CreateFromData( const FileIdRef& fileId,MemoryData data )
 {
 	MemoryStream stream(data);
 	List<HeapString> allLines;

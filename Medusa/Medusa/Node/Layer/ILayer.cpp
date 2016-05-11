@@ -6,7 +6,6 @@
 #include "Core/Command/EventArg/IEventArg.h"
 #include "Node/Layer/LayerFactory.h"
 #include "Graphics/ResolutionAdapter.h"
-#include "Core/Script/ScriptDefines.h"
 
 
 MEDUSA_BEGIN;
@@ -30,28 +29,7 @@ bool ILayer::Initialize()
 }
 
 
-MEDUSA_IMPLEMENT_LAYER(ILayer, INode, StringRef::Empty);
+MEDUSA_IMPLEMENT_LAYER(ILayer, INode, StringRef::Empty, StringRef::Empty);
 
 
 MEDUSA_END;
-
-
-#ifdef MEDUSA_SCRIPT
-#include "CoreLib/Common/angelscript.h"
-
-MEDUSA_SCRIPT_BEGIN;
-
-void RegisterILayer(asIScriptEngine* engine)
-{
-	int r2;
-	r2 = engine->RegisterObjectType(MACRO_TO_STRING(ILayer), sizeof(ILayer), asOBJ_REF | asOBJ_NOCOUNT); MEDUSA_ASSERT_SILENT(r2 >= 0);
-	MEDUSA_SCRIPT_REGISTER_NODE_NEW_DELETE(engine, ILayer);
-
-	MEDUSA_SCRIPT_REGISTER_CAST_BASE_DERIVED(engine, INode, ILayer);
-
-	RegisterILayer_Methods<ILayer>(engine, MACRO_TO_STRING(ILayer));
-
-}
-
-MEDUSA_SCRIPT_END;
-#endif

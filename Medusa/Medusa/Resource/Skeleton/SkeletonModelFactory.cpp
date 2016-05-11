@@ -31,6 +31,7 @@ bool SkeletonModelFactory::Uninitialize()
 
 SpineSkeletonModel* SkeletonModelFactory::CreateSpineFromJson(const FileIdRef& skeletonfileId, const FileIdRef& atlasFileId, bool isPreCalculated/*=false*/, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
+	if (shareType!=ResourceShareType::None)
 	{
 		ISkeletonModel* val = Find(skeletonfileId);
 		RETURN_SELF_IF_NOT_NULL((SpineSkeletonModel*)val);

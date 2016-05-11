@@ -8,7 +8,7 @@
 #include "Graphics/Buffer/TexCoordGraphicsBuffer.h"
 #include "Graphics/Buffer/ColorGraphicsBuffer.h"
 #include "Graphics/Buffer/NormalGraphicsBuffer.h"
-#include "Core/Geometry/Matrix4.h"
+#include "Geometry/Matrix4.h"
 
 MEDUSA_BEGIN;
 

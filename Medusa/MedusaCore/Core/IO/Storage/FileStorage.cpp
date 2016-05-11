@@ -83,7 +83,7 @@ bool FileStorage::RequireKey() const
 	return false;
 }
 
-void FileStorage::SetKey(const MemoryByteData& val)
+void FileStorage::SetKey(const MemoryData& val)
 {
 	mCoderChain.SetKey(val);
 
@@ -93,7 +93,7 @@ void FileStorage::SetKey(const MemoryByteData& val)
 	}
 }
 
-bool FileStorage::ValidateKey(const MemoryByteData& val) const
+bool FileStorage::ValidateKey(const MemoryData& val) const
 {
 	return true;
 }
@@ -128,7 +128,7 @@ bool FileStorage::AddCoderRule(const StringRef& fileExtension, CoderList coders)
 
 	if (!mCodeRules.TryAdd(fileExtension, coders))
 	{
-		CoderList oldCoders = mCodeRules.GetValue(fileExtension);
+		CoderList oldCoders = mCodeRules.Get(fileExtension);
 		Log::FormatError("Duplicate coder rule for {}:{}. Original is {}", fileExtension, coders, oldCoders);
 		return false;
 	}
@@ -145,7 +145,7 @@ bool FileStorage::AddCoderRule(const StringRef& fileExtension, CoderList coders)
 
 const CoderList* FileStorage::GetCoderRule(const StringRef& fileExtension)const
 {
-	return mCodeRules.TryGetValue(fileExtension);
+	return mCodeRules.TryGet(fileExtension);
 }
 
 CoderList FileStorage::GetFileCoders(const FileEntry& file) const
@@ -171,7 +171,7 @@ const CoderChain* FileStorage::GetFileCoderChain(const FileEntry& file) const
 		return &mCoderChain;
 	}
 
-	return mOtherCoderChains.TryGetValueWithFailed(coders, nullptr);
+	return mOtherCoderChains.GetOptional(coders, nullptr);
 }
 
 #pragma region Dir
@@ -416,30 +416,30 @@ FileEntry* FileStorage::FindFile(const StringRef& path, DirectoryEntry* parent /
 }
 
 
-MemoryByteData FileStorage::ReadAllData(const FileEntry& fileEntry, DataReadingMode mode /*= DataReadingMode::AlwaysCopy*/) const
+MemoryData FileStorage::ReadAllData(const FileEntry& fileEntry, DataReadingMode mode /*= DataReadingMode::AlwaysCopy*/) const
 {
 	const IStream* stream = ReadFileHelper(fileEntry, FileDataType::Binary);
 	if (stream == nullptr)
 	{
-		return MemoryByteData::Empty;
+		return MemoryData::Empty;
 	}
-	MemoryByteData data = stream->ReadToEnd(mode);
+	MemoryData data = stream->ReadToEnd(mode);
 	SAFE_RELEASE(stream);
 	return data;
 }
 
-MemoryByteData FileStorage::ReadAllData(const StringRef& path, DirectoryEntry* parent /*= nullptr*/, DataReadingMode mode /*= DataReadingMode::AlwaysCopy*/) const
+MemoryData FileStorage::ReadAllData(const StringRef& path, DirectoryEntry* parent /*= nullptr*/, DataReadingMode mode /*= DataReadingMode::AlwaysCopy*/) const
 {
 	const FileEntry* fileEntry = FindFile(path, parent);
 	if (fileEntry == nullptr)
 	{
-		return MemoryByteData::Empty;
+		return MemoryData::Empty;
 	}
 
 	return ReadAllData(*fileEntry, mode);
 }
 
-FileEntry* FileStorage::SaveFile(const MemoryByteData& data, const StringRef& path /*= StringRef::Empty*/, DirectoryEntry* parent /*= nullptr*/, DataReadingMode mode /*= DataReadingMode::AlwaysCopy*/)
+FileEntry* FileStorage::SaveFile(const MemoryData& data, const StringRef& path /*= StringRef::Empty*/, DirectoryEntry* parent /*= nullptr*/, DataReadingMode mode /*= DataReadingMode::AlwaysCopy*/)
 {
 	FileEntry* fileEntry = FindOrCreateFileEntry(path, parent);
 
@@ -893,11 +893,17 @@ const IStream* FileStorage::ReadFileHelper(const FileEntry& file, FileDataType d
 			const auto data = tempStream->CurrentBuffer();
 			SAFE_DELETE(tempStream);
 			MemoryStream* outputStream = new MemoryStream(data);
+
+			const IStream* tempStream2 = resultStream;
 			resultStream = outputStream;
+			tempStream2->Release();
 		}
 		else
 		{
+			const IStream* tempStream = resultStream;
 			resultStream = new BlockCodeReadStream(*resultStream, BlockSize(), *coderChain, file);
+			tempStream->Release();
+
 		}
 	}
 
@@ -913,17 +919,23 @@ IStream* FileStorage::WriteFileHelper(FileEntry& file, FileOpenMode openMode /*=
 	{
 		if (IsWholeFileCoding())
 		{
+			IStream* tempStream = resultStream;
 			resultStream = new FileCodeWriteStream(*resultStream, *coderChain, file);
+			tempStream->Release();
 		}
 		else
 		{
+			IStream* tempStream = resultStream;
 			resultStream = new BlockCodeWriteStream(*resultStream, BlockSize(), *coderChain, file);
+			tempStream->Release();
 		}
 	}
 
 	if (Hasher() != HasherType::None)
 	{
+		IStream* tempStream = resultStream;
 		resultStream = new HashStream(*resultStream, Hasher(), [&file](StringRef result) {file.SetSignature(result); });
+		tempStream->Release();
 
 	}
 
@@ -935,8 +947,8 @@ IStream* FileStorage::WriteFileHelper(FileEntry& file, FileOpenMode openMode /*=
 
 //SIREN_BODY_METADATA_BEGIN
 SIREN_METADATA(FileStorage, 11);
-SIREN_PROPERTY_METADATA_STRUCT(0, FileStorage, RootDir, 7);
-SIREN_PROPERTY_METADATA_STRUCT(1, FileStorage, CodeRules, 9);
+SIREN_FIELD_METADATA_STRUCT(0, FileStorage, RootDir, 7);
+SIREN_FIELD_METADATA_STRUCT(1, FileStorage, CodeRules, 9);
 //SIREN_BODY_METADATA_END
 
 MEDUSA_END;

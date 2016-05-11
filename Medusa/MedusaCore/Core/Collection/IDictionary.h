@@ -43,25 +43,25 @@ public:
 	typedef ICollection<TKey> KeyCollectionType;
 	typedef ICollection<TValue> ValueCollectionType;
 public:
-	TValueConstReturnType operator[](TKeyParameterType key)const{return GetValue(key);}
-	TValueReferenceType operator[](TKeyParameterType key){return GetValue(key);}
+	TValueConstReturnType operator[](TKeyParameterType key)const{return Get(key);}
+	TValueReferenceType operator[](TKeyParameterType key){return Get(key);}
 public:
 	//virtual KeyCollectionType& GetKeys()const=0;
 	//virtual ValueCollectionType& GetValues()const=0;
 	virtual bool ContainsKey(TKeyParameterType key)const=0;
 	virtual bool ContainsValue(TValueParameterType value)const=0;
 
-	virtual TValueReferenceType GetValue(TKeyParameterType key)=0;
-	virtual TValueConstReturnType GetValue(TKeyParameterType key)const=0;
-	virtual void SetValue(TKeyParameterType key,TValueParameterType value)=0;
+	virtual TValueReferenceType Get(TKeyParameterType key)=0;
+	virtual TValueConstReturnType Get(TKeyParameterType key)const=0;
+	virtual void Set(TKeyParameterType key,TValueParameterType value)=0;
 
-	virtual TValuePointerType TryGetValue(TKeyParameterType key)=0;
+	virtual TValuePointerType TryGet(TKeyParameterType key)=0;
 	virtual TKeyPointerType TryGetKey(TValueParameterType value)=0;
 
-	virtual TValueConstPointerType TryGetValue(TKeyParameterType key)const=0;
+	virtual TValueConstPointerType TryGet(TKeyParameterType key)const=0;
 	virtual TKeyConstPointerType TryGetKey(TValueParameterType value)const=0;
 
-	virtual TValue TryGetValueWithFailed(TKeyParameterType key,TValueParameterType failedReturn)const=0;
+	virtual TValueConstReturnType GetOptional(TKeyParameterType key,TValueParameterType failedReturn)const=0;
 
 	virtual void Add(TKeyParameterType key,TValueParameterType value)=0;
 	virtual bool TryAdd(TKeyParameterType key,TValueParameterType value)=0;
@@ -71,7 +71,7 @@ public:
 	virtual bool RemoveValue(TValueParameterType value)=0;
 
 
-	virtual TValue RemoveKeyWithValueReturned(TKeyParameterType key,TValueParameterType failedReturn)=0;
+	virtual TValue RemoveKeyOptional(TKeyParameterType key,TValueParameterType failedReturn)=0;
 
 	virtual void Add(TParameterType val)=0;
 	virtual bool TryAdd(TParameterType val)=0;

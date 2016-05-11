@@ -24,9 +24,9 @@ BaseFontModel::~BaseFontModel(void)
 	SAFE_DELETE_DICTIONARY_VALUE(mCachesMeshes);
 }
 
-bool BaseFontModel::Initialzie(ModelLoadingOptions loadingOptions/*=ModelLoadingOptions::None*/)
+bool BaseFontModel::Initialize(ModelLoadingOptions loadingOptions/*=ModelLoadingOptions::None*/)
 {
-	RETURN_FALSE_IF_FALSE(BaseMultipleModel::Initialzie(loadingOptions));
+	RETURN_FALSE_IF_FALSE(BaseMultipleModel::Initialize(loadingOptions));
 
 	
 	return true;
@@ -43,14 +43,7 @@ void BaseFontModel::ResetCachedMeshes()
 	}
 }
 
-INode* BaseFontModel::CreateCloneInstance()
-{
-	return nullptr;
-}
 
-INode* BaseFontModel::CreateReferenceInstance()
-{
-	return nullptr;
-}
+
 
 MEDUSA_END;

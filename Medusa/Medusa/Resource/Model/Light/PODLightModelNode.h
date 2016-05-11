@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 #pragma once
 #include "Resource/Model/Light/BaseLightModelNode.h"
-#include "Core/Geometry/Color3.h"
+#include "Geometry/Color3.h"
 
 
 MEDUSA_BEGIN;

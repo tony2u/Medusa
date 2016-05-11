@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 #pragma once
 #include "Core/String/HeapString.h"
-#include "Core/Geometry/Moveable/DefaultMoveable.h"
+#include "Geometry/Moveable/DefaultMoveable.h"
 #include "Core/Collection/List.h"
 
 MEDUSA_BEGIN;

@@ -10,7 +10,7 @@ MEDUSA_BEGIN;
 class TapGestureRecognizer:public IGestureRecognizer
 {
 public:
-	TapGestureRecognizer(INode* node,GestureFlags flags=GestureFlags::None,const FileIdRef& audioEffect=FileIdRef::Empty);
+	TapGestureRecognizer(INode* node);
 	virtual ~TapGestureRecognizer(void);
 	virtual InputType GetInputType()const{return InputType::Tap;}
 
@@ -18,7 +18,7 @@ public:
 	virtual void TouchesMoved(TouchEventArg& e);
 	virtual void TouchesEnded(TouchEventArg& e);
 	virtual void TouchesCancelled(TouchEventArg& e);
-	virtual void TryFireEvent(TouchEventArg& e);
+	virtual void MockTouch(TouchEventArg& e);
 
 	virtual bool IsValid()const;
 	virtual void Reset();

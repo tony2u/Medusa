@@ -5,7 +5,7 @@
 #include "Resource/Model/BaseMultipleModel.h"
 #include "Resource/Material/IMaterial.h"
 #include "Resource/Font/IFont.h"
-#include "Core/Geometry/Color4.h"
+#include "Geometry/Color4.h"
 #include "Resource/Model/Mesh/Font/FntTextMesh.h"
 
 MEDUSA_BEGIN;
@@ -18,7 +18,7 @@ public:
 	BaseFontModel(IFont* font,Alignment alignment=Alignment::LeftBottom,Size2U restrictSize=Size2U::Zero);
 	virtual ~BaseFontModel(void);
 public:
-	virtual bool Initialzie(ModelLoadingOptions loadingOptions=ModelLoadingOptions::None);
+	virtual bool Initialize(ModelLoadingOptions loadingOptions=ModelLoadingOptions::None);
 	IFont* Font() const { return mFont; }
 	Alignment GetAlignment() const { return mAlignment; }
 	const Color4F& Color() const { return mColor; }
@@ -27,9 +27,6 @@ public:
 
 	virtual void SetText(StringRef text)=0;
 	virtual void SetText(WStringRef text)=0;
-	virtual INode* CreateCloneInstance();
-	virtual INode* CreateReferenceInstance();
-
 
 protected:
 	void ResetCachedMeshes();

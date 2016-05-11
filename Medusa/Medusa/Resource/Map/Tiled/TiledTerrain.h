@@ -5,6 +5,7 @@
 #include "MedusaPreDeclares.h"
 #include "Core/Pattern/Property/StringPropertySet.h"
 #include "Core/String/HeapString.h"
+
 MEDUSA_BEGIN;
 
 class TiledTerrain
@@ -12,6 +13,7 @@ class TiledTerrain
 public:
 	TiledTerrain();
 	~TiledTerrain();
+	bool operator==(const TiledTerrain& val)const { return mTileId == val.mTileId; }
 
 	StringRef Name() const { return mName; }
 	void SetName(const StringRef& val) { mName = val; }
@@ -22,6 +24,7 @@ public:
 	StringPropertySet& MutableProperties() { return mProperties; }
 
 	void SetProperties(const StringPropertySet& val) { mProperties = val; }
+	bool Parse(const pugi::xml_node& node);
 
 private:
 	HeapString mName;

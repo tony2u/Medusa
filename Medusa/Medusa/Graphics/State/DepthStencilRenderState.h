@@ -3,8 +3,6 @@
 // license that can be found in the LICENSE file.
 #pragma  once
 #include "Graphics/State/IRenderState.h"
-#include "Graphics/GraphicsFuncType.h"
-#include "Graphics/GraphicsStencilOperation.h"
 MEDUSA_BEGIN;
 
 class DepthStencilRenderState :public IRenderState

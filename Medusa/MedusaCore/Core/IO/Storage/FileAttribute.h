@@ -31,7 +31,7 @@ public:
 //SIREN_HEADER_METHOD_END
 public:
 	bool IsTrivial()const { return mCoders == 0; }
-	bool IsReadonly()const { return !MEDUSA_HAS_FLAG(mPermission, FilePermission::Write); }
+	bool IsReadonly()const { return !MEDUSA_FLAG_HAS(mPermission, FilePermission::Write); }
 	void UseDefaultCoder();
 //SIREN_HEADER_FIELD_BEGIN
 protected:
@@ -45,11 +45,11 @@ protected:
 //SIREN_HEADER_SCHEMA_BEGIN
 struct FileAttribute::Schema
 {
-	SIREN_PROPERTY(0, 0, Required, FileAttribute, HasherType, mHasher);
-	SIREN_PROPERTY(1, 1, Optional, FileAttribute, uint, mChunkSize);
-	SIREN_PROPERTY(2, 2, Optional, FileAttribute, uint64, mCoders);
-	SIREN_PROPERTY(3, 3, Optional, FileAttribute, FilePermission, mPermission);
-	SIREN_PROPERTIES_4(void,FileAttribute);
+	SIREN_FIELD(0, 0, Required, FileAttribute, HasherType, mHasher);
+	SIREN_FIELD(1, 1, Optional, FileAttribute, uint, mChunkSize);
+	SIREN_FIELD(2, 2, Optional, FileAttribute, uint64, mCoders);
+	SIREN_FIELD(3, 3, Optional, FileAttribute, FilePermission, mPermission);
+	SIREN_FIELDS_4(void,FileAttribute);
 };//SIREN_HEADER_SCHEMA_END
 
 MEDUSA_END;

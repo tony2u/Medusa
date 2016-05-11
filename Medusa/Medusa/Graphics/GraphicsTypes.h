@@ -228,7 +228,7 @@ enum class GraphicsTextureWrapMode
 
 enum class GraphicsRenderBufferInternalFormat
 {
-	None=0,
+	None = 0,
 	//color
 	RGBA8 = 0x8058,	//GL_RGBA8 or GL_RGBA8_OES
 	RGBA4 = GL_RGBA4,
@@ -255,7 +255,10 @@ Specifies the number of color components in the texture.
 */
 enum class GraphicsInternalFormat
 {
+	None = 0,
 	Alpha = GL_ALPHA,
+	Red = GL_RED,
+
 	RGB = GL_RGB,
 	RGBA = GL_RGBA,
 	Luminance = GL_LUMINANCE,
@@ -269,30 +272,150 @@ enum class GraphicsInternalFormat
 	Compressed_ETC1_RGB8_OES = GL_ETC1_RGB8_OES,	//for iphone
 	BGRA = GL_BGRA,
 	DepthComponent = GL_DEPTH_COMPONENT,
+
+#ifdef GL_COMPRESSED_RGBA_S3TC_DXT1_EXT
+	S3TC_DXT1 = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT,
+#else
+	S3TC_DXT1 = 0x83F1,
+#endif
+#ifdef GL_COMPRESSED_RGBA_S3TC_DXT1_EXT
+	S3TC_DXT3 = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT,
+#else
+	S3TC_DXT3 = 0x83F2,
+#endif
+#ifdef GL_COMPRESSED_RGBA_S3TC_DXT5_EXT
+	S3TC_DXT5 = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT,
+#else
+	S3TC_DXT5 = 0x83F3,
+#endif
+
+#ifdef GL_ATC_RGB_AMD
+	ATC_RGB = GL_ATC_RGB_AMD,
+#else
+	ATC_RGB = 0x8C92,
+#endif
+#ifdef GL_ATC_RGBA_EXPLICIT_ALPHA_AMD
+	ATC_RGBA_EXPLICIT_ALPHA = GL_ATC_RGBA_EXPLICIT_ALPHA_AMD,
+#else
+	ATC_RGBA_EXPLICIT_ALPHA = 0x8C93,
+#endif
+#ifdef GL_COMPRESSED_RGBA_S3TC_DXT5_EXT
+	ATC_RGBA_INTERPOLATED_ALPHA = GL_ATC_RGBA_INTERPOLATED_ALPHA_AMD,
+#else
+	ATC_RGBA_INTERPOLATED_ALPHA = 0x87EE,
+#endif
+
 };
-
-
-//Specifies the format of the pixel data.
-//enum class GraphicsPixelFormat
-//{
-//	RGB=GL_RGB,
-//	RGBA=GL_RGBA,
-//	Alpha=GL_ALPHA,
-//	Luminance=GL_LUMINANCE,
-//	LuminanceAlpha=GL_LUMINANCE_ALPHA,
-//	BGRA=GL_BGRA,
-//	DepthComponent=GL_DEPTH_COMPONENT
-//};
 
 enum class GraphicsPixelFormat
 {
+	None = 0,
+	Red = GL_RED,
 	RGB = GL_RGB,
 	RGBA = GL_RGBA,
 	Alpha = GL_ALPHA,
 	Luminance = GL_LUMINANCE,
 	LuminanceAlpha = GL_LUMINANCE_ALPHA,
 	BGRA = GL_BGRA,
-	DepthComponent = GL_DEPTH_COMPONENT
+	DepthComponent = GL_DEPTH_COMPONENT,
+};
+
+
+
+enum class GraphicsPixelDataType
+{
+	None = 0,
+	Byte = GL_UNSIGNED_BYTE,
+	UnsignedShort565 = GL_UNSIGNED_SHORT_5_6_5,
+	UnsignedShort4444 = GL_UNSIGNED_SHORT_4_4_4_4,
+	UnsignedShort5551 = GL_UNSIGNED_SHORT_5_5_5_1,
+	HalfFloatOES = GL_HALF_FLOAT_OES,
+	FloatOES = GL_FLOAT,
+	UInt = GL_UNSIGNED_INT
+};
+
+enum class GraphicsHintMode
+{
+	Fastest = GL_FASTEST,
+	Nicest = GL_NICEST,
+	DontCare = GL_DONT_CARE
+};
+
+enum class GraphicsStencilOperation
+{
+	Keep = GL_KEEP,
+	Zero = GL_ZERO,
+	ReplaceToRef = GL_REPLACE,
+	Increase = GL_INCR,
+	IncreaseWrap = GL_INCR_WRAP,
+	Decrease = GL_DECR,
+	DecreaseWrap = GL_DECR_WRAP,
+	Invert = GL_INVERT
+};
+
+enum class GraphicsBlendEquation
+{
+	Add = GL_FUNC_ADD,
+	Subtract = GL_FUNC_SUBTRACT,
+	ReverserSubtract = GL_FUNC_REVERSE_SUBTRACT
+};
+
+enum class GraphicsSyncMask
+{
+	FlushCommands = GL_SYNC_FLUSH_COMMANDS_BIT,
+};
+
+enum class GraphicsMapBufferMask
+{
+	Read = GL_MAP_READ_BIT,
+	Write = GL_MAP_WRITE_BIT,
+	InvalidateRange = GL_MAP_INVALIDATE_RANGE_BIT,
+	InvalidateBuffer = GL_MAP_INVALIDATE_BUFFER_BIT,
+	FlushExplicit = GL_MAP_FLUSH_EXPLICIT_BIT,
+	Unsynchronized = GL_MAP_UNSYNCHRONIZED_BIT
+};
+
+enum class GraphicsColorMask
+{
+	None = 0,
+	R = 1,
+	G = 2,
+	B = 4,
+	A = 8
+};
+
+enum class GraphicsBufferComponentMask
+{
+	Depth = GL_DEPTH_BUFFER_BIT,
+	Stencil = GL_STENCIL_BUFFER_BIT,
+	Color = GL_COLOR_BUFFER_BIT,
+	All = Depth | Stencil | Color
+};
+
+
+enum class GraphicsFuncType
+{
+	Never = GL_NEVER,
+	Less = GL_LESS,
+	Equal = GL_EQUAL,
+	LessOrEqual = GL_LEQUAL,
+	Greater = GL_GREATER,
+	NotEqual = GL_NOTEQUAL,
+	GreaterOrEqual = GL_GEQUAL,
+	Always = GL_ALWAYS
+};
+
+enum class GraphicsFrontFace
+{
+	ClockWise = GL_CW,
+	CounterClockWise = GL_CCW,
+};
+
+enum class GraphicsFace
+{
+	Front = GL_FRONT,
+	Back = GL_BACK,
+	FrontAndBack = GL_FRONT_AND_BACK,
 };
 
 
@@ -457,6 +580,7 @@ enum class GraphicsTextureUnits
 
 enum class GraphicsUniformDataType
 {
+	None = 0,
 	Float = GL_FLOAT,
 	FloatVec2 = GL_FLOAT_VEC2,
 	FloatVec3 = GL_FLOAT_VEC3,
@@ -478,6 +602,7 @@ enum class GraphicsUniformDataType
 
 enum class GraphicsAttributeDataType
 {
+	None = 0,
 	Float = GL_FLOAT,
 	FloatVec2 = GL_FLOAT_VEC2,
 	FloatVec3 = GL_FLOAT_VEC3,

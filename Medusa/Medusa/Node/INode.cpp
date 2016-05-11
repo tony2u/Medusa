@@ -15,7 +15,6 @@
 #include "Node/Input/InputDispatcher.h"
 #include "Node/DataSource/IDataSource.h"
 #include "Core/Collection/STLPort.h"
-#include "Core/Script/ScriptDefines.h"
 #include "Core/Math/Random/Random.h"
 #include "Node/NodeFactory.h"
 #include "Node/Shape/IShape.h"
@@ -24,7 +23,9 @@
 #include "Node/Scene/SceneManager.h"
 #include "Application/ApplicationStatics.h"
 #include "Core/Command/EventArg/UserDataEventArg.h"
-#include "Core/Geometry/Geometry.h"
+#include "Geometry/Geometry.h"
+#include "Core/Script/ScriptEngine.h"
+#include "Node/Component/NodeScriptComponent.h"
 
 MEDUSA_BEGIN;
 
@@ -132,52 +133,32 @@ void INode::RemoveAllChilds(NodeRemoveFlags flags /*= NodeRemoveFlags::OnlyChild
 
 	bool hasManaged = !mManagedNodes.IsEmpty();
 
-	switch (flags.ToInt())
+	switch (flags)
 	{
-		case NodeRemoveFlags::OnlyChildren.IntValue:
-			if (hasManaged)
+	case NodeRemoveFlags::OnlyChildren:
+		if (hasManaged)
+		{
+			List<size_t> removedIndices;
+			size_t count = mNodes.Count();
+			FOR_EACH_SIZE(i, count)
 			{
-				List<size_t> removedIndices;
-				size_t count = mNodes.Count();
-				FOR_EACH_SIZE(i, count)
+				INode* node = mNodes[i];
+				if (!mManagedNodes.Contains(node))
 				{
-					INode* node = mNodes[i];
-					if (!mManagedNodes.Contains(node))
+					node->SetParent(nullptr);
+					removedIndices.Add(i);
+					StringRef name = node->Name();
+					if (!name.IsEmpty())
 					{
-						node->SetParent(nullptr);
-						removedIndices.Add(i);
-						StringRef name = node->Name();
-						if (!name.IsEmpty())
-						{
-							mNodeDict.RemoveKey(name);
-						}
+						mNodeDict.RemoveKey(name);
 					}
 				}
+			}
 
-				mNodes.RemoveIndexes(removedIndices);
-			}
-			else
-			{
-				FOR_EACH_COLLECTION(i, mNodes)
-				{
-					INode* node = *i;
-					node->SetParent(nullptr);
-				}
-				mNodes.Clear();
-				mNodeDict.Clear();
-			}
-			break;
-		case NodeRemoveFlags::OnlyManaged.IntValue:
-			RETURN_IF_FALSE(hasManaged);
-			FOR_EACH_COLLECTION(i, mManagedNodes)
-			{
-				INode* sprite = *i;
-				RemoveChild(sprite);
-			}
-			mManagedNodes.Clear();
-			break;
-		case NodeRemoveFlags::All.IntValue:
-			RETURN_IF_FALSE(hasManaged);
+			mNodes.RemoveIndexes(removedIndices);
+		}
+		else
+		{
 			FOR_EACH_COLLECTION(i, mNodes)
 			{
 				INode* node = *i;
@@ -185,11 +166,31 @@ void INode::RemoveAllChilds(NodeRemoveFlags flags /*= NodeRemoveFlags::OnlyChild
 			}
 			mNodes.Clear();
 			mNodeDict.Clear();
-			mManagedNodes.Clear();
+		}
+		break;
+	case NodeRemoveFlags::OnlyManaged:
+		RETURN_IF_FALSE(hasManaged);
+		FOR_EACH_COLLECTION(i, mManagedNodes)
+		{
+			INode* sprite = *i;
+			RemoveChild(sprite);
+		}
+		mManagedNodes.Clear();
+		break;
+	case NodeRemoveFlags::All:
+		RETURN_IF_FALSE(hasManaged);
+		FOR_EACH_COLLECTION(i, mNodes)
+		{
+			INode* node = *i;
+			node->SetParent(nullptr);
+		}
+		mNodes.Clear();
+		mNodeDict.Clear();
+		mManagedNodes.Clear();
 
-			break;
-		default:
-			break;
+		break;
+	default:
+		break;
 	}
 	OnLayoutChanged(*this, NodeLayoutChangedFlags::ChildRemoved);
 
@@ -238,53 +239,53 @@ void INode::DeleteAllChilds(NodeRemoveFlags flags /*= NodeRemoveFlags::OnlyChild
 		flags = NodeRemoveFlags::All;
 	}
 
-	switch (flags.ToInt())
+	switch (flags)
 	{
-		case NodeRemoveFlags::OnlyChildren.IntValue:
-			if (hasManaged)
+	case NodeRemoveFlags::OnlyChildren:
+		if (hasManaged)
+		{
+			List<size_t> removedIndices;
+			size_t count = mNodes.Count();
+			FOR_EACH_SIZE(i, count)
 			{
-				List<size_t> removedIndices;
-				size_t count = mNodes.Count();
-				FOR_EACH_SIZE(i, count)
+				INode* node = mNodes[i];
+				if (!mManagedNodes.Contains(node))
 				{
-					INode* node = mNodes[i];
-					if (!mManagedNodes.Contains(node))
+					removedIndices.Add(i);
+					StringRef name = node->Name();
+					if (!name.IsEmpty())
 					{
-						removedIndices.Add(i);
-						StringRef name = node->Name();
-						if (!name.IsEmpty())
-						{
-							mNodeDict.RemoveKey(name);
-						}
+						mNodeDict.RemoveKey(name);
 					}
 				}
+			}
 
-				Linq::DeleteIndexes(mNodes, removedIndices);
-			}
-			else
-			{
-				SAFE_DELETE_COLLECTION(mNodes);
-				mNodeDict.Clear();
-			}
-			break;
-		case NodeRemoveFlags::OnlyManaged.IntValue:
-			RETURN_IF_FALSE(hasManaged);
-			FOR_EACH_COLLECTION(i, mManagedNodes)
-			{
-				INode* sprite = *i;
-				DeleteChild(sprite);
-			}
-			mManagedNodes.Clear();
-			break;
-		case NodeRemoveFlags::All.IntValue:
-			RETURN_IF_FALSE(hasManaged);
+			Linq::DeleteIndexes(mNodes, removedIndices);
+		}
+		else
+		{
 			SAFE_DELETE_COLLECTION(mNodes);
 			mNodeDict.Clear();
-			mManagedNodes.Clear();
+		}
+		break;
+	case NodeRemoveFlags::OnlyManaged:
+		RETURN_IF_FALSE(hasManaged);
+		FOR_EACH_COLLECTION(i, mManagedNodes)
+		{
+			INode* sprite = *i;
+			DeleteChild(sprite);
+		}
+		mManagedNodes.Clear();
+		break;
+	case NodeRemoveFlags::All:
+		RETURN_IF_FALSE(hasManaged);
+		SAFE_DELETE_COLLECTION(mNodes);
+		mNodeDict.Clear();
+		mManagedNodes.Clear();
 
-			break;
-		default:
-			break;
+		break;
+	default:
+		break;
 	}
 	OnLayoutChanged(*this, NodeLayoutChangedFlags::ChildCleard);
 
@@ -395,7 +396,7 @@ IScene* INode::TryGetRootScene() const
 {
 	RETURN_SELF_IF_NOT_NULL(mScene);
 	INode* parent = mParent;
-	while (parent != nullptr&&!parent->IsA<IScene>())
+	while (parent != nullptr && !parent->IsA<IScene>())
 	{
 		parent = parent->Parent();
 	}
@@ -405,12 +406,12 @@ IScene* INode::TryGetRootScene() const
 
 INode* INode::FindChild(StringRef name)
 {
-	return mNodeDict.TryGetValueWithFailed(name, nullptr);
+	return mNodeDict.GetOptional(name, nullptr);
 }
 
 const INode* INode::FindChild(StringRef name) const
 {
-	return mNodeDict.TryGetValueWithFailed(name, nullptr);
+	return mNodeDict.GetOptional(name, nullptr);
 }
 
 void INode::ReorderAllChilds()
@@ -424,7 +425,7 @@ void INode::ReorderAllChilds()
 void INode::OnMoveableDirty(MoveableChangedFlags changedFlags)
 {
 	IRenderable::OnMoveableDirty(changedFlags);
-	if (changedFlags.Has(MoveableChangedFlags::SizeChanged))
+	if (MEDUSA_FLAG_HAS(changedFlags, MoveableChangedFlags::SizeChanged))
 	{
 		OnLayoutSizeChanged(mSize);
 		OnLayoutChanged(*this, NodeLayoutChangedFlags::SizeChanged);
@@ -467,16 +468,16 @@ bool INode::UpdateRecursively(float dt, const NodeUpdateFlags& flag/*=NodeUpdate
 	if (count == 0)
 	{
 		ApplicationStatics::Instance().AddUpdateNodeCount();
-		RETURN_TRUE_IF_FALSE(BeforeUpdate(dt, flag));
-		RETURN_TRUE_IF_FALSE(Update(dt, flag));
-		return AfterUpdate(dt, flag);
+		RETURN_FALSE_IF_FALSE(OnBeforeUpdate(dt, flag));
+		RETURN_FALSE_IF_FALSE(Update(dt, flag));
+		return OnAfterUpdate(dt, flag);
 	}
 	else
 	{
 		ApplicationStatics::Instance().AddTotalNodeCount(count);
 
-		RETURN_TRUE_IF_FALSE(BeforeUpdate(dt, flag));
-		count = mNodes.Count();	//re count node if child node is removed in BeforeUpdate
+		RETURN_FALSE_IF_FALSE(OnBeforeUpdate(dt, flag));
+		count = mNodes.Count();	//re count node if child node is removed in OnBeforeUpdate
 
 		intp i = (intp)count - 1;
 		for (; i >= 0; --i)
@@ -485,12 +486,12 @@ bool INode::UpdateRecursively(float dt, const NodeUpdateFlags& flag/*=NodeUpdate
 			BREAK_IF(child->mDepth < 0);
 			if (child->ForceIsRunning())
 			{
-				RETURN_TRUE_IF_FALSE(child->UpdateRecursively(dt, flag));
+				RETURN_FALSE_IF_FALSE(child->UpdateRecursively(dt, flag));
 			}
 		}
 
 		ApplicationStatics::Instance().AddUpdateNodeCount();
-		RETURN_TRUE_IF_FALSE(Update(dt, flag));
+		RETURN_FALSE_IF_FALSE(Update(dt, flag));
 
 		for (; i >= 0; --i)
 		{
@@ -501,7 +502,7 @@ bool INode::UpdateRecursively(float dt, const NodeUpdateFlags& flag/*=NodeUpdate
 			}
 		}
 
-		RETURN_TRUE_IF_FALSE(AfterUpdate(dt, flag));
+		RETURN_FALSE_IF_FALSE(OnAfterUpdate(dt, flag));
 
 	}
 
@@ -509,11 +510,6 @@ bool INode::UpdateRecursively(float dt, const NodeUpdateFlags& flag/*=NodeUpdate
 	return true;
 }
 
-
-bool INode::BeforeUpdate(float dt, NodeUpdateFlags flag /*= NodeUpdateFlags::None*/)
-{
-	return true;
-}
 
 bool INode::Update(float dt, NodeUpdateFlags flag/*=NodeUpdateFlags::None*/)
 {
@@ -525,23 +521,18 @@ bool INode::Update(float dt, NodeUpdateFlags flag/*=NodeUpdateFlags::None*/)
 	//update components
 	IEntity::UpdateComponents(dt);
 	//update action
-	if (!flag.Has(NodeUpdateFlags::SuppressRunningAction))
+	if (!MEDUSA_FLAG_HAS(flag, NodeUpdateFlags::SuppressRunningAction))
 	{
 		BaseActionRunner::UpdateActions(dt);
 	}
+	return OnUpdate(dt, flag);
 
-	return true;
-}
-
-
-bool INode::AfterUpdate(float dt, NodeUpdateFlags flag /*= NodeUpdateFlags::None*/)
-{
 	return true;
 }
 
 void INode::VisitRecursively(IVisitor < INode* >& visitor, RenderableChangedFlags& outFlag, NodeVisitFlags nodeFlag /*= NodeVisitFlags::None*/, RenderStateType renderStateFlag /*= RenderStateUpdateFlags::None*/)
 {
-	if (nodeFlag.IsForceUpdateWorldMatrix())
+	if (MEDUSA_FLAG_HAS(nodeFlag, NodeVisitFlags::ForceUpdateWorldMatrix))
 	{
 		ForceSetWorldMatrix(LocalMatrix()*mParent->WorldMatrix());
 	}
@@ -550,12 +541,12 @@ void INode::VisitRecursively(IVisitor < INode* >& visitor, RenderableChangedFlag
 		if (IsWorldMatrixDirty())
 		{
 			ForceSetWorldMatrix(LocalMatrix()*mParent->WorldMatrix());
-			nodeFlag |= NodeVisitFlags::ForceUpdateWorldMatrix;
+			MEDUSA_FLAG_ADD(nodeFlag, NodeVisitFlags::ForceUpdateWorldMatrix);
 		}
 	}
 
 	//update color
-	if (nodeFlag.IsForceUpdateWorldColor())
+	if (MEDUSA_FLAG_HAS(nodeFlag, NodeVisitFlags::ForceUpdateWorldColor))
 	{
 		SetWorldColor(Color()*mParent->WorldColor());
 	}
@@ -564,14 +555,14 @@ void INode::VisitRecursively(IVisitor < INode* >& visitor, RenderableChangedFlag
 		if (IsWorldColorDirty())
 		{
 			SetWorldColor(Color()*mParent->WorldColor());
-			nodeFlag |= NodeVisitFlags::ForceUpdateWorldColor;
+			MEDUSA_FLAG_ADD(nodeFlag, NodeVisitFlags::ForceUpdateWorldColor);
 		}
 	}
 
 	//update state
 	if (renderStateFlag != RenderStateType::None)
 	{
-		MEDUSA_ADD_FLAG(renderStateFlag, mWorldRenderState.DirtyFlag());
+		MEDUSA_FLAG_ADD(renderStateFlag, mWorldRenderState.DirtyFlag());
 		ForceUpdateRenderState(renderStateFlag);
 
 	}
@@ -579,13 +570,13 @@ void INode::VisitRecursively(IVisitor < INode* >& visitor, RenderableChangedFlag
 	{
 		if (IsWorldRenderStateDirty())
 		{
-			MEDUSA_ADD_FLAG(renderStateFlag, mWorldRenderState.DirtyFlag());
+			MEDUSA_FLAG_ADD(renderStateFlag, mWorldRenderState.DirtyFlag());
 			ForceUpdateRenderState(renderStateFlag);
 		}
 	}
 
 	visitor.Visit(this);
-	outFlag |= mChangedFlag;
+	MEDUSA_FLAG_ADD(outFlag, mChangedFlag);
 
 	//update child
 	size_t size = mNodes.Count();
@@ -604,7 +595,6 @@ void INode::VisitRecursively(IVisitor < INode* >& visitor, RenderableChangedFlag
 
 bool INode::EnterRecursively()
 {
-
 	size_t count = mNodes.Count();
 	intp i = (intp)count - 1;
 	for (; i >= 0; --i)
@@ -614,7 +604,9 @@ bool INode::EnterRecursively()
 		RETURN_FALSE_IF_FALSE(child->EnterRecursively());
 	}
 
-	RETURN_FALSE_IF_FALSE(Enter());
+	RETURN_FALSE_IF_FALSE(OnEnter());
+	RETURN_FALSE_IF_FALSE(IEntity::EnterComponents());
+
 
 	for (; i >= 0; --i)
 	{
@@ -636,7 +628,8 @@ bool INode::ExitRecursively()
 		RETURN_FALSE_IF_FALSE(child->ExitRecursively());
 	}
 
-	RETURN_FALSE_IF_FALSE(Exit());
+	RETURN_FALSE_IF_FALSE(OnExit());
+	RETURN_FALSE_IF_FALSE(IEntity::ExitComponents());
 
 	for (; i >= 0; --i)
 	{
@@ -659,7 +652,7 @@ bool INode::UpdateLogicRecursively()
 		RETURN_FALSE_IF_FALSE(child->UpdateLogicRecursively());
 	}
 
-	RETURN_FALSE_IF_FALSE(UpdateLogic());
+	RETURN_FALSE_IF_FALSE(OnUpdateLogic());
 
 	for (; i >= 0; --i)
 	{
@@ -681,7 +674,7 @@ bool INode::ResetLogicRecursively()
 		RETURN_FALSE_IF_FALSE(child->ResetLogicRecursively());
 	}
 
-	RETURN_FALSE_IF_FALSE(ResetLogic());
+	RETURN_FALSE_IF_FALSE(OnResetLogic());
 
 	for (; i >= 0; --i)
 	{
@@ -708,7 +701,11 @@ void INode::OnVisitQueueChanged()
 }
 void INode::OnRenderChanged(RenderableChangedFlags flag)
 {
-	if (flag.IsRenderQueueChanged() || flag.IsBatchChanged() || flag.IsDataTotalChanged() || flag.IsNewColor())
+	bool val = MEDUSA_FLAG_HAS(flag, RenderableChangedFlags::RenderQueueChanged);
+	val |= MEDUSA_FLAG_HAS(flag, RenderableChangedFlags::BatchChanged);
+	val |= MEDUSA_FLAG_HAS(flag, RenderableChangedFlags::DataTotalChanged);
+	val |= MEDUSA_FLAG_HAS(flag, RenderableChangedFlags::NewColor);
+	if (val)
 	{
 		OnVisitQueueChanged();
 	}
@@ -717,7 +714,7 @@ void INode::OnRenderChanged(RenderableChangedFlags flag)
 void INode::OnMeshChanged(RenderableChangedFlags flag)
 {
 	IRenderable::OnMeshChanged(flag);
-	if (this->mSizeToContent==SizeToContent::Mesh)
+	if (this->mSizeToContent == SizeToContent::Mesh)
 	{
 		if (mRenderingObject.Mesh() != nullptr)
 		{
@@ -728,7 +725,7 @@ void INode::OnMeshChanged(RenderableChangedFlags flag)
 			SetSize(Size2F::Zero);
 		}
 	}
-	
+
 }
 
 #pragma endregion Update
@@ -760,7 +757,7 @@ void INode::ResetInputPassing()
 void INode::EnableInputPassing()
 {
 	mInputPassingEnabled = true;
-	if (mParent != nullptr&&!mParent->IsInputPassingEnabled())
+	if (mParent != nullptr && !mParent->IsInputPassingEnabled())
 	{
 		mParent->EnableInputPassing();
 	}
@@ -843,85 +840,109 @@ void INode::OnBeforeMeasure(const Size2F& availableSize)
 {
 	switch (mStretch)
 	{
-		case Stretch::Fill:
-			mMeasuredSize = availableSize;
-			break;
-		case Stretch::FillWidth:
-			Log::AssertFormat(!Math::IsZero(mStretchAspectRatio), "StretchAspectRatio==0 when Stretch::FillWidth.");
+	case Stretch::Fill:
+		mMeasuredSize = availableSize;
+		break;
+	case Stretch::FillWidth:
+		Log::AssertFormat(!Math::IsZero(mStretchAspectRatio), "StretchAspectRatio==0 when Stretch::FillWidth.");
+		mMeasuredSize.Width = availableSize.Width;
+		mMeasuredSize.Height = availableSize.Width / mStretchAspectRatio;
+		break;
+	case Stretch::FillHeight:
+		Log::AssertFormat(!Math::IsZero(mStretchAspectRatio), "StretchAspectRatio==0 when Stretch::FillHeight.");
+		mMeasuredSize.Height = availableSize.Height;
+		mMeasuredSize.Width = availableSize.Height*mStretchAspectRatio;
+		break;
+	case Stretch::Uniform:
+	{
+		Log::AssertFormat(!Math::IsZero(mStretchAspectRatio), "StretchAspectRatio==0 when Stretch::Uniform.");
+		if (Math::IsZero(mSize.Width) || Math::IsZero(mSize.Height))
+		{
+			if (availableSize.Width < availableSize.Height)
+			{
+				//fill width
+				mMeasuredSize.Width = availableSize.Width;
+				mMeasuredSize.Height = availableSize.Width / mStretchAspectRatio;
+			}
+			else
+			{
+				//fill height
+				mMeasuredSize.Height = availableSize.Height;
+				mMeasuredSize.Width = availableSize.Height * mStretchAspectRatio;
+			}
+		}
+		else
+		{
+			float scaleX = availableSize.Width / mSize.Width;
+			float scaleY = availableSize.Height / mSize.Height;
+			float scale = Math::Min(scaleX, scaleY);
+			mMeasuredSize.Width = mSize.Width*scale;
+			mMeasuredSize.Height = mSize.Height*scale;
+		}
+
+	}
+	break;
+	case Stretch::UniformToFill:
+	{
+		Log::AssertFormat(!Math::IsZero(mStretchAspectRatio), "StretchAspectRatio==0 when Stretch::UniformToFill.");
+		if (Math::IsZero(mSize.Width) || Math::IsZero(mSize.Height))
+		{
+			if (availableSize.Width > availableSize.Height)
+			{
+				//fill width
+				mMeasuredSize.Width = availableSize.Width;
+				mMeasuredSize.Height = availableSize.Width / mStretchAspectRatio;
+			}
+			else
+			{
+				//fill height
+				mMeasuredSize.Height = availableSize.Height;
+				mMeasuredSize.Width = availableSize.Height * mStretchAspectRatio;
+			}
+		}
+		else
+		{
+			float scaleX = availableSize.Width / mSize.Width;
+			float scaleY = availableSize.Height / mSize.Height;
+			float scale = Math::Max(scaleX, scaleY);
+
+			mMeasuredSize.Width = mSize.Width*scale;
+			mMeasuredSize.Height = mSize.Height*scale;
+		}
+	}
+	break;
+	case Stretch::Percent:
+		mMeasuredSize.Width = availableSize.Width*mStretchPercent.X;
+		mMeasuredSize.Height = availableSize.Height*mStretchPercent.Y;
+		break;
+	case Stretch::ExpandWidth:
+		if (availableSize.Width > mSize.Width)
+		{
+			float scale = Math::IsZero(mSize.Width) ? 0.f : availableSize.Width / mSize.Width;
 			mMeasuredSize.Width = availableSize.Width;
-			mMeasuredSize.Height = availableSize.Width / mStretchAspectRatio;
-			break;
-		case Stretch::FillHeight:
-			Log::AssertFormat(!Math::IsZero(mStretchAspectRatio), "StretchAspectRatio==0 when Stretch::FillHeight.");
-			mMeasuredSize.Height = availableSize.Height;
-			mMeasuredSize.Width = availableSize.Height*mStretchAspectRatio;
-			break;
-		case Stretch::Uniform:
-		{
-			Log::AssertFormat(!Math::IsZero(mStretchAspectRatio), "StretchAspectRatio==0 when Stretch::Uniform.");
-			if (Math::IsZero(mSize.Width) || Math::IsZero(mSize.Height))
-			{
-				if (availableSize.Width < availableSize.Height)
-				{
-					//fill width
-					mMeasuredSize.Width = availableSize.Width;
-					mMeasuredSize.Height = availableSize.Width / mStretchAspectRatio;
-				}
-				else
-				{
-					//fill height
-					mMeasuredSize.Height = availableSize.Height;
-					mMeasuredSize.Width = availableSize.Height * mStretchAspectRatio;
-				}
-			}
-			else
-			{
-				float scaleX = availableSize.Width / mSize.Width;
-				float scaleY = availableSize.Height / mSize.Height;
-				float scale = Math::Min(scaleX, scaleY);
-				mMeasuredSize.Width = mSize.Width*scale;
-				mMeasuredSize.Height = mSize.Height*scale;
-			}
-
+			mMeasuredSize.Height = mSize.Height*scale;
 		}
-		break;
-		case Stretch::UniformToFill:
+		else
 		{
-			Log::AssertFormat(!Math::IsZero(mStretchAspectRatio), "StretchAspectRatio==0 when Stretch::UniformToFill.");
-			if (Math::IsZero(mSize.Width) || Math::IsZero(mSize.Height))
-			{
-				if (availableSize.Width > availableSize.Height)
-				{
-					//fill width
-					mMeasuredSize.Width = availableSize.Width;
-					mMeasuredSize.Height = availableSize.Width / mStretchAspectRatio;
-				}
-				else
-				{
-					//fill height
-					mMeasuredSize.Height = availableSize.Height;
-					mMeasuredSize.Width = availableSize.Height * mStretchAspectRatio;
-				}
-			}
-			else
-			{
-				float scaleX = availableSize.Width / mSize.Width;
-				float scaleY = availableSize.Height / mSize.Height;
-				float scale = Math::Max(scaleX, scaleY);
-
-				mMeasuredSize.Width = mSize.Width*scale;
-				mMeasuredSize.Height = mSize.Height*scale;
-			}
-		}
-		break;
-		case Stretch::Percent:
-			mMeasuredSize.Width = availableSize.Width*mStretchPercent.X;
-			mMeasuredSize.Height = availableSize.Height*mStretchPercent.Y;
-			break;
-		case Stretch::None:
 			mMeasuredSize = mSize.To2D();
-		default:
-			break;
+		}
+		break;
+	case Stretch::ExpandHeight:
+		if (availableSize.Height > mSize.Height)
+		{
+			float scale = Math::IsZero(mSize.Height) ? 0.f : availableSize.Height / mSize.Height;
+			mMeasuredSize.Height = availableSize.Height;
+			mMeasuredSize.Width = mSize.Width*scale;
+		}
+		else
+		{
+			mMeasuredSize = mSize.To2D();
+		}
+		break;
+	case Stretch::None:
+		mMeasuredSize = mSize.To2D();
+	default:
+		break;
 	}
 
 	if (mMinSize != Size2F::Zero)
@@ -938,19 +959,19 @@ void INode::OnBeforeMeasure(const Size2F& availableSize)
 
 	switch (mSizeToContent)
 	{
-		case SizeToContent::None:
-			break;
-		case SizeToContent::Width:
-			SetWidth(mMeasuredSize.Width);
-			break;
-		case SizeToContent::Height:
-			SetHeight(mMeasuredSize.Height);
-			break;
-		case SizeToContent::WidthAndHeight:
-			SetSize(mMeasuredSize);
-			break;
-		default:
-			break;
+	case SizeToContent::None:
+		break;
+	case SizeToContent::Width:
+		SetWidth(mMeasuredSize.Width);
+		break;
+	case SizeToContent::Height:
+		SetHeight(mMeasuredSize.Height);
+		break;
+	case SizeToContent::WidthAndHeight:
+		SetSize(mMeasuredSize);
+		break;
+	default:
+		break;
 	}
 }
 
@@ -963,14 +984,7 @@ void INode::OnAfterMeasure(const Size2F& availableSize)
 Rect2F INode::ArrangeSelf(const Rect2F& limitRect/*=Rect2F::Zero*/, NodeLayoutArrangeFlags arrangeFlags/*=NodeLayoutArrangeFlags::None*/)
 {
 	Rect2F resultRect;
-	if (mDockPoint!=DockPoint::None)
-	{
-		resultRect.Origin = DockToRect(limitRect, this->mDockPoint, mRelativePosition);
-		SetPosition(resultRect.Origin.X, resultRect.Origin.Y, mPosition.Z);
-	}
-	
-
-	if (mStretch!=Stretch::None)
+	if (mStretch != Stretch::None)
 	{
 		Scale2F outScale;
 		Geometry::StretchToRect(mSize.To2D(), limitRect, mStretch, mStretchPercent, outScale, resultRect.Size);
@@ -980,7 +994,25 @@ Rect2F INode::ArrangeSelf(const Rect2F& limitRect/*=Rect2F::Zero*/, NodeLayoutAr
 	{
 		resultRect.Size = mSize.To2D();
 	}
-	
+
+
+	if (mDockPoint != DockPoint::None)
+	{
+		resultRect.Origin = DockToRect(limitRect, this->mDockPoint, mRelativePosition);
+	}
+	else
+	{
+		resultRect.Origin = mPosition.To2D();
+	}
+
+	if (mMarginEdge != MarginEdges::None)
+	{
+		auto boundingBox= GetBoundingBox();
+		auto newOrigin= Geometry::ApplyMargin(boundingBox.To2D(), limitRect, mMarginEdge, mMargin);
+		resultRect.Origin += newOrigin - boundingBox.Origin.To2D();
+		SetPosition(resultRect.Origin.X, resultRect.Origin.Y, mPosition.Z);
+	}
+
 	resultRect.Origin = Point2F::Zero;
 	return resultRect;
 }
@@ -1013,16 +1045,16 @@ bool INode::ArrangeRecursively(const Rect2F& limitRect/*=Rect2F::Zero*/, NodeLay
 		outRect = limitRect;
 	}
 
-	if (!arrangeFlags.Has(NodeLayoutArrangeFlags::SuppressArrangeSelf))
+	if (!MEDUSA_FLAG_HAS(arrangeFlags, NodeLayoutArrangeFlags::SuppressArrangeSelf))
 	{
 		outRect = ArrangeSelf(outRect, arrangeFlags);
 	}
 	else
 	{
-		arrangeFlags.Remove(NodeLayoutArrangeFlags::SuppressArrangeSelf);
+		MEDUSA_FLAG_REMOVE(arrangeFlags, NodeLayoutArrangeFlags::SuppressArrangeSelf);
 	}
 
-	RETURN_TRUE_IF(arrangeFlags.Has(NodeLayoutArrangeFlags::SuppressArrangeChildren));
+	RETURN_TRUE_IF(MEDUSA_FLAG_HAS(arrangeFlags, NodeLayoutArrangeFlags::SuppressArrangeChildren));
 
 	return ArrangeChildren(outRect, arrangeFlags);
 }
@@ -1068,7 +1100,7 @@ void INode::StretchToRect(const Rect2F& rect, Stretch stretch, const Scale2F& st
 	Scale2F ouScale;
 	Size2F outSize;
 	Geometry::StretchToRect(mSize.To2D(), rect, stretch, strecthPercent, ouScale, outSize);
-	SetScale(ouScale.X, ouScale.Y,mScale.Z);
+	SetScale(ouScale.X, ouScale.Y, mScale.Z);
 	SetSize(outSize.Width, outSize.Height, mSize.Depth);
 }
 
@@ -1081,10 +1113,10 @@ void INode::SetDataSource(IDataSource* val)
 {
 	RETURN_IF_EQUAL(mDataSource, val);
 	SAFE_ASSIGN_REF(mDataSource, val);
-    if(mDataSource!=nullptr)
-    {
-        mDataSource->OnDataChanged += Bind(&INode::OnDataChanged,this);
-    }
+	if (mDataSource != nullptr)
+	{
+		mDataSource->OnDataChanged += Bind(&INode::OnDataChanged, this);
+	}
 }
 
 void INode::ReleaseDataSource()
@@ -1134,26 +1166,41 @@ void INode::EnableDebugDraw(bool val)
 	}
 }
 
+#ifdef MEDUSA_SCRIPT
+ScriptObject INode::AddScriptFile(const FileIdRef& file)
+{
+	if (file.IsEmpty())
+	{
+		return nullptr;
+	}
+
+	ScriptObject sc = ScriptEngine::State()->DoFileWithReturn(file);
+	if (sc == nullptr)
+	{
+		Log::AssertFailedFormat("Cannot load script: {}", file.ToString());
+		return nullptr;
+	}
+
+	auto* com = this->AddComponent<NodeScriptComponent>();
+	com->SetScriptObject(sc);
+	return sc;
+}
+
+void INode::SetScriptObject(ScriptObject object)
+{
+	NodeScriptComponent* com = this->FindOrCreateComponent<NodeScriptComponent>();
+	com->SetScriptObject(object);
+}
+
+ScriptObject INode::GetScriptObject() const
+{
+	NodeScriptComponent* com = this->FindComponent<NodeScriptComponent>();
+	RETURN_NULL_IF_NULL(com);
+	return com->GetScriptObject();
+}
+
+#endif
 
 MEDUSA_IMPLEMENT_RTTI_ROOT(INode);
 
 MEDUSA_END;
-
-
-#ifdef MEDUSA_SCRIPT
-#include "CoreLib/Common/angelscript.h"
-
-MEDUSA_SCRIPT_BEGIN;
-
-void RegisterINode(asIScriptEngine* engine)
-{
-	int r2;
-	r2 = engine->RegisterObjectType(MACRO_TO_STRING(INode), sizeof(INode), asOBJ_REF | asOBJ_NOCOUNT); MEDUSA_ASSERT_SILENT(r2 >= 0);
-	MEDUSA_SCRIPT_REGISTER_NODE_NEW_DELETE(engine, INode);
-
-	RegisterINode_Methods<INode>(engine, MACRO_TO_STRING(INode));
-}
-
-
-MEDUSA_SCRIPT_END;
-#endif

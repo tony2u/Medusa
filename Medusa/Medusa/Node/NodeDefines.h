@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 #pragma once
 
-#include "MedusaCorePreCompiled.h"
+#include "MedusaPreCompiled.h"
 
 MEDUSA_BEGIN;
 
@@ -272,5 +272,106 @@ enum class ToastPosition
 	Bottom = 2
 };
 
+enum class NodeLayoutArrangeFlags
+{
+	None = 0,
+	SuppressArrangeSelf = 1,
+	SuppressArrangeChildren = 2,
+};
 
+
+
+enum class NodeLayoutChangedFlags
+{
+	None = 0,
+	SizeChanged = 1,
+	ChildAdded = 2,
+	ChildRemoved = 4,
+	ChildCleard = 8,
+	ChildOrderChanged = 16,
+	PositionChanged = 32,
+	ArrangeChanged = 64,
+	CollapseChanged = 128,
+
+};
+
+enum class NodeRemoveFlags
+{
+	None = 0,
+	OnlyChildren = 1,
+	OnlyManaged = 2,
+	All= OnlyChildren| OnlyManaged
+};
+
+enum class NodeUpdateFlags
+{
+	None = 0,
+	SuppressRunningAction = 1,
+	SuppressDispatchingInput = 2,
+};
+
+enum class NodeVisitFlags
+{
+	None = 0,
+	ForceUpdateWorldMatrix = 1,
+	ForceUpdateWorldColor = 2,
+};
+
+
+enum class LayerCreateFlags
+{
+	None = 0,
+	AlwaysCreate = 1,
+	All = AlwaysCreate
+};
+
+enum class LayerDeleteFlags
+{
+	None = 0,
+	Async = 1,
+	All = Async
+};
+
+enum class LayerPopFlags
+{
+	None = 0,
+	ShowCurrentLayer = 1,
+	SuppressUpdateLogic = 2,
+	DisableTouch = 4,
+	IgnorePrevLayer = 8,
+	DeleteCurrentLayer = 16,
+	DeleteCurrentLayerAsync = 32,
+	RestoreStatusAfterPop = 64,
+};
+
+enum class LayerPushFlags
+{
+	None = 0,
+	ShowPrevLayer = 1,
+	SuppressUpdateLogic = 2,
+	AlwaysCreate = 4,
+	DisableTouch = 8,
+	HideAllPrevLayers = 16,
+	SaveStatusBeforePush = 32,
+};
+
+enum class ScenePopFlags
+{
+	None = 0,
+	ShowCurrentScene = 1,
+	SuppressUpdateLogic = 2,
+	DisableTouch = 4,
+	IgnorePrevScene = 8,
+	DeleteCurrentScene = 16,
+	DeleteCurrentSceneAsync = 32,
+};
+
+enum class ScenePushFlags
+{
+	None = 0,
+	ShowPrevScene = 1,
+	SuppressUpdateLogic = 2,
+	DisableTouch = 4,
+	HideAllPrevScenes = 8,
+};
 MEDUSA_END;

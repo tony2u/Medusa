@@ -58,12 +58,13 @@ protected:
 //SIREN_HEADER_SCHEMA_BEGIN
 struct DropPoolGroup::Schema
 {
-	SIREN_PROPERTY(0, 0, Optional, DropPoolGroup, bool, mPreventDuplicate);
-	SIREN_PROPERTY(1, 1, Optional, DropPoolGroup, uint, mMinTimes);
-	SIREN_PROPERTY(2, 2, Optional, DropPoolGroup, uint, mMaxTimes);
-	SIREN_PROPERTY_LIST(3, 3, Required, DropPoolGroup, DropPoolRandomItem, mItems);
-	SIREN_PROPERTIES_4(void,DropPoolGroup);
+	SIREN_FIELD(0, 0, Optional, DropPoolGroup, bool, mPreventDuplicate);
+	SIREN_FIELD(1, 1, Optional, DropPoolGroup, uint, mMinTimes);
+	SIREN_FIELD(2, 2, Optional, DropPoolGroup, uint, mMaxTimes);
+	SIREN_FIELD_LIST(3, 3, Required, DropPoolGroup, DropPoolRandomItem, mItems);
+	SIREN_FIELDS_4(void,DropPoolGroup);
 };
+
 //SIREN_HEADER_SCHEMA_END
 
 MEDUSA_END;

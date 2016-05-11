@@ -21,7 +21,7 @@ public:
 	virtual bool OnExecute() { return true; }
 	virtual bool OnExit() { return true; }
 
-	virtual ~ICommand() = 0;
+	virtual ~ICommand();
 
 	bool Execute();
 public:

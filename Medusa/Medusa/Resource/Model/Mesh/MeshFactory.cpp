@@ -87,17 +87,17 @@ ShapeGeneralMesh* MeshFactory::CreateShapeCircleMesh(float radius, float precisi
 	mesh->AppendVertex(center);
 	mesh->AppendIndex(0);
 	mesh->SetSize(msize3(2 * radius, 2 * radius, 0.f));
-	
+
 	FOR_EACH_SIZE(i, count)
 	{
 		float a = i*precision;
-		Point3F pos(radius+radius*Math::Cos(a), radius+radius*Math::Sin(a));
+		Point3F pos(radius + radius*Math::Cos(a), radius + radius*Math::Sin(a));
 		mesh->AppendVertex(pos);
-		mesh->AppendIndex(i+1);
+		mesh->AppendIndex(i + 1);
 	}
 	mesh->AppendIndex(1);
 	mesh->SetColorAll(color);
-	
+
 	return mesh;
 }
 
@@ -113,7 +113,11 @@ TextureQuadMesh* MeshFactory::CreateTextureQuadMesh(const Size2F& textureSize, c
 TextureQuadMesh* MeshFactory::CreateTextureQuadMesh(const FileIdRef& textureName, const FileMapOrderItem& orderItem, const Rect2F& textureRect /*= Rect2F::Zero*/, const Color4F& color /*= Color4F::White*/)
 {
 	ITexture* texture = TextureFactory::Instance().CreateFromOrderItem(textureName, orderItem, ShaderSamplerNames::Texture);
+	return CreateTextureQuadMesh(texture, textureRect, color);
+}
 
+TextureQuadMesh* MeshFactory::CreateTextureQuadMesh(ITexture* texture, const Rect2F& textureRect /*= Rect2F::Zero*/, const Color4F& color /*= Color4F::White*/)
+{
 	const Size2U& textureSize = texture->Size();
 	TextureQuadMesh* mesh = new TextureQuadMesh();
 
@@ -122,10 +126,10 @@ TextureQuadMesh* MeshFactory::CreateTextureQuadMesh(const FileIdRef& textureName
 	return mesh;
 }
 
-TextureNineGridMesh* MeshFactory::CreateTextureNineGridMesh(const Size2F& targetSize, const Size2F& textureSize, const ThicknessF& padding, const Rect2F& textureRect/*=Rect2F::Zero*/, const Color4F& color/*=Color4F::White*/)
+TextureNineGridMesh* MeshFactory::CreateTextureNineGridMesh(const Size2F& targetSize, const Size2F& textureSize, const ThicknessF& padding, const Rect2F& textureRect/*=Rect2F::Zero*/, RotateDirection rotation /*= RotateDirection::None*/, const Color4F& color/*=Color4F::White*/)
 {
 	TextureNineGridMesh* mesh = new TextureNineGridMesh();
-	mesh->Initialize(targetSize, textureSize, padding, textureRect, color);
+	mesh->Initialize(targetSize, textureSize, padding, textureRect, rotation, color);
 	return mesh;
 }
 
@@ -136,18 +140,33 @@ TextureGeneralMesh* MeshFactory::CreateTextureGeneralMesh(ITexture* texture, boo
 }
 
 
-TextureQuadMesh* MeshFactory::CreateTextureQuadMeshFromAtlasRegion(TextureAtlasRegion* region, const Color4F& color/*=Color4F::White*/)
+IMesh* MeshFactory::CreateTextureAtlasRegionMesh(TextureAtlasRegion* region, const Color4F& color /*= Color4F::White*/)
 {
 	RETURN_NULL_IF_NULL(region);
 
 	region->AssertMeshLoaded();
-	TextureQuadMesh* mesh = new TextureQuadMesh();
-	mesh->Initialize(region->Vertices(), region->Texcoords(), color);
-	mesh->SetSize(region->OriginalSize());
+	if (region->IsPolygon())
+	{
+		TextureGeneralMesh* mesh = new TextureGeneralMesh();
+		mesh->MutableVertices() = region->Vertices();
+		mesh->MutableTexcoords() = region->Texcoords();
+		mesh->MutableIndices() = region->Indices();
+		mesh->AppendColor(color, region->Vertices().Count());
+		mesh->SetSize(region->OriginalSize());
 
-	return mesh;
+		return mesh;
+	}
+	else
+	{
+		TextureQuadMesh* mesh = new TextureQuadMesh();
+		mesh->Initialize(region->Vertices(), region->Texcoords(), color);
+		mesh->SetSize(region->OriginalSize());
+
+		return mesh;
+	}
+
+
 }
-
 
 
 

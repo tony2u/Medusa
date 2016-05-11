@@ -102,13 +102,13 @@ bool BinaryPackage::Save()
 	return true;
 }
 
-void BinaryPackage::SetKey(const MemoryByteData& val)
+void BinaryPackage::SetKey(const MemoryData& val)
 {
 	FileStorage::SetKey(val);
 	mHeader.SetKey(val);
 }
 
-bool BinaryPackage::ValidateKey(const MemoryByteData& val) const
+bool BinaryPackage::ValidateKey(const MemoryData& val) const
 {
 	return mHeader.ValidateKey(val);
 }
@@ -125,10 +125,10 @@ bool BinaryPackage::OnLoaded()
 
 	if (!Validate())
 	{
-		Log::FormatError("Package:{} required key!", mPath);
+		//do not load next
 		return false;
 	}
-
+	
 
 	LoadBlockHeaders();
 	LoadFileStorage();
@@ -216,7 +216,7 @@ bool BinaryPackage::SaveBlockHeaders()
 
 bool BinaryPackage::LoadFileStorage()
 {
-	MemoryByteData resultData;
+	MemoryData resultData;
 	if (IsEncryptFileNames() && mCoderChain.HasCoders())
 	{
 		uint dataOriginalSize = mStream.Read<uint32>();
@@ -463,7 +463,7 @@ void BinaryPackage::MoveCopyBlock(BinaryPackageBlockHeader& from, BinaryPackageB
 		nextBlock->PrevId = to.Id;
 	}
 
-	FileEntry* fileEntry = fileEnties.TryGetValueWithFailed(from.Id, nullptr);
+	FileEntry* fileEntry = fileEnties.GetOptional(from.Id, nullptr);
 	if (fileEntry != nullptr)
 	{
 		fileEntry->SetFirstBlockId(to.Id);

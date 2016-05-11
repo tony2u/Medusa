@@ -4,8 +4,8 @@
 #pragma once
 #include "Resource/Material/IMaterial.h"
 #include "Core/String/HeapString.h"
-#include "Core/Geometry/Color3.h"
-#include "Core/Geometry/Color4.h"
+#include "Geometry/Color3.h"
+#include "Geometry/Color4.h"
 #include "Core/Memory/MemoryData.h"
 
 
@@ -52,7 +52,7 @@ public:
 	Color3F mSpecularColor;
 	Color3F mEmissionColor;
 
-	MemoryByteData UserData;
+	MemoryData UserData;
 };
 
 MEDUSA_END;

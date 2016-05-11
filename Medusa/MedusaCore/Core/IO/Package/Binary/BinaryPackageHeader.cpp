@@ -53,7 +53,7 @@ bool BinaryPackageHeader::ParseFrom(const IStream& stream)
 	mHeaderSize = stream.Read<uint>();
 	mContentVersion = stream.Read<uint>();
 
-	mFlag.ForceSet(stream.Read<uint>());
+	mFlag=(PackageFlags)stream.Read<uint>();
 
 	mBlockSize = stream.Read<uint>();
 	mBlockCount = stream.Read<uint>();
@@ -64,7 +64,7 @@ bool BinaryPackageHeader::ParseFrom(const IStream& stream)
 	mHasher = (HasherType)stream.Read<uint>();
 	mCoders = stream.Read<uint64>();
 
-	MemoryByteData outData = MemoryByteData::FromStatic(mKeyHash);
+	MemoryData outData = MemoryData::FromStatic(mKeyHash);
 	stream.ReadDataTo(outData);
 
 	return true;
@@ -76,7 +76,7 @@ bool BinaryPackageHeader::WriteTo(IStream& stream)
 	stream.Write(CurrentVersion);
 	stream.Write(FixedHeaderSize);
 	stream.Write(mContentVersion);
-	stream.Write(mFlag.ToUInt());
+	stream.Write((uint32)mFlag);
 	stream.Write(mBlockSize);
 	stream.Write(mBlockCount);
 	stream.Write(mFirstFreeBlockId);
@@ -85,14 +85,14 @@ bool BinaryPackageHeader::WriteTo(IStream& stream)
 	stream.Write((uint32)mHasher);
 	stream.Write(mCoders);
 
-	MemoryByteData data = MemoryByteData::FromStatic(mKeyHash);
+	MemoryData data = MemoryData::FromStatic(mKeyHash);
 	stream.WriteData(data);
 
 	return true;
 }
 
 
-void BinaryPackageHeader::SetKey(const MemoryByteData& val)
+void BinaryPackageHeader::SetKey(const MemoryData& val)
 {
 	if (val.IsNull())
 	{
@@ -103,16 +103,16 @@ void BinaryPackageHeader::SetKey(const MemoryByteData& val)
 		MD5 md5;
 		md5.Process(val.Data(), val.Size());
 		md5.Final();
-		MemoryByteData hashData = MemoryByteData::FromStatic(md5.Digest(), MD5::DigestSize);
-		MemoryByteData data = MemoryByteData::FromStatic(mKeyHash);
+		MemoryData hashData = MemoryData::FromStatic(md5.Digest(), MD5::DigestSize);
+		MemoryData data = MemoryData::FromStatic(mKeyHash);
 		data.Copy(hashData);
 	}
 
 }
 
-bool BinaryPackageHeader::ValidateKey(const MemoryByteData& key) const
+bool BinaryPackageHeader::ValidateKey(const MemoryData& key) const
 {
-	MemoryByteData data = MemoryByteData::FromStatic(mKeyHash);
+	MemoryData data = MemoryData::FromStatic(mKeyHash);
 	if (key.IsNull())
 	{
 		return Memory::EqualsAll(mKeyHash, (byte)0);
@@ -122,7 +122,7 @@ bool BinaryPackageHeader::ValidateKey(const MemoryByteData& key) const
 	md5.Process(key.Data(), key.Size());
 	md5.Final();
 
-	MemoryByteData hashData = MemoryByteData::FromStatic(md5.Digest(), MD5::DigestSize);
+	MemoryData hashData = MemoryData::FromStatic(md5.Digest(), MD5::DigestSize);
 	return data.IsContentEqual(hashData);
 }
 

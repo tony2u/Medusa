@@ -54,8 +54,14 @@ void RenderTargetFactory::SetCurrent( const FileIdRef& fileId )
 
 CustomRenderTarget* RenderTargetFactory::CreateCustom( const FileIdRef& fileId,bool setCurrent/*=true*/ ,ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
-	CustomRenderTarget* renderTarget= (CustomRenderTarget*)Find(fileId);
-	RETURN_SELF_IF_NOT_NULL(renderTarget);
+	CustomRenderTarget* renderTarget = nullptr;
+	if (shareType != ResourceShareType::None)
+	{
+		renderTarget = (CustomRenderTarget*)Find(fileId);
+		RETURN_SELF_IF_NOT_NULL(renderTarget);
+	}
+
+
 
 	if (renderTarget==nullptr)
 	{

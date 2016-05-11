@@ -4,7 +4,7 @@
 #pragma once
 #include "MedusaPreDeclares.h"
 #include "Core/Pattern/Component/IComponent.h"
-#include "Core/Math/Model/StaticScrollMathModel.h"
+#include "Geometry/Scroll/StaticScrollMathModel.h"
 
 MEDUSA_BEGIN;
 

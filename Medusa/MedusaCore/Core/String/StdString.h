@@ -26,6 +26,9 @@ namespace StdString
 	static bool IsPrint(int c) { return isprint(c) != 0; }
 	static bool IsPunct(int c) { return ispunct(c) != 0; }	//Checks whether c is a punctuation character.
 
+	static bool IsToken(int c) { return IsAlpha(c) || IsDigit(c) || c == '_'; }	//Checks whether c is a punctuation character.
+
+
 	bool IsDigit(const char* str);
 	bool IsDigit(const wchar_t* str);
 
@@ -40,6 +43,10 @@ namespace StdString
 
 	bool IsUpper(const char* str);
 	bool IsUpper(const wchar_t* str);
+
+	bool IsToken(const char* str);
+	bool IsToken(const wchar_t* str);
+
 
 	static int ToUpper(int c) { return toupper(c); }
 	static int ToLower(int c) { return tolower(c); }
@@ -71,6 +78,86 @@ namespace StdString
 
 	static const char* FindCharAny(const char* src, const char* dst) { RETURN_NULL_IF_NULL(src); return ::strpbrk(src, dst); }
 	static const wchar_t* FindCharAny(const wchar_t* src, const wchar_t* dst) { RETURN_NULL_IF_NULL(src); return ::wcspbrk(src, dst); }
+
+	template<typename T>
+	static const T* FindFirstChar(const T* src, size_t length, T c)
+	{
+		RETURN_NULL_IF(src == nullptr || length == 0);
+		const T* end = src + length;
+		while (src != end)
+		{
+			if (*src == c)
+			{
+				return src;
+			}
+			++src;
+		}
+		return nullptr;
+	}
+
+	template<typename T>
+	static const T* FindLastChar(const T* src, size_t length, T c)
+	{
+		RETURN_NULL_IF(src == nullptr || length == 0);
+		const T* end = src + length - 1;
+		const T* begin = src - 1;
+		while (end != begin)
+		{
+			if (*end == c)
+			{
+				return end;
+			}
+			--end;
+		}
+		return nullptr;
+	}
+
+	template<typename T>
+	static const T* FindString(const T* src, size_t length, const T* val, size_t valLength)
+	{
+		RETURN_NULL_IF(src == nullptr || length == 0);
+		RETURN_NULL_IF(val == nullptr || valLength == 0);
+
+		char firstChar = *val;
+		--valLength;
+		while (true)
+		{
+			const T* firstMatch = FindFirstChar(src, length, firstChar);
+			RETURN_NULL_IF_NULL(firstMatch);
+			length -= firstMatch - src + 1;
+			src = firstMatch + 1;
+			if (length < valLength)
+			{
+				return nullptr;	//not enough size
+			}
+
+			if (CompareN(src, val+1, valLength) == 0)
+			{
+				return src-1;	//back one char
+			}
+		}
+		return nullptr;
+	}
+
+	template<typename T>
+	static const T* FindCharAny(const T* src, size_t length, const T* val, size_t valLength)
+	{
+		RETURN_NULL_IF(src == nullptr || length == 0);
+		RETURN_NULL_IF(val == nullptr || valLength == 0);
+
+		const T* end = src + length;
+		while (src != end)
+		{
+			if (FindFirstChar(val,valLength,*src)!=nullptr)
+			{
+				return src;
+			}
+			++src;
+		}
+		return nullptr;
+		
+	}
+
 	//Get span of character set in string.	strspn("129th","1234567890")==3
 	static size_t StringSpan(const char* str, const char* set) { return strspn(str, set); }
 	static size_t StringSpan(const wchar_t* str, const wchar_t* set) { return wcsspn(str, set); }
@@ -83,6 +170,10 @@ namespace StdString
 
 	static long ToInt(const char* src, char** endPtr, int base) { return ::strtol(src, endPtr, base); }
 	static long ToInt(const wchar_t* src, wchar_t** endPtr, int base) { return ::wcstol(src, endPtr, base); }
+
+	static ulong ToUInt(const char* src, char** endPtr, int base) { return ::strtoul(src, endPtr, base); }
+	static ulong ToUInt(const wchar_t* src, wchar_t** endPtr, int base) { return ::wcstoul(src, endPtr, base); }
+
 
 	static double ToDouble(const char* src, char** endPtr) { return ::strtod(src, endPtr); }
 	static double ToDouble(const wchar_t* src, wchar_t** endPtr) { return ::wcstod(src, endPtr); }
@@ -306,6 +397,7 @@ namespace StdString
 
 		const static char HexUpperCase[16];
 		const static char HexLowerCase[16];
+		const static char Numbers[10];
 
 	};
 
@@ -344,7 +436,14 @@ namespace StdString
 
 		const static wchar_t HexUpperCase[16];
 		const static wchar_t HexLowerCase[16];
+
+		const static wchar_t Numbers[10];
+
 	};
+
+	using Constants = ConstValues<char>;
+	using WConstants = ConstValues<wchar_t>;
+
 
 	template<typename T>
 	static bool IsWordSeparator(T c)
@@ -366,9 +465,9 @@ namespace StdString
 	}
 
 
-    static uint ParseUInt(const char* begin, char** next){return (uint)strtoul(begin, next, 10);}
-    static uint ParseUInt(const wchar_t* begin, wchar_t** next){return (uint)wcstol(begin, next, 10);}
-};
+	static uint ParseUInt(const char* begin, char** next) { return (uint)strtoul(begin, next, 10); }
+	static uint ParseUInt(const wchar_t* begin, wchar_t** next) { return (uint)wcstol(begin, next, 10); }
+	};
 
 
 

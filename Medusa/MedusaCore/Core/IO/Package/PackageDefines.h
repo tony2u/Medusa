@@ -21,6 +21,14 @@ enum class PackagePriority
 	Downloaded = 2,	//download from outside, in writable path
 };
 
+enum class PackageFlags
+{
+	None=0,
+	Readonly=1, 
+	EncryptFileNames=2, 
+	WriteSaltData=4,
+	WholeFileCoding=8
+};
 
 
 

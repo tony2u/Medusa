@@ -15,7 +15,7 @@ class XXTEADecoder:public ICoder
 public:
 	XXTEADecoder() = default;
 	XXTEADecoder(const IEventArg& e);
-	XXTEADecoder(const MemoryByteData& key);
+	XXTEADecoder(const MemoryData& key);
 	~XXTEADecoder();
 
 public:
@@ -25,7 +25,7 @@ public:
 	virtual bool Validate()const override { return mKey.IsValid(); }
 	virtual size_t GuessResultSize(const IStream& input)const override;
 protected:
-	virtual size_t OnCode(const MemoryByteData& input, MemoryByteData& output)const override;
+	virtual size_t OnCode(const MemoryData& input, MemoryData& output)const override;
 private:
 	void DecryptHelper(MemoryUIntData& v)const;
 private:

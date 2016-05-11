@@ -8,15 +8,15 @@
 #include "Application/FrameStep.h"
 #include "Core/Collection/HashSet.h"
 #include "Graphics/GraphicsTypes.h"
-#include "Rendering/RenderableChangedFlags.h"
 #include "Core/Profile/StopWatch.h"
+#include "Rendering/RenderingTypes.h"
 
 MEDUSA_BEGIN;
 
 
 class ApplicationStatics :public Singleton < ApplicationStatics >
 {
-	friend class Singleton < ApplicationStatics > ;
+	friend class Singleton < ApplicationStatics >;
 private:
 	ApplicationStatics();
 	~ApplicationStatics();
@@ -26,13 +26,13 @@ public:
 	bool IsPrintLog() const { return mIsPrintLog; }
 	void SetIsPrintLog(bool val) { mIsPrintLog = val; }
 
-	bool IsShowPerformance() const { return mDebugInfoFlag.IsPerformance(); }
+	bool IsShowPerformance() const { return MEDUSA_FLAG_HAS(mDebugInfoFlag, ApplicationDebugInfoFlags::Performance); }
 	void ShowPerformance(bool val = true);
 
-	bool IsShowGPU() const { return mDebugInfoFlag.IsGPU(); }
+	bool IsShowGPU() const { return MEDUSA_FLAG_HAS(mDebugInfoFlag, ApplicationDebugInfoFlags::GPU); }
 	void ShowGPU(bool val = true);
 
-	bool IsShowTouch() const { return mDebugInfoFlag.IsTouch(); }
+	bool IsShowTouch() const { return MEDUSA_FLAG_HAS(mDebugInfoFlag, ApplicationDebugInfoFlags::Touch); }
 	void ShowTouch(bool val = true);
 	void SetDebugString(const WStringRef& val) { mDebugString = val; }
 	void SetDebugTouch(const Point2F& pos);
@@ -49,7 +49,7 @@ public:
 
 	void SetElpased(FrameStep step, float val);
 	void AddElpased(FrameStep step, float val);
-	
+
 	void Update(float dt);
 	void Draw(float dt);
 	StopWatch& UpdateWatch() { return mUpdateWatch; }
@@ -60,7 +60,7 @@ public:
 	void AddTotalNodeCount(size_t val);
 
 	size_t UpdateNodeCount() const { return mUpdateNodeCount; }
-	void AddUpdateNodeCount(size_t val=1);
+	void AddUpdateNodeCount(size_t val = 1);
 
 	size_t VisitNodeCount() const { return mVisitNodeCount; }
 	void AddVisitNodeCount(size_t val);
@@ -72,7 +72,7 @@ private:
 	size_t mTotalNodeCount;
 	size_t mUpdateNodeCount;
 	size_t mVisitNodeCount;
-	
+
 
 
 	bool mEnabled;

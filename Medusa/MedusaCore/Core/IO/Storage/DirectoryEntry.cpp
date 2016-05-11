@@ -1,4 +1,4 @@
-// Copyright (c) 2015 fjz13. All rights reserved.
+﻿// Copyright (c) 2015 fjz13. All rights reserved.
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 #include "MedusaCorePreCompiled.h"
@@ -90,12 +90,12 @@ bool DirectoryEntry::HasFileRecursively() const
 
 const DirectoryEntry* DirectoryEntry::FindDirectory(const StringRef& name) const
 {
-	return mDirDict.TryGetValueWithFailed(name, nullptr);
+	return mDirDict.GetOptional(name, nullptr);
 }
 
 DirectoryEntry* DirectoryEntry::FindDirectory(const StringRef& name)
 {
-	return mDirDict.TryGetValueWithFailed(name, nullptr);
+	return mDirDict.GetOptional(name, nullptr);
 }
 
 bool DirectoryEntry::ExistsDirectory(const StringRef& name) const
@@ -232,7 +232,7 @@ FileEntry* DirectoryEntry::CreateFileEntry(const StringRef& name)
 FileEntry* DirectoryEntry::FindOrCreateFileEntry(const StringRef& name)
 {
 	RETURN_NULL_IF_FALSE(IsValid());
-	FileEntry* file = mFileDict.TryGetValueWithFailed(name, nullptr);
+	FileEntry* file = mFileDict.GetOptional(name, nullptr);
 	RETURN_SELF_IF_NOT_NULL(file);
 
 	file = new FileEntry(0, name);
@@ -251,7 +251,7 @@ FileEntry* DirectoryEntry::FindOrCreateFileEntry(const StringRef& name)
 DirectoryEntry* DirectoryEntry::FindOrCreateDirectoryEntry(const StringRef& name)
 {
 	RETURN_NULL_IF_FALSE(IsValid());
-	DirectoryEntry* dirEntry = mDirDict.TryGetValueWithFailed(name, nullptr);
+	DirectoryEntry* dirEntry = mDirDict.GetOptional(name, nullptr);
 	RETURN_SELF_IF_NOT_NULL(dirEntry);
 
 	dirEntry = new DirectoryEntry(name);
@@ -264,7 +264,7 @@ DirectoryEntry* DirectoryEntry::FindOrCreateDirectoryEntry(const StringRef& name
 DirectoryEntry* DirectoryEntry::FindOrCreateDirectory(const StringRef& name)
 {
 	RETURN_NULL_IF_FALSE(IsValid());
-	DirectoryEntry* dirEntry = mDirDict.TryGetValueWithFailed(name, nullptr);
+	DirectoryEntry* dirEntry = mDirDict.GetOptional(name, nullptr);
 	RETURN_SELF_IF_NOT_NULL(dirEntry);
 
 	if (mStorage->OnCreateDirectory(Path::Combine(Path(), name)))
@@ -564,7 +564,7 @@ bool DirectoryEntry::RemoveAllFiles()
 	return true;
 }
 
-FileEntry* DirectoryEntry::SaveFile(const StringRef& path, const MemoryByteData& data)
+FileEntry* DirectoryEntry::SaveFile(const StringRef& path, const MemoryData& data)
 {
 	RETURN_NULL_IF_FALSE(IsValid());
 	RETURN_NULL_IF_NULL(mStorage);
@@ -589,14 +589,14 @@ bool DirectoryEntry::RemoveAllDirectories()
 const FileEntry* DirectoryEntry::FindFile(const StringRef& name) const
 {
 	RETURN_NULL_IF_FALSE(IsValid());
-	return mFileDict.TryGetValueWithFailed(name, nullptr);
+	return mFileDict.GetOptional(name, nullptr);
 
 }
 
 FileEntry* DirectoryEntry::FindFile(const StringRef& name)
 {
 	RETURN_NULL_IF_FALSE(IsValid());
-	return mFileDict.TryGetValueWithFailed(name, nullptr);
+	return mFileDict.GetOptional(name, nullptr);
 }
 
 bool DirectoryEntry::ExistsFile(const StringRef& name) const
@@ -608,10 +608,10 @@ bool DirectoryEntry::ExistsFile(const StringRef& name) const
 
 //SIREN_BODY_METADATA_BEGIN
 SIREN_METADATA(DirectoryEntry, 14);
-SIREN_PROPERTY_METADATA_STRUCT(0, DirectoryEntry, Name, 4);
-SIREN_PROPERTY_METADATA(1, DirectoryEntry, Operations, 10, (EntryOperation)0);
-SIREN_PROPERTY_METADATA_STRUCT(2, DirectoryEntry, Dirs, 4);
-SIREN_PROPERTY_METADATA_STRUCT(3, DirectoryEntry, Files, 5);
+SIREN_FIELD_METADATA_STRUCT(0, DirectoryEntry, Name, 4);
+SIREN_FIELD_METADATA(1, DirectoryEntry, Operations, 10, (EntryOperation)0, true);
+SIREN_FIELD_METADATA_STRUCT(2, DirectoryEntry, Dirs, 4);
+SIREN_FIELD_METADATA_STRUCT(3, DirectoryEntry, Files, 5);
 //SIREN_BODY_METADATA_END
 
 MEDUSA_END;

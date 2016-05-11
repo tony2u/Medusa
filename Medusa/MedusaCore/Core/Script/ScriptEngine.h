@@ -1,49 +1,48 @@
 // Copyright (c) 2015 fjz13. All rights reserved.
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
-#pragma  once
+#pragma once
+#include "MedusaCorePreDeclares.h"
 #ifdef MEDUSA_SCRIPT
-
 #include "Core/Pattern/Singleton.h"
-#include "Core/String/HeapString.h"
-#include "Core/Script/ScriptModule.h"
-#include "Core/Collection/Dictionary.h"
-#include "Core/Pattern/IInitializable.h"
+#include "Core/Module/IModule.h"
+#include "ScriptDefines.h"
 
 MEDUSA_BEGIN;
 
-class ScriptEngine:public Singleton<ScriptEngine>,public IInitializable
+class ScriptEngine :public Singleton<ScriptEngine>, public IModule
 {
 	friend class Singleton<ScriptEngine>;
 	ScriptEngine();
-	~ScriptEngine();
+	~ScriptEngine(void);
 public:
-	virtual bool Initialize()override;
+	virtual bool Initialize() override;
 	virtual bool Uninitialize()override;
-public:
-	ScriptModule* ExternalModule() const { return mExternalModule; }
-	ScriptModule* CreateExternalModule();
 
-	ScriptModule* InternalModule() const { return mInternalModule; }
-	ScriptModule* CreateInternalModule();
+	ScriptMachine* NewMachine(bool setCurrent = true);
+
+	ScriptMachine* Current() const { return mCurrent; }
+	void SetCurrent(ScriptMachine* val) { mCurrent = val; }
+	StringRef Path() const { return mPath; }
+	void SetPath(StringRef val) { mPath = val; }
+
+	static ScriptState* State();
 
 
-	ScriptModule* CreateModule(StringRef name);
-	ScriptModule* GetModule(StringRef name);
-	void DestoryModule(ScriptModule* module);
-	asIScriptEngine* GetScriptEngine() const { return mScriptEngine; }
-	asIScriptContext* GetScriptContext();
+protected:
+	virtual bool OnLoad(IEventArg& e = IEventArg::Empty) override;
+	virtual bool OnUnload(IEventArg& e = IEventArg::Empty) override;
 
+	virtual bool OnChildLoad(IModule& child, IEventArg& e = IEventArg::Empty) override;
+	virtual bool OnChildUnload(IModule& child, IEventArg& e = IEventArg::Empty) override;
+	virtual bool OnChildReload(IModule& child, IEventArg& e = IEventArg::Empty) override;
 private:
-	static void OnMessageCallback(const asSMessageInfo *msg, void *param);
-private:
-	asIScriptEngine* mScriptEngine;
+	ScriptMachine* mCurrent = nullptr;
+	HeapString mPath;
 
-	List<asIScriptContext* > mScriptContexts;
-	Dictionary<HeapString,ScriptModule*> mModules;
-	ScriptModule* mExternalModule;
-	ScriptModule* mInternalModule;
 };
 
+
 MEDUSA_END;
+
 #endif

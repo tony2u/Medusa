@@ -10,8 +10,8 @@ MEDUSA_BEGIN;
 enum class FilePermission
 {
 	None = 0,
-	Write = 128,
 	Read = 256,
+	Write = 128,
 	All = 384,
 };
 

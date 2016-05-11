@@ -13,7 +13,7 @@ public:
 	virtual ~PFXEffect();
 	
 	static PFXEffect* CreateFromFile(const FileIdRef& fileId);
-	static PFXEffect* CreateFromData(const FileIdRef& fileId,MemoryByteData data);
+	static PFXEffect* CreateFromData(const FileIdRef& fileId,MemoryData data);
 	static PFXEffect* CreateFromLines(const FileIdRef& fileId,const List<HeapString>& lines);
 };
 

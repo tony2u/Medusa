@@ -18,7 +18,8 @@
 #include "Resource/Audio/AudioFactory.h"
 #include "Resource/TextureAtlas/TextureAtlasFactory.h"
 #include "Resource/Skeleton/SkeletonModelFactory.h"
-
+#include "Resource/Map/Tiled/TiledMapFactory.h"
+#include "Resource/Map/Tiled/TiledTilesetFactory.h"
 
 MEDUSA_BEGIN;
 
@@ -39,6 +40,10 @@ ResourceManager::ResourceManager(void)
 	mResourceFactories.Add(&AudioFactory::Instance());
 	mResourceFactories.Add(&TextureAtlasFactory::Instance());
 	mResourceFactories.Add(&SkeletonModelFactory::Instance());
+
+	mResourceFactories.Add(&TiledMapFactory::Instance());
+	mResourceFactories.Add(&TiledTilesetFactory::Instance());
+
 
 }
 

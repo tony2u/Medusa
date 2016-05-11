@@ -4,6 +4,7 @@
 #pragma once
 
 #include "MedusaCorePreDeclares.h"
+#include "Core/String/StringRef.h"
 
 
 MEDUSA_BEGIN;
@@ -15,6 +16,7 @@ enum class FileMode { File, Directory };
 enum class FileType :char
 {
 	Unknown = -1,
+	None = 0,
 
 	rawimg = 1,
 	png = 2,
@@ -36,12 +38,68 @@ enum class FileType :char
 	xml = 27,
 	bin = 28,
 	atlas = 29,
-	mpf = 30,	//medusa custom package file
+	zip = 30,
+	tmx = 31,	//tiled map 
+	xaml = 32,	//xaml file
+	plist = 33,	//apple plist file
+	bplist = 34,	//apple binary plist file
 
-	zip = 40,
-	mpk = 41	//medusa custom package
+	matlas = 40,	//medusa custom atlas file
+	mpk = 41,	//medusa custom package
+	mp = 42,	//medusa custom siren proto file
+	mpb = 43,	//medusa custom siren assembly
+	csb = 44,
+
+	lua = 45,
+
+
+	Count = 46,
 };
 
+
+namespace FileExtensions
+{
+	const extern StringRef png;
+	const extern StringRef jpeg;
+	const extern StringRef jpg;
+
+	const extern StringRef gif;
+	const extern StringRef pvr;
+
+	const extern StringRef pcm;
+	const extern StringRef wav;
+	const extern StringRef ogg;
+
+	const extern StringRef fsh;
+	const extern StringRef vsh;
+	const extern StringRef pod;
+	const extern StringRef pfx;
+	const extern StringRef ttf;
+	const extern StringRef fnt;
+	const extern StringRef json;
+	const extern StringRef xml;
+	const extern StringRef bin;
+	const extern StringRef atlas;
+	const extern StringRef zip;
+	const extern StringRef tmx;
+	const extern StringRef xaml;
+	const extern StringRef plist;
+	const extern StringRef bplist;
+
+
+
+	const extern StringRef matlas;
+	const extern StringRef mpk;
+	const extern StringRef mp;
+	const extern StringRef mpb;
+	const extern StringRef csb;
+	const extern StringRef lua;
+
+
+
+
+
+};
 
 enum class ImageFileType :char
 {
@@ -61,8 +119,13 @@ enum class AudioFileType :char
 
 enum class ShaderFileType
 {
-	fsh = 5,
-	vsh = 6
+	fsh = (char)FileType::fsh,
+	vsh = (char)FileType::vsh
+};
+
+enum class ScriptFileType
+{
+	lua = (char)FileType::lua,
 };
 
 enum class FileBufferMode

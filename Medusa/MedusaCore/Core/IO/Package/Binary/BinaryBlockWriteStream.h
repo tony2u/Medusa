@@ -24,7 +24,7 @@ public:
 	virtual bool Close()override;
 
 protected:
-	virtual size_t WriteBlock(uint blockIndex, const MemoryByteData& data)override;
+	virtual size_t WriteBlock(uint blockIndex, const MemoryData& data)override;
 	void LoadBlockHeaders();
 protected:
 	BinaryPackage* mPackage;

@@ -6,13 +6,8 @@
 #include "Core/Log/Log.h"
 #include "Core/IO/Stream/FileStream.h"
 
-#ifdef MEDUSA_SCRIPT
-#include "CoreLib/Common/angelscript.h"
-#endif
 
 MEDUSA_BEGIN;
-
-
 
 bool File::Exists(StringRef filePath, int permission)
 {
@@ -88,7 +83,7 @@ bool File::Copy(StringRef srcFilePath, StringRef destFilePath)
 	FileStream srcFile;
 	FileStream destFile;
 	byte buffer[1024];
-	MemoryByteData data = MemoryByteData::FromStatic(buffer);
+	MemoryData data = MemoryData::FromStatic(buffer);
 	if (srcFile.OpenReadBinary(srcFilePath) && destFile.OpenNewWriteBinary(destFilePath))
 	{
 		while (true)
@@ -149,7 +144,15 @@ bool File::ReadAllTextTo(StringRef filePath, WHeapString& outString)
 
 }
 
-bool File::WriteAllTextTo(StringRef filePath, StringRef str)
+HeapString File::ReadAllText(StringRef filePath)
+{
+	HeapString text;
+	ReadAllTextTo(filePath, text);
+	return text;
+}
+
+
+bool File::WriteAllText(StringRef filePath, StringRef str)
 {
 	FileStream writer(filePath, FileOpenMode::DestoryWriteOrCreate, FileDataType::Text);
 	if (writer.IsOpen())
@@ -159,7 +162,7 @@ bool File::WriteAllTextTo(StringRef filePath, StringRef str)
 	return false;
 }
 
-bool File::WriteAllTextTo(StringRef filePath, WStringRef str)
+bool File::WriteAllText(StringRef filePath, WStringRef str)
 {
 	FileStream writer(filePath, FileOpenMode::DestoryWriteOrCreate, FileDataType::Text);
 	if (writer.IsOpen())
@@ -181,7 +184,7 @@ bool File::ReadAllLines(StringRef filePath, List<HeapString>& outLines, size_t m
 	return false;
 }
 
-MemoryByteData File::ReadAllData(StringRef filePath)
+MemoryData File::ReadAllData(StringRef filePath)
 {
 	FileStream stream;
 	if (stream.OpenReadBinary(filePath))
@@ -189,10 +192,10 @@ MemoryByteData File::ReadAllData(StringRef filePath)
 		return stream.ReadToEnd();
 	}
 
-	return MemoryByteData::Empty;
+	return MemoryData::Empty;
 }
 
-MemoryByteData File::ReadAllDataPriority(StringRef firstPath, StringRef secondPath)
+MemoryData File::ReadAllDataPriority(StringRef firstPath, StringRef secondPath)
 {
 	//try to read data from first path
 	if (File::Exists(firstPath))
@@ -208,7 +211,7 @@ MemoryByteData File::ReadAllDataPriority(StringRef firstPath, StringRef secondPa
 		}
 		else
 		{
-			return MemoryByteData::Empty;
+			return MemoryData::Empty;
 		}
 	}
 }
@@ -233,7 +236,7 @@ std::unique_ptr<FileStream> File::OpenBinaryReader(StringRef filePath)
 	return fs;
 }
 
-bool File::WriteAllDataTo(MemoryByteData data, StringRef filePath)
+bool File::WriteAllData( StringRef filePath, MemoryData data)
 {
 	FileStream stream;
 	if (stream.OpenNewWriteBinary(filePath))
@@ -246,20 +249,3 @@ bool File::WriteAllDataTo(MemoryByteData data, StringRef filePath)
 
 MEDUSA_END;
 
-
-#ifdef MEDUSA_SCRIPT
-#include "CoreLib/Common/angelscript.h"
-
-MEDUSA_SCRIPT_BEGIN;
-
-void RegisterFile(asIScriptEngine* engine)
-{
-	engine->SetDefaultNamespace("File");
-	engine->RegisterGlobalFunction("bool Exists(StringRef filePath,int permission )", asFUNCTIONPR(File::Exists, (StringRef, int), bool), asCALL_CDECL);
-
-}
-
-MEDUSA_SCRIPT_END;
-
-
-#endif

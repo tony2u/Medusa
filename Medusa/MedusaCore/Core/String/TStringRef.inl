@@ -10,14 +10,14 @@ MEDUSA_BEGIN;
 template<typename T>
 THeapString<T> TStringRef<T>::operator+( const TStringRef<T>& inString ) const
 {
-	return THeapString<T>(mBuffer)+inString;
+	return THeapString<T>(mBuffer,Length())+inString;
 }
 
 
 template<typename T>
 THeapString<T> TStringRef<T>::operator+( T c ) const
 {
-	return THeapString<T>(mBuffer)+c;
+	return THeapString<T>(mBuffer, Length())+c;
 }
 
 

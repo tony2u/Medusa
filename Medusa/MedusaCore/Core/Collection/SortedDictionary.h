@@ -132,7 +132,7 @@ public:
 		return false;
 	}
 
-	virtual TValueReferenceType GetValue(TKeyParameterType key)
+	virtual TValueReferenceType Get(TKeyParameterType key)
 	{
 		typename MapType::iterator i=mItems.find(key);
 		if (i!=mItems.end())
@@ -143,7 +143,7 @@ public:
 		MEDUSA_ASSERT_FAILED("cannot find entry");
 		return i->second;
 	}
-	virtual TValueConstReturnType GetValue(TKeyParameterType key)const
+	virtual TValueConstReturnType Get(TKeyParameterType key)const
 	{
 		typename MapType::const_iterator i=mItems.find(key);
 		if (i!=mItems.end())
@@ -155,12 +155,12 @@ public:
 		return i->second;
 	}
 
-	virtual void SetValue(TKeyParameterType key,TValueParameterType value)
+	virtual void Set(TKeyParameterType key,TValueParameterType value)
 	{
 		mItems[key]=value;
 	}
 
-	virtual TValuePointerType TryGetValue(TKeyParameterType key)
+	virtual TValuePointerType TryGet(TKeyParameterType key)
 	{
 		typename MapType::iterator i=mItems.find(key);
 		if (i!=mItems.end())
@@ -170,7 +170,7 @@ public:
 		return nullptr;
 	}
 
-	virtual TValueConstPointerType TryGetValue(TKeyParameterType key)const
+	virtual TValueConstPointerType TryGet(TKeyParameterType key)const
 	{
 		typename MapType::const_iterator i=mItems.find(key);
 		if (i!=mItems.end())
@@ -180,7 +180,7 @@ public:
 		return nullptr;
 	}
 
-	virtual TValue TryGetValueWithFailed(TKeyParameterType key,TValueParameterType failedReturn)const
+	virtual TValueConstReturnType GetOptional(TKeyParameterType key,TValueParameterType failedReturn)const
 	{
 		typename MapType::const_iterator i=mItems.find(key);
 		if (i!=mItems.end())
@@ -247,7 +247,7 @@ public:
 
 	}
 
-	virtual TValue RemoveKeyWithValueReturned(TKeyParameterType key,TValueParameterType failedReturn)
+	virtual TValue RemoveKeyOptional(TKeyParameterType key,TValueParameterType failedReturn)
 	{
 		typename MapType::iterator i=mItems.find(key);
 		if (i!=mItems.end())

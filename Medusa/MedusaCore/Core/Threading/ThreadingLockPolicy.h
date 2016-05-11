@@ -41,7 +41,7 @@ public:
 		Lock& operator=(const Lock &);
 	};
 private:
-	static Mutex mMutex;
+	static RecursiveMutex mMutex;
 };
 
 template<typename THost>
@@ -57,7 +57,7 @@ public:
 	private:
 		Lock(const Lock &);
 		Lock& operator=(const Lock &);
-		Mutex mMutex;
+		RecursiveMutex mMutex;
 	};
 };
 

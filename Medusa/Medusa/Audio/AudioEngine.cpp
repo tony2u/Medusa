@@ -231,7 +231,7 @@ StaticAudioSource* AudioEngine::PlayEffectSequence(const FileIdRef& fileId1,cons
 
 StaticAudioSource* AudioEngine::FindEffect(const StringRef& sourceName)const
 {
-	return mEffectSourceDict.TryGetValueWithFailedByOtherKey(sourceName,sourceName.HashCode(),nullptr);
+	return mEffectSourceDict.GetOptionalByOtherKey(sourceName,sourceName.HashCode(),nullptr);
 }
 
 void AudioEngine::PauseAllEffect()
@@ -301,7 +301,7 @@ StreamAudioSource* AudioEngine::PlayMusic( const FileIdRef& fileId,bool isRepeat
 }
 StreamAudioSource* AudioEngine::FindMusic(const StringRef& sourceName) const
 {
-	return mMusicSourceDict.TryGetValueWithFailedByOtherKey(sourceName,sourceName.HashCode(),nullptr);
+	return mMusicSourceDict.GetOptionalByOtherKey(sourceName,sourceName.HashCode(),nullptr);
 }
 
 void AudioEngine::PauseAllMusic()

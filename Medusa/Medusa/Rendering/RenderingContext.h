@@ -5,8 +5,8 @@
 #include "Graphics/Render/Render.h"
 #include "Graphics/GraphicsTypes.h"
 #include "Core/Pattern/Singleton.h"
-#include "Core/Geometry/Color3.h"
-#include "Core/Geometry/Point2.h"
+#include "Geometry/Color3.h"
+#include "Geometry/Point2.h"
 #include "Rendering/RenderingTypes.h"
 
 MEDUSA_BEGIN;
@@ -75,7 +75,7 @@ public:
 
 
 
-	void UpdateShaderVariables();
+	void UpdateShaderUniforms();
 private:
 	IRenderTarget* mRenderTarget;
 	Camera* mCamera;

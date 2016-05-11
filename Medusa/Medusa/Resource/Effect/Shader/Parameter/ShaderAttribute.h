@@ -6,11 +6,11 @@
 
 MEDUSA_BEGIN;
 
-class ShaderAttribute:public IShaderParameter
+class ShaderAttribute :public IShaderParameter
 {
 	friend class BaseProgramRenderPass;
 private:
-	ShaderAttribute(BaseProgramRenderPass* renderPass,uint index,StringRef name,GraphicsAttributeDataType dataType);
+	ShaderAttribute(BaseProgramRenderPass* renderPass, uint index, StringRef name, GraphicsAttributeDataType dataType);
 	virtual ~ShaderAttribute();
 public:
 	virtual void Set(float x);
@@ -23,8 +23,8 @@ public:
 	void SetArray3(const float* data);
 	void SetArray4(const float* data);
 
-	void SetPointer(uint componentCount,GraphicsDataType type,bool isNormalized=false,uint stride=0,const void* data=nullptr);
-	void SetPointerFromBufferObject(const IGraphicsBuffer& bufferObject,uint stride=0,int offset=0);
+	void SetPointer(uint componentCount, GraphicsDataType type, bool isNormalized = false, uint stride = 0, const void* data = nullptr);
+	void SetPointerFromBufferObject(const IGraphicsBuffer& bufferObject, uint stride = 0, int offset = 0);
 
 
 	void EnableArray(bool isEnabled);
@@ -32,8 +32,8 @@ public:
 
 	GraphicsAttributeDataType DataType() const { return mDataType; }
 private:
-	bool mIsArrayEnabled;
-	GraphicsAttributeDataType mDataType;
+	bool mIsArrayEnabled = false;
+	GraphicsAttributeDataType mDataType = GraphicsAttributeDataType::None;;
 
 };
 

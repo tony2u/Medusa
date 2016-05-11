@@ -3,13 +3,13 @@
 // license that can be found in the LICENSE file.
 #include "MedusaPreCompiled.h"
 #include "ShapeGeneralMesh.h"
-#include "Core/Geometry/Vertex/ShapeVertex.h"
+#include "Geometry/Vertex/ShapeVertex.h"
 #include "Graphics/Buffer/VertexGraphicsBuffer.h"
 #include "Graphics/Buffer/IndexGraphicsBuffer.h"
 #include "Graphics/Buffer/ColorGraphicsBuffer.h"
-#include "Core/Geometry/Quad.h"
+#include "Geometry/Quad.h"
 #include "Node/Sprite/Sprite.h"
-#include "Core/Geometry/Matrix4.h"
+#include "Geometry/Matrix4.h"
 
 MEDUSA_BEGIN;
 

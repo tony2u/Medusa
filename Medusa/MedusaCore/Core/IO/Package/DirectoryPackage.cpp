@@ -23,7 +23,7 @@ Medusa::DirectoryPackage::DirectoryPackage(const StringRef& path, PackagePriorit
 	mSearchPattern(searchPattern),
 	mBlockSize(FileStorage::DefaultBlockSize)
 {
-	
+	mRootDir.SetName(mPath);
 }
 
 DirectoryPackage::~DirectoryPackage(void)
@@ -43,8 +43,13 @@ bool DirectoryPackage::Initialize()
 	{
 		FileType fileType = FileInfo::ExtractType(file);
 		CONTINUE_IF(PackageFactory::IsPackage(fileType));
-		file.RemoveFirst(mPath);
-		HeapString dir = Path::GetDirectory(file);
+		StringRef subPath = file.ToString().SubString(mPath.Length());
+		if (subPath.BeginWith('/')||subPath.BeginWith('\\'))
+		{
+			subPath = subPath.SubString(1);
+		}
+
+		HeapString dir = Path::GetDirectory(subPath);
 
 		DirectoryEntry* dirEntry = FindOrCreateDirectoryEntry(dir);
 		if (dirEntry == nullptr)
@@ -53,7 +58,7 @@ bool DirectoryPackage::Initialize()
 			return false;
 		}
 
-		StringRef fileName = Path::GetFileName(file);
+		StringRef fileName = Path::GetFileName(subPath);
 		FileEntry* fileEntry = FindOrCreateFileEntry(fileName, dirEntry);
 		if (fileEntry == nullptr)
 		{
@@ -79,13 +84,13 @@ bool DirectoryPackage::OnCreateDirectory(const StringRef& dir)
 
 bool DirectoryPackage::OnRemoveDirectory(DirectoryEntry& dir)
 {
-	HeapString absolutePath = Path::Combine(mPath, dir.Path());
+	auto absolutePath = dir.Path();
 	return Directory::RemoveDir(absolutePath);
 }
 
 const IStream* DirectoryPackage::OnReadFile(const FileEntry& file, FileDataType dataType /*= FileDataType::Binary*/) const
 {
-	HeapString absolutePath = Path::Combine(mPath, file.Path());
+	auto absolutePath = file.Path();
 	FileStream* fileStream = new FileStream(absolutePath, FileOpenMode::ReadOnly, dataType);
 	if (!fileStream->IsOpen())
 	{
@@ -98,7 +103,7 @@ const IStream* DirectoryPackage::OnReadFile(const FileEntry& file, FileDataType 
 
 IStream* DirectoryPackage::OnWriteFile(FileEntry& file, FileOpenMode openMode /*= FileOpenMode::ReadOnly*/, FileDataType dataType /*= FileDataType::Binary*/)
 {
-	HeapString absolutePath = Path::Combine(mPath, file.Path());
+	auto absolutePath = file.Path();
 	FileStream* fileStream = new FileStream(absolutePath, openMode, dataType);
 	if (!fileStream->IsOpen())
 	{
@@ -110,7 +115,7 @@ IStream* DirectoryPackage::OnWriteFile(FileEntry& file, FileOpenMode openMode /*
 
 bool DirectoryPackage::OnRemoveFile(FileEntry& file)
 {
-	HeapString absolutePath = Path::Combine(mPath, file.Path());
+	auto absolutePath = file.Path();
 	return File::Delete(absolutePath);
 }
 

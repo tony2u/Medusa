@@ -5,7 +5,7 @@
 #include "Node/INode.h"
 #include "Core/Collection/Dictionary.h"
 #include "Core/Pattern/Nullable.h"
-#include "Core/Geometry/Cube.h"
+#include "Geometry/Cube.h"
 #include "Core/Pattern/VaryValue.h"
 
 MEDUSA_BEGIN;

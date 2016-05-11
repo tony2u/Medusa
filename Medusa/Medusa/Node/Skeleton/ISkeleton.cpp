@@ -21,7 +21,7 @@
 #include "Core/Action/Composite/SpeedAction.h"
 #include "Core/Action/Composite/CountDownAction.h"
 
-#include "Core/Geometry/Range.h"
+#include "Geometry/Range.h"
 
 
 MEDUSA_BEGIN;
@@ -137,10 +137,10 @@ ISkeleton::~ISkeleton()
 	SAFE_DELETE_DICTIONARY_VALUE(mTriggers);
 }
 
-bool ISkeleton::Update(float dt, NodeUpdateFlags flag /*= NodeUpdateFlags::None*/)
+bool ISkeleton::OnUpdate(float dt, NodeUpdateFlags flag /*= NodeUpdateFlags::None*/)
 {
 	//return true;
-	RETURN_FALSE_IF_FALSE(INode::Update(dt, flag));
+	
 	//run animation
 	//return true;
 	//update transform
@@ -293,17 +293,17 @@ bool ISkeleton::SetAvatarName(const StringRef& avatarName)
 
 SkeletonBone* ISkeleton::FindBone(const StringRef& name) const
 {
-	return mBoneDict.TryGetValueWithFailed(name, nullptr);
+	return mBoneDict.GetOptional(name, nullptr);
 }
 
 SkeletonSlot* ISkeleton::FindSlot(const StringRef& name) const
 {
-	return mSlotDict.TryGetValueWithFailed(name, nullptr);
+	return mSlotDict.GetOptional(name, nullptr);
 }
 
 SkeletonIK* ISkeleton::FindIK(const StringRef& name) const
 {
-	return mIKDict.TryGetValueWithFailed(name, nullptr);
+	return mIKDict.GetOptional(name, nullptr);
 }
 
 void ISkeleton::SetBoneVisible(bool val)
@@ -504,14 +504,14 @@ bool ISkeleton::RegisterTriggerHandler(const StringRef& animationName, const Str
 {
 	SkeletonAnimationModel* aniModel = mModel->FindAnimation(animationName);
 	RETURN_FALSE_IF_NULL(aniModel);
-	TriggerEventDict* eventDict = mTriggers.TryGetValueWithFailed(aniModel, nullptr);
+	TriggerEventDict* eventDict = mTriggers.GetOptional(aniModel, nullptr);
 	if (eventDict == nullptr)
 	{
 		eventDict = new TriggerEventDict();
 		mTriggers.Add(aniModel, eventDict);
 	}
 
-	TriggerEvent* events= eventDict->TryGetValueByOtherKey(triggerName, triggerName.HashCode());
+	TriggerEvent* events= eventDict->TryGetByOtherKey(triggerName, triggerName.HashCode());
 	if (events==nullptr)
 	{
 		TriggerEvent& newEvents = eventDict->NewAdd(triggerName);
@@ -527,10 +527,10 @@ bool ISkeleton::FireTrigger(SkeletonAnimation* ani, float time, const TriggerEve
 {
 	SkeletonAnimationModel* aniModel = mModel->FindAnimation(ani->Name());
 	RETURN_FALSE_IF_NULL(aniModel);
-	TriggerEventDict* eventDict = mTriggers.TryGetValueWithFailed(aniModel, nullptr);
+	TriggerEventDict* eventDict = mTriggers.GetOptional(aniModel, nullptr);
 	RETURN_FALSE_IF_NULL(eventDict);
 	StringRef triggerName= eventArg.Name();
-	TriggerEvent* events = eventDict->TryGetValueByOtherKey(triggerName, triggerName.HashCode());
+	TriggerEvent* events = eventDict->TryGetByOtherKey(triggerName, triggerName.HashCode());
 	RETURN_FALSE_IF_NULL(events);
 	events->Invoke(ani, time, eventArg);
 	return true;

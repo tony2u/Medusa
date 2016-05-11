@@ -1,0 +1,53 @@
+<Solution>
+  <PropertyGroup Name="Test" Version="3.10.0.0" Type="CocosStudio" />
+  <SolutionFolder>
+    <Group ctype="ResourceGroup">
+      <RootFolder Name=".">
+        <Folder Name="Font">
+          <TTF Name="arial.ttf" />
+        </Folder>
+        <Folder Name="Poker">
+          <Image Name="Back.png" />
+          <Image Name="Background.png" />
+          <Image Name="BlackJoker.png" />
+          <Image Name="Club.png" />
+          <Image Name="Diamond.png" />
+          <Image Name="Hearts.png" />
+          <Image Name="RedJoker.png" />
+          <Image Name="Rogue.png" />
+          <Image Name="Spades.png" />
+        </Folder>
+        <Folder Name="UI">
+          <Image Name="CloseNormal.png" />
+          <Image Name="CloseSelected.png" />
+          <Image Name="ddz_lzc_cjc.png" />
+          <Image Name="ddz_lzc_dsc.png" />
+          <Image Name="ddz_lzc_gjc.png" />
+          <Image Name="ddz_lzc_zjc.png" />
+          <Image Name="dt_bsc.png" />
+          <Image Name="dt_jdc.png" />
+          <Image Name="dt_lzc.png" />
+          <Image Name="dt_ylc.png" />
+          <Image Name="fjdz.png" />
+          <Image Name="fjdzvip.png" />
+          <Image Name="fjjqr.png" />
+          <Image Name="fjmrman.png" />
+          <Image Name="fjmrn.png" />
+          <Image Name="fjndz.png" />
+          <Image Name="fjndzvip.png" />
+          <Image Name="fjnm.png" />
+          <Image Name="fjnmmz.png" />
+          <Image Name="fjnmmzvip.png" />
+          <Image Name="fjnmvip.png" />
+        </Folder>
+        <TTF Name="arial.ttf" />
+        <Image Name="HelloWorld.png" />
+        <Project Name="LogoLayer.csd" Type="Layer" />
+        <Project Name="MainLayer.csd" Type="Layer" />
+        <Project Name="MainScene.csd" Type="Scene" />
+        <PlistInfo Name="Poker.csi" Type="Plist" />
+        <Project Name="PokerLayer.csd" Type="Layer" />
+      </RootFolder>
+    </Group>
+  </SolutionFolder>
+</Solution>

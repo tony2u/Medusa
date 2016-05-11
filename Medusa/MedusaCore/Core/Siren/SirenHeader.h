@@ -8,5 +8,5 @@
 #include "Core/Collection/List.h"
 #include "Core/Collection/Dictionary.h"
 #include "Core/String/HeapString.h"
-#include "Core/Siren/Reflection/PropertyInfo.h"
+#include "Core/Siren/Schema/SirenFieldInfo.h"
 

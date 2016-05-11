@@ -1,4 +1,4 @@
-// Copyright (c) 2015 fjz13. All rights reserved.
+﻿// Copyright (c) 2015 fjz13. All rights reserved.
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 #include "MedusaPreCompiled.h"
@@ -23,7 +23,7 @@ DropPoolRandomItem::~DropPoolRandomItem()
 
 //SIREN_BODY_METADATA_BEGIN
 SIREN_METADATA(DropPoolRandomItem, 18);
-SIREN_PROPERTY_METADATA(0, DropPoolRandomItem, Probability, 11, 1);
+SIREN_FIELD_METADATA(0, DropPoolRandomItem, Probability, 11, 1, true);
 //SIREN_BODY_METADATA_END
 
 MEDUSA_END;

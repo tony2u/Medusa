@@ -5,8 +5,8 @@
 
 #include "Node/INode.h"
 #include "Core/String/HeapString.h"
-#include "Core/Geometry/Moveable/DefaultMoveable.h"
-#include "Core/Geometry/Color4.h"
+#include "Geometry/Moveable/DefaultMoveable.h"
+#include "Geometry/Color4.h"
 #include "Core/String/IStringWrapper.h"
 
 MEDUSA_BEGIN;

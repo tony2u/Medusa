@@ -19,6 +19,7 @@
 #include "Core/Coder/CoderFactory.h"
 #include "Core/String/StringParser.h"
 #include "Core/Log/win/WindowsConsoleLogger.h"
+#include "Core/IO/FileSystem.h"
 
 using namespace Medusa;
 
@@ -44,7 +45,7 @@ BinaryPackage* OpenPackage(std::map<std::string, docopt::value> &args, size_t in
 		if (args["--key"])
 		{
 			std::string keyStr = args["--key"].asString();
-			MemoryByteData keyData = MemoryByteData::FromStatic((const byte*)keyStr.c_str(), keyStr.size());
+			MemoryData keyData = MemoryData::FromStatic((const byte*)keyStr.c_str(), keyStr.size());
 			package->SetKey(keyData);
 		}
 
@@ -70,7 +71,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	Log::Initialize();
 	Log::AddLogger(new WindowsConsoleLogger());
 	Log::EnableLogHeader(false);
-	Log::SetLevel(Log::Level::Info);
+	Log::SetLevel(LogLevel::Info);
 
 	//http://docopt.org/
 	static const char USAGE[] =
@@ -132,7 +133,7 @@ Options:
 		if (args["--key"])
 		{
 			std::string keyStr = args["--key"].asString();
-			MemoryByteData keyData = MemoryByteData::FromStatic((const byte*)keyStr.c_str(), keyStr.size());
+			MemoryData keyData = MemoryData::FromStatic((const byte*)keyStr.c_str(), keyStr.size());
 			package->SetKey(keyData);
 		}
 
@@ -252,6 +253,11 @@ Options:
 		for (const auto& filePath : fileStrs)
 		{
 			filePaths.Add(filePath);
+			if (Path::IsDirectory(filePath))
+			{
+				FileSystem::Instance().AddDirectory(filePath);
+			}
+
 		}
 
 		if (!AddToPackage(*package, filePaths, recursive, isReadonly, isOverwrite, deleteOriginalFiles))

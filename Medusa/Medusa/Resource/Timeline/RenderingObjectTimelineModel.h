@@ -4,7 +4,7 @@
 #pragma once
 #include "Resource/Timeline/ITimelineModel.h"
 #include "Core/IO/FileId.h"
-#include "Core/Geometry/Rect2.h"
+#include "Geometry/Rect2.h"
 #include "Core/Collection/SortedDictionary.h"
 #include "Rendering/RenderingObject.h"
 
@@ -21,6 +21,8 @@ public:
 	bool InitializeWithTextureAtlas(IMaterial* material,const SortedDictionary<uint, IMesh*>& meshes, float fps = 24.f);
 
 	bool InitializeWithObjects(SortedDictionary<uint, RenderingObject>& renderingObjects, float fps = 24.f);
+	bool InitializeWithObjects(List<RenderingObject>& renderingObjects, float fps = 24.f);
+
 
 	
 	void AddRenderingObject(float time, const RenderingObject& val);

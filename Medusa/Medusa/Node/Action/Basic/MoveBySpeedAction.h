@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 #pragma once
 #include "Core/Action/BaseInfiniteAction.h"
-#include "Core/Geometry/Point3.h"
+#include "Geometry/Point3.h"
 
 MEDUSA_BEGIN;
 

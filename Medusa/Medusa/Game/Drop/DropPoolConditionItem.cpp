@@ -23,8 +23,8 @@ DropPoolConditionItem::~DropPoolConditionItem()
 
 //SIREN_BODY_METADATA_BEGIN
 SIREN_METADATA(DropPoolConditionItem, 21);
-SIREN_PROPERTY_METADATA(0, DropPoolConditionItem, PredicateId, 11, 0);
-SIREN_PROPERTY_METADATA_STRUCT(1, DropPoolConditionItem, Item, 4);
+SIREN_FIELD_METADATA(0, DropPoolConditionItem, PredicateId, 11, 0, false);
+SIREN_FIELD_METADATA_STRUCT(1, DropPoolConditionItem, Item, 4);
 //SIREN_BODY_METADATA_END
 
 MEDUSA_END;

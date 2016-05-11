@@ -14,7 +14,7 @@ public:
 	typedef Delegate<void (INode* sender,LongPressBeganGestureEventArg&)> LongPressBeganEventHandler;
 	typedef Delegate<void (INode* sender,LongPressFailedGestureEventArg&)> LongPressFailedEventHandler;
 
-	LongPressGestureRecognizer(INode* node,float minPressDuration,float allowMovement,GestureFlags flags=GestureFlags::None);
+	LongPressGestureRecognizer(INode* node,float minPressDuration,float allowMovement);
 	virtual ~LongPressGestureRecognizer(void);
 	virtual InputType GetInputType()const{return InputType::LongPress;}
 

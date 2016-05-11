@@ -3,17 +3,17 @@
 // license that can be found in the LICENSE file.
 #pragma once
 #include "MedusaPreDeclares.h"
-#include "Core/Log/ILogger.h"
 #include "Core/Pattern/Singleton.h"
-#include "Core/Geometry/Size2.h"
 #include "Core/Pattern/Delegate.h"
 #include "Platform/EngineFeatures.h"
 #include "Core/Threading/ThreadingDefines.h"
-#include "Core/Task/FrameTaskStage.h"
+#include "Core/Module/IModule.h"
+#include "MedusaCoreModule.h"
+#include "MedusaModule.h"
 
 MEDUSA_BEGIN;
 
-class Application :public Singleton < Application >
+class Application :public Singleton < Application >,public IModule
 {
 	friend class Singleton < Application > ;
 private:
@@ -27,12 +27,10 @@ public:
 
 
 public:
-	BaseRenderView* RootView() const { return mRootView; }
-
-	IWindow* Window() const { return mWindow; }
+	void SetExtension(IModule* val) { mExtension = val; }
+	
 	IGame* Game() const { return mGame; }
-	void SetGame(IGame* val);
-
+	IWindow* Window()const { return mEngine.Window(); }
 	void RegisterGame(Delegate<IGame*()> val);
 
 
@@ -45,10 +43,8 @@ public:
 
 	bool IsInMainThread()const;
 public:
-	bool Initialize();
-	bool Uninitialize();
-	bool InitializeRenderEngine();
-	bool UninitializeRenderEngine();
+	virtual bool Initialize() override;
+	virtual bool Uninitialize() override;
 
 	bool Run();
 
@@ -61,12 +57,21 @@ public:
 	void Wakeup();
 	void ReceiveMemoryWarning();
 	void Redraw();
-private:
+protected:
+	virtual bool OnBeforeLoad(IEventArg& e = IEventArg::Empty) override;
+	virtual bool OnLoad(IEventArg& e = IEventArg::Empty) override;
+	virtual bool OnAfterLoad(IEventArg& e = IEventArg::Empty) override;
+	virtual bool OnUnload(IEventArg& e = IEventArg::Empty) override;
+	virtual bool OnAfterUnload(IEventArg& e = IEventArg::Empty) override;
+
+	virtual bool OnReload(IEventArg& e = IEventArg::Empty) override;
 
 private:
-	IGame* mGame;
-	IWindow* mWindow;
-	BaseRenderView* mRootView;
+	IGame* mGame=nullptr;
+	MedusaCoreModule mCore;
+	MedusaModule mEngine;
+	IModule* mExtension = nullptr;
+
 	Delegate<IGame*()> mCreateGameCallback;
 
 	float mFrameInterval;
@@ -74,14 +79,11 @@ private:
 
 	double mTimeStamp;
 	uint64 mFrameCount;
-	EngineFeatures mEngineFeatures;
 
 	ThreadHandle mMainThread;
 
-	FrameTaskStage mUpdateSystemStage;
 	bool mIsInitialized;
-
-
+	
 
 };
 

@@ -7,12 +7,13 @@
 
 #ifdef MEDUSA_WINDOWS
 ////////////////////////////////////////////////////////////////////////// Windows
-#if 1
+#if 0
 #include <Windows.h>
 #else
 #define _WINSOCKAPI_
 #include <Windows.h>
 #include <WinSock2.h>
+#include <WS2tcpip.h>
 #endif
 
 //add socket lib

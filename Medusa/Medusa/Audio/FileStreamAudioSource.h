@@ -16,15 +16,15 @@ public:
 	FileStreamAudioSource(const StringRef& name = StringRef::Empty);
 	virtual ~FileStreamAudioSource();
 	bool OpenFile(const FileIdRef& fileId);
-	bool OpenMemory(const FileIdRef& fileId, const MemoryByteData& data);
+	bool OpenMemory(const FileIdRef& fileId, const MemoryData& data);
 
 protected:
 	virtual void OnSeek(uint secondOffset);
-	virtual bool OnFetchData(MemoryByteData& outData);
+	virtual bool OnFetchData(MemoryData& outData);
 private:
 	IAudio* mAudioFile = nullptr;
 	MemoryStream mAudioStream;
-	Mutex mMutex;
+	RecursiveMutex mMutex;
 };
 
 

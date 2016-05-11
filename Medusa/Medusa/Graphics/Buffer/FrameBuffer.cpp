@@ -106,7 +106,7 @@ void FrameBuffer::AttachDepthStencil(GraphicsRenderBufferInternalFormat depthFor
 
 RenderBuffer* FrameBuffer::DetachRenderBuffer(GraphicsAttachment attachment)
 {
-	RenderBuffer* renderBuffer=mRenderBuffers.TryGetValueWithFailed(attachment,nullptr);
+	RenderBuffer* renderBuffer=mRenderBuffers.GetOptional(attachment,nullptr);
 	if (renderBuffer==nullptr)
 	{
 		MEDUSA_ASSERT_FAILED("Cannot find attachment");
@@ -125,7 +125,7 @@ RenderBuffer* FrameBuffer::DetachRenderBuffer(GraphicsAttachment attachment)
 
 RenderBuffer* FrameBuffer::GetRenderBuffer(GraphicsAttachment attachment)
 {
-	return mRenderBuffers.TryGetValueWithFailed(attachment,nullptr);
+	return mRenderBuffers.GetOptional(attachment,nullptr);
 }
 
 
@@ -140,7 +140,7 @@ void FrameBuffer::Resize(const Size2U& val)
 
 ITexture* FrameBuffer::DetachTexture( GraphicsAttachment attachment )
 {
-	ITexture* texture=mTextures.TryGetValueWithFailed(attachment,nullptr);
+	ITexture* texture=mTextures.GetOptional(attachment,nullptr);
 	if (texture==nullptr)
 	{
 		MEDUSA_ASSERT_FAILED("Cannot find attachment");
@@ -199,17 +199,18 @@ void FrameBuffer::UpdateClearMask( GraphicsAttachment attachment,bool isAttach )
 	switch(attachment)
 	{
 	case GraphicsAttachment::Color:
-		mClearMask.SetOrRemoveIf(GraphicsBufferComponentMask::Color,isAttach);
+		
+		MEDUSA_FLAG_ENABLE(mClearMask,GraphicsBufferComponentMask::Color,isAttach);
 		break;
 	case GraphicsAttachment::Depth:
-		mClearMask.SetOrRemoveIf(GraphicsBufferComponentMask::Depth,isAttach);
+		MEDUSA_FLAG_ENABLE(mClearMask, GraphicsBufferComponentMask::Depth,isAttach);
 		break;
 	case GraphicsAttachment::Stencil:
-		mClearMask.SetOrRemoveIf(GraphicsBufferComponentMask::Stencil,isAttach);
+		MEDUSA_FLAG_ENABLE(mClearMask, GraphicsBufferComponentMask::Stencil,isAttach);
 		break;
 	case GraphicsAttachment::DepthStencil:
-		mClearMask.SetOrRemoveIf(GraphicsBufferComponentMask::Depth, isAttach);
-		mClearMask.SetOrRemoveIf(GraphicsBufferComponentMask::Stencil, isAttach);
+		MEDUSA_FLAG_ENABLE(mClearMask, GraphicsBufferComponentMask::Depth, isAttach);
+		MEDUSA_FLAG_ENABLE(mClearMask, GraphicsBufferComponentMask::Stencil, isAttach);
 		break;
 	default:
 		break;

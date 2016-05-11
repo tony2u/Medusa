@@ -31,11 +31,11 @@ int IPackage::Compare(const IPackage& other) const
 
 bool IPackage::operator<(const IPackage& other) const
 {
-	if (mPriority<other.mPriority)
+	if (mPriority < other.mPriority)
 	{
 		return true;
 	}
-	else if (mPriority>other.mPriority)
+	else if (mPriority > other.mPriority)
 	{
 		return false;
 	}
@@ -51,53 +51,30 @@ IPackage::~IPackage()
 
 void IPackage::EnableEncryptFileNames(bool val)
 {
-	if (val)
-	{
-		SetFlags(Flags() | PackageFlags::EncryptFileNames);
-	}
-	else
-	{
-		SetFlags(Flags() &~PackageFlags::EncryptFileNames);
-	}
+	auto newVal= MEDUSA_FLAG_RETURN_ENABLE(Flags(), PackageFlags::EncryptFileNames, val);
+	SetFlags(newVal);
 }
 
 
 
 void IPackage::SetReadonly(bool val)
 {
-	if (val)
-	{
-		SetFlags(Flags() | PackageFlags::Readonly);
-	}
-	else
-	{
-		SetFlags(Flags() &~PackageFlags::Readonly);
-	}
+	auto newVal = MEDUSA_FLAG_RETURN_ENABLE(Flags(), PackageFlags::Readonly, val);
+	SetFlags(newVal);
+	
 }
 
 void IPackage::EnableWriteSaltData(bool val)
 {
-	if (val)
-	{
-		SetFlags(Flags() | PackageFlags::WriteSaltData);
-	}
-	else
-	{
-		SetFlags(Flags() &~PackageFlags::WriteSaltData);
-	}
+	auto newVal = MEDUSA_FLAG_RETURN_ENABLE(Flags(), PackageFlags::WriteSaltData, val);
+	SetFlags(newVal);
 }
 
 
 void IPackage::EnableWholeFileCoding(bool val)
 {
-	if (val)
-	{
-		SetFlags(Flags() | PackageFlags::WholeFileCoding);
-	}
-	else
-	{
-		SetFlags(Flags() &~PackageFlags::WholeFileCoding);
-	}
+	auto newVal = MEDUSA_FLAG_RETURN_ENABLE(Flags(), PackageFlags::WholeFileCoding, val);
+	SetFlags(newVal);
 }
 
 
@@ -139,8 +116,8 @@ bool IPackage::Merge(const IPackage& other)
 		const FileEntry* fileEntry = file.Value;
 		if (fileEntry->IsValid())
 		{
-			FileEntry* currentFile=FindFile(fileEntry->Path());
-			if (currentFile!=nullptr)
+			FileEntry* currentFile = FindFile(fileEntry->Path());
+			if (currentFile != nullptr)
 			{
 				if (currentFile->Signature() != fileEntry->Signature())
 				{
@@ -236,7 +213,7 @@ IPackage* IPackage::CreateDiff(const IPackage& other, const StringRef& diffPath)
 
 	for (const auto& file : currentFiles)
 	{
-		const auto* otherFile = otherFiles.RemoveKeyWithValueReturned(file.Key, nullptr);
+		const auto* otherFile = otherFiles.RemoveKeyOptional(file.Key, nullptr);
 		if (otherFile == nullptr)
 		{
 			//new add
@@ -325,7 +302,7 @@ void IPackage::OnFileAdded(FileEntry& file)
 {
 	if (mParent != nullptr)
 	{
-		mParent->MapFile(file,true);
+		mParent->MapFile(file, true);
 	}
 }
 
@@ -333,7 +310,7 @@ void IPackage::OnFileRemoved(FileEntry& file)
 {
 	if (mParent != nullptr)
 	{
-		mParent->UnmapFile(file,true);
+		mParent->UnmapFile(file, true);
 	}
 }
 

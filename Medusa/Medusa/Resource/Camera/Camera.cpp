@@ -5,7 +5,6 @@
 #include "Camera.h"
 #include "Graphics/Render/Render.h"
 #include "Rendering/RenderingContext.h"
-#include "Core/Pattern/AutoIncreaseId.h"
 
 
 MEDUSA_BEGIN;
@@ -16,7 +15,6 @@ Camera::Camera(const FileIdRef& fileId/*=FileId::Empty*/)
 	mCameraUp(Vector3F::Zero),
 	mViewProjectionMatrix(Matrix4::Identity)
 {
-	mId = AutoIncreaseId<Camera>::New();
 
 	mViewProjectionMatrix.SetUpdateDelegate(Bind(&Camera::OnUpdateViewProjectionMatrix,this));
 	mViewMatrix.SetUpdateDelegate(Bind(&Camera::OnUpdateViewMatrix,this));

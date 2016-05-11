@@ -4,7 +4,7 @@
 #include "MedusaPreCompiled.h"
 #include "Graphics/State/RasterizerRenderState.h"
 #include "Graphics/Render/Render.h"
-#include "Resource/Effect/Shader/Parameter/ShaderConstant.h"
+#include "Resource/Effect/Shader/Parameter/ShaderUniform.h"
 #include "Rendering/RenderingContext.h"
 #include "Resource/Effect/IEffect.h"
 #include "Resource/ResourceNames.h"
@@ -70,10 +70,11 @@ RasterizerRenderState* RasterizerRenderState::Current()
 	render.GetBooleanArray(GraphicsBooleanArrayName::ColorWriteMask, colorMask.MutableItems());
 
 	GraphicsColorMask resultColorMask;
-	resultColorMask.SetOrRemoveIf(GraphicsColorMask::R,colorMask[0]);
-	resultColorMask.SetOrRemoveIf(GraphicsColorMask::G,colorMask[1]);
-	resultColorMask.SetOrRemoveIf(GraphicsColorMask::B,colorMask[2]);
-	resultColorMask.SetOrRemoveIf(GraphicsColorMask::A,colorMask[3]);
+
+	MEDUSA_FLAG_ENABLE(resultColorMask,GraphicsColorMask::R,colorMask[0]);
+	MEDUSA_FLAG_ENABLE(resultColorMask,GraphicsColorMask::G,colorMask[1]);
+	MEDUSA_FLAG_ENABLE(resultColorMask,GraphicsColorMask::B,colorMask[2]);
+	MEDUSA_FLAG_ENABLE(resultColorMask,GraphicsColorMask::A,colorMask[3]);
 
 	state->SetColorMask(resultColorMask);
 	return state;

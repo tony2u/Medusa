@@ -5,8 +5,11 @@
 #include "MedusaCorePreDeclares.h"
 #include "Core/Collection/SortedDictionary.h"
 #include "Core/IO/Package/IPackage.h"
+#include "Core/Pattern/TuplePattern.h"
 
 MEDUSA_BEGIN;
+
+MEDUSA_TUPLE_2(FileEntryRef, FileEntry*, Entry, void*, Region);
 
 class FileMapOrderItem
 {
@@ -17,19 +20,20 @@ public:
 	bool operator<(const FileMapOrderItem& other)const { return mOrder < other.mOrder; }
 	bool operator==(const FileMapOrderItem& other)const { return mOrder == other.mOrder; }
 public:
+	FileIdRef GetFileId()const;
 	uint Order() const { return mOrder; }
 	void SetOrder(uint val) { mOrder = val; }
 	int DiffScore() const;
 	FileMapNameItem* Parent() const { return mParent; }
 	void SetParent(FileMapNameItem* val) { mParent = val; }
 
-	const FileEntry* GetFileEntry() const { return mFirstValidFileEntry; }
-	FileEntry* MutableFileEntry() { return mFirstValidFileEntry; }
+	const FileEntry* GetFileEntry() const { return mFirstValidFileEntry.Entry; }
+	FileEntry* MutableFileEntry() { return mFirstValidFileEntry.Entry; }
 
-
-
-	void AddFileEntry(FileEntry& fileEntry);
+	void AddFileEntry(FileEntry& fileEntry,void* region=nullptr);
 	bool RemoveFileEntry(const FileEntry& fileEntry);
+
+	void* Region() const { return mFirstValidFileEntry.Region; }
 
 	bool IsValid()const { return !mFiles.IsEmpty(); }
 	intp HashCode()const { return mOrder; }
@@ -39,9 +43,9 @@ protected:
 	uint mOrder = 0;
 	FileMapNameItem* mParent = nullptr;
 
-	SortedDictionary<const IPackage*, FileEntry*, CustomCompareForPointer<const IPackage*>> mFiles;
+	SortedDictionary<const IPackage*, FileEntryRef, CustomCompareForPointer<const IPackage*>> mFiles;
 
-	FileEntry* mFirstValidFileEntry = nullptr;
+	FileEntryRef mFirstValidFileEntry;
 
 };
 

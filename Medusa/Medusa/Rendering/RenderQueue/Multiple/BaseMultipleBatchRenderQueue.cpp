@@ -41,7 +41,7 @@ void BaseMultipleBatchRenderQueue::Update(RenderableChangedFlags changedFlag)
 		mIsNeedToSort = false;
 	}
 
-	if (changedFlag.Has(RenderableChangedFlags::BatchChanged))
+	if (MEDUSA_FLAG_HAS(changedFlag,RenderableChangedFlags::BatchChanged))
 	{
 		OnUpdateBatchList();
 		OnUpdateRenderGroup();

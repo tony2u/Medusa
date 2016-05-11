@@ -22,7 +22,7 @@ private:
 public:
 	ISkeleton(StringRef name, ISkeletonModel* model);
 	virtual ~ISkeleton();
-	virtual bool Update(float dt, NodeUpdateFlags flag = NodeUpdateFlags::None)override;
+	virtual bool OnUpdate(float dt, NodeUpdateFlags flag = NodeUpdateFlags::None)override;
 
 	void UpdateBones();
 	void ApplyBoneBoundingToSize();

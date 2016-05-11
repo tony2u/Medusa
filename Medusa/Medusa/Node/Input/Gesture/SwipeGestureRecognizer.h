@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 #pragma once
 #include "Node/Input/Gesture/IGestureRecognizer.h"
-#include "Core/Geometry/ScrollDirection.h"
+#include "Geometry/ScrollDirection.h"
 #include "Core/Profile/PerformanceCounter.h"
 
 MEDUSA_BEGIN;
@@ -12,7 +12,7 @@ MEDUSA_BEGIN;
 class SwipeGestureRecognizer:public IGestureRecognizer
 {
 public:
-	SwipeGestureRecognizer(INode* node, ScrollDirection direction, float minMovement, float minVelocity, GestureFlags flags = GestureFlags::None);
+	SwipeGestureRecognizer(INode* node, ScrollDirection direction, float minMovement, float minVelocity);
 	virtual ~SwipeGestureRecognizer(void);
 
 	virtual void Reset();

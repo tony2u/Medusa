@@ -53,7 +53,7 @@ void TalkingDataAnalyzer::RequestPay(const StringRef& itemId,double currencyAmou
 {
 	LOG_ASSERT_STRING_MAX_LENGTH(orderId,64);
 	LOG_ASSERT_STRING_MAX_LENGTH(itemId,32);
-	LOG_ASSERT_STRING_MAX_LENGTH(paymentType.ToString(),16);
+	//LOG_ASSERT_STRING_MAX_LENGTH(paymentType.ToString(),16);
 
 
 }
@@ -68,7 +68,7 @@ void TalkingDataAnalyzer::RequestAndSucceedPay(const StringRef& itemId,int itemC
 {
 	LOG_ASSERT_STRING_MAX_LENGTH(orderId,64);
 	LOG_ASSERT_STRING_MAX_LENGTH(itemId,32);
-	LOG_ASSERT_STRING_MAX_LENGTH(paymentType.ToString(),16);
+	//LOG_ASSERT_STRING_MAX_LENGTH(paymentType.ToString(),16);
 }
 
 

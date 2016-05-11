@@ -4,8 +4,8 @@
 #pragma  once
 #include "Graphics/GraphicsTypes.h"
 #include "Core/String/HeapString.h"
-#include "Core/Geometry/Rect2.h"
-#include "Core/Geometry/Color4.h"
+#include "Geometry/Rect2.h"
+#include "Geometry/Color4.h"
 #include "Graphics/Buffer/FrameBuffer.h"
 #include "Graphics/State/RenderTargetRenderState.h"
 #include "Resource/IResource.h"

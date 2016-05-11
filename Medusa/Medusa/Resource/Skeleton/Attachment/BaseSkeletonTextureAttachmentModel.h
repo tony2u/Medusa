@@ -3,8 +3,8 @@
 // license that can be found in the LICENSE file.
 #pragma once
 #include "ISkeletonAttachmentModel.h"
-#include "Core/Geometry/Color4.h"
-#include "Core/Geometry/Size3.h"
+#include "Geometry/Color4.h"
+#include "Geometry/Size3.h"
 
 MEDUSA_BEGIN;
 

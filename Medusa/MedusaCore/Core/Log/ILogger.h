@@ -5,7 +5,7 @@
 
 #include "MedusaCorePreDeclares.h"
 #include "Core/Collection/List.h"
-#include "LogLevel.h"
+#include "LogDefines.h"
 #include "Core/String/HeapString.h"
 
 MEDUSA_BEGIN;
@@ -13,12 +13,7 @@ MEDUSA_BEGIN;
 class ILogger
 {
 public:
-	enum class LogType
-	{
-		Info,
-		Error,
-		Assert
-	};
+	
 public:
 	ILogger(StringRef name = StringRef::Empty,bool isLogHeader=true);
 	virtual ~ILogger(void);
@@ -28,9 +23,9 @@ public:
 
 	LogLevel CurrentLevel() const { return mCurrentLevel; }
 	void SetCurrentLevel(LogLevel inCurrentLevel) { mCurrentLevel = inCurrentLevel; }
-	bool IsLogInfo(){return mCurrentLevel.Has(LogLevel::Info);}
-	bool IsLogError(){return mCurrentLevel.Has(LogLevel::Error);}
-	bool IsLogAll(){return mCurrentLevel.Has(LogLevel::All);}
+	bool IsLogInfo(){return MEDUSA_FLAG_HAS(mCurrentLevel,LogLevel::Info);}
+	bool IsLogError() { return MEDUSA_FLAG_HAS(mCurrentLevel, LogLevel::Error); }
+	bool IsLogAll() {return MEDUSA_FLAG_HAS(mCurrentLevel, LogLevel::All);}
 
 	bool IsLogHeaderEnabled() const { return mIsLogHeaderEnabled; }
 	void EnableLogHeader(bool val) { mIsLogHeaderEnabled = val; }

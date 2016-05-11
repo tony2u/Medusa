@@ -32,7 +32,7 @@ bool TimelineFactory::Uninitialize()
 
 RenderingObjectTimeline* TimelineFactory::CreateRenderingObjectTimelineFromTextures(const StringRef& modelName, const StringRef& textureNamePattern, float fps /*= 24.f*/, bool isRepeatForever /*= false*/)
 {
-	RenderingObjectTimelineModel* model = TimelineModelFactory::Instance().CreateRenderingObjectFromTextures(modelName, textureNamePattern,fps);
+	RenderingObjectTimelineModel* model = TimelineModelFactory::Instance().CreateRenderingObjectFromTextures(modelName, textureNamePattern, fps);
 	RenderingObjectTimeline* ani = new RenderingObjectTimeline(model, isRepeatForever);
 	return ani;
 }
@@ -44,20 +44,13 @@ RenderingObjectTimeline* TimelineFactory::CreateRenderingObjectTimelineFromSingl
 	return ani;
 }
 
-RenderingObjectTimeline* TimelineFactory::CreateRenderingObjectTimelineFromTextureAtlas(const StringRef& name, const StringRef& regionPattern, const FileIdRef& atlasFileId, TextureAtlasFileFormat fileFormat /*= TextureAtlasFileFormat::Spine*/, uint atlasPageCount /*= 1*/, const Color4F& color /*= Color4F::White*/, float fps /*= 24.f*/, bool isRepeatForever /*= false*/)
+RenderingObjectTimeline* TimelineFactory::CreateRenderingObjectTimelineFromTextureAtlas(const FileIdRef& atlasFileId, const StringRef& regionPattern, TextureAtlasType fileFormat /*= TextureAtlasFileFormat::Spine*/,  const Color4F& color /*= Color4F::White*/, float fps /*= 24.f*/, bool isRepeatForever /*= false*/)
 {
-	RenderingObjectTimelineModel* model = TimelineModelFactory::Instance().CreateMeshFromTextureAtlas(name, regionPattern, atlasFileId, fileFormat, atlasPageCount, color, fps);
+	RenderingObjectTimelineModel* model = TimelineModelFactory::Instance().CreateRenderingObjectFromTextureAtlas(atlasFileId.Name, atlasFileId, regionPattern,fileFormat, color, fps);
 	RenderingObjectTimeline* ani = new RenderingObjectTimeline(model, isRepeatForever);
 	return ani;
 }
 
-RenderingObjectTimeline* TimelineFactory::CreateRenderingObjectTimelineFromTextureAtlasDefault(const StringRef& name, TextureAtlasFileFormat fileFormat /*= TextureAtlasFileFormat::Spine*/, uint atlasPageCount /*= 1*/, const Color4F& color /*= Color4F::White*/, float fps /*= 24.f*/, bool isRepeatForever /*= false*/)
-{
-	FileId atlasFileId;
-	atlasFileId.Name = name;
-	atlasFileId.Name += ".atlas";
-	return CreateRenderingObjectTimelineFromTextureAtlas(name, name, atlasFileId, fileFormat, atlasPageCount, color, fps, isRepeatForever);
-}
 
 
 MEDUSA_END;

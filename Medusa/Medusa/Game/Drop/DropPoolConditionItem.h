@@ -50,10 +50,11 @@ protected:
 //SIREN_HEADER_SCHEMA_BEGIN
 struct DropPoolConditionItem::Schema
 {
-	SIREN_PROPERTY(0, 0, Required, DropPoolConditionItem, uint, mPredicateId);
-	SIREN_PROPERTY(1, 1, Required, DropPoolConditionItem, DropPoolItem, mItem);
-	SIREN_PROPERTIES_2(void,DropPoolConditionItem);
+	SIREN_FIELD(0, 0, Required, DropPoolConditionItem, uint, mPredicateId);
+	SIREN_FIELD(1, 1, Required, DropPoolConditionItem, DropPoolItem, mItem);
+	SIREN_FIELDS_2(void,DropPoolConditionItem);
 };
+
 //SIREN_HEADER_SCHEMA_END
 
 MEDUSA_END;

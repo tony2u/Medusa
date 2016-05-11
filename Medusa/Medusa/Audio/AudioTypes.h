@@ -5,7 +5,7 @@
 
 #include "MedusaPreDeclares.h"
 #include "Core/Pattern/TuplePattern.h"
-#include "Core/Geometry/Point3.h"
+#include "Geometry/Point3.h"
 
 #ifdef MEDUSA_AL
 #if defined(MEDUSA_WINDOWS)||defined(MEDUSA_ANDROID)

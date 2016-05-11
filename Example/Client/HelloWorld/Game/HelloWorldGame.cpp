@@ -8,32 +8,15 @@
 HelloWorldGame::HelloWorldGame()
 {
 	mName="HelloWorld";
-}
 
-HelloWorldGame::~HelloWorldGame()
-{
-	
-}
-
-bool HelloWorldGame::Initialize()
-{
-	RETURN_FALSE_IF_FALSE(IGame::Initialize());
-	
-
-	return true;
+	System::Instance().Initialize("Resource", "Save", "Temp");
 }
 
 
 bool HelloWorldGame::Start()
 {
-	SceneManager::Instance().PushScene<HelloWorldScene>();
+	SceneManager::Instance().Push<HelloWorldScene>();
 
-	return true;
-}
-
-
-bool HelloWorldGame::Uninitialize()
-{
 	return true;
 }
 

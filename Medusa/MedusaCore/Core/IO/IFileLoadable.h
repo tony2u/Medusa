@@ -12,8 +12,8 @@ class IFileLoadable
 {
 public:
 	virtual ~IFileLoadable() { Unload(); }
-	virtual bool LoadFromFileSystem(const FileIdRef& fileId, uint format = 0);
-	virtual bool LoadFromData(StringRef path, const MemoryByteData& data, uint format = (uint)-1);	//format used to indicate some other control option
+	virtual bool LoadFromFileSystem(const FileIdRef& fileId, uint format = (uint)-1);
+	virtual bool LoadFromData(const FileIdRef& fileId, const MemoryData& data, uint format = (uint)-1);	//format used to indicate some other control option
 	virtual void Unload();
 	
 protected:

@@ -4,7 +4,7 @@
 #pragma once
 
 #include "Graphics/Buffer/ListGraphicsBuffer.h"
-#include "Core/Geometry/Color4.h"
+#include "Geometry/Color4.h"
 
 MEDUSA_BEGIN;
 

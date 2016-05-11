@@ -26,10 +26,10 @@ void ISceneGraph::OnUpdate(float dt)
 	RenderingStatics::Instance().IncreaseTotalNodeCount(mRenderQueue->NodeCount());
 
 	//RETURN_IF_EQUAL(mChangedFlag, RenderableChangedFlags::None);
-	if (mChangedFlag.Has(RenderableChangedFlags::RenderQueueChanged))
+	if (MEDUSA_FLAG_HAS(mChangedFlag,RenderableChangedFlags::RenderQueueChanged))
 	{
 		OnUpdateQueue();
-		mChangedFlag.Remove(RenderableChangedFlags::RenderQueueChanged);
+		MEDUSA_FLAG_REMOVE(mChangedFlag, RenderableChangedFlags::RenderQueueChanged);
 	}
 	mRenderQueue->Update(mChangedFlag);
 	mChangedFlag = RenderableChangedFlags::None;

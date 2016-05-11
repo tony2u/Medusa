@@ -14,7 +14,7 @@ public:
 	IEventArg():Handled(false){}
 	virtual ~IEventArg(void){}
 public:
-	const static IEventArg Empty;
+	static IEventArg Empty;
 	volatile bool Handled;
 };
 

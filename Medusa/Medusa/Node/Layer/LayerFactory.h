@@ -5,18 +5,16 @@
 #include "Core/Pattern/Object/MapObjectFactory.h"
 #include "Core/String/StringRef.h"
 #include "MedusaPreDeclares.h"
-#include "Node/Layer/LayerPushFlags.h"
-#include "Node/Layer/LayerPopFlags.h"
-#include "Node/Layer/LayerCreateFlags.h"
-#include "Node/Layer/LayerDeleteFlags.h"
 #include "Core/Command/EventArg/IEventArg.h"
+#include "Node/NodeDefines.h"
+#include "Node/Layer/ILayer.h"
 
 MEDUSA_BEGIN;
 
 class LayerFactory:public MapObjectFactory<StringRef,ILayer*(const StringRef&,const IEventArg&)>
 {
 public:
-	using MapObjectFactory<StringRef,ILayer*(const StringRef&,const IEventArg&)>::Create;
+	using BaseType = MapObjectFactory<StringRef, ILayer*(const StringRef&, const IEventArg&)>;
 private:
 	LayerFactory(){}
 	~LayerFactory(){}
@@ -29,8 +27,8 @@ public:
 
 	
 	template<typename T>
-	T* CreateLayer(const IEventArg& e = IEventArg::Empty, LayerCreateFlags createFlags = LayerCreateFlags::None) { return (T*)CreateLayer(T::ClassNameStatic(), T::EditorFileNameStatic(), e, createFlags); }
-	ILayer* CreateLayer(const StringRef& className, const StringRef& editorFile, const IEventArg& e = IEventArg::Empty, LayerCreateFlags createFlags = LayerCreateFlags::None);
+	T* Create(const IEventArg& e = IEventArg::Empty, LayerCreateFlags createFlags = LayerCreateFlags::None) { return (T*)Create(T::ClassNameStatic(), T::EditorFileNameStatic(), e, createFlags); }
+	ILayer* Create(const StringRef& className, const FileIdRef& editorFile, const IEventArg& e = IEventArg::Empty, LayerCreateFlags createFlags = LayerCreateFlags::None);
 
 };
 

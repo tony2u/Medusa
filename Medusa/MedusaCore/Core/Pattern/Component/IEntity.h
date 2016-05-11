@@ -21,11 +21,10 @@ public:
 	IComponent* FindComponent(const StringRef& name)const;
 
 	template<typename T>
-	T* FindComponent()
+	T* FindComponent()const
 	{
-		FOR_EACH_COLLECTION(i, mComponents)
+		for(IComponent* component: mComponents)
 		{
-			IComponent* component = *i;
 			if (component->IsExactly<T>())
 			{
 				return (T*)component;
@@ -37,7 +36,6 @@ public:
 
 	template<typename T>
 	bool HasComponent()const { return FindComponent<T>() != nullptr; }
-
 	bool HasComponents()const { return !mComponents.IsEmpty(); }
 
 	IComponent* AddComponent(IComponent* component)
@@ -63,6 +61,27 @@ public:
 		T* component = (T*)ComponentFactory::Instance().Create<T>(priority, userData);
 		RETURN_NULL_IF_NULL(component);
 		AddComponent(component);
+		return component;
+	}
+
+	IComponent* FindOrCreateComponent(const StringRef& name, int priority = 0, void* userData = nullptr)
+	{
+		IComponent* component = FindComponent(name);
+		if (component==nullptr)
+		{
+			component = AddComponent(name, priority, userData);
+		}
+		return component;
+	}
+
+	template<typename T>
+	T* FindOrCreateComponent(int priority = 0, void* userData = nullptr)
+	{
+		T* component = FindComponent<T>();
+		if (component == nullptr)
+		{
+			component = AddComponent<T>(priority, userData);
+		}
 		return component;
 	}
 
@@ -181,11 +200,15 @@ public:
 public:
 	bool UpdateComponents(float dt);
 	bool AcceptComponentEvent(IEventArg& e);
+	bool EnterComponents();
+	bool ExitComponents();
+	bool UpdateComponentsLogic();
+	bool ResetComponentsLogic();
+
+
 protected:
 	ComponentList mComponents;
 	void* mSender;
-private:
-	List<size_t> mCompletedIndices;
 
 };
 

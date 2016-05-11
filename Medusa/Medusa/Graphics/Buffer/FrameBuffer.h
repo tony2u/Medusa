@@ -4,7 +4,6 @@
 #pragma  once
 #include "Graphics/GraphicsTypes.h"
 #include "Core/Collection/Dictionary.h"
-#include "Graphics/GraphicsBufferComponentMask.h"
 
 MEDUSA_BEGIN;
 class FrameBuffer

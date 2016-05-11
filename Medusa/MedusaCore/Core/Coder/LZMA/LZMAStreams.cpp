@@ -28,7 +28,7 @@ SRes LZMASeqInStream::ReadTo(void *buf, size_t *size) const
 	if (originalSize == 0)
 		return SZ_OK;
 
-	MemoryByteData outData= MemoryByteData::FromStatic((byte*)buf, *size);
+	MemoryData outData= MemoryData::FromStatic((byte*)buf, *size);
 	*size=mStream.ReadDataTo(outData);
 	return SZ_OK;
 }
@@ -49,7 +49,7 @@ size_t LZMASeqOutStream::WriteData(const void *buf, size_t size)
 	/* Returns: result - the number of actually written bytes.
 	(result < size) means error */
 
-	auto data= MemoryByteData::FromStatic((const byte*)buf, size);
+	auto data= MemoryData::FromStatic((const byte*)buf, size);
 	return mStream.WriteData(data);
 }
 

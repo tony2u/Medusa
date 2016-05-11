@@ -49,31 +49,31 @@ public:
 
 	TObjectReferenceType GetObject(TIdParameterType id)
 	{
-		return mItems.GetValue(id);
+		return mItems.Get(id);
 	}
 	TObjectConstReferenceType GetObject(TIdParameterType id)const
 	{
-		return mItems.GetValue(id);
+		return mItems.Get(id);
 	}
 
 	TObjectPointerType TryGetObject(TIdParameterType id)
 	{
-		return mItems.TryGetValue(id);
+		return mItems.TryGet(id);
 	}
 
 	TObjectConstPointerType TryGetObject(TIdParameterType id)const
 	{
-		return mItems.TryGetValue(id);
+		return mItems.TryGet(id);
 	}
 
 	TObject TryGetObjectWithFailed(TIdParameterType id, TObjectParameterType failedReturn)const
 	{
-		return mItems.TryGetValueWithFailed(id, failedReturn);
+		return mItems.GetOptional(id, failedReturn);
 	}
 
 	TObject TryGetObjectWithFailed(TIdParameterType id, TObjectParameterType failedReturn)
 	{
-		return mItems.TryGetValueWithFailed(id, failedReturn);
+		return mItems.GetOptional(id, failedReturn);
 	}
 
 	TIdPointerType TryGetId(TObjectParameterType object)
@@ -102,7 +102,7 @@ public:
 
 	bool DeleteId(TIdParameterType id)
 	{
-		TObjectPointerType outObject = mItems.TryGetValue(id);
+		TObjectPointerType outObject = mItems.TryGet(id);
 		if (outObject != nullptr)
 		{
 			if (RemoveId(id))

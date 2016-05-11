@@ -9,6 +9,7 @@
 #include "Core/IO/FileInfo.h"
 #include "Core/Assertion/CommonAssert.h"
 #include "Core/IO/FileSystem.h"
+#include "Core/IO/Map/FileMapOrderItem.h"
 
 MEDUSA_BEGIN;
 
@@ -36,8 +37,12 @@ bool ImageFactory::Uninitialize()
 
 IImage* ImageFactory::CreateFromFile(const FileIdRef& fileId, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
-	IImage* image = Find(fileId);
-	RETURN_SELF_IF_NOT_NULL(image);
+	IImage* image = nullptr;
+	if (shareType != ResourceShareType::None)
+	{
+		image = Find(fileId);
+		RETURN_SELF_IF_NOT_NULL(image);
+	}
 
 
 	switch (FileInfo::ExtractType(fileId.Name))
@@ -66,33 +71,40 @@ IImage* ImageFactory::CreateFromFile(const FileIdRef& fileId, ResourceShareType 
 
 IImage* ImageFactory::CreateFromOrderItem(const FileIdRef& fileId, const FileMapOrderItem& orderItem, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
-	IImage* image = Find(fileId);
-	RETURN_SELF_IF_NOT_NULL(image);
+	IImage* image = nullptr;
+	if (shareType != ResourceShareType::None)
+	{
+		image = Find(fileId);
+		RETURN_SELF_IF_NOT_NULL(image);
+	}
 
-	MemoryByteData data = FileSystem::Instance().ReadAllData(orderItem);
-	return CreateFromMemory(fileId, data, shareType);
+	const auto* fileEntry = orderItem.GetFileEntry();
+	if (fileEntry != nullptr)
+	{
+		MemoryData data = fileEntry->ReadAllData();
+		return CreateFromMemory(fileId, *fileEntry, data, shareType);
+	}
+	return nullptr;
 
 }
 
-IImage* ImageFactory::CreateFromMemory(const FileIdRef& fileId, MemoryByteData data, ResourceShareType shareType /*= ResourceShareType::Share*/)
+IImage* ImageFactory::CreateFromMemory(const FileIdRef& fileId, const FileEntry& fileEntry, MemoryData data, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
 	RETURN_NULL_IF_EMPTY(data);
-	IImage* image = Find(fileId);
-	RETURN_SELF_IF_NOT_NULL(image);
+	IImage* image = nullptr;
 
-
-	switch (FileInfo::ExtractType(fileId.Name))
+	switch (FileInfo::ExtractType(fileEntry.Name()))
 	{
 	case FileType::jpeg:
-		image = JpegImage::CreateFromMemory(fileId, data);
+		image = JpegImage::CreateFromMemory(fileId, fileEntry, data);
 		break;
 	case FileType::png:
-		image = PngImage::CreateFromMemory(fileId, data);
+		image = PngImage::CreateFromMemory(fileId, fileEntry, data);
 		break;
 	case FileType::gif:
-        return nullptr;
+		return nullptr;
 	case FileType::pvr:
-		image = PVRImage::CreateFromMemory(fileId, data);
+		image = PVRImage::CreateFromMemory(fileId, fileEntry, data);
 		break;
 	default:
 		return nullptr;
@@ -105,56 +117,8 @@ IImage* ImageFactory::CreateFromMemory(const FileIdRef& fileId, MemoryByteData d
 }
 
 
-uint ImageFactory::GetBytesPerComponent(GraphicsPixelFormat format, GraphicsPixelDataType dataType)
-{
-	switch (format)
-	{
-	case GraphicsPixelFormat::RGBA:
-	case GraphicsPixelFormat::BGRA:
-		switch (dataType.ToUInt())
-		{
-		case GraphicsPixelDataType::Byte.IntValue:
-			return 4;
-		case GraphicsPixelDataType::UnsignedShort5551.IntValue:
-			return 3;
-		case GraphicsPixelDataType::UnsignedShort4444.IntValue:
-			return 2;
-		default:
-			MEDUSA_ASSERT_FAILED("Invalid dataType");
-			break;
-		}
-	case GraphicsPixelFormat::RGB:
-		switch (dataType.ToUInt())
-		{
-		case GraphicsPixelDataType::Byte.IntValue:
-			return 3;
-		case GraphicsPixelDataType::UnsignedShort565.IntValue:
-			return 2;
-		default:
-			MEDUSA_ASSERT_FAILED("Invalid dataType");
-			break;
-		}
-	case GraphicsPixelFormat::LuminanceAlpha:
-		return 2;
-	case GraphicsPixelFormat::Luminance:
-	case GraphicsPixelFormat::Alpha:
-		return 1;
-	case GraphicsPixelFormat::DepthComponent:
-		switch (dataType.ToUInt())
-		{
-		case GraphicsPixelDataType::FloatOES.IntValue:
-		case GraphicsPixelDataType::UInt.IntValue:
-			return 4;
-		default:
-			MEDUSA_ASSERT_FAILED("Invalid dataType");
-			break;
-		}
-	}
-	return 0;
-}
-
-void ImageFactory::CopyImage(MemoryByteData& destData, GraphicsPixelFormat destFormat, GraphicsPixelDataType destDataType, const Size2U& destImageSize,
-	const Rect2U& rect, const MemoryByteData& imageData, GraphicsPixelFormat srcFormat, GraphicsPixelDataType srcDataType,
+void ImageFactory::CopyImage(MemoryData& destData, PixelType destFormat, const Size2U& destImageSize,
+	const Rect2U& rect, const MemoryData& imageData, PixelType srcFormat, 
 	int stride/*=0*/, bool isFlipY/*=false*/, GraphicsPixelConvertMode mode/*=PixelConvertMode::Normal*/)
 {
 	MEDUSA_ASSERT(rect.Right() <= destImageSize.Width, "");
@@ -162,8 +126,8 @@ void ImageFactory::CopyImage(MemoryByteData& destData, GraphicsPixelFormat destF
 
 	byte* dest = destData.MutableData();
 	const byte* src = imageData.Data();
-	uint destDepth = ImageFactory::GetBytesPerComponent(destFormat, destDataType);
-	uint srcDepth = ImageFactory::GetBytesPerComponent(srcFormat, srcDataType);
+	uint destDepth = destFormat.BytesPerComponent();
+	uint srcDepth = srcFormat.BytesPerComponent();
 
 	uint rowCount = destDepth*rect.Size.Width;
 	if (stride == 0)
@@ -171,7 +135,7 @@ void ImageFactory::CopyImage(MemoryByteData& destData, GraphicsPixelFormat destF
 		stride = rect.Size.Width*destDepth;
 	}
 
-	if (destFormat == srcFormat&&destDataType == srcDataType)
+	if (destFormat == srcFormat)
 	{
 		if (isFlipY)
 		{
@@ -194,7 +158,7 @@ void ImageFactory::CopyImage(MemoryByteData& destData, GraphicsPixelFormat destF
 	}
 	else
 	{
-		PixelConverter converter = GetPixelConverter(destFormat, destDataType, srcFormat, srcDataType, mode);
+		PixelConverter converter = GetPixelConverter(destFormat,  srcFormat, mode);
 		if (converter == nullptr)
 		{
 			MEDUSA_ASSERT_NOT_IMPLEMENT();
@@ -229,9 +193,9 @@ void ImageFactory::CopyImage(MemoryByteData& destData, GraphicsPixelFormat destF
 }
 
 
-MEDUSA_FORCE_INLINE void ImageFactory::CopyPixel(byte* dest, GraphicsPixelFormat destFormat, GraphicsPixelDataType destDataType, const byte* src, GraphicsPixelFormat srcFormat, GraphicsPixelDataType srcDataType, GraphicsPixelConvertMode mode/*=PixelConvertMode::Normal*/)
+MEDUSA_FORCE_INLINE void ImageFactory::CopyPixel(byte* dest, PixelType destFormat, const byte* src, PixelType srcFormat,GraphicsPixelConvertMode mode/*=PixelConvertMode::Normal*/)
 {
-	PixelConverter converter = GetPixelConverter(destFormat, destDataType, srcFormat, srcDataType, mode);
+	PixelConverter converter = GetPixelConverter(destFormat,  srcFormat,  mode);
 	if (converter == nullptr)
 	{
 		MEDUSA_ASSERT_NOT_IMPLEMENT();
@@ -290,9 +254,9 @@ MEDUSA_FORCE_INLINE void ImageFactory::Alpha_RGBA_Alpha(byte* dest, const byte* 
 	dest[3] = src[0];
 }
 
-ImageFactory::PixelConverter ImageFactory::GetPixelConverter(GraphicsPixelFormat destFormat, GraphicsPixelDataType destDataType, GraphicsPixelFormat srcFormat, GraphicsPixelDataType srcDataType, GraphicsPixelConvertMode mode)
+ImageFactory::PixelConverter ImageFactory::GetPixelConverter(PixelType destFormat, PixelType srcFormat,  GraphicsPixelConvertMode mode)
 {
-	if (destFormat == GraphicsPixelFormat::RGB&&destDataType == GraphicsPixelDataType::Byte&&srcFormat == GraphicsPixelFormat::RGBA&&srcDataType == GraphicsPixelDataType::Byte)
+	if (destFormat == PixelType::RGB888&&srcFormat == PixelType::RGBA8888)
 	{
 		if (mode == GraphicsPixelConvertMode::Normal)
 		{
@@ -305,7 +269,7 @@ ImageFactory::PixelConverter ImageFactory::GetPixelConverter(GraphicsPixelFormat
 
 	}
 
-	if (destFormat == GraphicsPixelFormat::RGBA&&destDataType == GraphicsPixelDataType::Byte&&srcFormat == GraphicsPixelFormat::RGB&&srcDataType == GraphicsPixelDataType::Byte)
+	if (destFormat == PixelType::RGBA8888&&srcFormat == PixelType::RGB888)
 	{
 		if (mode == GraphicsPixelConvertMode::Normal)
 		{
@@ -321,7 +285,7 @@ ImageFactory::PixelConverter ImageFactory::GetPixelConverter(GraphicsPixelFormat
 		}
 	}
 
-	if (destFormat == GraphicsPixelFormat::RGBA&&destDataType == GraphicsPixelDataType::Byte&&srcFormat == GraphicsPixelFormat::Alpha&&srcDataType == GraphicsPixelDataType::Byte)
+	if (destFormat == PixelType::RGBA8888&&srcFormat == PixelType::A8)
 	{
 		if (mode == GraphicsPixelConvertMode::Alpha)
 		{

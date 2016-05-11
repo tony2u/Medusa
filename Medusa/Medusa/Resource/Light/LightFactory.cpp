@@ -36,9 +36,13 @@ bool LightFactory::Uninitialize()
 
 ILight* LightFactory::CreateLightFromModel( const FileIdRef& fileId,const FileIdRef& modelFileId,bool setDefault/*=true*/,bool enabled/*=true*/ ,ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
-	ILight* light= Find(fileId);
-	RETURN_SELF_IF_NOT_NULL(light);
-
+	ILight* light = nullptr;
+	if (shareType != ResourceShareType::None)
+	{
+		light = Find(fileId);
+		RETURN_SELF_IF_NOT_NULL(light);
+	}
+	
 	BaseSceneModel* model=(BaseSceneModel*)ModelFactory::Instance().Create(modelFileId);
 	if (model!=nullptr)
 	{
@@ -62,8 +66,12 @@ ILight* LightFactory::CreateLightFromModel( const FileIdRef& fileId,const FileId
 
 DirectionalLight* LightFactory::CreateDirectionalLight( const FileIdRef& fileId,bool setDefault/*=true*/,bool enabled/*=true*/ ,ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
-	DirectionalLight* light= (DirectionalLight*)Find(fileId);
-	RETURN_SELF_IF_NOT_NULL(light);
+	DirectionalLight* light = nullptr;
+	if (shareType != ResourceShareType::None)
+	{
+		light = (DirectionalLight*)Find(fileId);
+		RETURN_SELF_IF_NOT_NULL(light);
+	}
 
 	if (light!=nullptr&&light->LightType()!=GraphicsLightType::Directional)
 	{
@@ -92,8 +100,13 @@ DirectionalLight* LightFactory::CreateDirectionalLight( const FileIdRef& fileId,
 
 SpotLight* LightFactory::CreateSpotLight( const FileIdRef& fileId,bool setDefault/*=true*/,bool enabled/*=true*/ ,ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
-	SpotLight* light=(SpotLight*)Find(fileId);
-	RETURN_SELF_IF_NOT_NULL(light);
+	SpotLight* light = nullptr;
+	if (shareType != ResourceShareType::None)
+	{
+		light = (SpotLight*)Find(fileId);
+		RETURN_SELF_IF_NOT_NULL(light);
+	}
+
 
 	if (light!=nullptr&&light->LightType()!=GraphicsLightType::Spot)
 	{

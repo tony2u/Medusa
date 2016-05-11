@@ -20,21 +20,25 @@ KeyboardHandler::~KeyboardHandler( void )
 
 void KeyboardHandler::KeyboardWillShow(KeyboardEventArg& e)
 {
+	IInputHandler::KeyboardWillShow(e);
 	OnWillShow(mNode, e);
 }
 
 void KeyboardHandler::KeyboardShowed(KeyboardEventArg& e)
 {
+	IInputHandler::KeyboardShowed(e);
 	OnShowed(mNode, e);
 }
 
 void KeyboardHandler::KeyboardWillHide(KeyboardEventArg& e)
 {
+	IInputHandler::KeyboardWillHide(e);
 	OnWillHide(mNode, e);
 }
 
 void KeyboardHandler::KeyboardHided(KeyboardEventArg& e)
 {
+	IInputHandler::KeyboardHided(e);
 	OnHided(mNode, e);
 }
 

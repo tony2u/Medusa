@@ -34,8 +34,6 @@ public:
 	virtual ILight* CreateLight(const FileIdRef& fileId)const{return nullptr;}
 
 	virtual void UpdateWorldMatrixRecursively(const Matrix4& parentWorldMatrix=Matrix4::Identity);
-	virtual INode* CreateCloneInstance();
-	virtual INode* CreateReferenceInstance();
 
 protected:
 	List<IModelNode*> mNodes;	//all nodes
@@ -43,7 +41,7 @@ protected:
 	List<BaseCameraModelNode*> mCameras;
 	List<VirtualModelNode*> mVirtualNodes;
 
-	MemoryByteData mUserData;
+	MemoryData mUserData;
 };
 
 MEDUSA_END;

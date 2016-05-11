@@ -28,11 +28,11 @@ struct WAVHeader
 
 WavAudio* WavAudio::CreateFromFile(const FileIdRef& fileId)
 {
-	MemoryByteData data = FileSystem::Instance().ReadAllData(fileId);
+	MemoryData data = FileSystem::Instance().ReadAllData(fileId);
 	return CreateFromMemory(fileId, data);
 }
 
-WavAudio* WavAudio::CreateFromMemory(const FileIdRef& fileId, MemoryByteData data)
+WavAudio* WavAudio::CreateFromMemory(const FileIdRef& fileId, MemoryData data)
 {
 	// Initialize the memory data
 	MemoryStream stream = MemoryStream::OpenRead(data);

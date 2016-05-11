@@ -8,6 +8,7 @@
 
 #include "Lib/Common/ogg/ogg.h"
 #include "Lib/Common/vorbis/vorbisfile.h"
+#include "Core/Utility/Endian.h"
 
 MEDUSA_BEGIN;
 
@@ -15,7 +16,7 @@ size_t ogg_read_func(void *ptr, size_t size, size_t nmemb, void *datasource)
 {
 	MemoryStream* oggStream = (MemoryStream*)datasource;
 	uintp readSize = Math::Min(oggStream->LeftLength(), (uintp)nmemb*size);
-	MemoryByteData outData = MemoryByteData::FromStatic((byte*)ptr, readSize);
+	MemoryData outData = MemoryData::FromStatic((byte*)ptr, readSize);
 	oggStream->ReadDataTo(outData);
 
 	return readSize;
@@ -41,11 +42,11 @@ long ogg_tell_func(void *datasource)
 
 OggAudio* OggAudio::CreateFromFile(const FileIdRef& fileId)
 {
-	MemoryByteData data = FileSystem::Instance().ReadAllData(fileId);
+	MemoryData data = FileSystem::Instance().ReadAllData(fileId);
 	return CreateFromMemory(fileId, data);
 }
 
-OggAudio* OggAudio::CreateFromMemory(const FileIdRef& fileId, MemoryByteData data)
+OggAudio* OggAudio::CreateFromMemory(const FileIdRef& fileId, MemoryData data)
 {
 
 	ov_callbacks callbacks;
@@ -66,7 +67,7 @@ OggAudio* OggAudio::CreateFromMemory(const FileIdRef& fileId, MemoryByteData dat
 	uintp sampleCount = (uintp)ov_pcm_total(&vf, -1);
 	bool seekable = ov_seekable(&vf)!=0;
 
-	uint bigEndian = !Utility::IsLittleEndian();
+	uint bigEndian = !Endian::IsLittle();
 	int currentSection = 0;
 
 	uintp pcmSize = sampleCount*vi->channels*sizeof(short);

@@ -3,8 +3,8 @@
 // license that can be found in the LICENSE file.
 #pragma once
 #include "Graphics/GraphicsTypes.h"
-#include "Core/Geometry/Point3.h"
-#include "Core/Geometry/Color3.h"
+#include "Geometry/Point3.h"
+#include "Geometry/Color3.h"
 #include "Core/String/HeapString.h"
 #include "Resource/IResource.h"
 

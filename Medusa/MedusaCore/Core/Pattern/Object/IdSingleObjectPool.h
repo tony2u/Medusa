@@ -56,10 +56,10 @@ public:
 
 		if (mItems.ContainsKey(id))
 		{
-			ItemStack* items = mItems.GetValue(id);
+			ItemStack* items = mItems.Get(id);
 			if (!items->IsEmpty())
 			{
-				obj = items->Pop();
+				obj = items->PopCopy();
 			}
 
 			if (items->IsEmpty())
@@ -79,7 +79,7 @@ public:
 
 	void Recycle(TIdParameterType id, TObjectParameterType obj)
 	{
-		ItemStack* stack = mItems.TryGetValueWithFailed(id, nullptr);
+		ItemStack* stack = mItems.GetOptional(id, nullptr);
 		if (stack == nullptr)
 		{
 			stack = new ItemStack();

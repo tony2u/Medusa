@@ -7,8 +7,8 @@
 #include "Graphics/Buffer/IndexGraphicsBuffer.h"
 #include "Graphics/Buffer/TexCoordGraphicsBuffer.h"
 #include "Graphics/Buffer/ColorGraphicsBuffer.h"
-#include "Core/Geometry/Quad.h"
-#include "Core/Geometry/Matrix4.h"
+#include "Geometry/Quad.h"
+#include "Geometry/Matrix4.h"
 #include "Resource/Font/FontChar.h"
 #include "Resource/Font/IFont.h"
 #include "Rendering/RenderingContext.h"
@@ -206,7 +206,7 @@ void FntTextMesh::Apply()
 
 	size_t stride = sizeof(FontCharVertex);
 	BaseProgramRenderPass* pass = RenderingContext::Instance().ProgramRenderPass();
-	ShaderAttribute* vertices = pass->GetAttributeByIndex(ShaderAttributeIndex::VertexArray);
+	ShaderAttribute* vertices = pass->FindAttributeByIndex(ShaderAttributeIndex::VertexArray);
 	if (vertices != nullptr)
 	{
 		mVertexTexcoordBuffer.Apply();
@@ -217,7 +217,7 @@ void FntTextMesh::Apply()
 
 	}
 
-	ShaderAttribute* texCoords = pass->GetAttributeByIndex(ShaderAttributeIndex::TexCoordArray);
+	ShaderAttribute* texCoords = pass->FindAttributeByIndex(ShaderAttributeIndex::TexCoordArray);
 	if (texCoords != nullptr)
 	{
 		size_t texcoordOffset = offsetof(FontCharVertex, TexCoord);
@@ -236,14 +236,14 @@ void FntTextMesh::Restore()
 	mIndexBuffer.Restore();
 	BaseProgramRenderPass* pass = RenderingContext::Instance().ProgramRenderPass();
 
-	ShaderAttribute* vertices = pass->GetAttributeByIndex(ShaderAttributeIndex::VertexArray);
+	ShaderAttribute* vertices = pass->FindAttributeByIndex(ShaderAttributeIndex::VertexArray);
 	if (vertices != nullptr)
 	{
 		vertices->EnableArray(false);
 		mVertexTexcoordBuffer.Restore();
 	}
 
-	ShaderAttribute* texCoords = pass->GetAttributeByIndex(ShaderAttributeIndex::TexCoordArray);
+	ShaderAttribute* texCoords = pass->FindAttributeByIndex(ShaderAttributeIndex::TexCoordArray);
 	if (texCoords != nullptr)
 	{
 		texCoords->EnableArray(false);

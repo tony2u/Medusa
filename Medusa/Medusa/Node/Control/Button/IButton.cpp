@@ -31,17 +31,17 @@ void IButton::OnTapCallback(INode* sender,TapGestureEventArg& e)
 	OnTap(sender,e);
 }
 
-void IButton::OnTapStateChanged(GestureState oldState,GestureState newState)
+void IButton::OnTapStateChanged(InputState oldState,InputState newState)
 {
 	switch (newState)
 	{
-		case GestureState::Begin:
+		case InputState::Begin:
 			SetButtonState(IsDisabled() ? ButtonState::DisabledSelected : ButtonState::Selected);
 			break;
-		case GestureState::End:
+		case InputState::End:
 			SetButtonState(IsDisabled() ? ButtonState::Disabled : ButtonState::Normal);
 			break;
-		case GestureState::None:
+		case InputState::None:
 			SetButtonState(IsDisabled() ? ButtonState::Disabled : ButtonState::Normal);
 			break;
 		default:

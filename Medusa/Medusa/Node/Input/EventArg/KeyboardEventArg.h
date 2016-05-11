@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 #pragma once
 #include "Core/Command/EventArg/IEventArg.h"
-#include "Core/Geometry/Rect2.h"
+#include "Geometry/Rect2.h"
 #include "Core/Pattern/Event.h"
 
 MEDUSA_BEGIN;

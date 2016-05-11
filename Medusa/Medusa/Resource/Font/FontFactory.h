@@ -6,7 +6,7 @@
 #include "Core/Pattern/Singleton.h"
 #include "Core/Collection/Dictionary.h"
 #include "Resource/Font/FontId.h"
-#include "Core/Geometry/Size2.h"
+#include "Geometry/Size2.h"
 #include "Resource/IResourceFactory.h"
 #include "Core/IO/FileId.h"
 #include "FontId.h"
@@ -32,7 +32,7 @@ public:
 public:
 	IFont* Create(const FontId& fontId, ResourceShareType shareType = ResourceShareType::Share);
 	IFont* CreateFromSingleTexture(const FontId& fontId, wchar_t firstChar = L'0', ResourceShareType shareType = ResourceShareType::Share);
-	IFont* CreateFromMemory(const FontId& fontId, const MemoryByteData& data, ResourceShareType shareType = ResourceShareType::Share);
+	IFont* CreateFromMemory(const FontId& fontId, const MemoryData& data, ResourceShareType shareType = ResourceShareType::Share);
 private:
 	Dictionary<FontId, IFont*, DefaultHashCoder<FontId>, EqualCompare<FontId> > mItems;
 	List<IFont*> mCacheItems;

@@ -4,7 +4,7 @@
 #pragma  once
 #include "Graphics/Render/Render.h"
 #include "Rendering/IRenderGroup.h"
-#include "Core/Geometry/Matrix4.h"
+#include "Geometry/Matrix4.h"
 #include "Rendering/Batch/BatchGroup.h"
 
 MEDUSA_BEGIN;

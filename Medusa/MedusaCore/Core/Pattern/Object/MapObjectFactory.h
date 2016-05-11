@@ -23,11 +23,19 @@ class MapObjectFactory<TId, TBase*(TArgs...), THashCoder, IsPoolEnabled>
 public:
 	typedef TBase* CreateDerivedCallback(TArgs...);
 	typedef CreateDerivedCallback* CreatorType;
-	~MapObjectFactory() { Clear(); }
-private:
 	typedef Dictionary<TId, CreatorType, THashCoder> MapType;
 	typedef Stack<TBase*> ObjectPool;
 	typedef Dictionary<TId, ObjectPool*, THashCoder> ObjectPoolDict;
+	~MapObjectFactory() { Clear(); }
+
+	const MapType& CreatorMap()const { return mMap; }
+
+	bool Contains(const TId& id)const
+	{
+		return mMap.ContainsKey(id);
+	}
+private:
+	
 	MapType mMap;
 	ObjectPoolDict mPoolDict;
 
@@ -84,7 +92,7 @@ public:
 	{
 		if (IsPoolEnabled)
 		{
-			ObjectPool* objectPool = mPoolDict.TryGetValueWithFailed(id, nullptr);
+			ObjectPool* objectPool = mPoolDict.GetOptional(id, nullptr);
 			if (objectPool != nullptr)
 			{
 				SAFE_DELETE_COLLECTION(*objectPool);
@@ -98,13 +106,13 @@ public:
 	{
 		if (IsPoolEnabled)
 		{
-			ObjectPool* objectPool = mPoolDict.TryGetValueWithFailed(id, nullptr);
+			ObjectPool* objectPool = mPoolDict.GetOptional(id, nullptr);
 			if (objectPool != nullptr&&!objectPool->IsEmpty())
 			{
-				return objectPool->Pop();
+				return objectPool->PopCopy();
 			}
 		}
-		CreatorType* outCreator = mMap.TryGetValue(id);
+		CreatorType* outCreator = mMap.TryGet(id);
 		if (outCreator != nullptr)
 		{
 			return (*outCreator)(std::forward<TArgs>(args)...);
@@ -116,7 +124,7 @@ public:
 	{
 		if (IsPoolEnabled)
 		{
-			ObjectPool* objectPool = mPoolDict.TryGetValueWithFailed(id, nullptr);
+			ObjectPool* objectPool = mPoolDict.GetOptional(id, nullptr);
 			if (objectPool != nullptr)
 			{
 				objectPool->Push(obj);

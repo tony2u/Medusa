@@ -5,7 +5,7 @@
 #include "MedusaPreDeclares.h"
 #include "Resource/IResource.h"
 #include "Core/Collection/List.h"
-#include "Core/Geometry/Size2.h"
+#include "Geometry/Size2.h"
 
 MEDUSA_BEGIN;
 

@@ -197,6 +197,11 @@ public:
 		return mLength == 0 || mBuffer == nullptr || mBufferSize == 0;
 	}
 
+	bool IsNullTermitated()const
+	{
+		return !IsEmpty() && mBuffer[Length()] == '\0';
+	}
+
 	size_t Size()const
 	{
 		return mBufferSize;
@@ -219,11 +224,18 @@ public:
 		mLength = mBuffer != nullptr ? StdString::GetLength(mBuffer) : 0;
 	}
 
-	size_t LeftLength() const { return mBufferSize - mLength - 1; }
+	size_t LeftLength() const 
+	{
+		if (mLength>=mBufferSize)
+		{
+			return 0;
+		}
+		return mBufferSize - mLength - 1; 
+	}
 
 	intp HashCode()const
 	{
-		return HashUtility::HashString(mBuffer);
+		return HashUtility::HashString(mBuffer,mBuffer+Length());
 	}
 public:
 	int Compare(const TStringRef<T>& inString, bool isIgnoreCase = false)const
@@ -270,25 +282,37 @@ public:
 	intp LastIndexOf(T inFindChar)const
 	{
 		RETURN_OBJECT_IF(IsEmpty(), -1);
-		return ToString().LastIndexOf(inFindChar, 0);
+		return ToString().LastIndexOf(inFindChar, 0,Length()-1);
 	}
 
-	intp LastIndexOf(T inFindChar, intp index)const
+	intp LastIndexOf(T inFindChar, intp beginIndex, intp endIndex)const
 	{
 		RETURN_OBJECT_IF(IsEmpty(), -1);
-		return ToString().LastIndexOf(inFindChar, index);
+		return ToString().LastIndexOf(inFindChar, beginIndex,endIndex);
 	}
 
-	intp LastIndexOf(const TStringRef<T>& inString, intp index = 0)const
+	intp LastIndexOf(const TStringRef<T>& inString)const
 	{
 		RETURN_OBJECT_IF(IsEmpty(), -1);
-		return ToString().LastIndexOf(inString, index);
+		return ToString().LastIndexOf(inString);
 	}
 
-	intp LastIndexOfAny(const TStringRef<T>& inString, intp index = 0)const
+	intp LastIndexOf(const TStringRef<T>& inString, intp beginIndex, intp endIndex)const
 	{
 		RETURN_OBJECT_IF(IsEmpty(), -1);
-		return ToString().LastIndexOfAny(inString, index);
+		return ToString().LastIndexOf(inString, beginIndex,endIndex);
+	}
+
+	intp LastIndexOfAny(const TStringRef<T>& inString)const
+	{
+		RETURN_OBJECT_IF(IsEmpty(), -1);
+		return ToString().LastIndexOfAny(inString);
+	}
+
+	intp LastIndexOfAny(const TStringRef<T>& inString, intp beginIndex, intp endIndex)const
+	{
+		RETURN_OBJECT_IF(IsEmpty(), -1);
+		return ToString().LastIndexOfAny(inString, beginIndex,endIndex);
 	}
 
 	bool IndicesOf(T val, List<intp>& outIndices)const
@@ -383,6 +407,18 @@ public:
 		return ToString().TryParseInt(outResult, radix);
 	}
 
+	bool TryParseUInt(ulong& outResult)const
+	{
+		RETURN_FALSE_IF(IsEmpty());
+		return ToString().TryParseUInt(outResult, 10);
+	}
+
+	bool TryParseUInt(ulong& outResult, int radix)const
+	{
+		RETURN_FALSE_IF(IsEmpty());
+		return ToString().TryParseUInt(outResult, radix);
+	}
+
 	double ToDouble()const
 	{
 		return ToString().ToDouble();
@@ -475,13 +511,13 @@ public:
 	void ToUpper()
 	{
 		RETURN_IF(IsEmpty());
-		StdString::ToUpper(mBuffer, mLength);
+		StdString::ToUpper(mBuffer, mLength+1);
 	}
 
 	void ToLower()
 	{
 		RETURN_IF(IsEmpty());
-		StdString::ToLower(mBuffer, mLength);
+		StdString::ToLower(mBuffer, mLength+1);
 	}
 
 	void Reverse()
@@ -559,19 +595,24 @@ public:
 		RETURN_FALSE_IF(IsEmpty());
 		size_t oldLength = oldString.Length();
 		size_t newLength = newString.Length();
+		const T* srcEnd = mBuffer + Length();
 		if (oldLength == newLength)
 		{
-			T* index = (T*)StdString::FindString(mBuffer, oldString.Buffer());
+			size_t srcLength = srcEnd - mBuffer;
+			T* index = (T*)StdString::FindString(mBuffer, srcLength, oldString.Buffer(), oldString.Length());
 			while (index != nullptr)
 			{
 				Memory::SafeCopy(index, mBuffer + mBufferSize - index, newString.Buffer(), newLength);
 				index += oldLength;
-				index = (T*)StdString::FindString(index, oldString.Buffer());
+				srcLength = srcEnd - index;
+				index = (T*)StdString::FindString(index, srcLength, oldString.Buffer(), oldString.Length());
 			}
 		}
 		else if (oldLength > newLength)
 		{
-			T* index = (T*)StdString::FindString(mBuffer, oldString.Buffer());
+			size_t srcLength = srcEnd - mBuffer;
+
+			T* index = (T*)StdString::FindString(mBuffer, srcLength,oldString.Buffer(),oldString.Length());
 			while (index != nullptr)
 			{
 				Memory::SafeCopy(index, mBuffer + mBufferSize - index, newString.Buffer(), newLength);
@@ -580,7 +621,8 @@ public:
 				Memory::SetZero(index, oldLength - newLength);
 				index += oldLength - newLength;
 
-				index = (T*)StdString::FindString(index, oldString.Buffer());
+				srcLength = srcEnd - index;
+				index = (T*)StdString::FindString(index, srcLength,oldString.Buffer(),oldString.Length());
 			}
 
 			//do a compress 
@@ -605,6 +647,8 @@ public:
 		}
 		else
 		{
+			//size_t srcLength = srcEnd - mBuffer;
+
 			//find all str indices
 			size_t dis = newLength - oldLength;
 			List<intp> indices;
@@ -1243,7 +1287,7 @@ public:
 		return Append(format);
 	}
 
-	MemoryData<T> ToMemoryData()const { return MemoryData<T>::FromStatic(mBuffer, mLength); }
+	TMemoryData<T> ToMemoryData()const { return TMemoryData<T>::FromStatic(mBuffer, mLength); }
 protected:
 	virtual bool ResizeHelper(size_t size) { return false; }
 protected:

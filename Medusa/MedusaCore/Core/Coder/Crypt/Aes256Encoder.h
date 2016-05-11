@@ -14,17 +14,17 @@ class Aes256Encoder:public ICoder
 public:
 	using ICoder::Code;
 	Aes256Encoder(const IEventArg& e);
-	Aes256Encoder(const MemoryByteData& key,Random* random=nullptr);
+	Aes256Encoder(const MemoryData& key,Random* random=nullptr);
 public:
 	virtual CoderType Type()const override { return CoderType::Encoder_Aes256; }
 	virtual size_t GuessResultSize(const IStream& input)const override;
 	virtual CoderFlags Flags()const override { return CoderFlags::Block; }
 	virtual bool Validate()const override { return mKey.IsValid(); }
 protected:
-	virtual size_t OnCode(const MemoryByteData& input, MemoryByteData& output)const override;
+	virtual size_t OnCode(const MemoryData& input, MemoryData& output)const override;
 private:
-	static void Encrypt(MemoryByteData& rkey, const MemoryByteData& key,const MemoryByteData& salt,unsigned char *buffer);
-	static void copy_key(MemoryByteData& rkey, const MemoryByteData& key, const MemoryByteData& salt);
+	static void Encrypt(MemoryData& rkey, const MemoryData& key,const MemoryData& salt,unsigned char *buffer);
+	static void copy_key(MemoryData& rkey, const MemoryData& key, const MemoryData& salt);
 
 	static void expand_enc_key(byte* rkey,unsigned char *rc);
 	static void sub_bytes(unsigned char *buffer);
@@ -39,7 +39,7 @@ private:
 	const static byte sbox[256];
 private:
 	Random* mRandom;
-	MemoryByteData mKey;
+	MemoryData mKey;
 };
 
 MEDUSA_END;

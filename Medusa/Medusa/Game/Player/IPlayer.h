@@ -15,16 +15,11 @@ public:
 	bool IsChanged() const { return mIsChanged; }
 	void MarkChanged() { mIsChanged = true; }
 
-	bool IsLogined() const { return mIsLogined; }
-	virtual void Logout() { mIsLogined = false; }
-
-	virtual bool Load();
 	virtual bool Save(bool isForceToSave = false);
 	virtual void ResetToDefault();
 	virtual void Update(float dt);
 protected:
-	bool mIsChanged;
-	bool mIsLogined;
+	bool mIsChanged=false;
 };
 
 

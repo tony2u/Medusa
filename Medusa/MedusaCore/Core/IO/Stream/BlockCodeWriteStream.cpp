@@ -61,7 +61,7 @@ uintp BlockCodeWriteStream::Length() const
 	return Math::Max((uintp)mFileEntry->OriginalSize(), pos);
 }
 
-size_t BlockCodeWriteStream::WriteBlock(uint blockIndex, const MemoryByteData& data)
+size_t BlockCodeWriteStream::WriteBlock(uint blockIndex, const MemoryData& data)
 {
 	MemoryStream dataStream(data);
 	size_t resultSize = mCoderChain->Encode(dataStream, *mSourceStream);

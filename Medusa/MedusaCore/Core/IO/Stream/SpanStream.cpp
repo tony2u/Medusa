@@ -92,7 +92,7 @@ uintp SpanStream::Length() const
 
 bool SpanStream::CanRead() const
 {
-	if (MEDUSA_HAS_FLAG(Operations(), StreamDataOperation::Read))
+	if (MEDUSA_FLAG_HAS(Operations(), StreamDataOperation::Read))
 	{
 		return IsSourcePosValid();
 	}
@@ -101,7 +101,7 @@ bool SpanStream::CanRead() const
 
 bool SpanStream::CanWrite() const
 {
-	if (MEDUSA_HAS_FLAG(Operations(), StreamDataOperation::Write))
+	if (MEDUSA_FLAG_HAS(Operations(), StreamDataOperation::Write))
 	{
 		return IsSourcePosValid();
 	}
@@ -110,7 +110,7 @@ bool SpanStream::CanWrite() const
 
 StreamDataOperation SpanStream::Operations() const
 {
-	return mIsSourceReadonly ? MEDUSA_AND_FLAG(StreamDataOperation::ReadSeek, mSourceStream->Operations()) : mSourceStream->Operations();
+	return mIsSourceReadonly ? MEDUSA_FLAG_AND(StreamDataOperation::ReadSeek, mSourceStream->Operations()) : mSourceStream->Operations();
 }
 
 bool SpanStream::Flush()
@@ -205,19 +205,19 @@ bool SpanStream::SetLength(uintp val)
 }
 
 
-size_t SpanStream::ReadDataTo(MemoryByteData& outData, DataReadingMode mode/*=DataReadingMode::AlwaysCopy*/)const
+size_t SpanStream::ReadDataTo(MemoryData& outData, DataReadingMode mode/*=DataReadingMode::AlwaysCopy*/)const
 {
 	RETURN_ZERO_IF_FALSE(CanRead());
 	size_t readSize = Math::Min((size_t)LeftLength(), outData.Size());
 
-	MemoryByteData temp = outData;
+	MemoryData temp = outData;
 	temp.ForceSetSize(readSize);
 	size_t result = mSourceStream->ReadDataTo(temp, mode);
 	return result;
 
 }
 
-size_t SpanStream::WriteData(const MemoryByteData& data, DataReadingMode mode /*= DataReadingMode::AlwaysCopy*/)
+size_t SpanStream::WriteData(const MemoryData& data, DataReadingMode mode /*= DataReadingMode::AlwaysCopy*/)
 {
 	RETURN_ZERO_IF_FALSE(CanWrite());
 	if (mLimitSize == 0)
@@ -226,7 +226,7 @@ size_t SpanStream::WriteData(const MemoryByteData& data, DataReadingMode mode /*
 	}
 
 	size_t newSize = Math::Min(data.Size(), (size_t)LeftLength());
-	MemoryByteData tempData = data;
+	MemoryData tempData = data;
 	tempData.ForceSetSize(newSize);
 
 	return mSourceStream->WriteData(tempData,mode);
@@ -361,13 +361,12 @@ size_t SpanStream::ReadLineToString(WHeapString& outString, bool includeNewLine/
 size_t SpanStream::WriteString(const StringRef& str, bool withNullTermitated /*= true*/)
 {
 	RETURN_ZERO_IF_FALSE(CanWrite());
-	MemoryByteData data = str.ToData().Cast<byte>();
+	MemoryData data = str.ToData().Cast<byte>();
 
 	size_t size = WriteData(data);
 	if (withNullTermitated)
 	{
-		WriteChar('\0');
-		++size;
+		size += WriteChar('\0') ? sizeof(char) : 0;
 	}
 	return size;
 }
@@ -375,12 +374,11 @@ size_t SpanStream::WriteString(const StringRef& str, bool withNullTermitated /*=
 size_t SpanStream::WriteString(const WStringRef& str, bool withNullTermitated /*= true*/)
 {
 	RETURN_ZERO_IF_FALSE(CanWrite());
-	MemoryByteData data = str.ToData().Cast<byte>();
+	MemoryData data = str.ToData().Cast<byte>();
 	size_t size = WriteData(data);
 	if (withNullTermitated)
 	{
-		WriteChar('\0');
-		++size;
+		size += WriteChar(L'\0') ? sizeof(wchar_t) : 0;
 	}
 	return size;
 }

@@ -10,21 +10,17 @@ MEDUSA_BEGIN;
 
 GPUTexture::GPUTexture( const FileIdRef& fileId,const Size2U& size,GraphicsTextureType textureType/*=GraphicsTextureType::Texture2D*/,
 					   GraphicsTextureTarget textureTarget/*=GraphicsTextureTarget::Texture2D*/,
-					   GraphicsInternalFormat internalFormat/*=GraphicsInternalFormat::RGB*/, 
+						PixelType pixelType /*= PixelType::RGB888*/,
 					   int level/*=0*/,
 					   int border/*=0*/,
-					   GraphicsPixelFormat pixelFormat/*=GraphicsPixelFormat::RGB*/,
-					   GraphicsPixelDataType pixelType/*=GraphicsPixelDataType::Byte*/,
 					   StringRef samplerName/*=StringRef::Empty*/,
 					   GraphicsTextureUnits unit/*=GraphicsTextureUnits::Texture0*/)
 	:ITexture(fileId,textureType,samplerName,unit),
 	mSize(size),
 	mTextureTarget(textureTarget),
-	mInternalformat(internalFormat),
+	mPixelType(pixelType),
 	mLevel(level),
-	mBorder(border),
-	mPixelFormat(pixelFormat),
-	mPixelType(pixelType)
+	mBorder(border)
 {
 
 }
@@ -40,7 +36,7 @@ void GPUTexture::Upload()
 	RETURN_IF_TRUE(mIsLoaded);
 	//data may be a null pointer. In this case, texture memory is allocated to accommodate a texture of width width and height height.
 	//You can then download subtextures to initialize this texture memory. 
-	Render::Instance().LoadTexture(mTextureTarget,mLevel,mInternalformat,mSize,mBorder,mPixelFormat,mPixelType,nullptr);
+	Render::Instance().LoadTexture(mTextureTarget,mLevel, mPixelType,mSize,mBorder, nullptr);
 	mIsLoaded=true;
 }
 

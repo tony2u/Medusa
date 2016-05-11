@@ -12,25 +12,30 @@ MEDUSA_BEGIN;
 class IShaderParameter
 {
 protected:
-	IShaderParameter(BaseProgramRenderPass* renderPass,int location,StringRef name);
+	IShaderParameter(BaseProgramRenderPass* renderPass, int location, StringRef name);
+	IShaderParameter(StringRef name);
+
 	virtual ~IShaderParameter();
 public:
 	BaseProgramRenderPass* RenderPass() const { return mRenderPass; }
-	int Location() const { return mLocation; }
-	StringRef Name() const { return mName; }
+	void SetRenderPass(BaseProgramRenderPass* val) { mRenderPass = val; }
 
+	int Location() const { return mLocation; }
+	void SetLocation(int val) { mLocation = val; }
+
+	StringRef Name() const { return mName; }
+	void SetName(StringRef val) { mName = val; }
 public:
 	void Validate()const;
 	void Invalidate();
 	bool IsAssigned() const { return mIsAssigned; }
-
 protected:
 	void MarkAssigned();
 protected:
-	BaseProgramRenderPass* mRenderPass;
-	int mLocation;
+	BaseProgramRenderPass* mRenderPass = nullptr;
+	int mLocation = -1;
 	HeapString mName;
-	bool mIsAssigned;
+	bool mIsAssigned = false;
 };
 
 MEDUSA_END;

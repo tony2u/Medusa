@@ -7,13 +7,11 @@
 #include "Graphics/State/RenderStateMachine.h"
 #include "Graphics/State/RenderTargetRenderState.h"
 #include "Graphics/Render/Render.h"
-#include "Core/Pattern/AutoIncreaseId.h"
 
 MEDUSA_BEGIN;
 
 IRenderTarget::IRenderTarget(const FileIdRef& fileId/*=FileId::Empty*/):IResource(fileId)
 {
-	mId = AutoIncreaseId<IRenderTarget>::New();
 
 	mViewPort.Origin=Point2I::Zero;
 	mViewPort.Size=ResolutionAdapter::Instance().WinSize();

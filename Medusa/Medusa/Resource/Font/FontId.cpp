@@ -4,26 +4,28 @@
 #include "MedusaPreCompiled.h"
 #include "FontId.h"
 #include "Core/IO/FileInfo.h"
+#include "Core/IO/Path.h"
+
 MEDUSA_BEGIN;
 
-FontId::FontId(const FileIdRef& fileId/*=FileId::Empty*/,uint size/*=12*/)
+FontId::FontId(const FileIdRef& fileId/*=FileId::Empty*/, uint size/*=0*/)
 	:FileId(fileId),
 	mSize(size),
-	mColor(Color4F::Black),
-	mBackgroundColor(Color4F::White),
+	mColor(Color4F::White),
+	mBackgroundColor(Color4F::Black),
 	mOutlineColor(Color4F::Black),
 	mUnderlineColor(Color4F::Black),
 	mOverlineColor(Color4F::Black),
 	mStrikethroughColor(Color4F::Black),
 	mMatrix(Matrix2::Identity)
 {
-	mIsBitmap=IsBitmapFont(Name);
+	mIsBitmap = IsBitmapFont(Name);
 }
-FontId::FontId(const char* name, uint size /*= 12*/)
+FontId::FontId(const char* name, uint size /*= 0*/)
 	:FileId(FileIdRef(name)),
 	mSize(size),
-	mColor(Color4F::Black),
-	mBackgroundColor(Color4F::White),
+	mColor(Color4F::White),
+	mBackgroundColor(Color4F::Black),
 	mOutlineColor(Color4F::Black),
 	mUnderlineColor(Color4F::Black),
 	mOverlineColor(Color4F::Black),
@@ -40,8 +42,6 @@ FontId::FontId(const FontId& fontId)
 	Order = fontId.Order;
 
 	mIsBitmap = fontId.mIsBitmap;
-	mDepth = fontId.mDepth;
-	mOriginalSize = fontId.mOriginalSize;
 	mSize = fontId.mSize;
 
 	mRise = fontId.mRise;
@@ -70,8 +70,6 @@ FontId& FontId::operator=(const FontId& fontId)
 	Order = fontId.Order;
 
 	mIsBitmap = fontId.mIsBitmap;
-	mDepth = fontId.mDepth;
-	mOriginalSize = fontId.mOriginalSize;
 	mSize = fontId.mSize;
 
 	mRise = fontId.mRise;
@@ -96,92 +94,89 @@ FontId& FontId::operator=(const FontId& fontId)
 
 bool FontId::IsBitmapFont(const StringRef& name)
 {
-	FileType fileType = FileInfo::ExtractType(name);
-	switch (fileType)
+	if (name.IsEmpty())
 	{
-	case FileType::pvr:
-	case FileType::fnt:
-		return true;
-	case FileType::ttf:
-	default:
 		return false;
-		break;
 	}
+	auto ext = Path::GetExtension(name);
+	if (ext == ".pvr" || ext == "fnt")
+	{
+		return true;
+	}
+	return false;
 }
 
 intp FontId::HashCode() const
 {
 	if (mIsBitmap)
 	{
-		return FileId::HashCode()^mSize;
+		return FileId::HashCode() ^ mSize;
 	}
 	else
 	{
 
-		intp hashCode=FileId::HashCode();
-		hashCode^=(int)mDepth;
-		hashCode^=mIsBitmap?1:0;
-		hashCode^=mSize;
-		hashCode^=mOriginalSize;
+		intp hashCode = FileId::HashCode();
+		hashCode ^= mIsBitmap ? 1 : 0;
+		hashCode ^= mSize;
 
-		hashCode^=HashUtility::Hash(mRise);
-		hashCode^=HashUtility::Hash(mSpacing);
-		hashCode^=HashUtility::Hash(mGamma);
-		hashCode^=mFlags.ToInt();
-		hashCode^=(int)mOutlineType;
-		hashCode^=mUnderlineTickness;
-		hashCode^=mOutlineThickness;
+		hashCode ^= HashUtility::Hash(mRise);
+		hashCode ^= HashUtility::Hash(mSpacing);
+		hashCode ^= HashUtility::Hash(mGamma);
+		hashCode ^= (int)mFlags;
+		hashCode ^= (int)mOutlineType;
+		hashCode ^= mUnderlineTickness;
+		hashCode ^= mOutlineThickness;
 
-		hashCode^=mColor.HashCode();
-		hashCode^=mBackgroundColor.HashCode();
-		hashCode^=mOutlineColor.HashCode();
-		hashCode^=mUnderlineColor.HashCode();
-		hashCode^=mOverlineColor.HashCode();
-		hashCode^=mStrikethroughColor.HashCode();
+		hashCode ^= mColor.HashCode();
+		hashCode ^= mBackgroundColor.HashCode();
+		hashCode ^= mOutlineColor.HashCode();
+		hashCode ^= mUnderlineColor.HashCode();
+		hashCode ^= mOverlineColor.HashCode();
+		hashCode ^= mStrikethroughColor.HashCode();
 
-		hashCode^=(int)mLCDFilterType;
-		hashCode^=mMatrix.HashCode();
+		hashCode ^= (int)mLCDFilterType;
+		hashCode ^= mMatrix.HashCode();
 
 		return hashCode;
 	}
 
-	
+
 }
 
-bool FontId::operator==( const FontId& val ) const
+bool FontId::operator==(const FontId& val) const
 {
 	if (mIsBitmap&&val.mIsBitmap)
 	{
-		return Name==val.Name&&Order==val.Order&&mSize==val.mSize;
+		return Name == val.Name&&Order == val.Order&&mSize == val.mSize;
 	}
 
-	return Name==val.Name&&
-		Order==val.Order&&
-		mIsBitmap==val.mIsBitmap&&
-		mDepth==val.mDepth&&
-		mSize==val.mSize&&
-		mOriginalSize==val.mOriginalSize&&
-		Math::IsEqual(mRise,val.mRise)&&
-		Math::IsEqual(mSpacing,val.mSpacing)&&
-		Math::IsEqual(mGamma,val.mGamma)&&
-		mFlags==val.mFlags&&
-		mOutlineType==val.mOutlineType&&
-		mUnderlineTickness==val.mUnderlineTickness&&
-		mOutlineThickness==val.mOutlineThickness&&
-		mColor==val.mColor&&
-		mBackgroundColor==val.mBackgroundColor&&
-		mOutlineColor==val.mOutlineColor&&
-		mUnderlineColor==val.mUnderlineColor&&
-		mOverlineColor==val.mOverlineColor&&
-		mStrikethroughColor==val.mStrikethroughColor&&
-		mLCDFilterType==val.mLCDFilterType&&
-		mMatrix==val.mMatrix;
+	return Name == val.Name&&
+		Order == val.Order&&
+		mIsBitmap == val.mIsBitmap&&
+		mSize == val.mSize&&
+		Math::IsEqual(mRise, val.mRise) &&
+		Math::IsEqual(mSpacing, val.mSpacing) &&
+		Math::IsEqual(mGamma, val.mGamma) &&
+		mFlags == val.mFlags&&
+		mOutlineType == val.mOutlineType&&
+		mUnderlineTickness == val.mUnderlineTickness&&
+		mOutlineThickness == val.mOutlineThickness&&
+		mColor == val.mColor&&
+		mBackgroundColor == val.mBackgroundColor&&
+		mOutlineColor == val.mOutlineColor&&
+		mUnderlineColor == val.mUnderlineColor&&
+		mOverlineColor == val.mOverlineColor&&
+		mStrikethroughColor == val.mStrikethroughColor&&
+		mLCDFilterType == val.mLCDFilterType&&
+		mMatrix == val.mMatrix;
 }
 
 
-const byte FontId::LightLCDFilter[5]={0x00, 0x55, 0x56, 0x55, 0x00};
-const byte FontId::DefaultLCDFilter[5]={0x10, 0x40, 0x70, 0x40, 0x10};
-const FontId FontId::Default(StringRef::Empty);
+const byte FontId::LightLCDFilter[5] = { 0x00, 0x55, 0x56, 0x55, 0x00 };
+const byte FontId::DefaultLCDFilter[5] = { 0x10, 0x40, 0x70, 0x40, 0x10 };
+const FontId FontId::Empty(StringRef::Empty);
+const FontId FontId::Default("arial.ttf");
+
 
 
 

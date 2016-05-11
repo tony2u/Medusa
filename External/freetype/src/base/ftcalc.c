@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Arithmetic computations (body).                                      */
 /*                                                                         */
-/*  Copyright 1996-2015 by                                                 */
+/*  Copyright 1996-2016 by                                                 */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -86,8 +86,7 @@
   FT_EXPORT_DEF( FT_Fixed )
   FT_RoundFix( FT_Fixed  a )
   {
-    return a >= 0 ?   ( a + 0x8000L ) & ~0xFFFFL
-                  : -((-a + 0x8000L ) & ~0xFFFFL );
+    return ( a + 0x8000L - ( a < 0 ) ) & ~0xFFFFL;
   }
 
 
@@ -96,8 +95,7 @@
   FT_EXPORT_DEF( FT_Fixed )
   FT_CeilFix( FT_Fixed  a )
   {
-    return a >= 0 ?   ( a + 0xFFFFL ) & ~0xFFFFL
-                  : -((-a + 0xFFFFL ) & ~0xFFFFL );
+    return ( a + 0xFFFFL ) & ~0xFFFFL;
   }
 
 
@@ -106,8 +104,7 @@
   FT_EXPORT_DEF( FT_Fixed )
   FT_FloorFix( FT_Fixed  a )
   {
-    return a >= 0 ?   a & ~0xFFFFL
-                  : -((-a) & ~0xFFFFL );
+    return a & ~0xFFFFL;
   }
 
 #ifndef FT_MSB
@@ -236,26 +233,14 @@
   {
 #ifdef FT_MULFIX_ASSEMBLER
 
-    return FT_MULFIX_ASSEMBLER( a_, b_ );
+    return FT_MULFIX_ASSEMBLER( (FT_Int32)a_, (FT_Int32)b_ );
 
 #else
 
-    FT_Int     s = 1;
-    FT_UInt64  a, b, c;
-    FT_Long    c_;
+    FT_Int64  ab = (FT_Int64)a_ * (FT_Int64)b_;
 
-
-    FT_MOVE_SIGN( a_, s );
-    FT_MOVE_SIGN( b_, s );
-
-    a = (FT_UInt64)a_;
-    b = (FT_UInt64)b_;
-
-    c = ( a * b + 0x8000UL ) >> 16;
-
-    c_ = (FT_Long)c;
-
-    return s < 0 ? -c_ : c_;
+    /* this requires arithmetic right shift of signed numbers */
+    return (FT_Long)( ( ab + 0x8000L - ( ab < 0 ) ) >> 16 );
 
 #endif /* FT_MULFIX_ASSEMBLER */
   }
@@ -437,9 +422,6 @@
 
     /* XXX: this function does not allow 64-bit arguments */
 
-    if ( a_ == 0 || b_ == c_ )
-      return a_;
-
     FT_MOVE_SIGN( a_, s );
     FT_MOVE_SIGN( b_, s );
     FT_MOVE_SIGN( c_, s );
@@ -487,9 +469,6 @@
 
 
     /* XXX: this function does not allow 64-bit arguments */
-
-    if ( a_ == 0 || b_ == c_ )
-      return a_;
 
     FT_MOVE_SIGN( a_, s );
     FT_MOVE_SIGN( b_, s );
@@ -546,9 +525,6 @@
     FT_UInt32  a, b;
 
 
-    if ( a_ == 0 || b_ == 0x10000L )
-      return a_;
-
     /*
      *  This is a clever way of converting a signed number `a' into its
      *  absolute value (stored back into `a') and its sign.  The sign is
@@ -598,9 +574,6 @@
 
 
     /* XXX: this function does not allow 64-bit arguments */
-
-    if ( a_ == 0 || b_ == 0x10000L )
-      return a_;
 
     FT_MOVE_SIGN( a_, s );
     FT_MOVE_SIGN( b_, s );

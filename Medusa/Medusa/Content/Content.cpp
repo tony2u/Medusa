@@ -8,6 +8,9 @@
 #include "Content/Wrapper/FS/Texture_fsh.cpp"
 #include "Content/Wrapper/FS/POD_fsh.cpp"
 #include "Content/Wrapper/FS/Shape_fsh.cpp"
+#include "Content/Wrapper/FS/Label_TTF_Text_fsh.cpp"
+#include "Content/Wrapper/FS/Label_TTF_Outline_fsh.cpp"
+#include "Content/Wrapper/FS/Label_TTF_OutlineText_fsh.cpp"
 
 #include "Content/Wrapper/VS/Position_vsh.cpp"
 #include "Content/Wrapper/VS/Texture_vsh.cpp"
@@ -16,13 +19,6 @@
 
 #include "Content/Wrapper/Other/arial22_0_png.cpp"
 #include "Content/Wrapper/Other/arial22_fnt.cpp"
-
-#ifdef MEDUSA_SCRIPT
-#include "Content/Wrapper/Script/IGame_cs.cpp"
-#include "Content/Wrapper/Script/INode_cs.cpp"
-#include "Content/Wrapper/Script/IScene_cs.cpp"
-#include "Content/Wrapper/Script/ILayer_cs.cpp"
-#endif
 
 MEDUSA_CONTENT_BEGIN;
 
@@ -33,6 +29,10 @@ void RegisterToFileSystem()
 	Register_Shape_fsh();
 	Register_POD_fsh();
 
+	Register_Label_TTF_Text_fsh();
+	Register_Label_TTF_Outline_fsh();
+	Register_Label_TTF_OutlineText_fsh();
+
 
 	Register_Position_vsh();
 	Register_Texture_vsh();
@@ -42,16 +42,6 @@ void RegisterToFileSystem()
 
 	Register_arial22_0_png();
 	Register_arial22_fnt();
-
-
-
-#ifdef MEDUSA_SCRIPT
-	Register_IGame_cs();
-	Register_INode_cs();
-	Register_IScene_cs();
-	Register_ILayer_cs();
-#endif
-
 
 }
 

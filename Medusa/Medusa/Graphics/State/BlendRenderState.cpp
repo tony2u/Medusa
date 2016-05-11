@@ -206,8 +206,8 @@ intp BlendRenderState::HashCode() const
 			(intp)mSrcAlphaFunc^
 			(intp)mDestRGBFunc^
 			(intp)mDestAlphaFunc^
-			(intp)mBlendRGBEquation.ToInt()^
-			(intp)mBlendAlphaEquation.ToInt()^
+			(intp)mBlendRGBEquation^
+			(intp)mBlendAlphaEquation^
 			(intp)mBlendColor.HashCode();
 	}
 	return 0;

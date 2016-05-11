@@ -59,7 +59,7 @@ const unsigned char Aes256Decoder::sboxinv[256] =
 	0xe1, 0x69, 0x14, 0x63, 0x55, 0x21, 0x0c, 0x7d
 };
 
-Aes256Decoder::Aes256Decoder(const MemoryByteData& key)
+Aes256Decoder::Aes256Decoder(const MemoryData& key)
 	: mKey(key.Clone())
 {
     uint maxSize=Aes256Encoder::KeyMaxSize;
@@ -67,7 +67,7 @@ Aes256Decoder::Aes256Decoder(const MemoryByteData& key)
 }
 
 Aes256Decoder::Aes256Decoder(const IEventArg& e)
-	:Aes256Decoder(((const UserDataEventArg<MemoryByteData>&)e).Data())
+	:Aes256Decoder(((const UserDataEventArg<MemoryData>&)e).Data())
 {
 }
 
@@ -92,7 +92,7 @@ size_t Aes256Decoder::GuessResultSize(const IStream& input) const
 	return outputLength;
 }
 
-size_t Aes256Decoder::OnCode(const MemoryByteData& input, MemoryByteData& output) const
+size_t Aes256Decoder::OnCode(const MemoryData& input, MemoryData& output) const
 {
 	MemoryStream inputStream(input);
 	MemoryStream outputStream(output);
@@ -101,8 +101,8 @@ size_t Aes256Decoder::OnCode(const MemoryByteData& input, MemoryByteData& output
 	size_t paddingSize = 0;
 
 	// Read salt
-	MemoryByteData salt = inputStream.ReadData(saltSize);
-	MemoryByteData rkey = MemoryByteData::Alloc(Aes256Encoder::KeyMaxSize);
+	MemoryData salt = inputStream.ReadData(saltSize);
+	MemoryData rkey = MemoryData::Alloc(Aes256Encoder::KeyMaxSize);
 
 	//read padding size
 	paddingSize = inputStream.ReadChar();
@@ -112,7 +112,7 @@ size_t Aes256Decoder::OnCode(const MemoryByteData& input, MemoryByteData& output
 	size_t bufferPos = 0;
 	size_t resultSize = 0;
 
-	MemoryByteData bufferData= MemoryByteData::FromStatic(buffer, Aes256Encoder::BlockSize);
+	MemoryData bufferData= MemoryData::FromStatic(buffer, Aes256Encoder::BlockSize);
 	while (!inputStream.IsEnd())
 	{
 		bufferPos += inputStream.ReadDataTo(bufferData);
@@ -131,7 +131,7 @@ size_t Aes256Decoder::OnCode(const MemoryByteData& input, MemoryByteData& output
 	return resultSize;
 }
 
-void Aes256Decoder::Decrypt(MemoryByteData& rkey, const MemoryByteData& key,const MemoryByteData& salt, unsigned char* buffer)
+void Aes256Decoder::Decrypt(MemoryData& rkey, const MemoryData& key,const MemoryData& salt, unsigned char* buffer)
 {
 	unsigned char i, rcon = 1;
 

@@ -5,7 +5,7 @@
 #include "MedusaCorePreDeclares.h"
 #include "Core/Siren/SirenHeader.h"
 #include "Core/IO/IFileLoadable.h"
-#include "SirenProtocol.h"
+#include "Core/Siren/Code/SirenCoderType.h"
 #include "Siren.h"
 #include "Core/IO/FileInfo.h"
 
@@ -15,9 +15,9 @@ template<typename T>
 class ISirenConfig :public IFileLoadable
 {
 public:
-	virtual bool LoadFromData(StringRef path, const MemoryByteData& data, uint format = (uint)-1)override
+	virtual bool LoadFromData(const FileIdRef& fileId, const MemoryData& data, uint format = (uint)-1)override
 	{
-		SirenProtocol protocol = (SirenProtocol)format;
+		SirenCoderType protocol = (SirenCoderType)format;
 		RETURN_FALSE_IF_FALSE(Siren::DeserializeTo(data, ((T&)*this), protocol));
 		return OnLoaded();
 	}
@@ -28,9 +28,9 @@ protected:
 		switch (fileType)
 		{
 			case FileType::json:
-				return (uint)SirenProtocol::Json;
+				return (uint)SirenCoderType::Json;
 			default:
-				return (uint)SirenProtocol::Compact;
+				return (uint)SirenCoderType::Compact;
 		}
 	}
 	virtual bool OnLoaded() { return true; }

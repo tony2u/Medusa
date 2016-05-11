@@ -62,7 +62,7 @@ void RenderingContext::ApplyRenderPass( IRenderPass* val )
 	{
 		mRenderPass->Invalidate();
 		mRenderPass->Apply();
-		UpdateShaderVariables();
+		UpdateShaderUniforms();
 	}
 }
 
@@ -73,7 +73,7 @@ void RenderingContext::ApplyMaterial(const  IMaterial* val )
 	if (mMaterial!=nullptr)
 	{
 		mMaterial->Apply();
-		UpdateShaderVariables();
+		UpdateShaderUniforms();
 	}
 }
 
@@ -82,14 +82,14 @@ void RenderingContext::ApplyState(RenderStateTreeLeafNode* stateNode)
 {
 	SetState(stateNode);
 	stateNode->Apply();
-	UpdateShaderVariables();
+	UpdateShaderUniforms();
 }
 
 
 void RenderingContext::ApplyDrawMode(GraphicsDrawMode val)
 {
 	SetDrawMode(val);
-	UpdateShaderVariables();
+	UpdateShaderUniforms();
 
 }
 
@@ -99,7 +99,7 @@ void RenderingContext::ApplyBatch( IRenderBatch* val )
 	if (mBatch!=nullptr)
 	{
 		mBatch->Apply();
-		UpdateShaderVariables();
+		UpdateShaderUniforms();
 	}
 }
 
@@ -167,11 +167,11 @@ void RenderingContext::ValidateBeforeDraw()
 	}
 }
 
-void RenderingContext::UpdateShaderVariables()
+void RenderingContext::UpdateShaderUniforms()
 {
 	if (mRenderPass!=nullptr)
 	{
-		mRenderPass->UpdateShaderVariables(mStep);
+		mRenderPass->UpdateShaderUniforms(mStep);
 	}
 }
 

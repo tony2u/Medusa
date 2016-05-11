@@ -9,45 +9,45 @@
 
 MEDUSA_BEGIN;
 
-class BaseProgramRenderPass:public IRenderPass
+class BaseProgramRenderPass :public IRenderPass
 {
 public:
-	BaseProgramRenderPass(const FileIdRef& fileId,IShader* vertexShader,IShader* pixelShader,int index=0);
+	BaseProgramRenderPass(const FileIdRef& fileId, IShader* vertexShader, IShader* pixelShader, int index = 0);
 	virtual ~BaseProgramRenderPass();
 
 	virtual void Apply();
 	virtual void Restore();
-	virtual bool IsCustom()const{return false;}
+	virtual bool IsCustom()const { return false; }
 
 	virtual bool Initialize();
 	virtual bool Uninitialize();
 
 	uint Program() const { return mProgramState->Program(); }
 
-	bool IsLinked() const { return mProgramState->Program()!=0&&mIsLinked; }
-	ShaderConstant* GetConstant(const StringRef& name)const;
-	ShaderAttribute* GetAttribute(const StringRef& name)const;
-	ShaderAttribute* GetAttributeByIndex(ShaderAttributeIndex index)const;
+	bool IsLinked() const { return mProgramState->Program() != 0 && mIsLinked; }
+	ShaderUniform* FindUniform(const StringRef& name)const;
+	ShaderAttribute* FindAttribute(const StringRef& name)const;
+	ShaderAttribute* FindAttributeByIndex(ShaderAttributeIndex index)const;
 
 
 	IShader* VertexShader() const { return mVertexShader; }
 	IShader* PixelShader() const { return mPixelShader; }
 
-	virtual void UpdateShaderVariables(RenderingStep step);
+	virtual void UpdateShaderUniforms(RenderingStep step);
 	virtual void Validate();
 	virtual void Invalidate();
 private:
 	void Link();
 	bool TryAddToManagedAttributes(const StringRef& name, ShaderAttribute* val);
 protected:
-	IShader* mVertexShader=nullptr;
-	IShader* mPixelShader=nullptr;
+	IShader* mVertexShader = nullptr;
+	IShader* mPixelShader = nullptr;
 	//render states
-	ProgramRenderState* mProgramState=nullptr;
+	ProgramRenderState* mProgramState = nullptr;
 
-	bool mIsLinked=false;
-	Dictionary<HeapString,ShaderConstant*> mUniforms;
-	Dictionary<HeapString,ShaderAttribute*> mAttributes;
+	bool mIsLinked = false;
+	Dictionary<HeapString, ShaderUniform*> mUniforms;
+	Dictionary<HeapString, ShaderAttribute*> mAttributes;
 	Array<ShaderAttribute*, (uint)ShaderAttributeIndex::Count> mManagedAttributes;
 };
 

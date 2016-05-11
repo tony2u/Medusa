@@ -83,7 +83,7 @@ void SceneRenderGroup::Draw(IRenderQueue& renderQueue, RenderingFlags renderingF
 	RETURN_IF_EMPTY(mGroups);
 	RenderingContext::Instance().ApplyRenderTargetAndCamera(mRenderTarget, mCamera);
 
-	if (!renderingFlags.Has(RenderingFlags::KeepRenderTarget))
+	if (!MEDUSA_FLAG_HAS(renderingFlags,RenderingFlags::KeepRenderTarget))
 	{
 		mRenderTarget->Clear();
 	}

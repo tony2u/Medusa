@@ -57,7 +57,7 @@ public:
 	{
 		mEntries = nullptr;
 		mBuckets = nullptr;
-		mSize = dict.Count();
+		mSize = 0;
 		Resize(dict.Count());
 
 		FOR_EACH_COLLECTION(i, dict)
@@ -227,7 +227,7 @@ public:
 	class ConstEnumerator :public IEnumerator < TConstReturnType, TConstPointerType >	//[IGNORE_PRE_DECLARE_FILE]
 	{
 	public:
-		explicit ConstEnumerator(const Entry* entries, size_t count) :mEntries(entries), mIndex(0), mAddedCount(count),mCurrent(nullptr) {}
+		explicit ConstEnumerator(const Entry* entries, size_t count) :mEntries(entries), mIndex(0), mAddedCount(count), mCurrent(nullptr) {}
 		virtual TConstReturnType Current() { return mCurrent->Pair; }
 		virtual TConstPointerType CurrentPtr() { return &(mCurrent->Pair); }
 
@@ -301,7 +301,7 @@ public:
 			} while (mEntries[mIndex].HashCode < 0 && mIndex>0);
 			return *this;
 		}
-		ConstInterator operator--(int)const 
+		ConstInterator operator--(int)const
 		{
 			size_t index = mIndex;
 			do
@@ -363,7 +363,7 @@ public:
 		size_t mAddedCount;
 		size_t mIndex;
 	};
-	ConstInterator begin()const { return ConstInterator(this->mEntries,this->mAddedCount,FirstIndex()); }
+	ConstInterator begin()const { return ConstInterator(this->mEntries, this->mAddedCount, FirstIndex()); }
 	ConstInterator end()const { return ConstInterator(this->mEntries, this->mAddedCount, this->mAddedCount); }
 	Interator begin() { return Interator(this->mEntries, this->mAddedCount, FirstIndex()); }
 	Interator end() { return Interator(this->mEntries, this->mAddedCount, this->mAddedCount); }
@@ -459,7 +459,7 @@ public:
 	}
 
 	template<typename TKey2>
-	bool ContainsOtherKey(TKey2 key, intp hashCode)const
+	bool ContainsOtherKey(const TKey2& key, intp hashCode)const
 	{
 		return FindEntryByOtherKey(key, hashCode) >= 0;
 	}
@@ -480,7 +480,7 @@ public:
 		return false;
 	}
 
-	virtual TValueReferenceType GetValue(TKeyParameterType key)
+	virtual TValueReferenceType Get(TKeyParameterType key)
 	{
 		intp i = FindEntry(key);
 		MEDUSA_ASSERT(i >= 0, "cannot find entry");
@@ -488,7 +488,7 @@ public:
 
 		return entry.Pair.Value;
 	}
-	virtual TValueConstReturnType GetValue(TKeyParameterType key)const
+	virtual TValueConstReturnType Get(TKeyParameterType key)const
 	{
 		intp i = FindEntry(key);
 		MEDUSA_ASSERT(i >= 0, "cannot find entry");
@@ -497,7 +497,7 @@ public:
 		return entry.Pair.Value;
 	}
 
-	virtual void SetValue(TKeyParameterType key, TValueParameterType value)
+	virtual void Set(TKeyParameterType key, TValueParameterType value)
 	{
 		intp i = FindEntry(key);
 		if (i >= 0)
@@ -510,7 +510,7 @@ public:
 		}
 	}
 
-	virtual TValuePointerType TryGetValue(TKeyParameterType key)
+	virtual TValuePointerType TryGet(TKeyParameterType key)
 	{
 		intp i = FindEntry(key);
 		if (i >= 0)
@@ -521,7 +521,7 @@ public:
 	}
 
 	template<typename TKey2>
-	TValuePointerType TryGetValueByOtherKey(TKey2 key, intp hashCode)
+	TValuePointerType TryGetByOtherKey(const TKey2& key, intp hashCode)
 	{
 		intp i = FindEntryByOtherKey(key, hashCode);
 		if (i >= 0)
@@ -531,7 +531,7 @@ public:
 		return nullptr;
 	}
 
-	virtual TValueConstPointerType TryGetValue(TKeyParameterType key)const
+	virtual TValueConstPointerType TryGet(TKeyParameterType key)const
 	{
 		intp i = FindEntry(key);
 		if (i >= 0)
@@ -542,7 +542,7 @@ public:
 	}
 
 	template<typename TKey2>
-	TValueConstPointerType TryGetValueByOtherKey(TKey2 key, intp hashCode)const
+	TValueConstPointerType TryGetByOtherKey(const TKey2& key, intp hashCode)const
 	{
 		intp i = FindEntryByOtherKey(key, hashCode);
 		if (i >= 0)
@@ -553,7 +553,7 @@ public:
 	}
 
 
-	virtual TValue TryGetValueWithFailed(TKeyParameterType key, TValueParameterType failedReturn)const
+	virtual TValueConstReturnType GetOptional(TKeyParameterType key, TValueParameterType failedReturn)const
 	{
 		intp i = FindEntry(key);
 		if (i >= 0)
@@ -564,7 +564,7 @@ public:
 	}
 
 	template<typename TKey2>
-	TValue TryGetValueWithFailedByOtherKey(TKey2 key, intp hashCode, TValueParameterType failedReturn)const
+	TValueConstReturnType GetOptionalByOtherKey(const TKey2& key, intp hashCode, TValueParameterType failedReturn)const
 	{
 		intp i = FindEntryByOtherKey(key, hashCode);
 		if (i >= 0)
@@ -658,9 +658,17 @@ public:
 		{
 			Grow();
 		}
-
+		
 		intp hashCode = (TKeyHashCoder::HashCode(key)) & 0x7FFFFFFF;
 		intp targetBucket = hashCode%mSize;
+		for (intp i = mBuckets[(size_t)targetBucket]; i >= 0; i = mEntries[(size_t)i].Next)
+		{
+			if (mEntries[(size_t)i].HashCode == hashCode && (TKeyCompare::Compare(key, mEntries[(size_t)i].Pair.Key) == 0))
+			{
+				return mEntries[(size_t)i].Pair.Value;
+			}
+		}
+
 		intp index = 0;
 		if (mFreeCount > 0)
 		{
@@ -692,7 +700,7 @@ public:
 	}
 
 	template<typename TKey2>
-	TValueReferenceType NewAdd(TKey2 key, intp hashCode)
+	TValueReferenceType NewAdd(const TKey2& key, intp hashCode)
 	{
 		if (mBuckets == nullptr || mEntries == nullptr)
 		{
@@ -701,6 +709,15 @@ public:
 
 		hashCode &= 0x7FFFFFFF;
 		intp targetBucket = hashCode%mSize;
+		for (intp i = mBuckets[(size_t)targetBucket]; i >= 0; i = mEntries[(size_t)i].Next)
+		{
+			if (mEntries[(size_t)i].HashCode == hashCode && (TKeyCompare::Compare(key, mEntries[(size_t)i].Pair.Key) == 0))
+			{
+				return mEntries[(size_t)i].Pair.Value;
+			}
+		}
+
+
 		intp index = 0;
 		if (mFreeCount > 0)
 		{
@@ -727,7 +744,7 @@ public:
 		entry.Pair.Key = key;
 		mBuckets[(size_t)targetBucket] = index;
 		++this->mCount;
-		
+
 		return entry.Pair.Value;
 	}
 
@@ -814,7 +831,7 @@ public:
 
 	}
 
-	virtual TValue RemoveKeyWithValueReturned(TKeyParameterType key, TValueParameterType failedReturn)
+	virtual TValue RemoveKeyOptional(TKeyParameterType key, TValueParameterType failedReturn)
 	{
 		if (mBuckets == nullptr || mEntries == nullptr)
 		{
@@ -840,12 +857,13 @@ public:
 				Entry& entry = mEntries[(size_t)i];
 				entry.HashCode = -1;
 				entry.Next = mFreeList;
+				auto result= entry.Pair.Value;
 				Memory::Destory(&entry.Pair);
 
 				mFreeList = i;
 				mFreeCount++;
 				--this->mCount;
-				return entry.Pair.Value;
+				return result;
 			}
 		}
 
@@ -855,7 +873,7 @@ public:
 
 
 	template<typename TKey2>
-	bool RemoveOtherKey(TKey2 key, intp otherHashCode)
+	bool RemoveOtherKey(const TKey2& key, intp otherHashCode)
 	{
 		RETURN_FALSE_IF_NULL(mEntries);
 
@@ -892,7 +910,7 @@ public:
 	}
 
 	template<typename TKey2>
-	TValue RemoveOtherKeyWithValueReturned(TKey2 key, intp otherHashCode, TValueParameterType failedReturn)
+	TValue RemoveOtherKeyOptional(const TKey2& key, intp otherHashCode, TValueParameterType failedReturn)
 	{
 		if (mBuckets == nullptr || mEntries == nullptr)
 		{
@@ -917,12 +935,13 @@ public:
 				Entry& entry = mEntries[(size_t)i];
 				entry.HashCode = -1;
 				entry.Next = mFreeList;
+				auto result = entry.Pair.Value;
 				Memory::Destory(&entry.Pair);
 
 				mFreeList = i;
 				mFreeCount++;
 				--this->mCount;
-				return entry.Pair.Value;
+				return result;
 			}
 		}
 
@@ -969,7 +988,7 @@ private:
 	}
 
 	template<typename TKey2>
-	intp FindEntryByOtherKey(TKey2 key, intp hashCode)const
+	intp FindEntryByOtherKey(const TKey2& key, intp hashCode)const
 	{
 		if (mEntries == nullptr || mBuckets == nullptr)
 		{
@@ -1017,13 +1036,13 @@ private:
 	}
 
 private:
-	intp* mBuckets;
-	Entry* mEntries;
+	intp* mBuckets = nullptr;
+	Entry* mEntries = nullptr;
 
-	size_t mSize;
-	intp mFreeList;
-	intp mFreeCount;
-	size_t mAddedCount;
+	size_t mSize = 0;
+	intp mFreeList = -1;
+	intp mFreeCount = 0;
+	size_t mAddedCount = 0;
 
 
 };

@@ -3,9 +3,8 @@
 // license that can be found in the LICENSE file.
 #pragma once
 #include "MedusaPreDeclares.h"
-#include "Core/Geometry/Rect2.h"
+#include "Geometry/Rect2.h"
 #include "Node/NodeDefines.h"
-#include "Node/NodeLayoutArrangeFlags.h"
 
 MEDUSA_BEGIN;
 

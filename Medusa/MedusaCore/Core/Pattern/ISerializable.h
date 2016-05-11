@@ -10,8 +10,8 @@ MEDUSA_BEGIN;
 class ISerializable
 {
 public:
-	virtual MemoryByteData Serialize(const MemoryByteData& data)const = 0;
-	virtual MemoryByteData Unserialize(const MemoryByteData& data)const = 0;
+	virtual MemoryData Serialize(const MemoryData& data)const = 0;
+	virtual MemoryData Unserialize(const MemoryData& data)const = 0;
 };
 
 MEDUSA_END;

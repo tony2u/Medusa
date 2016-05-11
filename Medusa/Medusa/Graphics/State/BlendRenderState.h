@@ -3,9 +3,8 @@
 // license that can be found in the LICENSE file.
 #pragma  once
 #include "Graphics/State/IRenderState.h"
-#include "Core/Geometry/Color4.h"
+#include "Geometry/Color4.h"
 
-#include "Graphics/GraphicsBlendEquation.h"
 
 
 MEDUSA_BEGIN;

@@ -8,7 +8,7 @@
 
 #include "Core/Math/Random/Random.h"
 #include "Core/Math/Random/RandomAlgorithm.h"
-#include "Core/Pattern/Predicate/PredicateConfig.h"
+#include "Game/AI/Predicate/PredicateConfig.h"
 #include "Core/Log/Log.h"
 #include "DropPoolConfig.h"
 
@@ -176,10 +176,10 @@ DropPool::~DropPool()
 
 //SIREN_BODY_METADATA_BEGIN
 SIREN_METADATA(DropPool, 8);
-SIREN_PROPERTY_METADATA_STRUCT(0, DropPool, FixedItems, 10);
-SIREN_PROPERTY_METADATA_STRUCT(1, DropPool, RandomGroups, 12);
-SIREN_PROPERTY_METADATA_STRUCT(2, DropPool, ConditionItems, 14);
-SIREN_PROPERTY_METADATA_STRUCT(3, DropPool, ItemLimits, 10);
+SIREN_FIELD_METADATA_STRUCT(0, DropPool, FixedItems, 10);
+SIREN_FIELD_METADATA_STRUCT(1, DropPool, RandomGroups, 12);
+SIREN_FIELD_METADATA_STRUCT(2, DropPool, ConditionItems, 14);
+SIREN_FIELD_METADATA_STRUCT(3, DropPool, ItemLimits, 10);
 //SIREN_BODY_METADATA_END
 
 MEDUSA_END;

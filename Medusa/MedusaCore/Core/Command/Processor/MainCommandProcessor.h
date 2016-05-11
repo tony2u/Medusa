@@ -13,8 +13,8 @@ MEDUSA_BEGIN;
 class MainCommandProcessor :public Singleton < MainCommandProcessor >,public BaseMainCommandProcessor<ScopedLock>
 {
 	friend class Singleton < MainCommandProcessor > ;
-	MainCommandProcessor(void) {}
-	virtual ~MainCommandProcessor(void) {}
+	MainCommandProcessor(void) = default;
+	virtual ~MainCommandProcessor(void) = default;
 public:
 	
 };

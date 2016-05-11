@@ -193,8 +193,8 @@ public:
 	{
 	public:
 		explicit ConstInterator(const LinkedListNode<T>* cur) :mCurrent(cur) {}
-		TConstReturnType operator*()const { return *mCurrent; }
-		TConstPointerType operator->()const { return mCurrent; }
+		TConstReturnType operator*()const { return mCurrent->Value; }
+		TConstPointerType operator->()const { return &(mCurrent->Value); }
 		bool operator==(const ConstInterator& other)const { return mCurrent == other.mCurrent; }
 		bool operator!=(const ConstInterator& other)const { return mCurrent != other.mCurrent; }
 		ConstInterator& operator++() { mCurrent=mCurrent->Next; return *this; }
@@ -209,8 +209,8 @@ public:
 	{
 	public:
 		explicit Interator(LinkedListNode<T>* cur) :mCurrent(cur) {}
-		TReturnType operator*()const { return *mCurrent; }
-		TPointerType operator->()const { return mCurrent; }
+		TReturnType operator*()const { return mCurrent->Value; }
+		TPointerType operator->()const { return &(mCurrent->Value); }
 		bool operator==(const Interator& other)const { return mCurrent == other.mCurrent; }
 		bool operator!=(const Interator& other)const { return mCurrent != other.mCurrent; }
 		Interator& operator++() { mCurrent = mCurrent->Next; return *this; }
@@ -220,10 +220,15 @@ public:
 	protected:
 		LinkedListNode<T>* mCurrent;
 	};
-	ConstInterator begin()const { return ConstInterator(&mHead); }
+	ConstInterator begin()const { return ConstInterator(mHead.Next); }
 	ConstInterator end()const { return ConstInterator(&mTail); }
-	Interator begin() { return Interator(&mHead); }
+	Interator begin() { return Interator(mHead.Next); }
 	Interator end() { return Interator(&mTail); }
+
+	ConstInterator rbegin()const { return ConstInterator(mTail.Prev); }
+	ConstInterator rend()const { return ConstInterator(&mHead); }
+	Interator rbegin() { return Interator(mTail.Prev); }
+	Interator rend() { return Interator(&mHead); }
 
 #pragma endregion IEnumerable interface
 
@@ -523,10 +528,11 @@ public:
 		}
 		this->mCount = 0;
 	}
-	virtual void Add(TParameterType val)
+	virtual NodePtr Add(TParameterType val)
 	{
 		NodePtr newNode = new LinkedListNode<T>(val);
 		AddLast(newNode);
+		return newNode;
 	}
 
 	NodePtr NewAddNode()

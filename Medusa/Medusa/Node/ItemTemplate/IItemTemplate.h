@@ -4,7 +4,7 @@
 #pragma once
 #include "MedusaPreDeclares.h"
 #include "Core/String/HeapString.h"
-#include "Core/Geometry/Size2.h"
+#include "Geometry/Size2.h"
 
 MEDUSA_BEGIN;
 

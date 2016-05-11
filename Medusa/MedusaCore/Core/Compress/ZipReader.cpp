@@ -75,9 +75,9 @@ bool ZipReader::Exists(StringRef fileName) const
 	return mFileDict.ContainsOtherKey(fileName,fileName.HashCode());
 }
 
-MemoryByteData ZipReader::ReadAllData(StringRef fileName)const
+MemoryData ZipReader::ReadAllData(StringRef fileName)const
 {
-	MemoryByteData result;
+	MemoryData result;
 
 	if (mZipFile==nullptr||fileName.IsEmpty())
 	{
@@ -85,7 +85,7 @@ MemoryByteData ZipReader::ReadAllData(StringRef fileName)const
 	}
 
 
-	const ZipFileInfo* zipEntryInfo=mFileDict.TryGetValueByOtherKey(fileName,fileName.HashCode());
+	const ZipFileInfo* zipEntryInfo=mFileDict.TryGetByOtherKey(fileName,fileName.HashCode());
 	if (zipEntryInfo==nullptr)
 	{
 		return result;
@@ -103,7 +103,7 @@ MemoryByteData ZipReader::ReadAllData(StringRef fileName)const
 		return result;
 	}
 
-	result=MemoryByteData::Alloc(zipEntryInfo->UncompressedSize);
+	result=MemoryData::Alloc(zipEntryInfo->UncompressedSize);
 	int readSize = unzReadCurrentFile(mZipFile, result.MutableData(), (uint)zipEntryInfo->UncompressedSize);
 	Log::Assert(readSize==(int)zipEntryInfo->UncompressedSize,"Invalid zip file size.");	//readSize could be 0 because we may have zero file such as "StringTable-enus.bin"
 	unzCloseCurrentFile(mZipFile);
@@ -112,9 +112,9 @@ MemoryByteData ZipReader::ReadAllData(StringRef fileName)const
 }
 
 
-MemoryByteData ZipReader::DecompressGZIP(const MemoryByteData& data, size_t expectedSize)
+MemoryData ZipReader::DecompressGZIP(const MemoryData& data, size_t expectedSize)
 {
-	MemoryByteData result = MemoryByteData::Alloc(expectedSize);
+	MemoryData result = MemoryData::Alloc(expectedSize);
 	int ret;
 	z_stream strm;
 
@@ -130,7 +130,7 @@ MemoryByteData ZipReader::DecompressGZIP(const MemoryByteData& data, size_t expe
 
 	if (ret != Z_OK)
 	{
-		return MemoryByteData::Empty;
+		return MemoryData::Empty;
 	}
 
 	do
@@ -145,7 +145,7 @@ MemoryByteData ZipReader::DecompressGZIP(const MemoryByteData& data, size_t expe
 			case Z_DATA_ERROR:
 			case Z_MEM_ERROR:
 				inflateEnd(&strm);
-				return MemoryByteData::Empty;
+				return MemoryData::Empty;
 		}
 
 		if (ret != Z_STREAM_END)
@@ -157,7 +157,7 @@ MemoryByteData ZipReader::DecompressGZIP(const MemoryByteData& data, size_t expe
 			if (!result.IsValid())
 			{
 				inflateEnd(&strm);
-				return MemoryByteData::Empty;
+				return MemoryData::Empty;
 			}
 
 			strm.next_out = (Bytef *)(result.Data() + result.Size());
@@ -167,7 +167,7 @@ MemoryByteData ZipReader::DecompressGZIP(const MemoryByteData& data, size_t expe
 
 	if (strm.avail_in != 0)
 	{
-		return MemoryByteData::Empty;
+		return MemoryData::Empty;
 	}
 
 	inflateEnd(&strm);

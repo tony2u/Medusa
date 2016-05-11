@@ -9,6 +9,7 @@
 #include "Core/Log/Log.h"
 #include "Core/IO/FileSystem.h"
 #include "Core/Siren/Siren.h"
+#include "Core/IO/FileIdRef.h"
 
 MEDUSA_BEGIN;
 
@@ -28,11 +29,11 @@ FuckyString::~FuckyString()
 
 bool FuckyString::Initialize(const FileIdRef& fileId, uint format /*= 0*/)
 {
-	MemoryByteData data = FileSystem::Instance().ReadAllData(fileId);
-	return LoadFromData(fileId.Name, data, format);
+	MemoryData data = FileSystem::Instance().ReadAllData(fileId);
+	return LoadFromData(fileId, data, format);
 }
 
-bool FuckyString::LoadFromData(StringRef path, const MemoryByteData& data, uint format/*=0*/)
+bool FuckyString::LoadFromData(const FileIdRef& fileId, const MemoryData& data, uint format/*=0*/)
 {
 	Unload();
 	RETURN_FALSE_IF_FALSE(Siren::DeserializeBinaryTo(data, *this));
@@ -58,7 +59,7 @@ bool FuckyString::IsFucky(WStringRef str) const
 	{
 		wchar_t c = str[i];
 
-		const FuckyStringNode* node = mRootNodes.TryGetValue(c);
+		const FuckyStringNode* node = mRootNodes.TryGet(c);
 		CONTINUE_IF_NULL(node);
 
 		const Dictionary<int, FuckyStringNode*>* nodes = node->ChildsPtr();
@@ -68,7 +69,7 @@ bool FuckyString::IsFucky(WStringRef str) const
 		{
 			wchar_t c2 = str[j];
 
-			FuckyStringNode* tempNode = nodes->TryGetValueWithFailed(c2, nullptr);
+			FuckyStringNode* tempNode = nodes->GetOptional(c2, nullptr);
 			BREAK_IF_NULL(tempNode);
 
 			if (tempNode->IsFucky())
@@ -97,7 +98,7 @@ bool FuckyString::TryClean(WHeapString& str, char replace) const
 	FOR_EACH_SIZE(i, length)
 	{
 		wchar_t c = str[i];
-		const FuckyStringNode* node = mRootNodes.TryGetValue(c);
+		const FuckyStringNode* node = mRootNodes.TryGet(c);
 		CONTINUE_IF_NULL(node);
 
 		const Dictionary<int, FuckyStringNode*>* nodes = node->ChildsPtr();
@@ -107,7 +108,7 @@ bool FuckyString::TryClean(WHeapString& str, char replace) const
 		for (size_t j = i + 1; j < length; ++j)
 		{
 			wchar_t c2 = str[j];
-			FuckyStringNode* tempNode = nodes->TryGetValueWithFailed(c2, nullptr);
+			FuckyStringNode* tempNode = nodes->GetOptional(c2, nullptr);
 			BREAK_IF_NULL(node);
 			if (tempNode->IsFucky())
 			{
@@ -142,7 +143,7 @@ bool FuckyString::TryClean(WHeapString& str, char replace) const
 
 //SIREN_BODY_METADATA_BEGIN
 SIREN_METADATA(FuckyString, 11);
-SIREN_PROPERTY_METADATA_STRUCT(0, FuckyString, RootNodes, 9);
+SIREN_FIELD_METADATA_STRUCT(0, FuckyString, RootNodes, 9);
 //SIREN_BODY_METADATA_END
 
 MEDUSA_END;

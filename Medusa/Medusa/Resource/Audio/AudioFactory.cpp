@@ -37,10 +37,14 @@ bool AudioFactory::Uninitialize()
 }
 
 
-IAudio* AudioFactory::CreateFromRaw(const FileIdRef& fileId, AudioFileType audioFileType, const MemoryByteData& data, uint sampleCount, uint channelCount, uint samplerRate, uint bitsPerSample, ResourceShareType shareType /*= ResourceShareType::Share*/)
+IAudio* AudioFactory::CreateFromRaw(const FileIdRef& fileId, AudioFileType audioFileType, const MemoryData& data, uint sampleCount, uint channelCount, uint samplerRate, uint bitsPerSample, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
-	IAudio* buffer = Find(fileId);
-	RETURN_SELF_IF_NOT_NULL(buffer);
+	IAudio* buffer = nullptr;
+	if (shareType != ResourceShareType::None)
+	{
+		buffer = Find(fileId);
+		RETURN_SELF_IF_NOT_NULL(buffer);
+	}
 
 	switch (audioFileType)
 	{
@@ -65,8 +69,13 @@ IAudio* AudioFactory::CreateFromRaw(const FileIdRef& fileId, AudioFileType audio
 
 IAudio* AudioFactory::CreateFromFile(const FileIdRef& fileId, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
-	IAudio* buffer = Find(fileId);
-	RETURN_SELF_IF_NOT_NULL(buffer);
+	IAudio* buffer = nullptr;
+	if (shareType != ResourceShareType::None)
+	{
+		buffer = Find(fileId);
+		RETURN_SELF_IF_NOT_NULL(buffer);
+	}
+
 
 	switch (FileInfo::ExtractType(fileId.Name))
 	{
@@ -86,10 +95,15 @@ IAudio* AudioFactory::CreateFromFile(const FileIdRef& fileId, ResourceShareType 
 	return buffer;
 }
 
-IAudio* AudioFactory::CreateFromMemory(const FileIdRef& fileId, const MemoryByteData& data, ResourceShareType shareType /*= ResourceShareType::Share*/)
+IAudio* AudioFactory::CreateFromMemory(const FileIdRef& fileId, const MemoryData& data, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
-	IAudio* buffer = Find(fileId);
-	RETURN_SELF_IF_NOT_NULL(buffer);
+	IAudio* buffer = nullptr;
+	if (shareType != ResourceShareType::None)
+	{
+		buffer = Find(fileId);
+		RETURN_SELF_IF_NOT_NULL(buffer);
+	}
+
 
 	switch (FileInfo::ExtractType(fileId.Name))
 	{

@@ -5,13 +5,11 @@
 #include "Resource/Effect/IEffect.h"
 #include "Resource/Effect/EffectTechniqueGroup.h"
 #include "Resource/Effect/EffectTechnique.h"
-#include "Core/Pattern/AutoIncreaseId.h"
 
 MEDUSA_BEGIN;
 
 IEffect::IEffect(const FileIdRef& fileId/*=FileId::Empty*/):IResource(fileId)
 {
-	mId = AutoIncreaseId<IEffect>::New();
 
 	mCurrentTechniqueGroup=nullptr;
 }
@@ -102,7 +100,7 @@ EffectTechniqueGroup* IEffect::GetGroupByIndex( uint index )
 
 EffectTechniqueGroup* IEffect::GetGroupByName( StringRef name )
 {
-	return mTechniqueGroupDict.TryGetValueWithFailed(name,nullptr);
+	return mTechniqueGroupDict.GetOptional(name,nullptr);
 }
 
 //
@@ -114,7 +112,7 @@ EffectTechniqueGroup* IEffect::GetGroupByName( StringRef name )
 //		MEDUSA_ASSERT_FAILED("Cannot bind after link");
 //	}
 //
-//	ShaderConstant** result=mUniforms.TryGetValue(name);
+//	ShaderConstant** result=mUniforms.TryGet(name);
 //	if (result==nullptr)
 //	{
 //		Render::Instance().BindUniformLocation(mEffect,index,name);

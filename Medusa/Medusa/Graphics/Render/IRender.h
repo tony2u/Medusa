@@ -5,30 +5,15 @@
 #include "MedusaPreDeclares.h"
 #include "Core/Collection/BitArray.h"
 #include "Graphics/GraphicsTypes.h"
-#include "Core/Geometry/Color4.h"
-#include "Core/Geometry/Rect2.h"
-#include "Core/Geometry/Range.h"
+#include "Geometry/Color4.h"
+#include "Geometry/Rect2.h"
+#include "Geometry/Range.h"
 #include "Core/Collection/Stack.h"
 #include "Core/Collection/Array.h"
 #include "Core/Collection/Dictionary.h"
 #include "Core/Pattern/IInitializable.h"
-
-
-#include "Graphics/GraphicsHintMode.h"
-#include "Graphics/GraphicsBlendEquation.h"
-#include "Graphics/GraphicsPixelDataType.h"
-#include "Graphics/GraphicsFuncType.h"
-#include "Graphics/GraphicsStencilOperation.h"
-#include "Graphics/GraphicsFrontFace.h"
-#include "Graphics/GraphicsFace.h"
-
-#include "Graphics/GraphicsBufferComponentMask.h"
-#include "Graphics/GraphicsColorMask.h"
-#include "Graphics/GraphicsMapBufferMask.h"
-#include "Graphics/GraphicsSyncMask.h"
 #include "Resource/Model/Mesh/MeshComponents.h"
-#include "Rendering/RenderingFlags.h"
-#include "Graphics/RenderPassFlags.h"
+#include "Graphics/PixelType.h"
 
 
 MEDUSA_BEGIN;
@@ -161,12 +146,12 @@ public:
 	virtual void GenerateTextureMipmap(GraphicsTextureType textureType)const = 0;
 
 	virtual bool IsTexture(uint texture)const = 0;
-	virtual void LoadTexture(GraphicsTextureTarget textureTarget, int level, GraphicsInternalFormat internalformat, const Size2U& size, int border, GraphicsPixelFormat format, GraphicsPixelDataType type, const void *pixels)const = 0;
-	virtual void LoadSubTexture(GraphicsTextureTarget textureTarget, int level, const Rect2I& rect, GraphicsPixelFormat format, GraphicsPixelDataType type, const void *pixels)const = 0;
+	virtual void LoadTexture(GraphicsTextureTarget textureTarget, int level, PixelType pixelType, const Size2U& size, int border, const void *pixels)const = 0;
+	virtual void LoadSubTexture(GraphicsTextureTarget textureTarget, int level, const Rect2I& rect, PixelType pixelType, const void *pixels)const = 0;
 
-	virtual void LoadCompressedTexture(GraphicsTextureTarget textureTarget, int level, GraphicsInternalFormat internalformat, const Size2U& size, int border, uint imageSize, const void *pixels)const = 0;
-	virtual void LoadCompressedSubTexture(GraphicsTextureTarget textureTarget, int level, GraphicsInternalFormat internalformat, const Rect2I& rect, uint imageSize, const void *pixels)const = 0;
-	virtual void CopyTexture(GraphicsTextureTarget textureTarget, int level, GraphicsInternalFormat internalformat, const Rect2I& rect, int border)const = 0;
+	virtual void LoadCompressedTexture(GraphicsTextureTarget textureTarget, int level, PixelType pixelType, const Size2U& size, int border, uint imageSize, const void *pixels)const = 0;
+	virtual void LoadCompressedSubTexture(GraphicsTextureTarget textureTarget, int level, PixelType pixelType, const Rect2I& rect, uint imageSize, const void *pixels)const = 0;
+	virtual void CopyTexture(GraphicsTextureTarget textureTarget, int level, PixelType pixelType, const Rect2I& rect, int border)const = 0;
 	virtual void CopySubTexture(GraphicsTextureTarget textureTarget, int level, const Point2I& offset, const Rect2I& rect)const = 0;
 
 	virtual void SetTextureMinFilter(GraphicsTextureType textureType, GraphicsTextureMinFilter minFilter) = 0;
@@ -345,13 +330,13 @@ public:
 
 #pragma region Texture
 public:
-	virtual void LoadTexture3D(GraphicsTextureTarget textureTarget, int level, GraphicsInternalFormat internalformat, const Size3U& size, int border, GraphicsPixelFormat format, GraphicsPixelDataType type, const void *pixels)const = 0;
-	virtual void LoadSubTexture3D(GraphicsTextureTarget textureTarget, int level, const CubeI& rect, GraphicsPixelFormat format, GraphicsPixelDataType type, const void *pixels)const = 0;
+	virtual void LoadTexture3D(GraphicsTextureTarget textureTarget, int level, PixelType pixelType, const Size3U& size, int border,  const void *pixels)const = 0;
+	virtual void LoadSubTexture3D(GraphicsTextureTarget textureTarget, int level, const CubeI& rect, PixelType pixelType, const void *pixels)const = 0;
 	virtual void CopySubTexture3D(GraphicsTextureTarget textureTarget, int level, const Point3I& offset, const Rect2I& rect)const = 0;
-	virtual void LoadCompressedTexture3D(GraphicsTextureTarget textureTarget, int level, GraphicsInternalFormat internalformat, const Size3U& size, int border, uint imageSize, const void *pixels)const = 0;
-	virtual void LoadCompressedSubTexture3D(GraphicsTextureTarget textureTarget, int level, GraphicsInternalFormat internalformat, const CubeI& rect, uint imageSize, const void *pixels)const = 0;
-	virtual void SetTextureStorage2D(GraphicsTextureTarget textureTarget, uint level, GraphicsInternalFormat internalformat, const Size2U& size)const = 0;
-	virtual void SetTextureStorage3D(GraphicsTextureTarget textureTarget, uint level, GraphicsInternalFormat internalformat, const Size3U& size)const = 0;
+	virtual void LoadCompressedTexture3D(GraphicsTextureTarget textureTarget, int level, PixelType pixelType, const Size3U& size, int border, uint imageSize, const void *pixels)const = 0;
+	virtual void LoadCompressedSubTexture3D(GraphicsTextureTarget textureTarget, int level, PixelType pixelType, const CubeI& rect, uint imageSize, const void *pixels)const = 0;
+	virtual void SetTextureStorage2D(GraphicsTextureTarget textureTarget, uint level, PixelType pixelType, const Size2U& size)const = 0;
+	virtual void SetTextureStorage3D(GraphicsTextureTarget textureTarget, uint level, PixelType pixelType, const Size3U& size)const = 0;
 #pragma endregion Texture
 
 #pragma region Query

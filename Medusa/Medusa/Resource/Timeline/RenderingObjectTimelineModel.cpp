@@ -107,6 +107,24 @@ bool RenderingObjectTimelineModel::InitializeWithObjects(SortedDictionary<uint, 
 	return true;
 }
 
+bool RenderingObjectTimelineModel::InitializeWithObjects(List<RenderingObject>& renderingObjects, float fps /*= 24.f*/)
+{
+	RETURN_FALSE_IF_FALSE(ITimelineModel::Initialize());
+	float frameInterval = 1.f / fps;
+	RETURN_FALSE_IF_EMPTY(renderingObjects);
+
+	uint index = 0;
+	for(auto& renderingObject: renderingObjects)
+	{
+		AddRenderingObject(frameInterval*index, renderingObject);
+		++index;
+	}
+
+	uint maxOrder = renderingObjects.Count()-1;
+	mDuration = frameInterval*(maxOrder + 1);
+	return true;
+}
+
 const RenderingObject* RenderingObjectTimelineModel::GetItemByIndex(uint frame) const
 {
 	return &mObjects[frame];

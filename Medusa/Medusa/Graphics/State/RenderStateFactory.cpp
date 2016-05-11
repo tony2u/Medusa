@@ -15,6 +15,8 @@
 #include "Graphics/State/RenderTargetRenderState.h"
 #include "Graphics/State/SamplerRenderState.h"
 #include "Graphics/State/ScissorRenderState.h"
+#include "Graphics/State/ShaderUniformRenderState.h"
+
 
 
 MEDUSA_BEGIN;
@@ -31,6 +33,8 @@ RenderStateFactory::RenderStateFactory()
 	Register<RasterizerRenderState>();
 	Register<ScissorRenderState>();
 	Register<SamplerRenderState>();
+	Register<ShaderUniformRenderState>();
+
 }
 
 RenderStateFactory::~RenderStateFactory()

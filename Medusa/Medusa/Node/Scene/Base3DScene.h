@@ -9,7 +9,7 @@ MEDUSA_BEGIN;
 
 class Base3DScene :public IScene
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_DECLARE_SCENE(Base3DScene);
 public:
 	Base3DScene(StringRef name = StringRef::Empty, const IEventArg& e = IEventArg::Empty);
 	virtual ~Base3DScene(void);

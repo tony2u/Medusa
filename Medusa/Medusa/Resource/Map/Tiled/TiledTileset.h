@@ -4,25 +4,32 @@
 #pragma once
 #include "MedusaPreDeclares.h"
 #include "Core/Pattern/Property/StringPropertySet.h"
-#include "Core/Geometry/Point2.h"
-#include "Core/Geometry/Size2.h"
+#include "Geometry/Point2.h"
+#include "Geometry/Size2.h"
 #include "Core/Collection/List.h"
+#include "TiledTile.h"
+#include "TiledTerrain.h"
+#include "Resource/IResource.h"
+#include "Core/IO/IFileLoadable.h"
+
 
 MEDUSA_BEGIN;
 
-class TiledTileset
+class TiledTileset : public IResource, public IFileLoadable
 {
 public:
-	TiledTileset();
-	~TiledTileset();
+	TiledTileset(const FileIdRef& fileId);
+	virtual ~TiledTileset();
+	virtual ResourceType Type()const override { return ResourceType::Tileset; }
 
-	uint FirstGlobalId() const { return mFirstGlobalId; }
-	void SetFirstGlobalId(uint val) { mFirstGlobalId = val; }
+	virtual bool LoadFromData(const FileIdRef& fileId, const MemoryData& data, uint format = 0)override;
+	virtual void Unload()override;
 
-	StringRef Name() const { return mName; }
-	void SetName(const StringRef& val) { mName = val; }
-	Size2I TileSize() const { return mTileSize; }
-	void SetTileSize(Size2I val) { mTileSize = val; }
+	bool Parse(const pugi::xml_node& node);
+
+	
+	Size2U TileSize() const { return mTileSize; }
+	void SetTileSize(Size2U val) { mTileSize = val; }
 
 	int Margin() const { return mMargin; }
 	void SetMargin(int val) { mMargin = val; }
@@ -40,24 +47,25 @@ public:
 	StringPropertySet& MutableProperties() { return mProperties; }
 	void SetProperties(const StringPropertySet& val) { mProperties = val; }
 
-	void AddTerrain(TiledTerrain* item);
-	void AddTile(TiledTile* item);
+	TiledTerrain& NewTerrain();
 
-	TiledTile* MutableTileWithIndex(int index)const;
+	void AllocTiles(uint tileCount);
+	TiledTile& MutableTileAt(int index);
+	const TiledTile& TileAt(int index)const;
+
 
 private:
-	uint mFirstGlobalId;
-	HeapString mName;
-	Size2I mTileSize;
+	Size2U mTileSize;
 	int mMargin;
 	int mSpacing;
 	Point2I mTileOffset;
-	TiledImage* mImage;
+	TiledImage* mImage;	//when use collection of images tileset, this field would be null
 	
-	List< TiledTerrain* > mTerrains;
-	List< TiledTile* > mTiles;
+	List< TiledTerrain > mTerrains;
+	List< TiledTile > mTiles;
 	StringPropertySet mProperties;
 	
+
 };
 
 MEDUSA_END;

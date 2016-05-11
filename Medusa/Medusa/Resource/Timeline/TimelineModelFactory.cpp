@@ -39,8 +39,14 @@ bool TimelineModelFactory::Uninitialize()
 
 ITimelineModel* TimelineModelFactory::CreateSkeletonFromModel(const StringRef& modelName, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
-	ITimelineModel* item = Find(modelName);
-	RETURN_SELF_IF_NOT_NULL(item);
+	ITimelineModel* item = nullptr;
+	if (shareType != ResourceShareType::None)
+	{
+		item = Find(modelName);
+		RETURN_SELF_IF_NOT_NULL(item);
+	}
+
+	
 
 	BaseSceneModel* model = (BaseSceneModel*)ModelFactory::Instance().Create(modelName);
 	if (model != nullptr)
@@ -53,8 +59,12 @@ ITimelineModel* TimelineModelFactory::CreateSkeletonFromModel(const StringRef& m
 
 ITimelineModel* TimelineModelFactory::CreateCameraFromModel(const StringRef& cameraName, const StringRef& modelName, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
-	ITimelineModel* item = Find(cameraName);
-	RETURN_SELF_IF_NOT_NULL(item);
+	ITimelineModel* item = nullptr;
+	if (shareType != ResourceShareType::None)
+	{
+		item = Find(cameraName);
+		RETURN_SELF_IF_NOT_NULL(item);
+	}
 
 	BaseSceneModel* model = (BaseSceneModel*)ModelFactory::Instance().Create(modelName);
 	if (model != nullptr)
@@ -67,8 +77,12 @@ ITimelineModel* TimelineModelFactory::CreateCameraFromModel(const StringRef& cam
 
 ITimelineModel* TimelineModelFactory::CreateLightFromModel(const StringRef& lightName, const StringRef& modelName, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
-	ITimelineModel* item = Find(lightName);
-	RETURN_SELF_IF_NOT_NULL(item);
+	ITimelineModel* item = nullptr;
+	if (shareType != ResourceShareType::None)
+	{
+		item = Find(lightName);
+		RETURN_SELF_IF_NOT_NULL(item);
+	}
 
 	BaseSceneModel* model = (BaseSceneModel*)ModelFactory::Instance().Create(modelName);
 	if (model != nullptr)
@@ -81,6 +95,7 @@ ITimelineModel* TimelineModelFactory::CreateLightFromModel(const StringRef& ligh
 
 RenderingObjectTimelineModel* TimelineModelFactory::CreateRenderingObjectFromSingleTexture(const StringRef& name, const FileIdRef& textureName, uint coloumn, uint row/*=1*/, float fps/*=24.f*/, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
+	if (shareType != ResourceShareType::None)
 	{
 		ITimelineModel* val = Find(name);
 		RETURN_SELF_IF_NOT_NULL((RenderingObjectTimelineModel*)val);
@@ -96,15 +111,15 @@ RenderingObjectTimelineModel* TimelineModelFactory::CreateRenderingObjectFromSin
 
 
 
-RenderingObjectTimelineModel* TimelineModelFactory::CreateMeshFromTextureAtlas(const StringRef& name,
+RenderingObjectTimelineModel* TimelineModelFactory::CreateRenderingObjectFromTextureAtlas(const StringRef& name,
+																				const FileIdRef& atlasFileId,
 																				 const StringRef& regionPattern,
-																				 const FileIdRef& atlasFileId,
-																				 TextureAtlasFileFormat fileFormat /*= TextureAtlasFileFormat::Spine*/,
-																				 uint atlasPageCount /*= 1*/,
+																				 TextureAtlasType fileFormat /*= TextureAtlasType::None*/,
 																				 const Color4F& color /*= Color4F::White*/,
 																				 float fps /*= 24.f*/,
 																				 ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
+	if (shareType != ResourceShareType::None)
 	{
 		ITimelineModel* val = Find(name);
 		RETURN_SELF_IF_NOT_NULL((RenderingObjectTimelineModel*)val);
@@ -113,7 +128,7 @@ RenderingObjectTimelineModel* TimelineModelFactory::CreateMeshFromTextureAtlas(c
 
 	SortedDictionary<uint, RenderingObject> outObjects;
 
-	bool isSuccess = RenderingObjectFactory::Instance().CreateFromTextureAtlas(outObjects, regionPattern, atlasFileId, fileFormat, atlasPageCount, color);
+	bool isSuccess = RenderingObjectFactory::Instance().CreateFromTextureAtlas(outObjects, regionPattern, atlasFileId, fileFormat, color);
 	if (!isSuccess)
 	{
 		return nullptr;
@@ -128,20 +143,23 @@ RenderingObjectTimelineModel* TimelineModelFactory::CreateMeshFromTextureAtlas(c
 
 RenderingObjectTimelineModel* TimelineModelFactory::CreateRenderingObjectFromTextures(const StringRef& name, const StringRef& textureNamePattern, float fps /*= 24.f*/, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
+	if (shareType != ResourceShareType::None)
 	{
 		ITimelineModel* val = Find(name);
 		RETURN_SELF_IF_NOT_NULL((RenderingObjectTimelineModel*)val);
 	}
-	SortedDictionary<uint, IMaterial*> outMaterials;
-	bool isSuccess=MaterialFactory::Instance().CreateTextures(outMaterials, textureNamePattern);
-	if (!isSuccess || outMaterials.IsEmpty())
+	List<RenderingObject> outObjects;
+	bool isSuccess = RenderingObjectFactory::Instance().CreateFromTextures(outObjects, textureNamePattern);
+	if (!isSuccess)
 	{
 		Log::FormatError("Cannot find textures with Pattern:{}", textureNamePattern);
 		return nullptr;
 	}
 
+
+
 	RenderingObjectTimelineModel* model = new RenderingObjectTimelineModel(name);
-	model->InitializeWithTextures(outMaterials, fps);
+	model->InitializeWithObjects(outObjects, fps);
 	Add(model, shareType);
 
 	return model;

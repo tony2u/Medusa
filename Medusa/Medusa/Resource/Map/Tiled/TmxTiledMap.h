@@ -3,44 +3,89 @@
 // license that can be found in the LICENSE file.
 #pragma once
 #include "MedusaPreDeclares.h"
-#include "ITiledMap.h"
 #include "Core/IO/IFileLoadable.h"
-#include "CoreLib/Common/pugixml/pugixml.hpp"
+#include "Core/IO/IFileLoadable.h"
+#include "Resource/IResource.h"
+#include "TiledDefines.h"
+#include "Geometry/Color4.h"
+#include "Geometry/Size2.h"
+#include "Core/Pattern/Property/StringPropertySet.h"
+#include "Core/Collection/List.h"
+#include "TiledTilesetRef.h"
+#include "Rendering/RenderingTypes.h"
 
+/*
+Features:
+custom properties:
+InstantiateLayer: the layer class to instantiate 
+
+
+*/
 
 MEDUSA_BEGIN;
 
-class TmxTiledMap : public ITiledMap, public IFileLoadable
+class TmxTiledMap : public IResource, public IFileLoadable
 {
 public:
 	TmxTiledMap(const FileIdRef& fileId);
 	virtual ~TmxTiledMap();
 
-	virtual bool LoadFromData(StringRef path, const MemoryByteData& data, uint format = 0)override;
+	virtual bool LoadFromData(const FileIdRef& fileId, const MemoryData& data, uint format = 0)override;
 	virtual void Unload()override;
 
 public:
 	float Version() const { return mVersion; }
 
-	static bool ParseProperties(pugi::xml_node node, StringPropertySet& outProperties);
-	static bool ParseTileset(pugi::xml_node node, TiledTileset& outTileset, TmxTiledMap& map);
-	static bool ParseTerrain(pugi::xml_node node, TiledTerrain& outTerrain);
-	static bool ParseImage(pugi::xml_node node, TiledImage& outImage);
-	static bool ParseTile(pugi::xml_node node, TiledTile& outTile, TmxTiledMap& map);
-	static bool ParseObject(pugi::xml_node node, TiledObject& outObject);
-
-
-	static bool ParseLayerBase(pugi::xml_node node, ITiledLayer& outLayer);
-	static bool ParseTileLayer(pugi::xml_node node, TiledTileLayer& outLayer, TmxTiledMap& map);
-	static bool ParseImageLayer(pugi::xml_node node, TiledImageLayer& outLayer, TmxTiledMap& map);
-	static bool ParseObjectLayer(pugi::xml_node node, TiledObjectLayer& outLayer, TmxTiledMap& map);
+	static bool ParseProperties(const pugi::xml_node& node, StringPropertySet& outProperties);
 
 	static Color4B ParseColor(const StringRef& str);
-	bool Parse(pugi::xml_node& rootNode);
-private:
+	bool Parse(const pugi::xml_node& rootNode);
+	virtual ResourceType Type()const override { return ResourceType::Map; }
+
+	const Color4B& BackgroundColor() const { return mBackgroundColor; }
+	const Size2U& Size() const { return mSize; }
+	const Size2U& TileSize() const { return mTileSize; }
+
+	TiledMapOrientation Orientation() const { return mOrientation; }
+	TiledMapRenderOrder RenderOrder() const { return mRenderOrder; }
+	TiledMapStaggerAxis StaggerAxis() const { return mStaggerAxis; }
+	TiledMapStaggerIndex StaggerIndex() const { return mStaggerIndex; }
+
+	const StringPropertySet& Properties() const { return mProperties; }
+
+	const TiledTilesetRef& GetTileset(int index) const { return mTilesets[index]; }
+	const TiledTilesetRef* FindTilesetContainsGlobalId(uint globalId) const;
+
+	const List<ITiledLayer*>& Layers() const { return mLayers; }
+	const List<TiledTileLayer*>& TileLayers() const { return mTileLayers; }
+
+	virtual ILayer* Instantiate(const StringRef& className= StringRef::Empty, InstantiateMode mode = InstantiateMode::None)const;
+
+protected:
+	Color4B mBackgroundColor;
+
+	TiledMapOrientation mOrientation;
+	TiledMapRenderOrder mRenderOrder;
+	TiledMapStaggerAxis mStaggerAxis;
+	TiledMapStaggerIndex mStaggerIndex;
+
+	Size2U mSize;
+	Size2U mTileSize;
+
+	List<ITiledLayer*> mLayers;
+	
+	List< TiledTileLayer* > mTileLayers;
+	List< TiledImageLayer* > mImageLayers;
+	List< TiledObjectLayer* > mObjectLayers;
+
+	List< TiledTilesetRef > mTilesets;
+	StringPropertySet mProperties;
+
 	float mVersion;
 	int mNextObjectId;
 
+	HeapString mInstantiateLayer;
+	
 };
 
 MEDUSA_END;

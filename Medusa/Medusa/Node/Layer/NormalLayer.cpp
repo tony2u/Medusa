@@ -20,6 +20,6 @@ NormalLayer::~NormalLayer(void)
 
 
 
-MEDUSA_IMPLEMENT_LAYER(NormalLayer, ILayer, StringRef::Empty);
+MEDUSA_IMPLEMENT_LAYER(NormalLayer, ILayer, StringRef::Empty, StringRef::Empty);
 
 MEDUSA_END;

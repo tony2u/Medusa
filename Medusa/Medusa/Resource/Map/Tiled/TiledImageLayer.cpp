@@ -4,6 +4,7 @@
 #include "MedusaPreCompiled.h"
 #include "TiledImageLayer.h"
 #include "TiledImage.h"
+#include "CoreLib/Common/pugixml/pugixml.hpp"
 
 
 MEDUSA_BEGIN;
@@ -18,6 +19,19 @@ TiledImageLayer::~TiledImageLayer()
 	SAFE_DELETE(mImage);
 }
 
+
+bool TiledImageLayer::Parse(const pugi::xml_node& node)
+{
+	RETURN_FALSE_IF_FALSE(ITiledLayer::Parse(node));
+	pugi::xml_node imageNode = node.child("image");
+	if (!imageNode.empty())
+	{
+		TiledImage* image = new TiledImage();
+		image->Parse(imageNode);
+		SetImage(image);
+	}
+	return true;
+}
 
 void TiledImageLayer::SetImage(TiledImage* val)
 {

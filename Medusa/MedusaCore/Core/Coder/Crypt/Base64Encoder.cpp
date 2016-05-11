@@ -37,7 +37,7 @@ size_t Base64Encoder::GuessResultSize(const IStream& input) const
 	return (length + 2 - ((length + 2) % 3)) / 3 * 4;
 }
 
-size_t Base64Encoder::OnCode(const MemoryByteData& input, MemoryByteData& output) const
+size_t Base64Encoder::OnCode(const MemoryData& input, MemoryData& output) const
 {
 	RETURN_ZERO_IF_EMPTY(input);
 

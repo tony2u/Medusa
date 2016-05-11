@@ -10,3 +10,5 @@
 #include "Analytics/TalkingDataAnalyzer.h"
 #include "Analytics/UmengAnalyzer.h"
 
+//MANUAL_BEGIN
+//MANUAL_END

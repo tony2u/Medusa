@@ -11,11 +11,11 @@ MEDUSA_BEGIN;
 
 XXTEADecoder::XXTEADecoder(const IEventArg& e)
 {
-	const UserDataEventArg<MemoryByteData>& e2 = (const UserDataEventArg<MemoryByteData>&)e;
+	const UserDataEventArg<MemoryData>& e2 = (const UserDataEventArg<MemoryData>&)e;
 	mKey = XXTEAEncoder::ToUIntArray(e2.Data(), false);
 }
 
-XXTEADecoder::XXTEADecoder(const MemoryByteData& key)
+XXTEADecoder::XXTEADecoder(const MemoryData& key)
 {
 	mKey= XXTEAEncoder::ToUIntArray(key, false);
 }
@@ -63,7 +63,7 @@ size_t XXTEADecoder::GuessResultSize(const IStream& input) const
 	return n * 4;	//align to int size
 }
 
-size_t XXTEADecoder::OnCode(const MemoryByteData& input, MemoryByteData& output) const
+size_t XXTEADecoder::OnCode(const MemoryData& input, MemoryData& output) const
 {
 	bool alignInt = input.Size() % 4 == 0;
 	if (alignInt)

@@ -27,7 +27,7 @@ public:
 	}
 
 	bool IsEmpty()const{return mData.IsNull();}
-	void SetData(MemoryData<T> val) { mData = val; SetDirtyRange(0,mData.Size()-1,mData.Size()-1);}
+	void SetData(TMemoryData<T> val) { mData = val; SetDirtyRange(0,mData.Size()-1,mData.Size()-1);}
 	void SetDataAndSize(T* data,size_t size){mData.ForceSetDataAndSize(data,size);SetDirtyRange(0,mData.Size()-1,mData.Size()-1);}
 
 	virtual void UpdateBufferData()
@@ -35,7 +35,7 @@ public:
 		LoadBufferData(mData.ByteSize(),mData.MutableData());
 	}
 protected:
-	MemoryData<T> mData;
+	TMemoryData<T> mData;
 };
 
 MEDUSA_END;

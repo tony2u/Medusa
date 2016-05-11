@@ -4,7 +4,7 @@
 #include "MedusaCorePreCompiled.h"
 #include "HashUtility.h"
 #include "Core/Math/Math.h"
-#include "Core/Utility/Utility.h"
+#include "Core/Utility/Endian.h"
 
 MEDUSA_BEGIN;
 
@@ -200,7 +200,7 @@ int64 HashUtility::HashIntArray64(const int* buffer, size_t size, int64 initialV
 
 int32 HashUtility::HashStringJenkins(const char* buffer, size_t length, int32 initialValue/*=0*/)
 {
-	const bool isLittleEndian = Utility::IsLittleEndian();
+	const bool isLittleEndian = Endian::IsLittle();
 	int32 a, b, c;                                          /* internal state */
 	union { const void *ptr; size_t i; } u;     /* needed for Mac Powerbook G4 */
 
@@ -375,7 +375,7 @@ int32 HashUtility::HashStringJenkins(const char* buffer, size_t length, int32 in
 
 int64 HashUtility::HashStringJenkins64(const char* buffer, size_t length, int64 initialValue/*=0*/)
 {
-	const bool isLittleEndian = Utility::IsLittleEndian();
+	const bool isLittleEndian = Endian::IsLittle();
 
 	int32 a, b, c;                                          /* internal state */
 	union { const void *ptr; size_t i; } u;     /* needed for Mac Powerbook G4 */

@@ -10,10 +10,7 @@ class HelloWorldGame:public IGame
 	MEDUSA_DECLARE_GAME();
 public:
 	HelloWorldGame();
-	virtual ~HelloWorldGame();
-
-	virtual bool Initialize();
-	virtual bool Uninitialize();
+	virtual ~HelloWorldGame() = default;
 
 	virtual bool Start();
 private:

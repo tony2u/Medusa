@@ -16,6 +16,9 @@
 #include "Resource/Material/MaterialFactory.h"
 #include "Resource/TextureAtlas/TextureAtlasPage.h"
 #include "Resource/TextureAtlas/TextureAtlas.h"
+#include "Resource/Image/IImage.h"
+#include "Resource/Font/IFont.h"
+#include "Graphics/State/ShaderUniformRenderState.h"
 
 MEDUSA_BEGIN;
 
@@ -23,7 +26,7 @@ MEDUSA_BEGIN;
 FntLabel::FntLabel(StringRef name, IFont* font, Alignment alignment/*=Alignment::LeftBottom*/, Size2F restrictSize/*=Size2F::Zero*/, bool isMultipleLine/*=true*/, bool isStatic/*=false*/)
 	:ILabel(name, font, alignment, restrictSize, isMultipleLine, isStatic)
 {
-	CreateMesh();
+	
 }
 
 FntLabel::~FntLabel(void)
@@ -127,9 +130,8 @@ BaseFontMesh* FntLabel::CreateFontMesh(TextureAtlasPage* page, bool isStatic /*=
 	Sprite* sprite = new Sprite();
 	sprite->SetMesh(mesh);
 
-	IMaterial* material = MaterialFactory::Instance().CreateSingleTexture(page->LoadTexture());
+	IMaterial* material = CreateLabelMaterial(page->LoadTexture());
 	sprite->SetMaterial(material);
-	mInternalMeshes.Add(mesh);
 	sprite->EnableManaged();
 	AddChild(sprite);
 
@@ -211,8 +213,8 @@ void FntLabel::CreateMesh()
 		auto* page = atlas->GetPage(0);
 		FntTextMesh* mesh = new FntTextMesh(mIsStatic);
 		SetMesh(mesh);
-		IMaterial* material = MaterialFactory::Instance().CreateSingleTexture(page->LoadTexture());
-
+		IMaterial* material = CreateLabelMaterial(page->LoadTexture());
+		
 
 		SetMaterial(material);
 		mInternalMeshes.Add(mesh);
@@ -224,7 +226,7 @@ void FntLabel::CreateMesh()
 		FOR_EACH_SIZE(i, count)
 		{
 			auto* page = atlas->GetPage(i);
-			IMaterial* material = MaterialFactory::Instance().CreateSingleTexture(page->LoadTexture());
+			IMaterial* material = CreateLabelMaterial(page->LoadTexture());
 
 			Sprite* sprite = new Sprite();
 			sprite->SetMesh(new FntTextMesh(mIsStatic));
@@ -236,6 +238,47 @@ void FntLabel::CreateMesh()
 			AddChild(sprite);
 		}
 	}
+
+}
+
+IMaterial* FntLabel::CreateLabelMaterial(ITexture* texture)
+{
+	//TODO:
+	if (mFont->IsBitmap())
+	{
+		return MaterialFactory::Instance().CreateSingleTexture(texture);
+	}
+
+	//ttf font
+	IEffect* effect = nullptr;
+	if (texture->Image()->GetPixelType() == PixelType::A8)
+	{
+		effect = EffectFactory::Instance().CreateSinglePassDefault(RenderPassNames::Label_TTF_Text);
+		auto* uniform= this->MutableRenderState().FindOrCreateUniform(ShaderUniformNames::TextColor);
+		uniform->Set(mFont->GetFontId().Color());
+	}
+	else if (texture->Image()->GetPixelType() == PixelType::IA88)
+	{
+		
+
+		/*List<FileIdRef> renderPassNames;
+		renderPassNames.Add(RenderPassNames::Label_TTF_Outline);
+		renderPassNames.Add(RenderPassNames::Label_TTF_Text);*/
+
+	//	effect = EffectFactory::Instance().CreateMultiplePasses( RenderPassNames::Label_TTF_OutlineText, renderPassNames);
+
+		effect = EffectFactory::Instance().CreateSinglePassDefault(RenderPassNames::Label_TTF_OutlineText);
+		auto* uniform = this->MutableRenderState().FindOrCreateUniform(ShaderUniformNames::TextColor);
+		uniform->Set(mFont->GetFontId().Color());
+		uniform = this->MutableRenderState().FindOrCreateUniform(ShaderUniformNames::OutlineColor);
+		uniform->Set(mFont->GetFontId().OutlineColor());
+	}
+	else
+	{
+		Log::AssertFailed("Invalid texture format for ttf");
+		return nullptr;
+	}
+	return new IMaterial(texture, effect);
 
 }
 

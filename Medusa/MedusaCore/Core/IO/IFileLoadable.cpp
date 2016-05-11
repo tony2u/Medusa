@@ -12,16 +12,21 @@ MEDUSA_BEGIN;
 
 bool IFileLoadable::LoadFromFileSystem(const FileIdRef& fileId, uint format/*=(uint)-1*/)
 {
-	MemoryByteData data = FileSystem::Instance().ReadAllData(fileId);
 	if (format == (uint)-1)
 	{
 		format = OnCheckFormat(fileId.Name);
 	}
-	RETURN_FALSE_IF_EMPTY(data);
-	return LoadFromData(fileId.Name, data, format);
+
+	MemoryData data = FileSystem::Instance().ReadAllData(fileId);
+	if (data.IsEmpty())
+	{
+		Log::FormatError("Cannot load:{}", fileId.ToString());
+		return false;
+	}
+	return LoadFromData(fileId, data, format);
 }
 
-bool IFileLoadable::LoadFromData(StringRef path, const MemoryByteData& data, uint format/*=(uint)-1*/)
+bool IFileLoadable::LoadFromData(const FileIdRef& fileId, const MemoryData& data, uint format/*=(uint)-1*/)
 {
 	Unload();
 	if (data.IsNull())

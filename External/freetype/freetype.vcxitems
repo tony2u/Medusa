@@ -64,6 +64,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)include\freetype\internal\ftdebug.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)include\freetype\internal\ftdriver.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)include\freetype\internal\ftgloadr.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\freetype\internal\fthash.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)include\freetype\internal\ftmemory.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)include\freetype\internal\ftobjs.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)include\freetype\internal\ftpic.h" />
@@ -116,6 +117,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)src\base\ftgasp.c" />
     <ClCompile Include="$(MSBuildThisFileDirectory)src\base\ftglyph.c" />
     <ClCompile Include="$(MSBuildThisFileDirectory)src\base\ftgxval.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)src\base\fthash.c" />
     <ClCompile Include="$(MSBuildThisFileDirectory)src\base\ftinit.c" />
     <ClCompile Include="$(MSBuildThisFileDirectory)src\base\ftlcdfil.c" />
     <ClCompile Include="$(MSBuildThisFileDirectory)src\base\ftotval.c" />

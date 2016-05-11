@@ -29,7 +29,7 @@ public:
 	SecurityValue(TParameterType val){ResetKey();mValue=val;Lock();}
 	SecurityValue(const SecurityValue& field){ResetKey();mValue=field.Value();Lock();}
 	SecurityValue& operator=(const SecurityValue& field){SetValue(field.Value());return *this;}
-	SecurityValue& operator=(TParameterType val){SetValue(val.GetValue());return *this;}
+	SecurityValue& operator=(TParameterType val){SetValue(val.Get());return *this;}
 public:
 	inline operator T()
 	{
@@ -52,7 +52,7 @@ private:
 	void ResetKey()
 	{
 		Random rand;
-		MemoryByteData key=MemoryByteData::Alloc(sizeof(T));
+		MemoryData key=MemoryData::Alloc(sizeof(T));
 		rand.NextBytes(key);
 		mEncoder.SetKey(key);
 		mDecoder.SetKey(key);
@@ -63,14 +63,14 @@ private:
 		{
 			ResetKey();
 		}
-       const MemoryByteData input=MemoryByteData::FromStatic(&mValue,sizeof(T));
-         MemoryByteData output=MemoryByteData::FromStatic(&mValue,sizeof(T));
+       const MemoryData input=MemoryData::FromStatic(&mValue,sizeof(T));
+         MemoryData output=MemoryData::FromStatic(&mValue,sizeof(T));
 		mEncoder.Code(input,output);
 	}
 	void Unlock()
     {
-        const MemoryByteData input=MemoryByteData::FromStatic(&mValue,sizeof(T));
-        MemoryByteData output=MemoryByteData::FromStatic(&mValue,sizeof(T));
+        const MemoryData input=MemoryData::FromStatic(&mValue,sizeof(T));
+        MemoryData output=MemoryData::FromStatic(&mValue,sizeof(T));
         
         mDecoder.Code(input,output);
     }
@@ -100,8 +100,8 @@ public:
 		mValue.Lock();
 	}
 
-	const T& GetValue()const{return mValue.ForceGetValue();}
-	T& GetValue(){return mValue.ForceGetValue();}
+	const T& Get()const{return mValue.ForceGetValue();}
+	T& Get(){return mValue.ForceGetValue();}
 	void SetValue(TParameterType val) { mValue.ForceSetValue(val);}
 private:
 	SecurityValue<T,TIsResetKey>& mValue;

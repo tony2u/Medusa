@@ -1,0 +1,286 @@
+{
+  "ID": "9b25395d-399e-4fb9-9251-3add4cff12e4",
+  "Version": "3.10.0.0",
+  "Name": "MainLayer",
+  "Content": {
+    "Content": {
+      "Animation": {
+        "Duration": 20,
+        "Speed": 1.0,
+        "Timelines": [
+          {
+            "ActionTag": -459803446,
+            "Property": "Position",
+            "Frames": [
+              {
+                "X": 150.0,
+                "Y": 480.0,
+                "FrameIndex": 0,
+                "EasingData": {
+                  "Type": 0
+                },
+                "ctype": "PointFrameData"
+              },
+              {
+                "X": 825.0,
+                "Y": 514.0,
+                "FrameIndex": 20,
+                "EasingData": {
+                  "Type": 0
+                },
+                "ctype": "PointFrameData"
+              }
+            ],
+            "ctype": "TimelineData"
+          },
+          {
+            "ActionTag": -459803446,
+            "Property": "Scale",
+            "Frames": [
+              {
+                "X": 1.0593,
+                "Y": 1.0,
+                "FrameIndex": 0,
+                "EasingData": {
+                  "Type": 0
+                },
+                "ctype": "ScaleValueFrameData"
+              },
+              {
+                "X": 1.0,
+                "Y": 1.0,
+                "FrameIndex": 20,
+                "EasingData": {
+                  "Type": 0
+                },
+                "ctype": "ScaleValueFrameData"
+              }
+            ],
+            "ctype": "TimelineData"
+          },
+          {
+            "ActionTag": -459803446,
+            "Property": "RotationSkew",
+            "Frames": [
+              {
+                "X": 0.0,
+                "Y": 0.0,
+                "FrameIndex": 0,
+                "EasingData": {
+                  "Type": 0
+                },
+                "ctype": "ScaleValueFrameData"
+              },
+              {
+                "X": 0.0,
+                "Y": 0.0,
+                "FrameIndex": 20,
+                "EasingData": {
+                  "Type": 0
+                },
+                "ctype": "ScaleValueFrameData"
+              }
+            ],
+            "ctype": "TimelineData"
+          }
+        ],
+        "ctype": "TimelineActionData"
+      },
+      "AnimationList": [],
+      "ObjectData": {
+        "Tag": 5,
+        "Children": [
+          {
+            "FileData": {
+              "Type": "Normal",
+              "Path": "HelloWorld.png",
+              "Plist": ""
+            },
+            "BlendFunc": {
+              "Src": 770,
+              "Dst": 771
+            },
+            "AnchorPoint": {
+              "ScaleX": 0.5,
+              "ScaleY": 0.5
+            },
+            "Position": {
+              "X": 530.016,
+              "Y": 300.032
+            },
+            "Scale": {
+              "ScaleX": 1.0,
+              "ScaleY": 1.0
+            },
+            "CColor": {
+              "R": 166,
+              "G": 72,
+              "B": 72
+            },
+            "IconVisible": false,
+            "PositionPercentXEnabled": true,
+            "PositionPercentYEnabled": true,
+            "PrePosition": {
+              "X": 0.5521,
+              "Y": 0.4688
+            },
+            "PreSize": {
+              "X": 1.0,
+              "Y": 1.0
+            },
+            "LeftMargin": 50.016,
+            "RightMargin": -50.016,
+            "TopMargin": 19.968,
+            "BottomMargin": -19.968,
+            "UserData": "eee",
+            "Tag": 6,
+            "FrameEvent": "sss",
+            "ActionTag": -566508409,
+            "Size": {
+              "X": 960.0,
+              "Y": 640.0
+            },
+            "Alpha": 121,
+            "Name": "HelloWorld_1",
+            "ctype": "SpriteObjectData"
+          },
+          {
+            "FontSize": 20,
+            "LabelText": "123",
+            "FontResource": {
+              "Type": "Normal",
+              "Path": "arial.ttf",
+              "Plist": ""
+            },
+            "VerticalAlignmentType": "VT_Bottom",
+            "OutlineSize": 2,
+            "OutlineColor": {
+              "G": 0,
+              "B": 0
+            },
+            "OutlineEnabled": true,
+            "ShadowColor": {
+              "R": 110,
+              "G": 110,
+              "B": 110
+            },
+            "ShadowOffsetX": 2.0,
+            "ShadowOffsetY": -2.0,
+            "AnchorPoint": {
+              "ScaleX": 0.5,
+              "ScaleY": 0.5
+            },
+            "Position": {
+              "X": 150.0,
+              "Y": 450.0
+            },
+            "Scale": {
+              "ScaleX": 1.0,
+              "ScaleY": 1.0
+            },
+            "CColor": {},
+            "IconVisible": false,
+            "PrePosition": {
+              "X": 0.1562,
+              "Y": 0.7031
+            },
+            "PreSize": {
+              "X": 0.0385,
+              "Y": 0.0422
+            },
+            "LeftMargin": 131.5,
+            "RightMargin": 791.5,
+            "TopMargin": 176.5,
+            "BottomMargin": 436.5,
+            "Tag": 8,
+            "ActionTag": 1418980696,
+            "Size": {
+              "X": 37.0,
+              "Y": 27.0
+            },
+            "Name": "Text_2",
+            "ctype": "TextObjectData"
+          },
+          {
+            "IsCustomSize": true,
+            "FontSize": 20,
+            "LabelText": "ABC",
+            "FontResource": {
+              "Type": "Normal",
+              "Path": "arial.ttf",
+              "Plist": ""
+            },
+            "HorizontalAlignmentType": "HT_Center",
+            "VerticalAlignmentType": "VT_Center",
+            "OutlineSize": 2,
+            "OutlineColor": {
+              "R": 178,
+              "G": 84,
+              "B": 84
+            },
+            "OutlineEnabled": true,
+            "ShadowColor": {
+              "R": 160,
+              "G": 61,
+              "B": 61
+            },
+            "ShadowOffsetX": 2.0,
+            "ShadowOffsetY": -2.0,
+            "ShadowEnabled": true,
+            "StretchHeightEnable": true,
+            "AnchorPoint": {
+              "ScaleX": 0.5,
+              "ScaleY": 0.5
+            },
+            "Position": {
+              "X": 150.0,
+              "Y": 480.0
+            },
+            "Scale": {
+              "ScaleX": 1.0593,
+              "ScaleY": 1.0
+            },
+            "CColor": {
+              "R": 162,
+              "G": 63,
+              "B": 63
+            },
+            "IconVisible": false,
+            "PrePosition": {
+              "X": 0.1562,
+              "Y": 0.75
+            },
+            "PreSize": {
+              "X": 0.0469,
+              "Y": 0.1359
+            },
+            "LeftMargin": 127.5,
+            "RightMargin": 787.5,
+            "TopMargin": 116.5,
+            "BottomMargin": 436.5,
+            "Tag": 4,
+            "ActionTag": -459803446,
+            "Size": {
+              "X": 45.0,
+              "Y": 87.0
+            },
+            "Name": "Text_1",
+            "ctype": "TextObjectData"
+          }
+        ],
+        "Size": {
+          "X": 960.0,
+          "Y": 640.0
+        },
+        "Name": "Layer",
+        "ctype": "LayerObjectData"
+      },
+      "UsedResources": [
+        "arial.ttf",
+        "HelloWorld.png"
+      ],
+      "ctype": "GameFileData"
+    }
+  },
+  "Type": "Layer"
+}

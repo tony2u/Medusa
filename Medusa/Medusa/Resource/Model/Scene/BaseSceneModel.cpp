@@ -57,15 +57,6 @@ void BaseSceneModel::AddVirtualNode( VirtualModelNode* node )
 }
 
 
-INode* BaseSceneModel::CreateCloneInstance()
-{
-	return nullptr;
-}
-
-INode* BaseSceneModel::CreateReferenceInstance()
-{
-	return nullptr;
-}
 
 
 MEDUSA_END;

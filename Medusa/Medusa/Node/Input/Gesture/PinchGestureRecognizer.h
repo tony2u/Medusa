@@ -8,7 +8,7 @@ MEDUSA_BEGIN;
 class PinchGestureRecognizer:public IGestureRecognizer
 {
 public:
-	PinchGestureRecognizer(INode* node,GestureFlags flags=GestureFlags::None);
+	PinchGestureRecognizer(INode* node);
 	virtual ~PinchGestureRecognizer(void);
 	virtual InputType GetInputType()const{return InputType::Pinch;}
 

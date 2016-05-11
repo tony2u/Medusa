@@ -34,8 +34,14 @@ bool ShaderFactory::Uninitialize()
 
 IShader* ShaderFactory::CreateShader( const FileIdRef& fileId,const List<HeapString>* defines/*=nullptr*/,ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
-	IShader* result=Find(fileId);
-	RETURN_SELF_IF_NOT_NULL(result);
+	IShader* result = nullptr;
+	if (shareType != ResourceShareType::None)
+	{
+		result = Find(fileId);
+		RETURN_SELF_IF_NOT_NULL(result);
+	}
+
+	
 
 	result=ShaderCreater::Instance().Create(fileId.Name,fileId);
 	if (result==nullptr)
@@ -54,7 +60,7 @@ IShader* ShaderFactory::CreateShader( const FileIdRef& fileId,const List<HeapStr
 		}
 	}
 
-	MemoryByteData data= FileSystem::Instance().ReadAllData(fileId);
+	MemoryData data= FileSystem::Instance().ReadAllData(fileId);
 	if (data.IsNull())
 	{
 		Log::FormatError("Cannot find:{}-{}", fileId.Name, fileId.Order);

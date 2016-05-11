@@ -212,6 +212,9 @@ MEDUSA_BEGIN;
 #define MACRO_DEFINE_CONST_STATIC_BOOL(name,value) const static bool name=value;
 
 //Count the number of args
+#define MACRO_ARG_COUNT(...) std::tuple_size<decltype(std::make_tuple(__VA_ARGS__))>::value
+
+/*
 #define MACRO_ARG_COUNT(...) MACRO_ARG_COUNT_HELPER( __VA_ARGS__, MACRO_ARG_COUNT_RSEQ_N())
 
 #ifdef MEDUSA_WINDOWS
@@ -222,5 +225,6 @@ MEDUSA_BEGIN;
 
 #define MACRO_ARG_COUNT_HELPER2( _1, _2, _3, _4, _5, _6, _7, _8, _9,_10, _11,_12,_13,_14,_15,_16, N,...) N
 #define MACRO_ARG_COUNT_RSEQ_N() 16,15,14,13,12,11,10, 9,8,7,6,5,4,3,2,1,0
+*/
 
 MEDUSA_END;

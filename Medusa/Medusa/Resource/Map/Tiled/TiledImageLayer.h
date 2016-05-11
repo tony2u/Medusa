@@ -13,6 +13,7 @@ public:
 	TiledImageLayer();
 	~TiledImageLayer();
 	virtual TiledLayerType Type()const override { return TiledLayerType::Image; }
+	bool Parse(const pugi::xml_node& node);
 
 	TiledImage* Image() const { return mImage; }
 	void SetImage(TiledImage* val);

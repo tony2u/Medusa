@@ -48,7 +48,7 @@ void ParallaxComponent::SetPosition(const Point3F& val)
 
 void ParallaxComponent::EnableParallax(INode* node, const Point3F& ratio /*= Point3F::One*/, const Point3F& offset /*= Point3F::Zero*/)
 {
-	ParallaxInfo* info = mItems.TryGetValue(node);
+	ParallaxInfo* info = mItems.TryGet(node);
 	if (info == nullptr)
 	{
 		ParallaxInfo& newInfo = mItems.NewAdd(node);

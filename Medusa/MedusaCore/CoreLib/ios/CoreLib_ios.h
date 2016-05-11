@@ -45,5 +45,7 @@
 
 #include <libkern/OSAtomic.h>
 #include <mach/mach_time.h>
+#include<netdb.h>
+
 
 #endif

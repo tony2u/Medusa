@@ -5,8 +5,8 @@
 #include "Core/Pattern/Singleton.h"
 #include "Resource/BaseResourceFactory.h"
 #include "Resource/Timeline/ITimelineModel.h"
-#include "Resource/TextureAtlas/TextureAtlasTypes.h"
-#include "Core/Geometry/Color4.h"
+#include "Resource/TextureAtlas/TextureAtlasDefines.h"
+#include "Geometry/Color4.h"
 
 MEDUSA_BEGIN;
 
@@ -21,7 +21,7 @@ public:
 	virtual bool Uninitialize()override;
 public:
 	RenderingObjectTimelineModel* CreateRenderingObjectFromSingleTexture(const StringRef& name, const FileIdRef& textureName, uint coloumn, uint row = 1, float fps = 24.f, ResourceShareType shareType = ResourceShareType::Share);
-	RenderingObjectTimelineModel* CreateMeshFromTextureAtlas(const StringRef& name, const StringRef& regionPattern,const FileIdRef& atlasFileId, TextureAtlasFileFormat fileFormat = TextureAtlasFileFormat::Spine, uint atlasPageCount = 1, const Color4F& color = Color4F::White, float fps = 24.f, ResourceShareType shareType = ResourceShareType::Share);
+	RenderingObjectTimelineModel* CreateRenderingObjectFromTextureAtlas(const StringRef& name, const FileIdRef& atlasFileId,const StringRef& regionPattern,TextureAtlasType fileFormat = TextureAtlasType::None, const Color4F& color = Color4F::White, float fps = 24.f, ResourceShareType shareType = ResourceShareType::Share);
 	RenderingObjectTimelineModel* CreateRenderingObjectFromTextures(const StringRef& name, const StringRef& textureNamePattern, float fps = 24.f, ResourceShareType shareType = ResourceShareType::Share);
 
 	ITimelineModel* CreateSkeletonFromModel(const StringRef& modelName,ResourceShareType shareType = ResourceShareType::Share);

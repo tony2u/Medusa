@@ -9,6 +9,7 @@
 #include "Core/IO/FileSystem.h"
 #include "Core/Math/Random/Random.h"
 #include "Core/Siren/Siren.h"
+#include "Core/IO/FileIdRef.h"
 
 
 MEDUSA_BEGIN;
@@ -29,11 +30,11 @@ RandomNameConfig::~RandomNameConfig()
 
 bool RandomNameConfig::Initialize(const FileIdRef& fileId, uint format /*= 0*/)
 {
-	MemoryByteData data = FileSystem::Instance().ReadAllData(fileId);
-	return LoadFromData(fileId.Name, data, format);
+	MemoryData data = FileSystem::Instance().ReadAllData(fileId);
+	return LoadFromData(fileId, data, format);
 }
 
-bool RandomNameConfig::LoadFromData(StringRef path, const MemoryByteData& data, uint format/*=0*/)
+bool RandomNameConfig::LoadFromData(const FileIdRef& fileId, const MemoryData& data, uint format/*=0*/)
 {
 	Unload();
 	RETURN_FALSE_IF_FALSE(Siren::DeserializeBinaryTo(data, *this));
@@ -41,7 +42,7 @@ bool RandomNameConfig::LoadFromData(StringRef path, const MemoryByteData& data, 
 	FOR_EACH_COLLECTION(i, mItems)
 	{
 		const RandomNameConfigItem& item = *i;
-		List<const RandomNameConfigItem*>* itemList = mItemDict.TryGetValueWithFailed(item.Position(), nullptr);
+		List<const RandomNameConfigItem*>* itemList = mItemDict.GetOptional(item.Position(), nullptr);
 		if (itemList == nullptr)
 		{
 			itemList = new List<const RandomNameConfigItem*>();
@@ -64,9 +65,9 @@ void RandomNameConfig::Unload()
 HeapString RandomNameConfig::GetRandomName3(uint seed/*=0*/) const
 {
 	Random random(seed);
-	List<const RandomNameConfigItem*>* items0 = mItemDict.TryGetValueWithFailed(0, nullptr);
-	List<const RandomNameConfigItem*>* items1 = mItemDict.TryGetValueWithFailed(1, nullptr);
-	List<const RandomNameConfigItem*>* items2 = mItemDict.TryGetValueWithFailed(2, nullptr);
+	List<const RandomNameConfigItem*>* items0 = mItemDict.GetOptional(0, nullptr);
+	List<const RandomNameConfigItem*>* items1 = mItemDict.GetOptional(1, nullptr);
+	List<const RandomNameConfigItem*>* items2 = mItemDict.GetOptional(2, nullptr);
 	HeapString result;
 	if (items0 != nullptr&&!items0->IsEmpty())
 	{
@@ -91,7 +92,7 @@ HeapString RandomNameConfig::GetRandomName3(uint seed/*=0*/) const
 }
 //SIREN_BODY_METADATA_BEGIN
 SIREN_METADATA(RandomNameConfig, 16);
-SIREN_PROPERTY_METADATA_STRUCT(0, RandomNameConfig, Items, 5);
+SIREN_FIELD_METADATA_STRUCT(0, RandomNameConfig, Items, 5);
 //SIREN_BODY_METADATA_END
 
 MEDUSA_END;

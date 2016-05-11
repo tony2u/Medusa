@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 #include "MedusaPreCompiled.h"
 #include "TiledMapFactory.h"
-#include "TmxTiledMap.h"
+
 
 MEDUSA_BEGIN;
 
@@ -29,6 +29,7 @@ bool TiledMapFactory::Uninitialize()
 
 TmxTiledMap* TiledMapFactory::Create(const FileIdRef& fileId, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
+	if (shareType != ResourceShareType::None)
 	{
 		TmxTiledMap* val = (TmxTiledMap*)Find(fileId);
 		RETURN_SELF_IF_NOT_NULL((TmxTiledMap*)val);

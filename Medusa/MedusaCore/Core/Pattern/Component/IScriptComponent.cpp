@@ -2,8 +2,10 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 #include "MedusaCorePreCompiled.h"
+#ifdef MEDUSA_SCRIPT
+
 #include "IScriptComponent.h"
-#include "Core/Script/ScriptObject.h"
+#include "ComponentFactory.h"
 
 MEDUSA_BEGIN;
 
@@ -19,15 +21,8 @@ IScriptComponent::~IScriptComponent(void)
 }
 
 
-bool IScriptComponent::Update(float dt)
-{
-	return mScriptObject->Invoke<bool>("Update", dt);
-}
-
-bool IScriptComponent::AcceptEvent(IEventArg& eventArg)
-{
-	//TODO: 
-	return true;
-}
+MEDUSA_IMPLEMENT_COMPONENT(IScriptComponent, IComponent);
 
 MEDUSA_END;
+
+#endif

@@ -48,5 +48,6 @@
 #include "CoreLib/android/uuid/uuid.h"
 
 #include <zlib.h>
+#include<netdb.h>
 
 #endif

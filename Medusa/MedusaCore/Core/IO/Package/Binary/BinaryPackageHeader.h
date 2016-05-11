@@ -4,10 +4,10 @@
 #pragma once
 #include "MedusaCorePreDeclares.h"
 #include "Core/Collection/List.h"
-#include "Core/IO/Package/PackageFlags.h"
 #include "Core/Coder/CoderDefines.h"
 #include "Core/Coder/CoderInfo.h"
 #include "Core/Hash/HasherType.h"
+#include "Core/IO/Package/PackageDefines.h"
 
 MEDUSA_BEGIN;
 //one block can only be owned by one file
@@ -45,8 +45,8 @@ struct BinaryPackageHeader
 	HasherType Hasher() const { return mHasher; }
 	void SetHasher(HasherType val) { mHasher = val; }
 
-	void SetKey(const MemoryByteData& val);
-	bool ValidateKey(const MemoryByteData& key)const;
+	void SetKey(const MemoryData& val);
+	bool ValidateKey(const MemoryData& key)const;
 public:
 	uint32 FirstBlockOffset()const;
 	uint32 GetBlockOffset(uint blockId)const;

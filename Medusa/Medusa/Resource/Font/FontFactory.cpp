@@ -77,7 +77,7 @@ void FontFactory::Shrink()
 
 bool FontFactory::Remove(const FontId& fontId)
 {
-	IFont* ani = mItems.RemoveOtherKeyWithValueReturned(fontId, fontId.HashCode(), nullptr);
+	IFont* ani = mItems.RemoveOtherKeyOptional(fontId, fontId.HashCode(), nullptr);
 	RETURN_FALSE_IF_NULL(ani);
 	ani->Release();
 	return true;
@@ -85,7 +85,7 @@ bool FontFactory::Remove(const FontId& fontId)
 
 IFont* FontFactory::Find(const FontId& fontId) const
 {
-	return mItems.TryGetValueWithFailedByOtherKey(fontId, fontId.HashCode(), nullptr);
+	return mItems.GetOptionalByOtherKey(fontId, fontId.HashCode(), nullptr);
 }
 
 bool FontFactory::Add(IFont* val, ResourceShareType shareType /*= ResourceShareType::Share*/)
@@ -123,8 +123,14 @@ bool FontFactory::Add(IFont* val, ResourceShareType shareType /*= ResourceShareT
 
 IFont* FontFactory::Create(const FontId& fontId, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
-	IFont* resultFont = Find(fontId);
-	RETURN_SELF_IF_NOT_NULL(resultFont);
+	IFont* resultFont = nullptr;
+	if (shareType != ResourceShareType::None)
+	{
+		resultFont = Find(fontId);
+		RETURN_SELF_IF_NOT_NULL(resultFont);
+	}
+
+	
 
 	FileType fileType = FileInfo::ExtractType(fontId.Name);
 
@@ -148,7 +154,7 @@ IFont* FontFactory::Create(const FontId& fontId, ResourceShareType shareType /*=
 		case FileType::fnt:
 		{
 
-			const IStream* stream = FileSystem::Instance().ReadFile(fontId.ToRef());
+			const IStream* stream = FileSystem::Instance().Read(fontId.ToRef());
 			RETURN_NULL_IF_NULL(stream);
 
 			char c1 = (char)stream->ReadChar();
@@ -162,7 +168,7 @@ IFont* FontFactory::Create(const FontId& fontId, ResourceShareType shareType /*=
 			else
 			{
 				SAFE_RELEASE(stream);
-				stream = FileSystem::Instance().ReadFile(fontId.ToRef(),FileDataType::Text);
+				stream = FileSystem::Instance().Read(fontId.ToRef(),FileDataType::Text);
 				resultFont = BMPFont::CreateFromBMPText(fontId, *stream);
 			}
 
@@ -180,8 +186,10 @@ IFont* FontFactory::Create(const FontId& fontId, ResourceShareType shareType /*=
 
 IFont* FontFactory::CreateFromSingleTexture(const FontId& fontId, wchar_t firstChar /*= L'0'*/, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
+
+	if (shareType != ResourceShareType::None)
 	{
-		IFont* resultFont = Find(fontId);
+		auto resultFont = Find(fontId);
 		RETURN_SELF_IF_NOT_NULL(resultFont);
 	}
 	
@@ -190,12 +198,15 @@ IFont* FontFactory::CreateFromSingleTexture(const FontId& fontId, wchar_t firstC
 	return resultFont;
 }
 
-IFont* FontFactory::CreateFromMemory(const FontId& fontId, const MemoryByteData& data, ResourceShareType shareType /*= ResourceShareType::Share*/)
+IFont* FontFactory::CreateFromMemory(const FontId& fontId, const MemoryData& data, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
 	//TODO: load from data
-
-	IFont* resultFont = Find(fontId);
-	RETURN_SELF_IF_NOT_NULL(resultFont);
+	IFont* resultFont = nullptr;
+	if (shareType != ResourceShareType::None)
+	{
+		resultFont = Find(fontId);
+		RETURN_SELF_IF_NOT_NULL(resultFont);
+	}
 
 	FileType fileType = FileInfo::ExtractType(fontId.Name);
 
@@ -213,7 +224,7 @@ IFont* FontFactory::CreateFromMemory(const FontId& fontId, const MemoryByteData&
 		break;
 		case FileType::fnt:
 		{
-			const IStream* stream = FileSystem::Instance().ReadFile(fontId.ToRef());
+			const IStream* stream = FileSystem::Instance().Read(fontId.ToRef());
 			RETURN_NULL_IF_NULL(stream);
 
 			char c1 = (char)stream->ReadChar();
@@ -227,7 +238,7 @@ IFont* FontFactory::CreateFromMemory(const FontId& fontId, const MemoryByteData&
 			else
 			{
 				SAFE_RELEASE(stream);
-				stream = FileSystem::Instance().ReadFile(fontId.ToRef(),FileDataType::Text);
+				stream = FileSystem::Instance().Read(fontId.ToRef(),FileDataType::Text);
 				resultFont = BMPFont::CreateFromBMPText(fontId, *stream);
 			}
 

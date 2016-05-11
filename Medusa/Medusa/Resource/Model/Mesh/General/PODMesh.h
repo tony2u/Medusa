@@ -6,8 +6,8 @@
 #include "Resource/Model/Mesh/IMesh.h"
 #include "Graphics/Buffer/MemoryArrayGraphicsBuffer.h"
 #include "Graphics/Buffer/MemoryIndexGraphicsBuffer.h"
-#include "Core/Geometry/Matrix4.h"
-#include "Core/Geometry/Scale3.h"
+#include "Geometry/Matrix4.h"
+#include "Geometry/Scale3.h"
 #include "Core/Memory/MemoryData.h"
 MEDUSA_BEGIN;
 
@@ -50,9 +50,9 @@ struct PODData
 	PODDataType	Type;		/*!< Type of data stored */
 	uint		ComponentCount;			/*!< Number of values per vertex */
 	uint		Stride;	/*!< Distance in bytes from one array entry to the next */
-	MemoryByteData	Data;		/*!< Actual data (array of values); if mesh is interleaved, this is an OFFSET from pInterleaved */
+	MemoryData	Data;		/*!< Actual data (array of values); if mesh is interleaved, this is an OFFSET from pInterleaved */
 	bool IsInterleaved;
-	void FixInterleavedEndianness(MemoryByteData interleavedData, uint size);
+	void FixInterleavedEndianness(MemoryData interleavedData, uint size);
 	static uint GetPODDataComponentByteSize(PODDataType type);
 
 	const byte* GetDataOrOffset()const;
@@ -108,7 +108,7 @@ public:
 	PODBoneBatches	BoneBatches;	/*!< Bone tables */
 	Matrix4			UnpackMatrix;	/*!< A matrix used for unscaling scaled vertex data created with PVRTModelPODScaleAndConvertVtxData*/
 
-	MemoryByteData InterleavedData;	/*!< Interleaved vertex data */
+	MemoryData InterleavedData;	/*!< Interleaved vertex data */
 private:
 	MemoryArrayGraphicsBuffer<byte> mVertexBufferObject;
 	MemoryIndexGraphicsBuffer<byte> mIndexBufferObject;

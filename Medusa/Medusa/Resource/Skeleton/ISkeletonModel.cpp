@@ -75,7 +75,7 @@ void ISkeletonModel::AddBone(SkeletonBoneModel* bone)
 
 SkeletonBoneModel* ISkeletonModel::FindBone(const StringRef& name) const
 {
-	return mBoneDict.TryGetValueWithFailed(name, nullptr);
+	return mBoneDict.GetOptional(name, nullptr);
 }
 
 void ISkeletonModel::AddSlot(SkeletonSlotModel* slot)
@@ -86,7 +86,7 @@ void ISkeletonModel::AddSlot(SkeletonSlotModel* slot)
 
 SkeletonSlotModel* ISkeletonModel::FindSlot(const StringRef& name) const
 {
-	return mSlotDict.TryGetValueWithFailed(name, nullptr);
+	return mSlotDict.GetOptional(name, nullptr);
 }
 
 void ISkeletonModel::AddAvatar(SkeletonAvatarModel* avatar, bool isDefault /*= false*/)
@@ -101,7 +101,7 @@ void ISkeletonModel::AddAvatar(SkeletonAvatarModel* avatar, bool isDefault /*= f
 
 SkeletonAvatarModel* ISkeletonModel::FindAvatar(const StringRef& name) const
 {
-	return mAvatarDict.TryGetValueWithFailed(name, nullptr);
+	return mAvatarDict.GetOptional(name, nullptr);
 }
 
 void ISkeletonModel::AddTrigger(SkeletonTriggerModel* val)
@@ -112,7 +112,7 @@ void ISkeletonModel::AddTrigger(SkeletonTriggerModel* val)
 
 SkeletonTriggerModel* ISkeletonModel::FindTrigger(const StringRef& name) const
 {
-	return mTriggerDict.TryGetValueWithFailed(name, nullptr);
+	return mTriggerDict.GetOptional(name, nullptr);
 }
 
 void ISkeletonModel::AddAnimation(SkeletonAnimationModel* val)
@@ -124,7 +124,7 @@ void ISkeletonModel::AddAnimation(SkeletonAnimationModel* val)
 
 SkeletonAnimationModel* ISkeletonModel::FindAnimation(const StringRef& name) const
 {
-	return mAnimationDict.TryGetValueWithFailed(name, nullptr);
+	return mAnimationDict.GetOptional(name, nullptr);
 }
 
 intp ISkeletonModel::FindSlotIndex(const StringRef& name) const
@@ -155,7 +155,7 @@ void ISkeletonModel::AddIK(SkeletonIKModel* ik)
 
 SkeletonIKModel* ISkeletonModel::FindIK(const StringRef& name) const
 {
-	return mIKDict.TryGetValueWithFailed(name, nullptr);
+	return mIKDict.GetOptional(name, nullptr);
 }
 
 intp ISkeletonModel::FindAnimationIndex(const StringRef& name) const

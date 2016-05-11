@@ -51,7 +51,7 @@ size_t Base64Decoder::GuessResultSize(const IStream& input) const
 	return ((6 * inputLen) / 8) - numEq;
 }
 
-size_t Base64Decoder::OnCode(const MemoryByteData& input, MemoryByteData& output) const
+size_t Base64Decoder::OnCode(const MemoryData& input, MemoryData& output) const
 {
 	RETURN_ZERO_IF_EMPTY(input);
 	char* originResult = (char*)output.MutableData();

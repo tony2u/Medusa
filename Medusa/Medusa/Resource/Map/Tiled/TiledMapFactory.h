@@ -4,13 +4,13 @@
 #pragma once
 #include "Core/Pattern/Singleton.h"
 #include "Resource/BaseResourceFactory.h"
-#include "Resource/Map/Tiled/ITiledMap.h"
+#include "Resource/Map/Tiled/TmxTiledMap.h"
 
 MEDUSA_BEGIN;
 
 
 
-class TiledMapFactory :public Singleton<TiledMapFactory>, public BaseResourceFactory < ITiledMap >
+class TiledMapFactory :public Singleton<TiledMapFactory>, public BaseResourceFactory < TmxTiledMap >
 {
 	friend class Singleton < TiledMapFactory > ;
 public:

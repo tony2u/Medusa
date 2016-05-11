@@ -11,6 +11,7 @@
 #include "Graphics/State/ScissorRenderState.h"
 #include "Graphics/State/RenderStateMachine.h"
 #include "Graphics/State/RenderStateFactory.h"
+#include "Graphics/State/ShaderUniformRenderState.h"
 
 
 MEDUSA_BEGIN;
@@ -129,12 +130,18 @@ const Rect2F& RenderStateSet::GetScissorBoxOrEmpty() const
 }
 
 
+ShaderUniformValue* RenderStateSet::FindOrCreateUniform(StringRef name)
+{
+	ShaderUniformRenderState* state = AllocState<ShaderUniformRenderState>();
+	return state->FindOrCreate(name);
+}
+
 void RenderStateSet::UpdateFromParent(const RenderStateSet& selfRenderState, const RenderStateSet& parentRenderState, const Matrix4& selfWorldMatrix, RenderStateType flag)
 {
 	FOR_EACH_SIZE(i, (uint)RenderStateType::Count)
 	{
 		uint index = 1 << i;
-		CONTINUE_IF_FALSE(MEDUSA_HAS_FLAG(flag, index));
+		CONTINUE_IF_FALSE(MEDUSA_FLAG_HAS(flag, index));
 
 		auto* state = mItems[i];
 		auto* selfState = selfRenderState.mItems[i];
@@ -169,7 +176,7 @@ void RenderStateSet::UpdateFromSelf(const RenderStateSet& selfRenderState, const
 	FOR_EACH_SIZE(i, (uint)RenderStateType::Count)
 	{
 		uint index = 1 << i;
-		CONTINUE_IF_FALSE(MEDUSA_HAS_FLAG(flag, index));
+		CONTINUE_IF_FALSE(MEDUSA_FLAG_HAS(flag, index));
 		
 		auto* state = mItems[i];
 		auto* selfState = selfRenderState.mItems[i];

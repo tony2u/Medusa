@@ -19,8 +19,8 @@ public:
 	using BaseMainCommandProcessor<ScopedNoLock>::ClearWithoutRun;
 
 
-	SimpleMainCommandProcessor(void);
-	virtual ~SimpleMainCommandProcessor(void);
+	SimpleMainCommandProcessor(void) = default;
+	virtual ~SimpleMainCommandProcessor(void) = default;
 	
 };
 

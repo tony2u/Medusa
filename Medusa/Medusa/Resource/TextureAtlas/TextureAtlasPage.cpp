@@ -12,8 +12,8 @@
 
 MEDUSA_BEGIN;
 
-TextureAtlasPage::TextureAtlasPage(const FileIdRef& fileId)
-	:mFileId(fileId),
+TextureAtlasPage::TextureAtlasPage(const FileIdRef& textureFileId)
+	:mTextureFileId(textureFileId),
 	mPageSize(Size2U::Zero)
 {
 
@@ -47,10 +47,10 @@ void TextureAtlasPage::AddRegion(TextureAtlasRegion* region)
 ITexture* TextureAtlasPage::LoadTexture()
 {
 	RETURN_SELF_IF_NOT_NULL(mTexture);
-	mTexture = TextureFactory::Instance().CreateFromFile(mFileId.ToRef());
+	mTexture = TextureFactory::Instance().CreateFromFile(mTextureFileId.ToRef());
 	if (mTexture == nullptr)
 	{
-		Log::AssertFailedFormat("Cannot load texture:{}-{}", mFileId.Name.c_str(), (uint)mFileId.Order);
+		Log::AssertFailedFormat("Cannot load texture:{}-{}", mTextureFileId.Name.c_str(), (uint)mTextureFileId.Order);
 		return nullptr;
 	}
 
@@ -83,6 +83,11 @@ void TextureAtlasPage::SetAtlas(TextureAtlas* val)
 	mAtlas = val;
 }
 
+void TextureAtlasPage::SetTexcoordUpSide(bool val)
+{
+	mIsTexcoordUpSide = val;
+}
+
 Size2U TextureAtlasPage::Size() const
 {
 	if (mTexture!=nullptr)
@@ -94,7 +99,7 @@ Size2U TextureAtlasPage::Size() const
 }
 
 
-void Medusa::TextureAtlasPage::SetPageSize(const Size2U& val)
+void TextureAtlasPage::SetPageSize(const Size2U& val)
 {
 	RETURN_IF_EQUAL(mPageSize, val);
 	mPageSize = val;

@@ -82,7 +82,8 @@ void IRenderable::SetMesh(IMesh* val)
 		bool isValidToDrawNow = mRenderingObject.IsValid();
 		if (isValidToDrawPrev != isValidToDrawNow)
 		{
-			changeFlag |= RenderableChangedFlags::RenderQueueChanged | RenderableChangedFlags::BatchChanged;
+			MEDUSA_FLAG_ADD(changeFlag, RenderableChangedFlags::RenderQueueChanged);
+			MEDUSA_FLAG_ADD(changeFlag, RenderableChangedFlags::BatchChanged);
 		}
 	}
 	else
@@ -110,7 +111,7 @@ void IRenderable::SetMaterial(IMaterial* val)
 		bool isValidToDrawNow = mRenderingObject.IsValid();
 		if (isValidToDrawPrev != isValidToDrawNow)
 		{
-			changeFlag |= RenderableChangedFlags::RenderQueueChanged;
+			MEDUSA_FLAG_ADD(changeFlag, RenderableChangedFlags::RenderQueueChanged);
 		}
 	}
 	else
@@ -255,7 +256,7 @@ void IRenderable::OnUpdateWorldRenderState(RenderStateSet& outVal, int32 dirtyFl
 
 bool IRenderable::IsWorldRenderStateDirty() const
 {
-	return mWorldRenderState.IsDirty() || mRenderStateTreeNode == nullptr || mBatchGroup == 0 || mChangedFlag.IsBatchChanged();
+	return mWorldRenderState.IsDirty() || mRenderStateTreeNode == nullptr || mBatchGroup == 0 || MEDUSA_FLAG_HAS(mChangedFlag,RenderableChangedFlags::BatchChanged);
 }
 
 void IRenderable::ForceUpdateRenderState(RenderStateType updateFlag /*= RenderStateUpdateFlags::None*/)
@@ -325,13 +326,13 @@ void IRenderable::SetMeshFixType(MeshFixType fixType)
 
 void IRenderable::OnBatchChanged()
 {
-	AddRenderableChangedFlags(RenderableChangedFlags::BatchChanged | RenderableChangedFlags::DataTotalChanged);
+	AddRenderableChangedFlags((RenderableChangedFlags)((uint)RenderableChangedFlags::BatchChanged | (uint)RenderableChangedFlags::DataTotalChanged));
 }
 
 
 void IRenderable::OnRenderQueueChanged()
 {
-	AddRenderableChangedFlags(RenderableChangedFlags::RenderQueueChanged | RenderableChangedFlags::BatchChanged | RenderableChangedFlags::DataTotalChanged);
+	AddRenderableChangedFlags((RenderableChangedFlags)((uint)RenderableChangedFlags::RenderQueueChanged | (uint)RenderableChangedFlags::BatchChanged | (uint)RenderableChangedFlags::DataTotalChanged));
 }
 
 void IRenderable::OnRenderChanged(RenderableChangedFlags flag)
@@ -357,7 +358,7 @@ void IRenderable::ClearChangedFlag()
 
 void IRenderable::AddRenderableChangedFlags(RenderableChangedFlags val)
 {
-	mChangedFlag |= val;
+	MEDUSA_FLAG_ADD(mChangedFlag, val);
 	OnRenderChanged(val);
 }
 

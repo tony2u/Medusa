@@ -13,7 +13,7 @@ More docs and examples will be added later.
 * Tield map support
 * Texture atlas support
 * Audio engine,ogg
-* Use "AngelScript" as script language
+* Use lua as script language
 * Custom file package format,support easy merge,diff,defrag,resource manage,Encrypting
 * Custom data protocol (called "Siren",using C# as DSL)
 * OpenGLES(2.0 & 3.0)

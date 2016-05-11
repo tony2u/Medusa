@@ -9,6 +9,7 @@
 #include "Resource/ResourceNames.h"
 #include "Resource/Effect/Shader/Parameter/ShaderAttribute.h"
 #include "Node/Sprite/Sprite.h"
+#include "Core/Utility/Endian.h"
 
 MEDUSA_BEGIN;
 
@@ -28,7 +29,7 @@ PODMesh::~PODMesh(void)
 
 void PODMesh::FixInterleavedEndianness()
 {
-	RETURN_IF(InterleavedData.IsNull()||Utility::IsLittleEndian());
+	RETURN_IF(InterleavedData.IsNull()|| Endian::IsLittle());
 	VertexList.FixInterleavedEndianness(InterleavedData,mVertexCount);
 	NormalList.FixInterleavedEndianness(InterleavedData,mVertexCount);
 	TangentList.FixInterleavedEndianness(InterleavedData,mVertexCount);
@@ -71,7 +72,7 @@ bool PODMesh::Initialzie()
 void PODMesh::Apply()
 {
 	BaseProgramRenderPass* pass = RenderingContext::Instance().ProgramRenderPass();
-	ShaderAttribute* vertices= pass->GetAttributeByIndex(ShaderAttributeIndex::VertexArray);
+	ShaderAttribute* vertices= pass->FindAttributeByIndex(ShaderAttributeIndex::VertexArray);
 	if (vertices!=nullptr)
 	{
 		mVertexBufferObject.Apply();
@@ -80,21 +81,21 @@ void PODMesh::Apply()
 
 	}
 
-	ShaderAttribute* normals=pass->GetAttributeByIndex(ShaderAttributeIndex::NormalArray);
+	ShaderAttribute* normals=pass->FindAttributeByIndex(ShaderAttributeIndex::NormalArray);
 	if (normals!=nullptr)
 	{
 		normals->Invalidate();
 		normals->SetPointer(3,GraphicsDataType::Float,false,NormalList.Stride,NormalList.GetDataOrOffset());
 	}
 
-	ShaderAttribute* texCoords= pass->GetAttributeByIndex(ShaderAttributeIndex::TexCoordArray);
+	ShaderAttribute* texCoords= pass->FindAttributeByIndex(ShaderAttributeIndex::TexCoordArray);
 	if (texCoords!=nullptr)
 	{
 		texCoords->Invalidate();
 		texCoords->SetPointer(2,GraphicsDataType::Float,false,UVWList[0].Stride,UVWList[0].GetDataOrOffset());
 	}
 
-	ShaderAttribute* tangents= RenderingContext::Instance().ProgramRenderPass()->GetAttribute(ShaderAttributeNames::TangentArray);
+	ShaderAttribute* tangents= RenderingContext::Instance().ProgramRenderPass()->FindAttribute(ShaderAttributeNames::TangentArray);
 	if (tangents!=nullptr)
 	{
 		tangents->Invalidate();
@@ -110,26 +111,26 @@ void PODMesh::Restore()
 	mIndexBufferObject.Restore();
 	BaseProgramRenderPass* pass = RenderingContext::Instance().ProgramRenderPass();
 
-	ShaderAttribute* vertices= pass->GetAttributeByIndex(ShaderAttributeIndex::VertexArray);
+	ShaderAttribute* vertices= pass->FindAttributeByIndex(ShaderAttributeIndex::VertexArray);
 	if (vertices!=nullptr)
 	{
 		vertices->EnableArray(false);
 		mVertexBufferObject.Restore();
 	}
 
-	ShaderAttribute* normals=pass->GetAttributeByIndex(ShaderAttributeIndex::NormalArray);
+	ShaderAttribute* normals=pass->FindAttributeByIndex(ShaderAttributeIndex::NormalArray);
 	if (normals!=nullptr)
 	{
 		normals->EnableArray(false);
 	}
 
-	ShaderAttribute* texCoords= pass->GetAttributeByIndex(ShaderAttributeIndex::TexCoordArray);
+	ShaderAttribute* texCoords= pass->FindAttributeByIndex(ShaderAttributeIndex::TexCoordArray);
 	if (texCoords!=nullptr)
 	{
 		texCoords->EnableArray(false);
 	}
 
-	ShaderAttribute* tangents= RenderingContext::Instance().ProgramRenderPass()->GetAttribute(ShaderAttributeNames::TangentArray);
+	ShaderAttribute* tangents= RenderingContext::Instance().ProgramRenderPass()->FindAttribute(ShaderAttributeNames::TangentArray);
 	if (tangents!=nullptr)
 	{
 		tangents->EnableArray(false);
@@ -193,7 +194,7 @@ const byte* PODData::GetDataOrOffset() const
 	return Data.Data();
 }
 
-void PODData::FixInterleavedEndianness( MemoryByteData interleavedData,uint size )
+void PODData::FixInterleavedEndianness( MemoryData interleavedData,uint size )
 {
 	RETURN_IF_ZERO(ComponentCount);
 	RETURN_IF_FALSE(IsInterleaved);

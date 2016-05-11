@@ -4,8 +4,8 @@
 #include "MedusaPreCompiled.h"
 #include "SkeletonRegionAttachmentModel.h"
 #include "Resource/TextureAtlas/TextureAtlasRegion.h"
-#include "Core/Geometry/Matrix2.h"
-#include "Core/Geometry/Matrix4.h"
+#include "Geometry/Matrix2.h"
+#include "Geometry/Matrix4.h"
 #include "Resource/TextureAtlas/TextureAtlasRegion.h"
 
 MEDUSA_BEGIN;
@@ -35,11 +35,11 @@ bool SkeletonRegionAttachmentModel::Initialize()
 	realScale.X *= mSize.Width / regionOriginalSize.Width;
 	realScale.Y *= mSize.Height / regionOriginalSize.Height;
 
-	const Array<Point3F, 4>& vertexes=mRegion->Vertices();
+	const auto& vertexes=mRegion->Vertices();
 	
-	Matrix4 matrix = Matrix4::CreateWorld(mSize, Point3F::Half, realScale, mRotation, mPosition);
+	Matrix4 matrix = Matrix4::CreateWorld(mSize, Point3F::Half, realScale, Rotation2F::Zero,mRotation, mPosition);
 
-	Array<Point3F, 4>& vertices= mMesh.MutableVertices();
+	auto& vertices= mMesh.MutableVertices();
 	FOR_EACH_SIZE(i, vertices.Size)
 	{
 		vertices[i] = matrix.Transform(vertexes[i]);
@@ -53,7 +53,7 @@ bool SkeletonRegionAttachmentModel::Initialize()
 
 RenderingObject SkeletonRegionAttachmentModel::GetRenderingObject() const
 {
-	return RenderingObject((IMesh*)&mMesh, mRegion->GetMaterial());
+	return RenderingObject((IMesh*)&mMesh, mRegion->CreateMaterial());
 }
 
 

@@ -103,7 +103,8 @@ IShape* NodeFactory::CreateRectBorder(const Size2F& rectSize, const Color4F& col
 	ShapeQuadMesh* mesh = MeshFactory::Instance().CreateShapeQuadMesh(rectSize, color);
 	RETURN_NULL_IF_NULL(mesh);
 	IMaterial* material = MaterialFactory::Instance().CreateShape(MEDUSA_PREFIX(Shape_WireFrame));
-
+	material->SetDrawMode(GraphicsDrawMode::LineStrip);
+	
 	IShape* sprite = new IShape();
 	sprite->Initialize();
 	sprite->SetSizeToContent(SizeToContent::Mesh);
@@ -119,6 +120,7 @@ IShape* NodeFactory::CreateRectBorder(const Rect2F& rect, const Color4F& color)
 	ShapeQuadMesh* mesh = MeshFactory::Instance().CreateShapeQuadMesh(rect, color);
 	RETURN_NULL_IF_NULL(mesh);
 	IMaterial* material = MaterialFactory::Instance().CreateShape(MEDUSA_PREFIX(Shape_WireFrame));
+	material->SetDrawMode(GraphicsDrawMode::LineStrip);
 
 	IShape* sprite = new IShape();
 	sprite->Initialize();
@@ -185,9 +187,22 @@ Sprite* NodeFactory::CreateEmptySprite()
 }
 
 
-Sprite* NodeFactory::CreateQuadSprite(const FileIdRef& textureName, const Rect2F& textureRect/*=Rect2F::Zero*/)
+Sprite* NodeFactory::CreateSprite(const FileIdRef& textureName, const Rect2F& textureRect/*=Rect2F::Zero*/)
 {
 	auto renderingObject = RenderingObjectFactory::Instance().CreateFromTexture(textureName, textureRect);
+	RETURN_NULL_IF_NULL(renderingObject);
+
+	Sprite* sprite = new Sprite();
+	sprite->SetRenderingObject(renderingObject);
+	sprite->SetSize(renderingObject.Mesh()->Size());
+	sprite->Initialize();
+
+	return sprite;
+}
+
+Sprite* NodeFactory::CreateSprite(ITexture* texture, const Rect2F& textureRect /*= Rect2F::Zero*/)
+{
+	auto renderingObject = RenderingObjectFactory::Instance().CreateFromTexture(texture, textureRect);
 	RETURN_NULL_IF_NULL(renderingObject);
 
 	Sprite* sprite = new Sprite();
@@ -206,6 +221,7 @@ NineGridSprite* NodeFactory::CreateNineGridSprite(const Size2F& targetSize, cons
 	NineGridSprite* sprite = new NineGridSprite();
 	sprite->EnableLayout(false);	//suppress duplicate arrange after size changed
 	sprite->SetRenderingObject(renderingObject);
+	sprite->SetTexturePadding(padding);
 	sprite->SetSize(renderingObject.Mesh()->Size());
 	sprite->Initialize();
 	sprite->EnableLayout(true);
@@ -227,9 +243,9 @@ Sprite* NodeFactory::CreateSpriteFromAtlasRegion(TextureAtlasRegion* region)
 
 }
 
-Sprite* NodeFactory::CreateSpriteFromAtlasRegion(StringRef regionName, const FileIdRef& atlasFileId, TextureAtlasFileFormat fileFormat /*= TextureAtlasFileFormat::Spine*/, uint atlasPageCount /*= 1*/)
+Sprite* NodeFactory::CreateSpriteFromAtlasRegion(StringRef regionName, const FileIdRef& atlasFileId, TextureAtlasType fileFormat /*= TextureAtlasType::None*/)
 {
-	auto renderingObject = RenderingObjectFactory::Instance().CreateFromTextureAtlasRegion(regionName, atlasFileId, fileFormat, atlasPageCount);
+	auto renderingObject = RenderingObjectFactory::Instance().CreateFromTextureAtlasRegion(regionName, atlasFileId, fileFormat);
 	RETURN_NULL_IF_NULL(renderingObject);
 
 	Sprite* sprite = new Sprite();
@@ -240,11 +256,12 @@ Sprite* NodeFactory::CreateSpriteFromAtlasRegion(StringRef regionName, const Fil
 }
 
 
+
 Sprite* NodeFactory::CreatePODSprite(const FileIdRef& modelName)
 {
 	IModel* model = ModelFactory::Instance().Create(modelName);
 	RETURN_NULL_IF_NULL(model);
-	return (Sprite*)model->CreateCloneInstance();
+	return (Sprite*)model->Instantiate();
 }
 
 
@@ -314,19 +331,19 @@ ListBox* NodeFactory::CreateEmptyListBox()
 	return listBox;
 }
 
-TextureButton* NodeFactory::CreateTextureButton(const FileIdRef& normalTextureName, const FileIdRef& selectedTextureName/*=FileId::Empty*/, const FileIdRef& disabledTextureName/*=FileId::Empty*/, const FileIdRef& disabledSelectedTextureName/*=FileId::Empty*/)
+TextureButton* Medusa::NodeFactory::CreateTextureButton(const FileIdRef& normalTextureName, const FileIdRef& selectedTextureName /*= FileIdRef::Empty*/, const FileIdRef& disabledTextureName /*= FileIdRef::Empty*/, const FileIdRef& disabledSelectedTextureName /*= FileIdRef::Empty*/, bool isEnableNineGrid /*= false*/, const Size2F& targetSize /*= Size2F::Zero*/, const ThicknessF& padding /*= ThicknessF::Zero*/)
 {
-	TextureButton* button = new TextureButton(StringRef::Empty, normalTextureName, selectedTextureName, disabledTextureName, disabledSelectedTextureName);
+	TextureButton* button = new TextureButton(StringRef::Empty, normalTextureName, selectedTextureName, disabledTextureName, disabledSelectedTextureName,isEnableNineGrid,targetSize,padding);
 	button->Initialize();
 	return button;
 }
 
 NodeButton* NodeFactory::CreateNodeButton(const FileIdRef& normalTextureName, const FileIdRef& selectedTextureName /*= FileIdRef::Empty*/, const FileIdRef& disabledTextureName /*= FileIdRef::Empty*/, const FileIdRef& disabledSelectedTextureName /*= FileIdRef::Empty*/)
 {
-	Sprite* normalSprite = CreateQuadSprite(normalTextureName);
-	Sprite* selectedSprite = CreateQuadSprite(selectedTextureName);
-	Sprite* disabledSprite = CreateQuadSprite(disabledTextureName);
-	Sprite* disabledSelectedSprite = CreateQuadSprite(disabledSelectedTextureName);
+	Sprite* normalSprite = CreateSprite(normalTextureName);
+	Sprite* selectedSprite = CreateSprite(selectedTextureName);
+	Sprite* disabledSprite = CreateSprite(disabledTextureName);
+	Sprite* disabledSelectedSprite = CreateSprite(disabledSelectedTextureName);
 
 	NodeButton* button = new NodeButton(StringRef::Empty, normalSprite, selectedSprite, disabledSprite, disabledSelectedSprite);
 	button->Initialize();
@@ -343,7 +360,7 @@ TextureProgressBar* NodeFactory::CreateTextureProgressBar(ProgressType progressT
 TextureProgressBar* NodeFactory::CreateTextureProgressBar(ProgressType progressType, const FileIdRef& textureName, const FileIdRef& backgroundTextureName, float percent /*= 1.f*/)
 {
 	TextureProgressBar* val = CreateTextureProgressBar(progressType, textureName, percent);
-	Sprite* sprite = CreateQuadSprite(backgroundTextureName);
+	Sprite* sprite = CreateSprite(backgroundTextureName);
 	sprite->SetDepth(-1);
 	val->AddChild(sprite);
 	return val;

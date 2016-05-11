@@ -37,6 +37,12 @@ namespace StringParser
 	template<class TValue>
 	StringParser::ResultString<char, TValue> ToString(const TValue& inValue);
 
+	long ToInt(const StringRef& str);
+	bool TryParseInt(const StringRef& str, long& outVal);
+	ulong ToUInt(const StringRef& str);
+	bool TryParseUInt(const StringRef& str, ulong& outVal);
+
+
 	/*
 	 bool GBKToUTF8(const StringRef& fromString, HeapString& toString);
 	 bool UTF8ToGBK(const StringRef& fromString, HeapString& toString);
@@ -61,11 +67,37 @@ namespace StringParser
 		return StringParser::ToString(inValue);
 	}
 
+	template<typename TChar>
+	typename std::enable_if<std::is_same<TChar, char>::value, HeapString>::type ToStringT(const HeapString& val)
+	{
+		return val;
+	}
+
+	template<typename TChar>
+	typename std::enable_if<std::is_same<TChar, char>::value, HeapString>::type ToStringT(const WHeapString& val)
+	{
+		return ToA(val);
+	}
+
+
 	template<typename TChar, class TValue>
 	typename std::enable_if<std::is_same<TChar, wchar_t>::value, StringParser::ResultString<TChar, TValue>>::type ToStringT(const TValue& inValue)
 	{
 		return StringParser::ToWString(inValue);
 	}
+
+	template<typename TChar>
+	typename std::enable_if<std::is_same<TChar, wchar_t>::value, WHeapString>::type ToStringT(const HeapString& val)
+	{
+		return ToW(val);
+	}
+
+	template<typename TChar>
+	typename std::enable_if<std::is_same<TChar, wchar_t>::value, WHeapString>::type ToStringT(const WHeapString& val)
+	{
+		return val;
+	}
+
 
 	intp ConvertToBuffer(const StringRef& inBuffer, WHeapString& outBuffer);
 	intp ConvertToBuffer(const char* str, size_t length, WHeapString& outBuffer);
@@ -78,56 +110,202 @@ namespace StringParser
 
 
 	template<typename T>
-	bool Split(const TStringRef<T>& str, const TStringRef<T>& delimiter, List<THeapString<T> >& outResults)
+	bool Split(const TStringRef<T>& str, const T* delimiter, List<TStringRef<T> >& outResults, bool removeEmptyEntries = true)
+	{
+		return Split(str, TStringRef<T>(delimiter), outResults, removeEmptyEntries);
+	}
+
+	template<typename T>
+	bool Split(const TStringRef<T>& str, const TStringRef<T>& delimiter, List<TStringRef<T> >& outResults,bool removeEmptyEntries=true)
 	{
 		RETURN_FALSE_IF(str.IsEmpty());
 
 		intp begin = 0;
 		intp index = str.IndexOfAny(delimiter, begin);
-		while (index >= 0)
+
+		if (removeEmptyEntries)
 		{
-			if (index > begin)
+			while (index >= 0)
 			{
-				outResults.EmplaceBack(str.Buffer() + begin, (size_t)(index - begin));
+				if (index > begin)
+				{
+					outResults.EmplaceBack(str.Buffer() + begin, (size_t)(index - begin));
+				}
+				begin = index + 1;
+				while (delimiter.Contains(str[begin]))	//strip duplicate delimiters
+				{
+					++begin;
+				}
+				index = str.IndexOfAny(delimiter, begin);
 			}
-			begin = index + 1;
-			while (delimiter.Contains(str[begin]))	//strip duplicate delimiters
+
+		}
+		else
+		{
+			while (index >= 0)
 			{
-				++begin;
+				if (index > begin)
+				{
+					outResults.EmplaceBack(str.Buffer() + begin, (size_t)(index - begin));
+				}
+				else
+				{
+					outResults.NewAdd();
+				}
+
+				begin = index + 1;
+				index = str.IndexOfAny(delimiter, begin);
 			}
-			index = str.IndexOfAny(delimiter, begin);
+		}
+		
+		//add last
+		if (removeEmptyEntries)
+		{
+			if ((size_t)begin < str.Length())
+			{
+				auto left = str.SubString(begin);
+				left = left.TrimAll();
+				if (!left.IsEmpty())
+				{
+					outResults.Add(left);
+				}
+			}
+		}
+		else
+		{
+			if ((size_t)begin < str.Length())
+			{
+				outResults.EmplaceBack(str.Buffer() + begin, (size_t)(str.Length() - begin));
+			}
+			else
+			{
+				outResults.NewAdd();
+			}
+		}
+		
+
+		return !outResults.IsEmpty();
+	}
+
+	template<typename T>
+	bool Split(const TStringRef<T>& str, const T* delimiter, List<THeapString<T> >& outResults, bool removeEmptyEntries = true)
+	{
+		return Split(str, TStringRef<T>(delimiter), outResults, removeEmptyEntries);
+	}
+
+	template<typename T>
+	bool Split(const TStringRef<T>& str, const TStringRef<T>& delimiter, List<THeapString<T> >& outResults, bool removeEmptyEntries = true)
+	{
+		RETURN_FALSE_IF(str.IsEmpty());
+
+		intp begin = 0;
+		intp index = str.IndexOfAny(delimiter, begin);
+
+		if (removeEmptyEntries)
+		{
+			while (index >= 0)
+			{
+				if (index > begin)
+				{
+					outResults.EmplaceBack(str.Buffer() + begin, (size_t)(index - begin));
+				}
+				begin = index + 1;
+				while (delimiter.Contains(str[begin]))	//strip duplicate delimiters
+				{
+					++begin;
+				}
+				index = str.IndexOfAny(delimiter, begin);
+			}
+
+		}
+		else
+		{
+			while (index >= 0)
+			{
+				if (index > begin)
+				{
+					outResults.EmplaceBack(str.Buffer() + begin, (size_t)(index - begin));
+				}
+				else
+				{
+					outResults.NewAdd();
+				}
+
+				begin = index + 1;
+				index = str.IndexOfAny(delimiter, begin);
+			}
 		}
 
 		//add last
-		if ((size_t)begin<str.Length())
+		if (removeEmptyEntries)
 		{
-			outResults.EmplaceBack(str.Buffer() + begin, (size_t)(str.Length() - begin));
+			if ((size_t)begin < str.Length())
+			{
+				auto left = str.SubString(begin);
+				left = left.TrimAll();
+				if (!left.IsEmpty())
+				{
+					outResults.Add(left);
+				}
+			}
+		}
+		else
+		{
+			if ((size_t)begin < str.Length())
+			{
+				outResults.EmplaceBack(str.Buffer() + begin, (size_t)(str.Length() - begin));
+			}
+			else
+			{
+				outResults.NewAdd();
+			}
 		}
 
 		return !outResults.IsEmpty();
 	}
 
 	template<typename T, typename TValue>
-	bool SplitToValues(const TStringRef<T>& str, const TStringRef<T>& delimiter, List<TValue>& outResults)
+	bool SplitToValues(const TStringRef<T>& str, const TStringRef<T>& delimiter, List<TValue>& outResults, const TValue* emptyResult=nullptr)
 	{
 		RETURN_FALSE_IF(str.IsEmpty());
 
 		intp begin = 0;
 		intp index = str.IndexOfAny(delimiter, begin);
-		while (index >= 0)
+		if (emptyResult==nullptr)
 		{
-			if (index > begin)
+			while (index >= 0)
 			{
-				TStringRef<T> tempStr(str.Buffer() + begin, index - begin);
-				outResults.NewAdd() = StringTo<TValue>(tempStr);
+				if (index > begin)
+				{
+					TStringRef<T> tempStr(str.Buffer() + begin, index - begin);
+					outResults.NewAdd() = StringTo<TValue>(tempStr);
+				}
+				begin = index + 1;
+				while (delimiter.Contains(str[begin]))	//strip duplicate delimiters
+				{
+					++begin;
+				}
+				index = str.IndexOfAny(delimiter, begin);
 			}
-			begin = index + 1;
-			while (delimiter.Contains(str[begin]))	//strip duplicate delimiters
-			{
-				++begin;
-			}
-			index = str.IndexOfAny(delimiter, begin);
 		}
+		else
+		{
+			while (index >= 0)
+			{
+				if (index > begin)
+				{
+					TStringRef<T> tempStr(str.Buffer() + begin, index - begin);
+					outResults.NewAdd() = StringTo<TValue>(tempStr);
+				}
+				else
+				{
+					outResults.Add(*emptyResult);
+				}
+				begin = index + 1;
+				index = str.IndexOfAny(delimiter, begin);
+			}
+		}
+		
 
 		//add last
 		if ((size_t)begin < str.Length())
@@ -135,7 +313,10 @@ namespace StringParser
 			TStringRef<T> tempStr(str.Buffer() + begin);
 			outResults.NewAdd() = StringTo<TValue>(tempStr);
 		}
-		
+		else if (emptyResult!=nullptr)
+		{
+			outResults.Add(*emptyResult);
+		}
 
 		return !outResults.IsEmpty();
 	}

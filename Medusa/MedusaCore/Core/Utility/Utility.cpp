@@ -4,25 +4,12 @@
 #include "MedusaCorePreCompiled.h"
 #include "Core/Utility/Utility.h"
 #include "Core/Math/Math.h"
+#include "Endian.h"
+#include "Core/Memory/Memory.h"
 
 MEDUSA_BEGIN;
 
 
-bool Utility::IsLittleEndian()
-{
-	static bool isLittleEndian;
-	static bool isInit = false;
-
-	if(!isInit)
-	{
-		short word = 0x0001;
-		char *byte = (char*) &word;
-		isLittleEndian = byte[0] ? true : false;
-		isInit = true;
-	}
-
-	return isLittleEndian;
-}
 
 /*
 	volatile float x=1.f;
@@ -33,52 +20,103 @@ bool Utility::IsLittleEndian()
 	EM_OVERFLOW: overflow error
 	EM_INVALID: exception
 	*/
-void Utility::EnableFloatPointException( bool isEnable )
+void Utility::EnableFloatPointException(bool isEnable)
 {
 #ifdef MEDUSA_WINDOWS
 	uint32 currentState;
 	uint32 newState;
 	//get current state
-	_controlfp_s(&currentState,0,0);
-	newState=currentState;
+	_controlfp_s(&currentState, 0, 0);
+	newState = currentState;
 	if (isEnable)
 	{
-		newState&=~(EM_ZERODIVIDE|EM_OVERFLOW|EM_INVALID);
+		newState &= ~(EM_ZERODIVIDE | EM_OVERFLOW | EM_INVALID);
 	}
 	else
 	{
-		newState|=(EM_ZERODIVIDE|EM_OVERFLOW|EM_INVALID);
+		newState |= (EM_ZERODIVIDE | EM_OVERFLOW | EM_INVALID);
 	}
 
-	_controlfp_s(&currentState,newState,MCW_EM);
+	_controlfp_s(&currentState, newState, MCW_EM);
 #else
-    
+
 #endif
 }
 
-uint32 Utility::SwapUInt32( uint32 val )
+uint32 Utility::SwapUInt(uint32 val)
 {
-	return ((val&0x000000FF)<<24) + ((val&0x0000FF00)<<8) + ((val&0x00FF0000)>>8) + ((val&0xFF000000) >> 24);
+	return ((val & 0x000000FF) << 24) + ((val & 0x0000FF00) << 8) + ((val & 0x00FF0000) >> 8) + ((val & 0xFF000000) >> 24);
 }
 
-uint64 Utility::SwapUInt64( uint64 val )
+uint64 Utility::SwapUInt64(uint64 val)
 {
-	unsigned char* bytes=(unsigned char*)&val;
+	unsigned char* bytes = (unsigned char*)&val;
 
-	Math::Swap(bytes[0],bytes[7]);
-	Math::Swap(bytes[1],bytes[6]);
-	Math::Swap(bytes[2],bytes[5]);
-	Math::Swap(bytes[3],bytes[4]);
+	Math::Swap(bytes[0], bytes[7]);
+	Math::Swap(bytes[1], bytes[6]);
+	Math::Swap(bytes[2], bytes[5]);
+	Math::Swap(bytes[3], bytes[4]);
 	return val;
 }
 
-void Utility::SwapBytes( unsigned char* data,size_t size )
+void Utility::SwapBytes(unsigned char* data, size_t size)
 {
 	size_t i = 0, j = size - 1;
-	while(i < j)
+	while (i < j)
 	{
-		Math::Swap(data[i++],data[j--]);
+		Math::Swap(data[i++], data[j--]);
 	}
+}
+
+int Utility::ToInt(const byte* data, size_t size /*= sizeof(int)*/)
+{
+	int result = 0;
+	if (Endian::IsLittle())
+	{
+		for (int n = size - 1; n >= 0; n--)
+			result = (result << 8) + data[n];
+	}
+	else
+	{
+		for (uint n = 0; n < size; n++)
+			result = (result << 8) + data[n];
+	}
+
+	return result;
+}
+
+double Utility::ToDouble(const byte* data)
+{
+	double result;
+	if (Endian::IsLittle())
+	{
+		Memory::SafeCopy((byte*)&result, sizeof(result), data, sizeof(result));
+	}
+	else
+	{
+		double temp;
+		Memory::SafeCopy((byte*)&temp, sizeof(result), data, sizeof(result));
+		SwapBytes((byte*)&temp, sizeof(result));
+		Memory::SafeCopy((byte*)&result, sizeof(result), (const byte*)&temp, sizeof(result));
+	}
+	return result;
+}
+
+float Utility::ToFloat(const byte* data)
+{
+	float result;
+	if (Endian::IsLittle())
+	{
+		Memory::SafeCopy((byte*)&result, sizeof(result), data, sizeof(result));
+	}
+	else
+	{
+		float temp;
+		Memory::SafeCopy((byte*)&temp, sizeof(result), data, sizeof(result));
+		SwapBytes((byte*)&temp, sizeof(result));
+		Memory::SafeCopy((byte*)&result, sizeof(result), (const byte*)&temp, sizeof(result));
+	}
+	return result;
 }
 
 bool Utility::HasBit(size_t val, byte index)
@@ -105,15 +143,15 @@ char Utility::ToHexChar(int val)
 
 /*
 
-					 int16, int32,          zig zag encoded to unsigned integer:                       
-                     int64                                                                                 
-                                             0 -> 0                                             
-                                            -1 -> 1                                                   
-                                             1 -> 2                                             
-                                            -2 -> 3                                                   
-                                            ...                                                 
-                                                                                                
-                                            and then encoded as unsigned integer     
+					 int16, int32,          zig zag encoded to unsigned integer:
+					 int64
+											 0 -> 0
+											-1 -> 1
+											 1 -> 2
+											-2 -> 3
+											...
+
+											and then encoded as unsigned integer
 
 variable uint32
 .---.---.   .---..---.---.   .---..---.---.   .---..---.---.   .---..---.---.---.---.   .---.

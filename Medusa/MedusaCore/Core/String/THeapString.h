@@ -64,6 +64,13 @@ public:
 
 	}
 
+	explicit THeapString(const TMemoryData<T>& data) :BaseString<T>(nullptr, (size_t)0, size_t(0))
+	{
+		this->mBuffer = (T*)data.Data();
+		this->mBufferSize = data.ByteSize();
+		this->mLength = data.LengthAsString();
+	}
+
 	virtual ~THeapString()
 	{
 		Clear();
@@ -297,13 +304,13 @@ public:
 	intp LastIndexOf(const THeapString& inString)const
 	{
 		RETURN_OBJECT_IF(this->IsEmpty(), -1);
-		return this->ToString().LastIndexOf(inString, 0);
+		return this->ToString().LastIndexOf(inString);
 	}
 
-	intp LastIndexOf(const THeapString& inString, intp index)const
+	intp LastIndexOf(const THeapString& inString, intp beginIndex, intp endIndex)const
 	{
 		RETURN_OBJECT_IF(this->IsEmpty(), -1);
-		return this->ToString().LastIndexOf(inString, index);
+		return this->ToString().LastIndexOf(inString, beginIndex, endIndex);
 	}
 
 	using BaseString<T>::LastIndexOfAny;
@@ -313,10 +320,10 @@ public:
 		return this->ToString().LastIndexOfAny(inString, 0);
 	}
 
-	intp LastIndexOfAny(const THeapString& inString, intp index)const
+	intp LastIndexOfAny(const THeapString& inString, intp beginIndex, intp endIndex)const
 	{
 		RETURN_OBJECT_IF(this->IsEmpty(), -1);
-		return this->ToString().LastIndexOfAny(inString, index);
+		return this->ToString().LastIndexOfAny(inString, beginIndex, endIndex);
 	}
 
 	using BaseString<T>::Contains;
@@ -367,16 +374,46 @@ public:
 		return ReplaceAll(oldString.ToString(), newString.ToString());
 	}
 
+	bool ReplaceAll(const TStringRef<T>& oldString, const THeapString& newString)
+	{
+		return ReplaceAll(oldString, newString.ToString());
+	}
+
+	bool ReplaceAll(const THeapString& oldString, const TStringRef<T>& newString)
+	{
+		return ReplaceAll(oldString.ToString(), newString);
+	}
+
+
 	using BaseString<T>::ReplaceFirst;
 	bool ReplaceFirst(const THeapString& oldString, const THeapString& newString)
 	{
 		return ReplaceFirst(oldString.ToString(), newString.ToString());
 	}
+	bool ReplaceFirst(const TStringRef<T>& oldString, const THeapString& newString)
+	{
+		return ReplaceFirst(oldString, newString.ToString());
+	}
+
+	bool ReplaceFirst(const THeapString& oldString, const TStringRef<T>& newString)
+	{
+		return ReplaceFirst(oldString.ToString(), newString);
+	}
+
 
 	using BaseString<T>::ReplaceLast;
 	bool ReplaceLast(const THeapString& oldString, const THeapString& newString)
 	{
 		return ReplaceLast(oldString.ToString(), newString.ToString());
+	}
+	bool ReplaceLast(const TStringRef<T>& oldString, const THeapString& newString)
+	{
+		return ReplaceLast(oldString, newString.ToString());
+	}
+
+	bool ReplaceLast(const THeapString& oldString, const TStringRef<T>& newString)
+	{
+		return ReplaceLast(oldString.ToString(), newString);
 	}
 
 	using BaseString<T>::RemoveBeginAny;
@@ -473,6 +510,16 @@ public:
 		return this->ReserveSize(length + 1);
 	}
 
+	bool ReserveLeftLength(size_t length)
+	{
+		size_t leftLength = this->LeftLength();
+		if (length > leftLength)
+		{
+			return this->ReserveSize(this->mBufferSize + length - leftLength);
+		}
+		return true;
+	}
+
 	void ReleaseExtraSize()
 	{
 		RETURN_IF_ZERO(this->mBufferSize);
@@ -491,6 +538,7 @@ public:
 	}
 
 	void ForceSetBuffer(T* buffer) { if (this->mBuffer != nullptr) { SAFE_FREE(this->mBuffer); }this->mBuffer = buffer; }
+	T* ForceReleaseBuffer() { T* buffer = this->mBuffer; this->mBuffer = nullptr; return buffer; }
 	void ForceSetBufferSize(size_t bufferSize) { this->mBufferSize = bufferSize; }
 
 protected:
@@ -530,9 +578,3 @@ typedef THeapString<wchar_t> WHeapString;
 //[PRE_DECLARE_END]
 
 MEDUSA_END;
-
-#ifdef MEDUSA_SCRIPT
-MEDUSA_SCRIPT_BEGIN;
-void RegisterHeapString(asIScriptEngine* engine);
-MEDUSA_SCRIPT_END;
-#endif

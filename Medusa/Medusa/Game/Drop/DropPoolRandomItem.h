@@ -46,9 +46,10 @@ protected:
 //SIREN_HEADER_SCHEMA_BEGIN
 struct DropPoolRandomItem::Schema
 {
-	SIREN_PROPERTY(0, 3, Optional, DropPoolRandomItem, uint, mProbability);
-	SIREN_PROPERTIES_1(DropPoolItem,DropPoolRandomItem);
-};//SIREN_HEADER_SCHEMA_END
+	SIREN_FIELD(0, 3, Optional, DropPoolRandomItem, uint, mProbability);
+	SIREN_FIELDS_1(DropPoolItem,DropPoolRandomItem);
+};
+//SIREN_HEADER_SCHEMA_END
 
 struct DropPoolRandomItemProbalityFunc
 {

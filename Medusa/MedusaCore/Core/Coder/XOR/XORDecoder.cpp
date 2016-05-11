@@ -12,11 +12,11 @@ MEDUSA_BEGIN;
 
 XORDecoder::XORDecoder(const IEventArg& e) :ICoder(e)
 {
-	const UserDataEventArg<MemoryByteData>& e2 = (const UserDataEventArg<MemoryByteData>&)e;
+	const UserDataEventArg<MemoryData>& e2 = (const UserDataEventArg<MemoryData>&)e;
 	mKey = e2.Data();
 }
 
-XORDecoder::XORDecoder(const MemoryByteData& e)
+XORDecoder::XORDecoder(const MemoryData& e)
 {
 	mKey = e;
 }
@@ -32,7 +32,7 @@ size_t XORDecoder::GuessResultSize(const IStream& input) const
 	return input.LeftLength();
 }
 
-size_t XORDecoder::OnCode(const MemoryByteData& input, MemoryByteData& output) const
+size_t XORDecoder::OnCode(const MemoryData& input, MemoryData& output) const
 {
 	RETURN_ZERO_IF_EMPTY(input);
 

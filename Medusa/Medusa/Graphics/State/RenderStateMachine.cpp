@@ -17,6 +17,7 @@
 #include "Graphics/State/RenderTargetRenderState.h"
 #include "Graphics/State/SamplerRenderState.h"
 #include "Graphics/State/ScissorRenderState.h"
+#include "Graphics/State/ShaderUniformRenderState.h"
 
 
 MEDUSA_BEGIN;
@@ -48,6 +49,8 @@ bool RenderStateMachine::Initialize()
 	mRenderStates.Add((uint)RenderTargetRenderState::GetTypeIdStatic(),RenderStateStack::New(RenderTargetRenderState::Current(true)));
 	mRenderStates.Add((uint)ScissorRenderState::GetTypeIdStatic(),RenderStateStack::New(ScissorRenderState::Current()));
 	mRenderStates.Add((uint)SamplerRenderState::GetTypeIdStatic(), RenderStateStack::New(SamplerRenderState::Current()));
+	mRenderStates.Add((uint)ShaderUniformRenderState::GetTypeIdStatic(), new RenderStateStack());
+
 
 	/*FOR_EACH_COLLECTION(i,mRenderStates)
 	{
@@ -65,7 +68,7 @@ void RenderStateMachine::Push( IRenderState* state )
 	RenderStateStack* stack = mRenderStates[(uint)state->Type()];
 
 #ifdef MEDUSA_SAFE_CHECK
-	if (stack==nullptr||stack->IsEmpty())
+	if (stack==nullptr)
 	{
 		Log::AssertFailedFormat("Empty state stack when pushing {} [{}]:",state->Class().Name().c_str(),state->Type());
 		return;
@@ -73,8 +76,8 @@ void RenderStateMachine::Push( IRenderState* state )
 #endif
 
 #ifdef MEDUSA_SAFE_CHECK
-	IRenderState* currentVal = stack->Top();
-	if (!state->Equals(*currentVal))
+	IRenderState* currentVal = stack->TopOr(nullptr);
+	if (currentVal==nullptr||!state->Equals(*currentVal))
 	{
 		state->Apply();
 	}
@@ -83,6 +86,7 @@ void RenderStateMachine::Push( IRenderState* state )
 		//duplicate state push
 	}
 #else
+
 	state->Apply();
 
 #endif
@@ -97,14 +101,14 @@ void RenderStateMachine::Pop( const IRenderState* state /*=nullptr*/)
 {
 	RenderStateStack* stack=mRenderStates[(uint)state->Type()];
 #ifdef MEDUSA_SAFE_CHECK
-	if (stack==nullptr||stack->IsEmpty())
+	if (stack==nullptr)
 	{
 		Log::AssertFailedFormat("Empty state stack when popping {} [{}]:", state->Class().Name().c_str(), state->Type());
 		return;
 	}
 #endif
 
-	IRenderState* currentVal=stack->Pop();
+	IRenderState* currentVal=stack->PopCopy();
 
 #ifdef MEDUSA_SAFE_CHECK
 	if (state!=nullptr&&currentVal!=state)
@@ -113,16 +117,16 @@ void RenderStateMachine::Pop( const IRenderState* state /*=nullptr*/)
 		return;
 	}
 
-	if (stack->IsEmpty())
+	/*if (stack->IsEmpty())
 	{
 		Log::AssertFailedFormat("Empty state stack after popping {} [{}]:", state->Class().Name().c_str(), state->Type());
 		return;
-	}
+	}*/
 #endif
-	IRenderState* prevVal = stack->Top();
+	IRenderState* prevVal = stack->TopOr(nullptr);
 
 #ifdef MEDUSA_SAFE_CHECK
-	if (!currentVal->Equals(*prevVal))
+	if (prevVal!=nullptr&&!currentVal->Equals(*prevVal))
 	{
 		prevVal->Apply();
 	}
@@ -131,7 +135,10 @@ void RenderStateMachine::Pop( const IRenderState* state /*=nullptr*/)
 		//duplicate state pop
 	}
 #else
-	prevVal->Apply();
+	if (prevVal!=nullptr)
+	{
+		prevVal->Apply();
+	}
 #endif
 
 	SAFE_RELEASE(currentVal);

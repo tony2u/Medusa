@@ -67,16 +67,6 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Medusa\MedusaProto\MedusaProto.csproj">
-      <Project>{da64a783-b7d5-49c9-8299-c9d0abac2944}</Project>
-      <Name>MedusaProto</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Medusa\Siren\Siren.csproj">
-      <Project>{44e3d588-83dd-40fc-b92b-d68987e14154}</Project>
-      <Name>Siren</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

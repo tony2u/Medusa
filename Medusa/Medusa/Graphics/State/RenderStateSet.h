@@ -74,6 +74,8 @@ public:
 
 	//rasterizer
 
+	//shader uniform
+	ShaderUniformValue* FindOrCreateUniform(StringRef name);
 protected:
 	void OnStateChangedEvent(IRenderState& state);
 protected:

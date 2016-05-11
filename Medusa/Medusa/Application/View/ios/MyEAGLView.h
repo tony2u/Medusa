@@ -7,7 +7,7 @@
 #import <UIKit/UIKit.h>
 
 #import <CoreFoundation/CoreFoundation.h>
-#include "Core/Geometry/Size2.h"
+#include "Geometry/Size2.h"
 
 
 @interface MyEAGLView : UIView

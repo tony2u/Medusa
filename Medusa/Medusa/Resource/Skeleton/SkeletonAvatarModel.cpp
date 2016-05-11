@@ -22,7 +22,7 @@ SkeletonAvatarModel::~SkeletonAvatarModel(void)
 
 void SkeletonAvatarModel::AddSlotAttachment(SkeletonSlotModel* slot, ISkeletonAttachmentModel* attchement)
 {
-	List<ISkeletonAttachmentModel*>* attchements=mSlotAttachmentDict.TryGetValueWithFailed(slot,nullptr);
+	List<ISkeletonAttachmentModel*>* attchements=mSlotAttachmentDict.GetOptional(slot,nullptr);
 	if (attchements==nullptr)
 	{
 		attchements = new List<ISkeletonAttachmentModel*>();
@@ -35,7 +35,7 @@ void SkeletonAvatarModel::AddSlotAttachment(SkeletonSlotModel* slot, ISkeletonAt
 
 ISkeletonAttachmentModel* SkeletonAvatarModel::FindAttachment(SkeletonSlotModel* slot, const StringRef& attchementName) const
 {
-	List<ISkeletonAttachmentModel*>* attchements = mSlotAttachmentDict.TryGetValueWithFailed(slot, nullptr);
+	List<ISkeletonAttachmentModel*>* attchements = mSlotAttachmentDict.GetOptional(slot, nullptr);
 	RETURN_NULL_IF_NULL(attchements);
 
 	FOR_EACH_COLLECTION(i, *attchements)

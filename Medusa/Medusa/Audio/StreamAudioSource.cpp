@@ -157,7 +157,7 @@ void StreamAudioSource::OnStreamThread(Thread& thread)
 bool StreamAudioSource::FillAndQueueBuffer(size_t i)
 {
 	bool isEnd=false;
-	MemoryByteData outData;
+	MemoryData outData;
 	
 	if (!OnFetchData(outData))
 	{

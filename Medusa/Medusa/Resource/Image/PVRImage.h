@@ -6,6 +6,7 @@
 #include "Graphics/Render/Render.h"
 #include "Resource/Image/IImage.h"
 #include "Core/Collection/Dictionary.h"
+#include "Graphics/PixelType.h"
 
 MEDUSA_BEGIN;
 
@@ -151,7 +152,7 @@ struct PVRImageHeader
 	static uint GetBitsPerPixel(uint64 pixelFormat);
 	static Size3U GetMinDimensions(uint64 pixelFormat);
 	uint GetChannelSize()const;
-	void GetGraphicFormats(GraphicsInternalFormat& outInternalFormat,GraphicsPixelFormat& outPixelFormat,GraphicsPixelDataType& outPixelType)const;
+	PixelType GetGraphicFormats()const;
 
 };
 #pragma pack(pop)
@@ -194,7 +195,7 @@ public:
 	typedef Dictionary<uint,PVRImageMetaDataBlock*> MetaDataBlockList;
 	typedef Dictionary<uint,MetaDataBlockList*> MetaDataBlockMap;
 public:
-	PVRImage(const FileIdRef& fileId,const PVRImageHeader& header,MetaDataBlockMap* metaBlocks,MemoryByteData imageData,bool isCopyImageData,bool isCompressed);
+	PVRImage(const FileIdRef& fileId,const PVRImageHeader& header,MetaDataBlockMap* metaBlocks,MemoryData imageData,bool isCopyImageData,PixelType pixelType);
 	virtual ~PVRImage(void);
 	virtual ImageFileType ImageType()const{return ImageFileType::pvr;}
 	const PVRImageHeader& Header() const { return mHeader; }
@@ -205,7 +206,7 @@ public:
 	PVRImageMetaDataBlock* GetMetaBlock(uint fourCC,uint key)const;
 
 	static PVRImage* CreateFromFile(const FileIdRef& fileId);
-	static PVRImage* CreateFromMemory(const FileIdRef& fileId,MemoryByteData data);
+	static PVRImage* CreateFromMemory(const FileIdRef& fileId, const FileEntry& fileEntry,MemoryData data);
 	virtual uint GetTextureDataSize(uint mipLevel)const;
 
 private:

@@ -32,7 +32,7 @@ bool FileStreamAudioSource::OpenFile(const FileIdRef& fileId)
 	return false;
 }
 
-bool FileStreamAudioSource::OpenMemory(const FileIdRef& fileId, const MemoryByteData& data)
+bool FileStreamAudioSource::OpenMemory(const FileIdRef& fileId, const MemoryData& data)
 {
 	mAudioFile = AudioFactory::Instance().CreateFromMemory(fileId,data);
 	if (mAudioFile != nullptr)
@@ -51,7 +51,7 @@ void FileStreamAudioSource::OnSeek(uint secondOffset)
 	mAudioStream.Seek(secondOffset);
 }
 
-bool FileStreamAudioSource::OnFetchData(MemoryByteData& outData)
+bool FileStreamAudioSource::OnFetchData(MemoryData& outData)
 {
 	ScopedLock lock(mMutex);
 

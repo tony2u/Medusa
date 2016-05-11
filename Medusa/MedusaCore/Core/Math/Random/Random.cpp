@@ -29,7 +29,7 @@ int Random::Rand()
 	return (mSeed >> 16) & 0x7FFF;
 }
 
-void Random::NextBytes(MemoryByteData& outData)
+void Random::NextBytes(MemoryData& outData)
 {
 	byte* buffer = outData.MutableData();
 	size_t size = outData.Size();

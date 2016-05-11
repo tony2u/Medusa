@@ -25,8 +25,10 @@ enum class ResourceType
 	TextureAtlas,
 	Skeleton,
 	Map,
+	Tileset,
 
-	Count = 16
+
+	Count = 17
 };
 
 enum class ResourceShareType
@@ -34,6 +36,13 @@ enum class ResourceShareType
 	None = 0,
 	Share = 1,
 	ShareAndCache = 2
+};
+
+enum class InstantiateMode
+{
+	None,
+	Sprite,
+	Mesh
 };
 
 MEDUSA_END;

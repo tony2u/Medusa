@@ -30,7 +30,7 @@ bool ThreadPool::Initialize(uint minCount /*= ThreadPool::MinCount*/, uint maxCo
 	return InitializeHelper(minCount, maxCount, autoManaged);
 }
 
-void ThreadPool::Uninitialzie()
+void ThreadPool::Uninitialize()
 {
 	ClearAll();
 	UninitialzieHelper();
@@ -67,7 +67,7 @@ ThreadPoolWork* ThreadPool::CreateWork(ICommand* command)
 
 ThreadPoolWork* ThreadPool::FindWork(const StringRef& name) const
 {
-	return mNamedWorks.TryGetValueWithFailed(name, nullptr);
+	return mNamedWorks.GetOptional(name, nullptr);
 }
 
 void ThreadPool::SubmitWork(ThreadPoolWork& work)
@@ -115,7 +115,7 @@ void ThreadPool::DeleteWork(ThreadPoolWork* work)
 void ThreadPool::DeleteWork(const StringRef& name)
 {
 	RETURN_IF_EMPTY(name);
-	ThreadPoolWork* work = mNamedWorks.RemoveKeyWithValueReturned(name, nullptr);
+	ThreadPoolWork* work = mNamedWorks.RemoveKeyOptional(name, nullptr);
 	SAFE_RELEASE(work);
 }
 
@@ -161,7 +161,7 @@ ThreadPoolTimer* ThreadPool::CreateTimer(ICommand* command, uint delay /*= 0*/, 
 
 ThreadPoolTimer* ThreadPool::FindTimer(const StringRef& name) const
 {
-	return mNamedTimers.TryGetValueWithFailed(name, nullptr);
+	return mNamedTimers.GetOptional(name, nullptr);
 }
 
 void ThreadPool::SubmitTimer( ThreadPoolTimer& timer)
@@ -210,7 +210,7 @@ void ThreadPool::DeleteTimer(ThreadPoolTimer* timer)
 void ThreadPool::DeleteTimer(const StringRef& name)
 {
 	RETURN_IF_EMPTY(name);
-	ThreadPoolTimer* timer = mNamedTimers.RemoveKeyWithValueReturned(name, nullptr);
+	ThreadPoolTimer* timer = mNamedTimers.RemoveKeyOptional(name, nullptr);
 	SAFE_RELEASE(timer);
 }
 
@@ -255,7 +255,7 @@ ThreadPoolWait* ThreadPool::CreateWait(ICommand* command, IWaitable* waitable)
 
 ThreadPoolWait* ThreadPool::FindWait(const StringRef& name) const
 {
-	return mNamedWaits.TryGetValueWithFailed(name, nullptr);
+	return mNamedWaits.GetOptional(name, nullptr);
 
 }
 
@@ -304,7 +304,7 @@ void ThreadPool::DeleteWait(ThreadPoolWait* wait)
 void ThreadPool::DeleteWait(const StringRef& name)
 {
 	RETURN_IF_EMPTY(name);
-	ThreadPoolWait* wait = mNamedWaits.RemoveKeyWithValueReturned(name, nullptr);
+	ThreadPoolWait* wait = mNamedWaits.RemoveKeyOptional(name, nullptr);
 	SAFE_RELEASE(wait);
 }
 

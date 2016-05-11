@@ -16,7 +16,13 @@ IFont::IFont(const FontId& fontId)
 	mChannel = Color4F::Zero;
 	mMaxAdvance = Size2U::Zero;
 
-	mAtlas = TextureAtlasFactory::Instance().CreateEmpty(fontId.ToRef(), ResourceShareType::None);
+	FileId atlasId = fontId;
+	if (!fontId.IsBitmap())
+	{
+		atlasId.Name.Format("{}@{}{}", fontId.Name,mId,FileExtensions::matlas);
+	}
+
+	mAtlas = TextureAtlasFactory::Instance().CreateEmpty(atlasId, ResourceShareType::None);		//TODO: expand to single+font id
 }
 
 
@@ -34,12 +40,12 @@ void IFont::AddChar(FontChar* fontChar)
 
 const FontChar* IFont::GetChar(wchar_t c) const
 {
-	return mChars.TryGetValueWithFailed(c, nullptr);
+	return mChars.GetOptional(c, nullptr);
 }
 
 FontChar* IFont::GetChar(wchar_t c)
 {
-	return mChars.TryGetValueWithFailed(c, nullptr);
+	return mChars.GetOptional(c, nullptr);
 }
 
 const FontChar* IFont::TryLoadChar(wchar_t c)
@@ -58,13 +64,13 @@ void IFont::AddKerning(FontKerning* pair)
 const FontKerning* IFont::GetKerning(int prev, int next) const
 {
 	uint64 id = ((uint64)prev << 32) | ((uint64)next);
-	return mKernings.TryGetValueWithFailed(id, nullptr);
+	return mKernings.GetOptional(id, nullptr);
 }
 
 FontKerning* IFont::GetKerning(int prev, int next)
 {
 	uint64 id = ((uint64)prev << 32) | ((uint64)next);
-	return mKernings.TryGetValueWithFailed(id, nullptr);
+	return mKernings.GetOptional(id, nullptr);
 }
 
 const FontKerning* IFont::TryLoadKerning(int prev, int next)

@@ -7,7 +7,7 @@
 #include "BaseGestureEventArg.h"
 #include "Core/Pattern/Delegate.h"
 #include "Core/Pattern/Event.h"
-#include "Core/Geometry/ScrollDirection.h"
+#include "Geometry/ScrollDirection.h"
 
 MEDUSA_BEGIN;
 

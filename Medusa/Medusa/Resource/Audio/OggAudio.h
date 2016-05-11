@@ -14,7 +14,7 @@ public:
 	virtual AudioFileType AudioType()const override { return AudioFileType::ogg; }
 
 	static OggAudio* CreateFromFile(const FileIdRef& fileId);
-	static OggAudio* CreateFromMemory(const FileIdRef& fileId,MemoryByteData data);
+	static OggAudio* CreateFromMemory(const FileIdRef& fileId,MemoryData data);
 
 };
 

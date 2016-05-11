@@ -24,7 +24,7 @@ protected:
 	virtual void OnUpdateFont() override;
 
 	void CreateMesh();
-
+	IMaterial* CreateLabelMaterial(ITexture* texture);
 protected:
 	List<BaseFontMesh*> mInternalMeshes;
 	List<TextureAtlasPage*> mInternalPages;

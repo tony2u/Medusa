@@ -40,13 +40,17 @@ bool ModelFactory::Uninitialize()
 
 QuadModel* ModelFactory::CreateQuad( const FileIdRef& fileId ,ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
-	QuadModel* model= (QuadModel*)Find(fileId);
-	RETURN_SELF_IF_NOT_NULL(model);
+	QuadModel* model = nullptr;
+	if (shareType != ResourceShareType::None)
+	{
+		model = (QuadModel*)Find(fileId);
+		RETURN_SELF_IF_NOT_NULL(model);
+	}
 
 	IMaterial* material= MaterialFactory::Instance().CreateSingleTexture(fileId);
 
 	model=new QuadModel(fileId,material,Rect2I(Point2I::Zero,material->FirstTexture()->Size()));
-	model->Initialzie();
+	model->Initialize();
 	Add(model, shareType);
 
 	return model;
@@ -56,7 +60,7 @@ SingleLineFontModel* ModelFactory::CreateSingleLineFontModel(const FontId& fontI
 {
 	IFont* font=FontFactory::Instance().Create(fontId);
 	SingleLineFontModel* model=new SingleLineFontModel(font,alignment,restrictSize);
-	model->Initialzie();
+	model->Initialize();
 	model->SetText(text);
 	return model;
 
@@ -67,7 +71,7 @@ MultipleLineFontModel* ModelFactory::CreateMultipleLineFontModel(const FontId& f
 	IFont* font=FontFactory::Instance().Create(fontId);
 	RETURN_NULL_IF_NULL(font);
 	MultipleLineFontModel* model=new MultipleLineFontModel(font,alignment,restrictSize);
-	model->Initialzie();
+	model->Initialize();
 	model->SetText(text);
 	return model;
 
@@ -75,8 +79,14 @@ MultipleLineFontModel* ModelFactory::CreateMultipleLineFontModel(const FontId& f
 
 IModel* ModelFactory::Create( const FileIdRef& fileId,ModelLoadingOptions loadingOptions/*=ModelLoadingOptions::None*/ ,ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
-	IModel* model= Find(fileId);
-	RETURN_SELF_IF_NOT_NULL(model);
+	IModel* model = nullptr;
+	if (shareType != ResourceShareType::None)
+	{
+		model = Find(fileId);
+		RETURN_SELF_IF_NOT_NULL(model);
+	}
+
+	
 
 	switch(FileInfo::ExtractType(fileId.Name))
 	{

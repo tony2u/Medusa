@@ -68,10 +68,10 @@ bool SkeletonSlotVertexTimeline::OnUpdate(float prevElapsed,float dt, float blen
         return false;
     }
 
-	switch (mAttachmentModel->Type().ToInt())
+	switch (mAttachmentModel->Type())
 	{
-		case SkeletonAttachmentType::Mesh.IntValue:
-		case SkeletonAttachmentType::SkinnedMesh.IntValue:
+		case SkeletonAttachmentType::Mesh:
+		case SkeletonAttachmentType::SkinnedMesh:
 		{
 			TextureGeneralMesh* mesh = (TextureGeneralMesh*)slot->Mesh();
 			List<Point3F>& vertices = mesh->MutableVertices();
@@ -100,7 +100,7 @@ bool SkeletonSlotVertexTimeline::OnUpdate(float prevElapsed,float dt, float blen
 		}
 			break;
 		default:
-			Log::AssertFailedFormat("SkeletonSlotVertexTimeline:Invalid attachment type:{} ", mAttachmentModel->Type().ToString().c_str());
+			Log::AssertFailedFormat("SkeletonSlotVertexTimeline:Invalid attachment type:{} ", mAttachmentModel->Type());
 			return false;
 	}
 

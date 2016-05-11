@@ -27,7 +27,7 @@ class ThreadPool :public Singleton<ThreadPool>, protected ThreadPoolImp
 	~ThreadPool(void);
 public:
 	bool Initialize(uint minCount = ThreadPool::MinCount, uint maxCount = ThreadPool::MaxCount, bool autoManaged = true);
-	void Uninitialzie();
+	void Uninitialize();
 #pragma region Work
 public:
 	ThreadPoolWork* TrySumbitWork(Action0 action);

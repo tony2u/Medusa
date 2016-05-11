@@ -3,16 +3,16 @@
 // license that can be found in the LICENSE file.
 #include "MedusaPreCompiled.h"
 #include "DynamicAtlasRGBAImage.h"
-#include "Core/Geometry/Size3.h"
+#include "Geometry/Size3.h"
 #include "Resource/Image/ImageFactory.h"
 
 MEDUSA_BEGIN;
 
-DynamicAtlasRGBAImage::DynamicAtlasRGBAImage(const FileIdRef& fileId,Size2U initImageSize,Size2U maxImageSize,GraphicsInternalFormat internalFormat,GraphicsPixelFormat imageFormat,bool isPreMultiplyAlpha )
-	:RGBAImage(fileId,initImageSize,internalFormat,imageFormat,isPreMultiplyAlpha),
+DynamicAtlasRGBAImage::DynamicAtlasRGBAImage(const FileIdRef& fileId,Size2U initImageSize,Size2U maxImageSize, PixelType pixelType,bool isPreMultiplyAlpha )
+	:RGBAImage(fileId,initImageSize,pixelType,isPreMultiplyAlpha),
 	mPack(initImageSize),mMaxImageSize(maxImageSize)
 {
-	mImageData.ClearZero();
+	
 }
 
 
@@ -21,7 +21,7 @@ DynamicAtlasRGBAImage::~DynamicAtlasRGBAImage(void)
 
 }
 
-bool DynamicAtlasRGBAImage::AddImageRect(const Size2U& size,int pitch,const MemoryByteData& imageData,GraphicsPixelFormat pixelFormat,GraphicsPixelDataType srcDataType,
+bool DynamicAtlasRGBAImage::AddImageRect(const Size2U& size,int pitch,const MemoryData& imageData, PixelType pixelType,
 								  Rect2U& outRect, bool isFlipY/*=false*/,GraphicsPixelConvertMode mode/*=PixelConvertMode::Normal*/)
 {
 	RETURN_FALSE_IF(size>mMaxImageSize);
@@ -29,7 +29,7 @@ bool DynamicAtlasRGBAImage::AddImageRect(const Size2U& size,int pitch,const Memo
 	if (outRect!=Rect2U::Zero)
 	{
 		outRect.Size-=1;	//should -1 to remove edge
-		CopyImage(outRect,imageData,pixelFormat,srcDataType,pitch,isFlipY,mode);
+		CopyImage(outRect,imageData,pixelType,pitch,isFlipY,mode);
 		return true;
 	}
 
@@ -47,16 +47,16 @@ bool DynamicAtlasRGBAImage::AddImageRect(const Size2U& size,int pitch,const Memo
 		outRect=mPack.Insert(size,SkylineBinPack::LevelChoiceHeuristic::LevelBottomLeft);
 		if (outRect!=Rect2U::Zero)
 		{
-			MemoryByteData newImageData=MemoryByteData::Alloc(mImageSize.Area()*BytesPerComponent());
+			MemoryData newImageData=MemoryData::Alloc(mImageSize.Area()*BytesPerComponent());
 			//2.copy image data to new image
 
-			ImageFactory::CopyImage(newImageData,mPixelFormat,mPixelDataType,newImageSize,Rect2U(Point2F::Zero,mImageSize),mImageData,mPixelFormat,mPixelDataType,0,false,GraphicsPixelConvertMode::Normal);
+			ImageFactory::CopyImage(newImageData,mPixelType,newImageSize,Rect2U(Point2F::Zero,mImageSize),mImageData, mPixelType,0,false,GraphicsPixelConvertMode::Normal);
 			mImageSize=newImageSize;
 			mImageData=newImageData;
 
 			//draw new image
 			outRect.Size-=1;//should -1 to remove edge
-			CopyImage(outRect,imageData,pixelFormat,srcDataType,pitch,isFlipY,mode);
+			CopyImage(outRect,imageData,pixelType,pitch,isFlipY,mode);
 			return true;
 		}
 

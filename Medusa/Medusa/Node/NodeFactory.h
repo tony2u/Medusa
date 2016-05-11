@@ -4,12 +4,12 @@
 #pragma once
 #include "Core/Pattern/Singleton.h"
 #include "Graphics/GraphicsTypes.h"
-#include "Core/Geometry/Size2.h"
+#include "Geometry/Size2.h"
 #include "Node/NodeDefines.h"
 #include "Core/IO/FileIdRef.h"
-#include "Core/Geometry/Rect2.h"
-#include "Resource/TextureAtlas/TextureAtlasTypes.h"
-#include "Core/Geometry/GeometryDefines.h"
+#include "Geometry/Rect2.h"
+#include "Resource/TextureAtlas/TextureAtlasDefines.h"
+#include "Geometry/GeometryDefines.h"
 
 MEDUSA_BEGIN;
 
@@ -35,12 +35,15 @@ public:
 
 	Sprite* CreateEmptySprite();
 
-	Sprite* CreateQuadSprite(const FileIdRef& textureName, const Rect2F& textureRect = Rect2F::Zero);
+	Sprite* CreateSprite(const FileIdRef& textureName, const Rect2F& textureRect = Rect2F::Zero);
+	Sprite* CreateSprite(ITexture* texture, const Rect2F& textureRect = Rect2F::Zero);
+
 	NineGridSprite* CreateNineGridSprite( const Size2F& targetSize, const FileIdRef& textureName, const ThicknessF& padding, const Rect2F& textureRect = Rect2F::Zero);
 	Sprite* CreatePODSprite(const FileIdRef& modelName);
 
-	Sprite* CreateSpriteFromAtlasRegion(StringRef regionName, const FileIdRef& atlasFileId, TextureAtlasFileFormat fileFormat = TextureAtlasFileFormat::Spine, uint atlasPageCount = 1);
+	Sprite* CreateSpriteFromAtlasRegion(StringRef regionName, const FileIdRef& atlasFileId, TextureAtlasType fileFormat = TextureAtlasType::None);
 	Sprite* CreateSpriteFromAtlasRegion(TextureAtlasRegion* region);
+
 
 
 	ILabel* CreateMultipleLineLabel(const FontId& fontId, StringRef text, Alignment alignment = Alignment::LeftBottom, Size2F restrictSize = Size2F::Zero, bool isStatic = false);
@@ -54,7 +57,7 @@ public:
 
 	IPanel* CreatePanel(PanelType panelType);
 
-	TextureButton* CreateTextureButton(const FileIdRef& normalTextureName, const FileIdRef& selectedTextureName = FileIdRef::Empty, const FileIdRef& disabledTextureName = FileIdRef::Empty, const FileIdRef& disabledSelectedTextureName = FileIdRef::Empty);
+	TextureButton* CreateTextureButton(const FileIdRef& normalTextureName, const FileIdRef& selectedTextureName = FileIdRef::Empty, const FileIdRef& disabledTextureName = FileIdRef::Empty, const FileIdRef& disabledSelectedTextureName = FileIdRef::Empty, bool isEnableNineGrid = false, const Size2F& targetSize = Size2F::Zero, const ThicknessF& padding = ThicknessF::Zero);
 	NodeButton* CreateNodeButton(const FileIdRef& normalTextureName, const FileIdRef& selectedTextureName = FileIdRef::Empty, const FileIdRef& disabledTextureName = FileIdRef::Empty, const FileIdRef& disabledSelectedTextureName = FileIdRef::Empty);
 
 	TextureProgressBar* CreateTextureProgressBar(ProgressType progressType, const FileIdRef& textureName, float percent = 1.f);

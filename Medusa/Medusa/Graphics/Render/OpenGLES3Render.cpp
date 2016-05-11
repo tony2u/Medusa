@@ -4,10 +4,10 @@
 #include "MedusaPreCompiled.h"
 #include "OpenGLES3Render.h"
 #include "Core/Log/Log.h"
-#include "Core/Geometry/Size3.h"
-#include "Core/Geometry/Rect2.h"
-#include "Core/Geometry/Cube.h"
-#include "Core/Geometry/Point4.h"
+#include "Geometry/Size3.h"
+#include "Geometry/Rect2.h"
+#include "Geometry/Cube.h"
+#include "Geometry/Point4.h"
 
 MEDUSA_BEGIN;
 
@@ -40,7 +40,7 @@ void OpenGLES3Render::SetDrawBufferTargets(uint count, const GraphicsColorBuffer
 
 void OpenGLES3Render::BlitFrameBuffer(const Rect2I& srcRect, const Rect2I& destRect, GraphicsBufferComponentMask mask, GraphicsTextureMagFilter filter) const
 {
-	glBlitFramebuffer(srcRect.Left(), srcRect.Bottom(), srcRect.Right(), srcRect.Top(), destRect.Left(), destRect.Bottom(), destRect.Right(), destRect.Top(), mask.ToInt(), (uint)filter);
+	glBlitFramebuffer(srcRect.Left(), srcRect.Bottom(), srcRect.Right(), srcRect.Top(), destRect.Left(), destRect.Bottom(), destRect.Right(), destRect.Top(), (int)mask, (uint)filter);
 	AssertSuccess();
 }
 
@@ -82,15 +82,15 @@ void OpenGLES3Render::GetInternalFormatParameter(GraphicsInternalFormat internal
 #pragma endregion Frame buffer
 
 #pragma region Texture
-void OpenGLES3Render::LoadTexture3D(GraphicsTextureTarget textureTarget, int level, GraphicsInternalFormat internalformat, const Size3U& size, int border, GraphicsPixelFormat format, GraphicsPixelDataType type, const void *pixels) const
+void OpenGLES3Render::LoadTexture3D(GraphicsTextureTarget textureTarget, int level, PixelType pixelType, const Size3U& size, int border, const void *pixels) const
 {
-	glTexImage3D((uint)textureTarget, level, (uint)internalformat, size.Width, size.Height, size.Depth, border, (uint)format, type.ToInt(), pixels);
+	glTexImage3D((uint)textureTarget, level, (uint)pixelType.InternalFormat(), size.Width, size.Height, size.Depth, border, (uint)pixelType.Format(), (int)pixelType.DataType(), pixels);
 	AssertSuccess();
 }
 
-void OpenGLES3Render::LoadSubTexture3D(GraphicsTextureTarget textureTarget, int level, const CubeI& rect, GraphicsPixelFormat format, GraphicsPixelDataType type, const void *pixels) const
+void OpenGLES3Render::LoadSubTexture3D(GraphicsTextureTarget textureTarget, int level, const CubeI& rect, PixelType pixelType, const void *pixels) const
 {
-	glTexSubImage3D((uint)textureTarget, level, rect.Origin.X, rect.Origin.Y, rect.Origin.Z, rect.Size.Width, rect.Size.Height, rect.Size.Depth, (uint)format, type.ToInt(), pixels);
+	glTexSubImage3D((uint)textureTarget, level, rect.Origin.X, rect.Origin.Y, rect.Origin.Z, rect.Size.Width, rect.Size.Height, rect.Size.Depth, (uint)pixelType.Format(), (int)pixelType.DataType(), pixels);
 	AssertSuccess();
 }
 
@@ -100,27 +100,27 @@ void OpenGLES3Render::CopySubTexture3D(GraphicsTextureTarget textureTarget, int 
 	AssertSuccess();
 }
 
-void OpenGLES3Render::LoadCompressedTexture3D(GraphicsTextureTarget textureTarget, int level, GraphicsInternalFormat internalformat, const Size3U& size, int border, uint imageSize, const void *pixels) const
+void OpenGLES3Render::LoadCompressedTexture3D(GraphicsTextureTarget textureTarget, int level, PixelType pixelType, const Size3U& size, int border, uint imageSize, const void *pixels) const
 {
-	glCompressedTexImage3D((uint)textureTarget, level, (uint)internalformat, size.Width, size.Width, size.Height, border, imageSize, pixels);
+	glCompressedTexImage3D((uint)textureTarget, level, (uint)pixelType.InternalFormat(), size.Width, size.Width, size.Height, border, imageSize, pixels);
 	AssertSuccess();
 }
 
-void OpenGLES3Render::LoadCompressedSubTexture3D(GraphicsTextureTarget textureTarget, int level, GraphicsInternalFormat internalformat, const CubeI& rect, uint imageSize, const void *pixels) const
+void OpenGLES3Render::LoadCompressedSubTexture3D(GraphicsTextureTarget textureTarget, int level, PixelType pixelType, const CubeI& rect, uint imageSize, const void *pixels) const
 {
-	glCompressedTexSubImage3D((uint)textureTarget, level, rect.Origin.X, rect.Origin.Y, rect.Origin.Z, rect.Size.Width, rect.Size.Height, rect.Size.Depth, (uint)internalformat, imageSize, pixels);
+	glCompressedTexSubImage3D((uint)textureTarget, level, rect.Origin.X, rect.Origin.Y, rect.Origin.Z, rect.Size.Width, rect.Size.Height, rect.Size.Depth, (uint)pixelType.InternalFormat(), imageSize, pixels);
 	AssertSuccess();
 }
 
-void OpenGLES3Render::SetTextureStorage2D(GraphicsTextureTarget textureTarget, uint level, GraphicsInternalFormat internalformat, const Size2U& size) const
+void OpenGLES3Render::SetTextureStorage2D(GraphicsTextureTarget textureTarget, uint level, PixelType pixelType, const Size2U& size) const
 {
-	glTexStorage2D((uint)textureTarget, level, (uint)internalformat, size.Width, size.Height);
+	glTexStorage2D((uint)textureTarget, level, (uint)pixelType.InternalFormat(), size.Width, size.Height);
 	AssertSuccess();
 }
 
-void OpenGLES3Render::SetTextureStorage3D(GraphicsTextureTarget textureTarget, uint level, GraphicsInternalFormat internalformat, const Size3U& size) const
+void OpenGLES3Render::SetTextureStorage3D(GraphicsTextureTarget textureTarget, uint level, PixelType pixelType, const Size3U& size) const
 {
-	glTexStorage3D((uint)textureTarget, level, (uint)internalformat, size.Width, size.Height, size.Depth);
+	glTexStorage3D((uint)textureTarget, level, (uint)pixelType.InternalFormat(), size.Width, size.Height, size.Depth);
 	AssertSuccess();
 }
 #pragma endregion Texture
@@ -179,7 +179,7 @@ uint OpenGLES3Render::GetQueryObjectParameter(uint query, GraphicsQueryObjectPar
 
 void* OpenGLES3Render::MapBufferRange(GraphicsBufferType bufferType, int offset, uint length, GraphicsMapBufferMask mask) const
 {
-	void* p = glMapBufferRange((uint)bufferType, offset, length, mask.ToInt());
+	void* p = glMapBufferRange((uint)bufferType, offset, length, (int)mask);
 	AssertSuccess();
 	return p;
 }
@@ -619,13 +619,13 @@ void OpenGLES3Render::DeleteSync(intp sync) const
 
 void OpenGLES3Render::ClientWaitSync(intp sync, GraphicsSyncMask mask, uint64 timeout) const
 {
-	glClientWaitSync((GLsync)sync, mask.ToInt(), timeout);
+	glClientWaitSync((GLsync)sync, (int)mask, timeout);
 	AssertSuccess();
 }
 
 void OpenGLES3Render::WaitSync(intp sync, GraphicsSyncMask mask, uint64 timeout) const
 {
-	glWaitSync((GLsync)sync, mask.ToInt(), timeout);
+	glWaitSync((GLsync)sync, (int)mask, timeout);
 	AssertSuccess();
 }
 

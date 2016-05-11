@@ -13,7 +13,7 @@
 #include "Resource/ResourceNames.h"
 #include "Node/NodeFactory.h"
 #include "Node/Action/Basic/FadeBySpeedAction.h"
-#include "Core/Math/Model/SpringScrollMathModel.h"
+#include "Geometry/Scroll/SpringScrollMathModel.h"
 
 MEDUSA_BEGIN;
 
@@ -376,7 +376,7 @@ void ScrollPanel::SetVerticalScrollBarWidth(float val)
 	OnUpdateScrollBar();
 }
 
-bool ScrollPanel::Update(float dt, NodeUpdateFlags flag /*= NodeUpdateFlags::None*/)
+bool ScrollPanel::OnUpdate(float dt, NodeUpdateFlags flag /*= NodeUpdateFlags::None*/)
 {
 	bool isMoved = mScrollModel->UpdateModel(dt);
 	if (isMoved)

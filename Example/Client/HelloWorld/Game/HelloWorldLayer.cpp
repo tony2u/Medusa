@@ -42,7 +42,7 @@ bool HelloWorldLayer::Initialize()
 }
 
 
-bool HelloWorldLayer::Enter()
+bool HelloWorldLayer::OnEnter()
 {
 	auto winSize = ResolutionAdapter::Instance().WinSize();
 	auto* camera = CameraFactory::Instance().CreateFromModel("Camera01", "Scene.pod", winSize, false);
@@ -51,4 +51,4 @@ bool HelloWorldLayer::Enter()
 	return true;
 }
 
-MEDUSA_IMPLEMENT_LAYER(HelloWorldLayer, ILayer, StringRef::Empty);
+MEDUSA_IMPLEMENT_LAYER(HelloWorldLayer, ILayer, StringRef::Empty, StringRef::Empty);

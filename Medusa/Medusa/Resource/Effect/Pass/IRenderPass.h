@@ -9,8 +9,6 @@
 #include "Graphics/State/RenderStateSet.h"
 #include "Core/Pattern/Delegate.h"
 #include "Resource/IResource.h"
-#include "Graphics/RenderPassFlags.h"
-#include "Rendering/RenderingFlags.h"
 #include "Rendering/RenderingTypes.h"
 MEDUSA_BEGIN;
 
@@ -40,7 +38,7 @@ public:
 	
 	RenderPassFlags Flags() const { return mFlags; }
 
-	virtual void UpdateShaderVariables(RenderingStep step)=0;
+	virtual void UpdateShaderUniforms(RenderingStep step)=0;
 	virtual void Validate()=0;
 	virtual void Invalidate()=0;
 

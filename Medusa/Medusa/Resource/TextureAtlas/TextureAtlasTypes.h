@@ -3,14 +3,19 @@
 // license that can be found in the LICENSE file.
 #pragma once
 
-#include "MedusaCorePreCompiled.h"
+#include "MedusaPreCompiled.h"
 
 MEDUSA_BEGIN;
 
 enum class TextureAtlasFileFormat
 {
-	Spine = 0,
-	Count = 1,
+	MedusaText = 0,
+	MedusaBinary = 1,
+
+	Spine = 2,
+	Tile=3,
+	
+	Count = 4,
 
 	//alias
 	Libdgx = Spine,

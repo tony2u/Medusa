@@ -8,6 +8,22 @@
 MEDUSA_BEGIN;
 namespace Compile
 {
+	const char* FixedClassName(const char* name);
+
+	template <typename T, typename Enable = void>
+	struct IsCustomEnum
+	{
+		const static bool Value = false;
+	};
+
+	template <typename T>
+	struct IsCustomEnum < T, typename std::enable_if<T::IsEnum>::type >
+	{
+		const static bool Value = true;
+	};
+
+
+
 	template <typename T>
 	class TypeTraits
 	{
@@ -96,11 +112,37 @@ namespace Compile
 		typedef typename std::conditional<IsArithmetic || IsPointer || IsMemberPointer || IsEnum, T, ConstReferenceType>::type ParameterType;
 		typedef typename std::conditional<IsArithmetic || IsPointer || IsMemberPointer || IsEnum, ConstType, ConstReferenceType>::type ConstReturnType;
 		typedef typename std::conditional<IsArithmetic || IsPointer || IsMemberPointer || IsEnum, T, ReferenceType>::type ReturnType;
+
+		static const char* FixedClassName()
+		{
+			//a little trick
+			const char* name = typeid(UnderlyingType).name();	//return "struct C" or "class C"
+			return Compile::FixedClassName(name);
+		}
 	};
 
+	template<typename T>
+	struct ReturnCountTraits
+	{
+		constexpr static int Value = 1;
+	};
+
+	template<>
+	struct ReturnCountTraits<void>
+	{
+		constexpr static int Value = 0;
+	};
+
+	template<typename... P>
+	struct ReturnCountTraits<std::tuple<P...>>
+	{
+		constexpr static int Value = sizeof...(P);
+	};
 
 	namespace FunctionTraitsDetail
 	{
+
+		
 
 		template <typename F>
 		struct _FunctionTraitsDetail;
@@ -137,11 +179,15 @@ namespace Compile
     template <typename R, typename C, typename... P> \
     struct _FunctionTraitsDetail<R(C::*)(P...) __VA_ARGS__>          \
          : _FunctionTraitsDetail<R(P...)>                            \
-    {typedef C ClassType;};                                              \
+	 {\
+		typedef C ClassType;\
+		};                                              \
     template <typename R, typename C, typename... P> \
     struct _FunctionTraitsDetail<R(C::*)(P..., ...) __VA_ARGS__>     \
          : _FunctionTraitsDetail<R(P..., ...)>                       \
-    {typedef C ClassType;};
+    {\
+		typedef C ClassType;\
+		};     
 
 		FUNCTION_TRAITS_IMPL__()
 			FUNCTION_TRAITS_IMPL__(const)
@@ -170,6 +216,7 @@ namespace Compile
 			typedef R type(P...);
 			typedef R return_type;
 			typedef std::tuple<P...> parameters;
+			constexpr static int ReturnCount = ReturnCountTraits<R>::Value;
 		};
 
 		template <typename R, typename... P>
@@ -178,21 +225,22 @@ namespace Compile
 			typedef R type(P..., ...);
 			typedef R return_type;
 			typedef std::tuple<P...> parameters;
-
+			constexpr static int ReturnCount = ReturnCountTraits<R>::Value;
 		};
 
+		//check member function
 	}
 
 	template <typename F>
 	using FunctionTraits = FunctionTraitsDetail::_FunctionTraitsDetail<typename std::decay<F>::type>;
 
-	template<int...>
+	template<size_t...>
 	struct IndexTuple {};
 
-	template<int N, int... Indexes>
+	template<size_t N, size_t... Indexes>
 	struct MakeIndexes : MakeIndexes<N - 1, N - 1, Indexes...> {};
 
-	template<int... N>
+	template<size_t... N>
 	struct MakeIndexes<0, N...>
 	{
 		typedef IndexTuple<N...> type;

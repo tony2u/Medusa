@@ -60,10 +60,11 @@ protected:
 //SIREN_HEADER_SCHEMA_BEGIN
 struct DropPoolItem::Schema
 {
-	SIREN_PROPERTY(0, 0, Required, DropPoolItem, uint, mId);
-	SIREN_PROPERTY(1, 1, Optional, DropPoolItem, int, mType);
-	SIREN_PROPERTY(2, 2, Optional, DropPoolItem, int, mCount);
-	SIREN_PROPERTIES_3(void,DropPoolItem);
-};//SIREN_HEADER_SCHEMA_END
+	SIREN_FIELD(0, 0, Required, DropPoolItem, uint, mId);
+	SIREN_FIELD(1, 1, Optional, DropPoolItem, int, mType);
+	SIREN_FIELD(2, 2, Optional, DropPoolItem, int, mCount);
+	SIREN_FIELDS_3(void,DropPoolItem);
+};
+//SIREN_HEADER_SCHEMA_END
 
 MEDUSA_END;

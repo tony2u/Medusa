@@ -4,9 +4,9 @@
 #pragma once
 #include "MedusaPreDeclares.h"
 #include "Resource/Model/Mesh/IMesh.h"
-#include "Core/Geometry/Point2.h"
-#include "Core/Geometry/Point3.h"
-#include "Core/Geometry/Color4.h"
+#include "Geometry/Point2.h"
+#include "Geometry/Point3.h"
+#include "Geometry/Color4.h"
 #include "Graphics/GraphicsTypes.h"
 
 

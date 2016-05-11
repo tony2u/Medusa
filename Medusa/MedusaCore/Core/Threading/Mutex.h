@@ -48,6 +48,23 @@ public:
 };
 
 
+/*
+A not-recursive Mutex is similar to a Mutex,
+which means that a deadlock will occur if the same
+thread tries to lock a mutex it has already locked again.
+Locking a not-recursive Mutex is faster than locking a recursive Mutex.
+*/
+class RecursiveMutex :public Mutex
+{
+public:
+	RecursiveMutex(bool isInitializeNow = true)
+		:Mutex(true, isInitializeNow)
+	{
+	}
+
+};
+
+
 class NoMutex
 {
 	friend class ThreadEvent;

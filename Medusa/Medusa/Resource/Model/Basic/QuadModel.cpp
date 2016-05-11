@@ -21,9 +21,9 @@ QuadModel::~QuadModel(void)
 	
 }
 
-bool QuadModel::Initialzie(ModelLoadingOptions loadingOptions/*=ModelLoadingOptions::None*/)
+bool QuadModel::Initialize(ModelLoadingOptions loadingOptions/*=ModelLoadingOptions::None*/)
 {
-	RETURN_FALSE_IF_FALSE(BaseSingleTextureModel::Initialzie(loadingOptions));
+	RETURN_FALSE_IF_FALSE(BaseSingleTextureModel::Initialize(loadingOptions));
 	
 	//const Size2U& textureSize= mMeshModelNode.Mesh().Material()->FirstTexture()->Size();
 

@@ -5,13 +5,126 @@
 #include "IRender.h"
 #include "Core/Log/Log.h"
 #include "Core/String/StringParser.h"
-#include "Core/Geometry/GeometryFactory.h"
+#include "Geometry/GeometryFactory.h"
 #include "Resource/Effect/Shader/Parameter/ShaderAttribute.h"
 #include "Core/Collection/Array.h"
 #include "Graphics/State/SamplerRenderState.h"
 #include "Core/String/Format/Format.h"
 
 MEDUSA_BEGIN;
+
+static HeapString ConvetFrontFace(int val)
+{
+	const static int paramSize = 2;
+	
+
+	const static GraphicsFrontFace paramNames[paramSize] =
+	{
+		GraphicsFrontFace::ClockWise,
+		GraphicsFrontFace::CounterClockWise,
+	};
+
+	const static char* paramKeys[paramSize] =
+	{
+		"ClockWise",
+		"CounterClockWise",
+	};
+
+	FOR_EACH_SIZE(i, paramSize)
+	{
+		if (val == (int)paramNames[i])
+		{
+			return HeapString(paramKeys[i]);
+		}
+	}
+	return StringParser::ToString(val);
+}
+
+
+static HeapString ConvetFace(int val)
+{
+	const static int paramSize = 3;
+
+	const static GraphicsFace paramNames[paramSize] =
+	{
+		GraphicsFace::Front,
+		GraphicsFace::Back,
+		GraphicsFace::FrontAndBack,
+	};
+
+	const static char* paramKeys[paramSize] =
+	{
+		"Front",
+		"Back",
+		"FrontAndBack",
+	};
+
+	FOR_EACH_SIZE(i, paramSize)
+	{
+		if (val == (int)paramNames[i])
+		{
+			return HeapString(paramKeys[i]);
+		}
+	}
+	return StringParser::ToString(val);
+}
+
+static HeapString ConvetBlendEquation(int val)
+{
+	const static int paramSize = 3;
+
+	const static GraphicsBlendEquation paramNames[paramSize] =
+	{
+		GraphicsBlendEquation::Add,
+		GraphicsBlendEquation::Subtract,
+		GraphicsBlendEquation::ReverserSubtract,
+	};
+
+	const static char* paramKeys[paramSize] =
+	{
+		"Add",
+		"Subtract",
+		"ReverserSubtract",
+	};
+
+	FOR_EACH_SIZE(i, paramSize)
+	{
+		if (val == (int)paramNames[i])
+		{
+			return HeapString(paramKeys[i]);
+		}
+	}
+	return StringParser::ToString(val);
+}
+
+
+static HeapString ConvetHintMode(int val)
+{
+	const static int paramSize = 3;
+
+	const static GraphicsHintMode paramNames[paramSize] =
+	{
+		GraphicsHintMode::Fastest,
+		GraphicsHintMode::Nicest,
+		GraphicsHintMode::DontCare,
+	};
+
+	const static char* paramKeys[paramSize] =
+	{
+		"Fastest",
+		"Nicest",
+		"DontCare",
+	};
+
+	FOR_EACH_SIZE(i, paramSize)
+	{
+		if (val == (int)paramNames[i])
+		{
+			return HeapString(paramKeys[i]);
+		}
+	}
+	return StringParser::ToString(val);
+}
 
 static HeapString ConvetInternalFormat(int val)
 {
@@ -53,6 +166,122 @@ static HeapString ConvetInternalFormat(int val)
 	FOR_EACH_SIZE(i,paramSize)
 	{
 		if (val==(int)paramNames[i])
+		{
+			return HeapString(paramKeys[i]);
+		}
+	}
+	return StringParser::ToString(val);
+}
+
+
+static HeapString ConvetStencilOperation(int val)
+{
+	const static int paramSize = 8;
+	const static GraphicsStencilOperation paramNames[paramSize] =
+	{
+		GraphicsStencilOperation::Keep,
+		GraphicsStencilOperation::Zero,
+		GraphicsStencilOperation::ReplaceToRef,
+		GraphicsStencilOperation::Increase,
+		GraphicsStencilOperation::IncreaseWrap,
+		GraphicsStencilOperation::Decrease,
+		GraphicsStencilOperation::DecreaseWrap,
+		GraphicsStencilOperation::Invert,
+
+	};
+	const static char* paramKeys[paramSize] =
+	{
+		"Keep",
+		"Zero",
+		"ReplaceToRef",
+		"Increase",
+		"IncreaseWrap",
+		"Decrease",
+		"DecreaseWrap",
+		"Invert",
+	};
+
+	FOR_EACH_SIZE(i, paramSize)
+	{
+		if (val == (int)paramNames[i])
+		{
+			return HeapString(paramKeys[i]);
+		}
+	}
+	return StringParser::ToString(val);
+}
+
+
+
+static HeapString ConvetFuncType(int val)
+{
+	const static int paramSize = 8;
+	const static GraphicsFuncType paramNames[paramSize] =
+	{
+		GraphicsFuncType::Never,
+		GraphicsFuncType::Less,
+		GraphicsFuncType::Equal,
+		GraphicsFuncType::LessOrEqual,
+		GraphicsFuncType::Greater,
+		GraphicsFuncType::NotEqual,
+		GraphicsFuncType::GreaterOrEqual,
+		GraphicsFuncType::Always,
+
+	};
+	const static char* paramKeys[paramSize] =
+	{
+		"Never",
+		"Less",
+		"Equal",
+		"LessOrEqual",
+		"Greater",
+		"NotEqual",
+		"GreaterOrEqual",
+		"Always",
+	};
+
+	FOR_EACH_SIZE(i, paramSize)
+	{
+		if (val == (int)paramNames[i])
+		{
+			return HeapString(paramKeys[i]);
+		}
+	}
+	return StringParser::ToString(val);
+}
+
+
+
+
+static HeapString ConvetPixelDataType(int val)
+{
+	const static int paramSize = 7;
+
+	const static GraphicsPixelDataType paramNames[paramSize] =
+	{
+		GraphicsPixelDataType::Byte,
+		GraphicsPixelDataType::UnsignedShort565,
+		GraphicsPixelDataType::UnsignedShort4444,
+		GraphicsPixelDataType::UnsignedShort5551,
+		GraphicsPixelDataType::HalfFloatOES,
+		GraphicsPixelDataType::FloatOES,
+		GraphicsPixelDataType::UInt,
+	};
+
+	const static char* paramKeys[paramSize] =
+	{
+		"Byte",
+		"UnsignedShort565",
+		"UnsignedShort4444",
+		"UnsignedShort5551",
+		"HalfFloatOES",
+		"FloatOES",
+		"UInt"
+	};
+
+	FOR_EACH_SIZE(i, paramSize)
+	{
+		if (val == (int)paramNames[i])
 		{
 			return HeapString(paramKeys[i]);
 		}
@@ -468,7 +697,7 @@ void IRender::PrintAll() const
 					break;
 				case GraphicsIntegerName::BlendAlphaEquation:
 				case GraphicsIntegerName::BlendRGBEquation:
-					str+=GraphicsBlendEquation(outVal).ToString();
+					str+= ConvetBlendEquation(outVal);
 					break;
 				case GraphicsIntegerName::BlendSrcAlphaFunc:
 				case GraphicsIntegerName::BlendSrcRGBFunc:
@@ -479,15 +708,15 @@ void IRender::PrintAll() const
 					str+=ConvetBlendDestFunc(outVal);
 					break;
 				case GraphicsIntegerName::CullFaceMode:
-					str+=GraphicsFace(outVal).ToString();
+					str+= ConvetFace(outVal);
 					break;
 				case GraphicsIntegerName::FrontFace:
-					str+=GraphicsFrontFace(outVal).ToString();
+					str+= ConvetFrontFace(outVal);
 					break;
 				case GraphicsIntegerName::DepthFunc:
 				case GraphicsIntegerName::StencilBackFunc:
 				case GraphicsIntegerName::StencilFunc:
-					str+=GraphicsFuncType(outVal).ToString();
+					str+= ConvetFuncType(outVal);
 					break;
 				case GraphicsIntegerName::StencilFailOperation:
 				case GraphicsIntegerName::StencilPassDepthFailOperation:
@@ -495,13 +724,13 @@ void IRender::PrintAll() const
 				case GraphicsIntegerName::StencilBackFailOperation:
 				case GraphicsIntegerName::StencilBackPassDepthFailOperation:
 				case GraphicsIntegerName::StencilBackPassDepthPassOperation:
-					str+=GraphicsStencilOperation(outVal).ToString();
+					str+= ConvetStencilOperation(outVal);
 					break;
 				case GraphicsIntegerName::GenerateMipmapHint:
-					str+=GraphicsHintMode(outVal).ToString();
+					str += ConvetHintMode(outVal);
 					break;
 				case GraphicsIntegerName::ImplementionColorReadType:
-					str+=GraphicsPixelDataType(outVal).ToString();
+					str += ConvetPixelDataType(outVal);
 					break;
 				case GraphicsIntegerName::ImplementionColorReadFormat:
 					str+=ConvetInternalFormat(outVal);
@@ -769,19 +998,19 @@ bool IRender::Initialize()
 	TryGetBooleanArray(GraphicsBooleanArrayName::ColorWriteMask,outColorMask);
 	if (outColorMask[0])
 	{
-		mColorWriteMask|=GraphicsColorMask::R;
+		MEDUSA_FLAG_ADD(mColorWriteMask, GraphicsColorMask::R);
 	}
 	if (outColorMask[1])
 	{
-		mColorWriteMask|=GraphicsColorMask::G;
+		MEDUSA_FLAG_ADD(mColorWriteMask, GraphicsColorMask::G);
 	}
 	if (outColorMask[2])
 	{
-		mColorWriteMask|=GraphicsColorMask::B;
+		MEDUSA_FLAG_ADD(mColorWriteMask, GraphicsColorMask::B);
 	}
 	if (outColorMask[3])
 	{
-		mColorWriteMask|=GraphicsColorMask::A;
+		MEDUSA_FLAG_ADD(mColorWriteMask, GraphicsColorMask::A);
 	}
 
 	//int values
@@ -799,17 +1028,17 @@ bool IRender::Initialize()
 	TryGetInteger(GraphicsIntegerName::RenderBufferBinding, (int&)mRenderBufferBinding);
 	TryGetInteger(GraphicsIntegerName::BlendDestAlphaFunc,(int&)mBlendDestAlphaFunc);
 	TryGetInteger(GraphicsIntegerName::BlendDestRGBFunc,(int&)mBlendDestRGBFunc);
-	TryGetInteger(GraphicsIntegerName::BlendAlphaEquation,mBlendAlphaEquation.ForceGetReference());
-	TryGetInteger(GraphicsIntegerName::BlendRGBEquation,mBlendRGBEquation.ForceGetReference());
+	TryGetInteger(GraphicsIntegerName::BlendAlphaEquation,(int&)mBlendAlphaEquation);
+	TryGetInteger(GraphicsIntegerName::BlendRGBEquation, (int&)mBlendRGBEquation);
 	TryGetInteger(GraphicsIntegerName::BlendSrcAlphaFunc,(int&)mBlendSrcAlphaFunc);
 	TryGetInteger(GraphicsIntegerName::BlendSrcRGBFunc,(int&)mBlendSrcRGBFunc);
-	TryGetInteger(GraphicsIntegerName::CullFaceMode,mCullFaceMode.ForceGetReference());
+	TryGetInteger(GraphicsIntegerName::CullFaceMode, (int&)mCullFaceMode);
 	TryGetInteger(GraphicsIntegerName::CurrentProgram, (int&)mCurrentProgram);
-	TryGetInteger(GraphicsIntegerName::DepthFunc,mDepthFunc.ForceGetReference());
-	TryGetInteger(GraphicsIntegerName::FrontFace,mFrontFace.ForceGetReference());
-	TryGetInteger(GraphicsIntegerName::GenerateMipmapHint,mGenerateMipmapHint.ForceGetReference());
+	TryGetInteger(GraphicsIntegerName::DepthFunc, (int&)mDepthFunc);
+	TryGetInteger(GraphicsIntegerName::FrontFace, (int&)mFrontFace);
+	TryGetInteger(GraphicsIntegerName::GenerateMipmapHint, (int&)mGenerateMipmapHint);
 	TryGetInteger(GraphicsIntegerName::ImplementionColorReadFormat,(int&)mImplementionColorReadFormat);
-	TryGetInteger(GraphicsIntegerName::ImplementionColorReadType,mImplementionColorReadType.ForceGetReference());
+	TryGetInteger(GraphicsIntegerName::ImplementionColorReadType, (int&)mImplementionColorReadType);
 	TryGetInteger(GraphicsIntegerName::MaxCombinedTextureUnitCount,mMaxCombinedTextureUnitCount);
 	TryGetInteger(GraphicsIntegerName::MaxTextureUnitCount,mMaxFragmentTextureUnitCount);
 	TryGetInteger(GraphicsIntegerName::MaxVertexTextureUnitCount,mMaxVertexTextureUnitCount);
@@ -826,18 +1055,18 @@ bool IRender::Initialize()
 	TryGetInteger(GraphicsIntegerName::UnpackAlignment,mUnpackAlignment);
 	TryGetInteger(GraphicsIntegerName::SampleBufferCount,mSampleBufferCount);
 	TryGetInteger(GraphicsIntegerName::SampleCoverageMaskSize,mSampleCoverageMaskSize);
-	TryGetInteger(GraphicsIntegerName::StencilBackFailOperation,mStencilBackFailOperation.ForceGetReference());
-	TryGetInteger(GraphicsIntegerName::StencilBackFunc,mStencilBackFunc.ForceGetReference());
-	TryGetInteger(GraphicsIntegerName::StencilBackPassDepthFailOperation,mStencilBackPassDepthFailOperation.ForceGetReference());
-	TryGetInteger(GraphicsIntegerName::StencilBackPassDepthPassOperation,mStencilBackPassDepthPassOperation.ForceGetReference());
+	TryGetInteger(GraphicsIntegerName::StencilBackFailOperation, (int&)mStencilBackFailOperation);
+	TryGetInteger(GraphicsIntegerName::StencilBackFunc, (int&)mStencilBackFunc);
+	TryGetInteger(GraphicsIntegerName::StencilBackPassDepthFailOperation, (int&)mStencilBackPassDepthFailOperation);
+	TryGetInteger(GraphicsIntegerName::StencilBackPassDepthPassOperation, (int&)mStencilBackPassDepthPassOperation);
 	TryGetInteger(GraphicsIntegerName::StencilBackRefValue,mStencilBackRefValue);
 	TryGetInteger(GraphicsIntegerName::StencilBackValueMask, (int&)mStencilBackValueMask);
 	TryGetInteger(GraphicsIntegerName::StencilBackWriteMask, (int&)mStencilBackWriteMask);
 	TryGetInteger(GraphicsIntegerName::StencilClearValue,mStencilClearValue);
-	TryGetInteger(GraphicsIntegerName::StencilFailOperation,mStencilFailOperation.ForceGetReference());
-	TryGetInteger(GraphicsIntegerName::StencilFunc,mStencilFunc.ForceGetReference());
-	TryGetInteger(GraphicsIntegerName::StencilPassDepthFailOperation,mStencilPassDepthFailOperation.ForceGetReference());
-	TryGetInteger(GraphicsIntegerName::StencilPassDepthPassOperation,mStencilPassDepthPassOperation.ForceGetReference());
+	TryGetInteger(GraphicsIntegerName::StencilFailOperation, (int&)mStencilFailOperation);
+	TryGetInteger(GraphicsIntegerName::StencilFunc, (int&)mStencilFunc);
+	TryGetInteger(GraphicsIntegerName::StencilPassDepthFailOperation, (int&)mStencilPassDepthFailOperation);
+	TryGetInteger(GraphicsIntegerName::StencilPassDepthPassOperation, (int&)mStencilPassDepthPassOperation);
 	TryGetInteger(GraphicsIntegerName::StencilRefValue,mStencilRefValue);
 	TryGetInteger(GraphicsIntegerName::StencilValueMask, (int&)mStencilValueMask);
 	TryGetInteger(GraphicsIntegerName::StencilWriteMask, (int&)mStencilWriteMask);
@@ -952,17 +1181,17 @@ int IRender::GetInteger( GraphicsIntegerName name ) const
 	case GraphicsIntegerName::RenderBufferBinding:return mRenderBufferBinding;
 	case GraphicsIntegerName::BlendDestAlphaFunc:return (int)mBlendDestAlphaFunc;
 	case GraphicsIntegerName::BlendDestRGBFunc:return (int)mBlendDestRGBFunc;
-	case GraphicsIntegerName::BlendAlphaEquation:return mBlendAlphaEquation.ToInt();
-	case GraphicsIntegerName::BlendRGBEquation:return mBlendRGBEquation.ToInt();
+	case GraphicsIntegerName::BlendAlphaEquation:return (int)mBlendAlphaEquation;
+	case GraphicsIntegerName::BlendRGBEquation:return (int)mBlendRGBEquation;
 	case GraphicsIntegerName::BlendSrcAlphaFunc:return (int)mBlendSrcAlphaFunc;
 	case GraphicsIntegerName::BlendSrcRGBFunc:return (int)mBlendSrcRGBFunc;
-	case GraphicsIntegerName::CullFaceMode:return mCullFaceMode.ToInt();
+	case GraphicsIntegerName::CullFaceMode:return (int)mCullFaceMode;
 	case GraphicsIntegerName::CurrentProgram:return mCurrentProgram;
-	case GraphicsIntegerName::DepthFunc:return mDepthFunc.ToInt();
-	case GraphicsIntegerName::FrontFace:return mFrontFace.ToInt();
-	case GraphicsIntegerName::GenerateMipmapHint:return mGenerateMipmapHint.ToInt();
+	case GraphicsIntegerName::DepthFunc:return (int)mDepthFunc;
+	case GraphicsIntegerName::FrontFace:return (int)mFrontFace;
+	case GraphicsIntegerName::GenerateMipmapHint:return (int)mGenerateMipmapHint;
 	case GraphicsIntegerName::ImplementionColorReadFormat:return (int)mImplementionColorReadFormat;
-	case GraphicsIntegerName::ImplementionColorReadType:return mImplementionColorReadType.ToInt();
+	case GraphicsIntegerName::ImplementionColorReadType:return (int)mImplementionColorReadType;
 	case GraphicsIntegerName::MaxCombinedTextureUnitCount:return mMaxCombinedTextureUnitCount;
 	case GraphicsIntegerName::MaxTextureUnitCount:return mMaxFragmentTextureUnitCount;
 	case GraphicsIntegerName::MaxVertexTextureUnitCount:return mMaxVertexTextureUnitCount;
@@ -979,18 +1208,18 @@ int IRender::GetInteger( GraphicsIntegerName name ) const
 	case GraphicsIntegerName::UnpackAlignment:return mUnpackAlignment;
 	case GraphicsIntegerName::SampleBufferCount:return mSampleBufferCount;
 	case GraphicsIntegerName::SampleCoverageMaskSize:return mSampleCoverageMaskSize;
-	case GraphicsIntegerName::StencilBackFailOperation:return mStencilBackFailOperation.ToInt();
-	case GraphicsIntegerName::StencilBackFunc:return mStencilBackFunc.ToInt();
-	case GraphicsIntegerName::StencilBackPassDepthFailOperation:return mStencilBackPassDepthFailOperation.ToInt();
-	case GraphicsIntegerName::StencilBackPassDepthPassOperation:return mStencilBackPassDepthPassOperation.ToInt();
+	case GraphicsIntegerName::StencilBackFailOperation:return (int)mStencilBackFailOperation;
+	case GraphicsIntegerName::StencilBackFunc:return (int)mStencilBackFunc;
+	case GraphicsIntegerName::StencilBackPassDepthFailOperation:return (int)mStencilBackPassDepthFailOperation;
+	case GraphicsIntegerName::StencilBackPassDepthPassOperation:return (int)mStencilBackPassDepthPassOperation;
 	case GraphicsIntegerName::StencilBackRefValue:return mStencilBackRefValue;
 	case GraphicsIntegerName::StencilBackValueMask:return mStencilBackValueMask;
 	case GraphicsIntegerName::StencilBackWriteMask:return mStencilBackWriteMask;
 	case GraphicsIntegerName::StencilClearValue:return mStencilClearValue;
-	case GraphicsIntegerName::StencilFailOperation:return mStencilFailOperation.ToInt();
-	case GraphicsIntegerName::StencilFunc:return mStencilFunc.ToInt();
-	case GraphicsIntegerName::StencilPassDepthFailOperation:return mStencilPassDepthFailOperation.ToInt();
-	case GraphicsIntegerName::StencilPassDepthPassOperation:return mStencilPassDepthPassOperation.ToInt();
+	case GraphicsIntegerName::StencilFailOperation:return (int)mStencilFailOperation;
+	case GraphicsIntegerName::StencilFunc:return (int)mStencilFunc;
+	case GraphicsIntegerName::StencilPassDepthFailOperation:return (int)mStencilPassDepthFailOperation;
+	case GraphicsIntegerName::StencilPassDepthPassOperation:return (int)mStencilPassDepthPassOperation;
 	case GraphicsIntegerName::StencilRefValue:return mStencilRefValue;
 	case GraphicsIntegerName::StencilValueMask:return mStencilValueMask;
 	case GraphicsIntegerName::StencilWriteMask:return mStencilWriteMask;
@@ -1094,10 +1323,10 @@ void IRender::GetBooleanArray( GraphicsBooleanArrayName name,bool* params ) cons
 	switch (name)
 	{
 	case GraphicsBooleanArrayName::ColorWriteMask:
-		*(params)=mColorWriteMask.Has(GraphicsColorMask::R);
-		*(params+1)=mColorWriteMask.Has(GraphicsColorMask::G);
-		*(params+2)=mColorWriteMask.Has(GraphicsColorMask::B);
-		*(params+3)=mColorWriteMask.Has(GraphicsColorMask::A);
+		*(params)=  MEDUSA_FLAG_HAS(mColorWriteMask,GraphicsColorMask::R);
+		*(params+1)=MEDUSA_FLAG_HAS(mColorWriteMask,GraphicsColorMask::G);
+		*(params+2)=MEDUSA_FLAG_HAS(mColorWriteMask,GraphicsColorMask::B);
+		*(params+3)=MEDUSA_FLAG_HAS(mColorWriteMask,GraphicsColorMask::A);
 		break;
 	default:
 		Log::AssertFailedFormat("Invalid GraphicsBooleanArrayName:{}",name);

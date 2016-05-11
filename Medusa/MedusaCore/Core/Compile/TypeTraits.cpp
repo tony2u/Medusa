@@ -11,5 +11,22 @@ namespace Compile
 {
 	template<>
 	void DefaultValue<void>() {  }
+
+	const char* FixedClassName(const char* name)
+	{
+		//a little trick
+		const char* p = name;
+		while (*name != '\0')
+		{
+			if (*name == ' ' || *name == ':')	//remove str before name
+			{
+				p = name + 1;
+			}
+			++name;
+		}
+
+		return p;
+	}
+
 }
 MEDUSA_END

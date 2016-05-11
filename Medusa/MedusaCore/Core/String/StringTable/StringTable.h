@@ -30,7 +30,7 @@ public:
 //SIREN_HEADER_METHOD_END
 
 	bool Initialize(const FileIdRef& fileId, uint format = 0);
-	virtual bool LoadFromData(StringRef path, const MemoryByteData& data, uint format = 0);
+	virtual bool LoadFromData(const FileIdRef& fileId, const MemoryData& data, uint format = 0);
 	virtual void Unload();
 
 public:
@@ -61,8 +61,9 @@ protected:
 //SIREN_HEADER_SCHEMA_BEGIN
 struct StringTable::Schema
 {
-	SIREN_PROPERTY_DICTIONARY(0, 0, Required, StringTable, HeapString, StringNameItem, mItems);
-	SIREN_PROPERTIES_1(void,StringTable);
-};//SIREN_HEADER_SCHEMA_END
+	SIREN_FIELD_DICTIONARY(0, 0, Required, StringTable, HeapString, StringNameItem, mItems);
+	SIREN_FIELDS_1(void,StringTable);
+};
+//SIREN_HEADER_SCHEMA_END
 
 MEDUSA_END;

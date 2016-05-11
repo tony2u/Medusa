@@ -14,8 +14,8 @@ class IAudio :public IResource
 {
 public:
 	IAudio(const FileIdRef& fileId = FileIdRef::Empty);
-	IAudio(const MemoryByteData& data,const FileIdRef& fileId = FileIdRef::Empty);
-	IAudio(MemoryByteData&& data, const FileIdRef& fileId = FileIdRef::Empty);
+	IAudio(const MemoryData& data,const FileIdRef& fileId = FileIdRef::Empty);
+	IAudio(MemoryData&& data, const FileIdRef& fileId = FileIdRef::Empty);
 
 	virtual ~IAudio();
 	virtual ResourceType Type()const { return ResourceType::Audio; }
@@ -24,9 +24,9 @@ public:
 
 	uint Buffer() const { return mBuffer; }
 
-	const MemoryByteData& Data() const { return mData; }
-	void SetData(const MemoryByteData& val) { mData = val; }
-	void SetData(MemoryByteData&& val) { mData = std::move(val); }
+	const MemoryData& Data() const { return mData; }
+	void SetData(const MemoryData& val) { mData = val; }
+	void SetData(MemoryData&& val) { mData = std::move(val); }
 
 
 	uintp SampleCount() const { return mSampleCount; }
@@ -48,13 +48,13 @@ public:
 
 	bool IsUploaded() const { return mIsUploaded; }
 	bool Upload();
-	bool Upload(const MemoryByteData& data);
+	bool Upload(const MemoryData& data);
 protected:
 	void GenerateBuffer();
 private:
 	uint mBuffer = 0;
 	bool mIsUploaded = false;
-	MemoryByteData mData;
+	MemoryData mData;
 	
 	uintp mSampleCount = 0;	//total sample count
 	uint mChannelCount = 0;	//how many channel per frame

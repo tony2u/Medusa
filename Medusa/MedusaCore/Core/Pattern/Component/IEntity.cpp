@@ -44,6 +44,7 @@ void IEntity::PauseAllComponents()
 void IEntity::StartAllComponents()
 {
 	RETURN_IF_EMPTY(mComponents);
+	List<size_t> completedIndices;
 	size_t count = mComponents.Count();
 	FOR_EACH_SIZE(i, count)
 	{
@@ -52,12 +53,12 @@ void IEntity::StartAllComponents()
 		component->Start();
 		if (component->IsDone())
 		{
-			mCompletedIndices.Add(i);
+			completedIndices.Add(i);
 		}
 	}
 
-	Linq::DeleteIndexes(mComponents, mCompletedIndices);
-	mCompletedIndices.Clear();
+	Linq::DeleteIndexes(mComponents, completedIndices);
+	
 }
 
 void IEntity::StopAllComponents()
@@ -75,6 +76,7 @@ void IEntity::StopAllComponents()
 bool IEntity::AcceptComponentEvent(IEventArg& e)
 {
 	RETURN_TRUE_IF_EMPTY(mComponents);
+	List<size_t> completedIndices;
 	size_t count = mComponents.Count();
 	FOR_EACH_SIZE(i, count)
 	{
@@ -83,19 +85,64 @@ bool IEntity::AcceptComponentEvent(IEventArg& e)
 		component->AcceptEvent(e);
 		if (component->IsDone())
 		{
-			mCompletedIndices.Add(i);
+			completedIndices.Add(i);
 		}
 	}
 
-	Linq::DeleteIndexes(mComponents, mCompletedIndices);
-	mCompletedIndices.Clear();
+	Linq::DeleteIndexes(mComponents, completedIndices);
 	return true;
 }
 
+
+bool IEntity::EnterComponents()
+{
+	size_t count = mComponents.Count();
+	FOR_EACH_SIZE(i, count)
+	{
+		IComponent* component = mComponents[i];
+		RETURN_FALSE_IF_FALSE(component->Enter());
+	}
+	return true;
+}
+
+bool IEntity::ExitComponents()
+{
+	size_t count = mComponents.Count();
+	FOR_EACH_SIZE(i, count)
+	{
+		IComponent* component = mComponents[i];
+		RETURN_FALSE_IF_FALSE(component->Exit());
+	}
+	return true;
+}
+
+
+
+bool IEntity::UpdateComponentsLogic()
+{
+	size_t count = mComponents.Count();
+	FOR_EACH_SIZE(i, count)
+	{
+		IComponent* component = mComponents[i];
+		RETURN_FALSE_IF_FALSE(component->UpdateLogic());
+	}
+	return true;
+}
+
+bool IEntity::ResetComponentsLogic()
+{
+	size_t count = mComponents.Count();
+	FOR_EACH_SIZE(i, count)
+	{
+		IComponent* component = mComponents[i];
+		RETURN_FALSE_IF_FALSE(component->ResetLogic());
+	}
+	return true;
+}
 bool IEntity::UpdateComponents(float dt)
 {
 	RETURN_TRUE_IF_EMPTY(mComponents);
-
+	List<size_t> completedIndices;
 	size_t count = mComponents.Count();
 	FOR_EACH_SIZE(i, count)
 	{
@@ -104,12 +151,11 @@ bool IEntity::UpdateComponents(float dt)
 		component->Update(dt);
 		if (component->IsDone())
 		{
-			mCompletedIndices.Add(i);
+			completedIndices.Add(i);
 		}
 	}
 
-	Linq::DeleteIndexes(mComponents, mCompletedIndices);
-	mCompletedIndices.Clear();
+	Linq::DeleteIndexes(mComponents, completedIndices);
 
 	return true;
 }

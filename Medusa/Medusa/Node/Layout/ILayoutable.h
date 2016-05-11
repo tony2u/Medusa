@@ -3,15 +3,14 @@
 // license that can be found in the LICENSE file.
 #pragma once
 #include "MedusaPreDeclares.h"
-#include "Core/Geometry/Point2.h"
-#include "Core/Geometry/Rect2.h"
-#include "Core/Geometry/Size2.h"
-#include "Core/Geometry/Thickness.h"
+#include "Geometry/Point2.h"
+#include "Geometry/Rect2.h"
+#include "Geometry/Size2.h"
+#include "Geometry/Thickness.h"
+#include "Geometry/Padding4.h"
 #include "Node/NodeDefines.h"
-#include "Core/Geometry/Scale2.h"
-#include "Node/NodeLayoutArrangeFlags.h"
-#include "Node/NodeLayoutChangedFlags.h"
-#include "Core/Geometry/GeometryDefines.h"
+#include "Geometry/Scale2.h"
+#include "Geometry/GeometryDefines.h"
 
 MEDUSA_BEGIN;
 
@@ -53,11 +52,13 @@ public:
 	float StretchAspectRatio() const { return mStretchAspectRatio; }
 	void SetStretchAspectRatio(float val) { mStretchAspectRatio = val; }
 
-	const ThicknessF& Padding() const { return mPadding; }
-	void SetPadding(const ThicknessF& val);
+	const Padding4F& Padding() const { return mPadding; }
+	void SetPadding(const Padding4F& val);
 
 	const ThicknessF& Margin() const { return mMargin; }
 	void SetMargin(const ThicknessF& val);
+	MarginEdges MarginEdge() const { return mMarginEdge; }
+	void SetMarginEdge(MarginEdges val);
 
 	Direction GetDirection() const { return mDirection; }
 	void SetDirection(Direction val);
@@ -79,7 +80,9 @@ protected:
 	Size2F mMinSize;
 	Size2F mMaxSize;
 	ThicknessF mMargin;	//not used now
-	ThicknessF mPadding;	//not used now
+	MarginEdges mMarginEdge=MarginEdges::None;
+	
+	Padding4F mPadding;	//not used now
 	
 	//adjust size
 	Stretch mStretch= Stretch::None;

@@ -4,12 +4,12 @@
 #pragma once
 #include "Resource/Model/Scene/BaseSceneModel.h"
 #include "Resource/Model/Scene/PODDefines.h"
-#include "Core/Geometry/Point3.h"
-#include "Core/Geometry/Scale3.h"
-#include "Core/Geometry/Quaternion.h"
-#include "Core/Geometry/Color3.h"
-#include "Core/Geometry/Matrix4.h"
-#include "Core/Geometry/Matrix4.h"
+#include "Geometry/Point3.h"
+#include "Geometry/Scale3.h"
+#include "Geometry/Quaternion.h"
+#include "Geometry/Color3.h"
+#include "Geometry/Matrix4.h"
+#include "Geometry/Matrix4.h"
 
 
 
@@ -44,7 +44,7 @@ struct PODNode
 	List<uint>	AnimationMatrixIndexes;
 	List<Matrix4,NoCompare<Matrix4> > AnimationMatrixes;		/*!< 16 floats per frame of animation. */
 
-	MemoryByteData UserData;
+	MemoryData UserData;
 
 	virtual bool TryGetMatrix(float frame,Matrix4& outMatrix)const;
 private:
@@ -59,7 +59,7 @@ class PODModel:public BaseSceneModel
 public:
 	PODModel(const FileIdRef& fileId);
 	virtual ~PODModel(void);
-	virtual bool Initialzie(ModelLoadingOptions loadingOptions=ModelLoadingOptions::None);
+	virtual bool Initialize(ModelLoadingOptions loadingOptions=ModelLoadingOptions::None);
 	virtual ITimelineModel* CreateSkeletonTimelineModel()const;
 	virtual ITimelineModel* CreateCameraTimelineModel(StringRef name)const;
 	virtual ITimelineModel* CreateLightTimelineModel(StringRef name)const;
@@ -69,14 +69,14 @@ public:
 
 
 	static PODModel* CreateFromFile(const FileIdRef& fileId,ModelLoadingOptions loadingOptions=ModelLoadingOptions::None);
-	static PODModel* CreateFromData(const FileIdRef& fileId,MemoryByteData data,ModelLoadingOptions loadingOptions=ModelLoadingOptions::None);
+	static PODModel* CreateFromData(const FileIdRef& fileId,MemoryData data,ModelLoadingOptions loadingOptions=ModelLoadingOptions::None);
 
 	PODNode* GetPODNode(uint index){return mPODNodes[index];}
 	PODNode* GetPODNode(StringRef name);
 
 	bool TryGetWorldMatrix(PODNode* node,float frame,Matrix4& outMatrix)const;
 
-	virtual INode* CreateCloneInstance()override;
+	virtual INode* Instantiate(InstantiateMode mode = InstantiateMode::None)const override;
 
 private:
 	static bool ReadIdentifier(MemoryStream& stream,PODIdentifier& outIdentifier,uint& outLength);
@@ -97,8 +97,8 @@ private:
 
 private:
 	HeapString mVersion;
-	MemoryByteData mExportOption;
-	MemoryByteData mHistory;
+	MemoryData mExportOption;
+	MemoryData mHistory;
 
 	Color3F mBackgroundColor;
 	Color3F mAmbientColor;

@@ -8,8 +8,8 @@
 #include "Audio/AudioEngine.h"
 
 MEDUSA_BEGIN;
-TapGestureRecognizer::TapGestureRecognizer( INode* node ,GestureFlags flags/*=GestureFlags::None*/,const FileIdRef& audioEffect/*=FileId::Empty*/) 
-	:IGestureRecognizer(node,flags,audioEffect)
+TapGestureRecognizer::TapGestureRecognizer( INode* node) 
+	:IGestureRecognizer(node)
 {
 	mBeganTouch=Touch::Zero;
 }
@@ -22,20 +22,21 @@ TapGestureRecognizer::~TapGestureRecognizer(void)
 
 void TapGestureRecognizer::TouchesBegan( TouchEventArg& e )
 {
+	IInputHandler::TouchesBegan(e);
 	switch(mState)
 	{
-	case GestureState::None:
+	case InputState::None:
 		if (e.IsOneFingerValid())
 		{
 			mBeganTouch=e.FirstValidActiveTouch();
-			SetState(GestureState::Begin);
-			if (mFlags.Has(GestureFlags::SuppressTouchBegan))
+			SetState(InputState::Begin);
+			if (MEDUSA_FLAG_HAS(mBehaviors,InputBehaviors::SuppressTouchBegan))
 			{
 				e.Handled=true;
 			}
 		}
 		break;
-	case GestureState::Begin:
+	case InputState::Begin:
 		break;
 	default:
 		break;
@@ -45,15 +46,16 @@ void TapGestureRecognizer::TouchesBegan( TouchEventArg& e )
 
 void TapGestureRecognizer::TouchesMoved( TouchEventArg& e )
 {
+	IInputHandler::TouchesMoved(e);
 	switch(mState)
 	{
-	case GestureState::None:
+	case InputState::None:
 		break;
-	case GestureState::Begin:
+	case InputState::Begin:
 		{
 			if (!e.IsValid())
 			{
-				SetState(GestureState::Failed);
+				SetState(InputState::Failed);
 				mBeganTouch=Touch::Zero;
 				//e.Handled=true;
 
@@ -68,24 +70,26 @@ void TapGestureRecognizer::TouchesMoved( TouchEventArg& e )
 
 void TapGestureRecognizer::TouchesEnded( TouchEventArg& e )
 {
+	IInputHandler::TouchesEnded(e);
 	switch(mState)
 	{
-	case GestureState::None:
+	case InputState::None:
 		OnTapFailed(mNode);
 		break;
-	case GestureState::Begin:
+	case InputState::Begin:
 		{
 			if (e.IsValid()&&e.FindValidActiveTouchById(mBeganTouch.Id)!=nullptr)
 			{
-				if (!mFlags.Has(GestureFlags::SuppressAudio))
+				if (MEDUSA_FLAG_HAS(mBehaviors,InputBehaviors::PlayAudio))
 				{
 					AudioEngine::Instance().PlayEffect(mAudioEffect.ToRef());
 				}
 
-				SetState(GestureState::Valid);
+				SetState(InputState::Valid);
 				TapGestureEventArg tapEventArg(this,e.FirstValidActiveTouch());
 				OnTap(mNode,tapEventArg);
-				SetState(GestureState::None);
+				RaiseEvent(InputEventType::Tap, &tapEventArg);
+				SetState(InputState::None);
 				mBeganTouch=Touch::Zero;
 				e.Handled=true;
 				CancelOtherHandlers();
@@ -97,32 +101,34 @@ void TapGestureRecognizer::TouchesEnded( TouchEventArg& e )
 		break;
 	}
 
-	SetState(GestureState::None);
+	SetState(InputState::None);
 }
 
-void TapGestureRecognizer::TryFireEvent( TouchEventArg& e )
+void TapGestureRecognizer::MockTouch( TouchEventArg& e )
 {
 	if (e.IsValid())
 	{
 		TapGestureEventArg tapEventArg(this,e.FirstValidActiveTouch());
 		OnTap(mNode,tapEventArg);
+		RaiseEvent(InputEventType::Tap,&tapEventArg);
 		e.Handled=tapEventArg.Handled;
 	}
 }
 
 void TapGestureRecognizer::TouchesCancelled( TouchEventArg& e )
 {
-	SetState(GestureState::None);
+	IInputHandler::TouchesCancelled(e);
+	SetState(InputState::None);
 }
 
 bool TapGestureRecognizer::IsValid() const
 {
-	return mState==GestureState::Valid;
+	return mState==InputState::Valid;
 }
 
 void TapGestureRecognizer::Reset()
 {
-	SetState(GestureState::None);
+	SetState(InputState::None);
 }
 
 

@@ -10,7 +10,7 @@ class MemoryFileAutoRegister
 {
 public:
 	template<typename T>
-	MemoryFileAutoRegister(const FileIdRef& fileId, MemoryData<T> data)
+	MemoryFileAutoRegister(const FileIdRef& fileId, TMemoryData<T> data)
 	{
 		FileSystem::Instance().Memory().RegisterMemory(data.template Cast<byte>(), fileId);
 
@@ -18,19 +18,19 @@ public:
 	template<typename T>
 	MemoryFileAutoRegister(const FileIdRef& fileId, T* buffer, size_t byteSize)
 	{
-		MemoryByteData data = MemoryByteData::FromStatic((byte*)buffer, byteSize);
+		MemoryData data = MemoryData::FromStatic((byte*)buffer, byteSize);
 		FileSystem::Instance().Memory().RegisterMemory(data, fileId);
 	}
 	template<typename T, size_t size>
 	MemoryFileAutoRegister(const FileIdRef& fileId, T(&buffer)[size])
 	{
-		MemoryByteData data = MemoryByteData::FromStatic((byte*)buffer, size*sizeof(T));
+		MemoryData data = MemoryData::FromStatic((byte*)buffer, size*sizeof(T));
 		FileSystem::Instance().Memory().RegisterMemory(data, fileId);
 	}
 
 
 	template<typename T>
-	static void Register(const FileIdRef& fileId, MemoryData<T> data)
+	static void Register(const FileIdRef& fileId, TMemoryData<T> data)
 	{
 		FileSystem::Instance().Memory().RegisterMemory(data.template Cast<byte>(), fileId);
 
@@ -38,13 +38,13 @@ public:
 	template<typename T>
 	static void Register(const FileIdRef& fileId, T* buffer, size_t byteSize)
 	{
-		MemoryByteData data = MemoryByteData::FromStatic((byte*)buffer, byteSize);
+		MemoryData data = MemoryData::FromStatic((byte*)buffer, byteSize);
 		FileSystem::Instance().Memory().RegisterMemory(data, fileId);
 	}
 	template<typename T, size_t size>
 	static void Register(const FileIdRef& fileId, T(&buffer)[size])
 	{
-		MemoryByteData data = MemoryByteData::FromStatic((byte*)buffer, size*sizeof(T));
+		MemoryData data = MemoryData::FromStatic((byte*)buffer, size*sizeof(T));
 		FileSystem::Instance().Memory().RegisterMemory(data, fileId);
 	}
 };

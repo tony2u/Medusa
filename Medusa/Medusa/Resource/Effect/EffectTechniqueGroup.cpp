@@ -101,7 +101,7 @@ EffectTechnique* EffectTechniqueGroup::GetTechniqueByIndex( uint index )
 
 EffectTechnique* EffectTechniqueGroup::GetTechniqueByName( StringRef name )
 {
-	return mTechniqueDict.TryGetValueWithFailed(name,nullptr);
+	return mTechniqueDict.GetOptional(name,nullptr);
 }
 
 void EffectTechniqueGroup::SetEffect( IEffect* val )

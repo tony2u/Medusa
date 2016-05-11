@@ -49,7 +49,14 @@ namespace HashUtility
 		return  '\0' == *str ? seed : HashString(str + 1, seed ^ (*str + 0x9e3779b9 + (seed << 6) + (seed >> 2)));
 	}
 
-
+	constexpr intp HashString(const char* str,const char* end, intp seed = 0)
+	{
+		return  end == str ? seed : HashString(str + 1, end, seed ^ (*str + 0x9e3779b9 + (seed << 6) + (seed >> 2)));
+	}
+	constexpr intp HashString(const wchar_t* str, const wchar_t* end, intp seed = 0)
+	{
+		return  end == str ? seed : HashString(str + 1, end, seed ^ (*str + 0x9e3779b9 + (seed << 6) + (seed >> 2)));
+	}
 
 	int32 HashIntArray(const int* buffer,size_t size,int32 initialValue=0);
 	int64 HashIntArray64(const int* buffer,size_t size,int64 initialValue=0);

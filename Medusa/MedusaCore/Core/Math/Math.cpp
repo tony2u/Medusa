@@ -616,7 +616,7 @@ namespace Math
 #ifdef MEDUSA_X64
 #ifdef MEDUSA_WINDOWS
 		uint32_t r = 0;
-		_BitScanForward64(&r, x);
+		_BitScanForward64((ulong*)&r, x);
 		return r;
 #elif MEDUSA_HAS_BUILTIN(__builtin_clzll)
 		return __builtin_clzll(x);
@@ -654,7 +654,7 @@ namespace Math
 #ifdef MEDUSA_X64
 #ifdef MEDUSA_WINDOWS
 		uint32_t r = 0;
-		_BitScanReverse64(&r, x);
+		_BitScanReverse64((ulong*)&r, x);
 		return r;
 #elif MEDUSA_HAS_BUILTIN(__builtin_ctzll)
 		return __builtin_ctzll(x);

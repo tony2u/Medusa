@@ -37,7 +37,7 @@ protected:
 	virtual bool IsStream()const{return true;}
 
 	virtual void OnSeek(uint secondOffset) = 0;
-	virtual bool OnFetchData(MemoryByteData& outData) = 0;
+	virtual bool OnFetchData(MemoryData& outData) = 0;
 private:
 	void OnStreamThread(Thread& thread);
 	bool FillQueue();

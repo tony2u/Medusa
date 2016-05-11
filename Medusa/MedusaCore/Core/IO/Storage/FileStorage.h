@@ -12,7 +12,7 @@
 #include "Core/Pattern/Singleton.h"
 #include "Core/String/HeapString.h"
 #include "Core/Log/Log.h"
-#include "Core/Siren/SirenProtocol.h"
+#include "Core/Siren/Code/SirenCoderType.h"
 #include "Core/Coder/CoderChain.h"
 #include "Core/IO/Storage/FileAttribute.h"
 
@@ -61,12 +61,13 @@ public:
 	virtual bool Uninitialize();
 	virtual bool IsReadOnly()const { return false; }
 	virtual bool IsWholeFileCoding()const { return false; }
+
 	bool HasCoders()const { return Coders() != 0; }
 
 	bool RequireKey()const;
-	const MemoryByteData& Key() const { return mCoderChain.Key(); }
-	virtual void SetKey(const MemoryByteData& val);
-	virtual bool ValidateKey(const MemoryByteData& val)const;
+	const MemoryData& Key() const { return mCoderChain.Key(); }
+	virtual void SetKey(const MemoryData& val);
+	virtual bool ValidateKey(const MemoryData& val)const;
 	virtual bool Validate()const;
 
 	virtual bool Save();
@@ -119,11 +120,11 @@ public:
 	const IStream* ReadFile(const StringRef& path, DirectoryEntry* parent = nullptr, FileDataType dataType = FileDataType::Binary)const;
 	IStream* WriteFile(const StringRef& path, DirectoryEntry* parent = nullptr, FileOpenMode openMode = FileOpenMode::DestoryWriteOrCreate, FileDataType dataType = FileDataType::Binary);
 
-	MemoryByteData ReadAllData(const StringRef& path, DirectoryEntry* parent = nullptr, DataReadingMode mode = DataReadingMode::AlwaysCopy)const;
-	MemoryByteData ReadAllData(const FileEntry& fileEntry, DataReadingMode mode = DataReadingMode::AlwaysCopy)const;
+	MemoryData ReadAllData(const StringRef& path, DirectoryEntry* parent = nullptr, DataReadingMode mode = DataReadingMode::AlwaysCopy)const;
+	MemoryData ReadAllData(const FileEntry& fileEntry, DataReadingMode mode = DataReadingMode::AlwaysCopy)const;
 
 
-	FileEntry* SaveFile(const MemoryByteData& data, const StringRef& path = StringRef::Empty, DirectoryEntry* parent = nullptr, DataReadingMode mode = DataReadingMode::AlwaysCopy);
+	FileEntry* SaveFile(const MemoryData& data, const StringRef& path = StringRef::Empty, DirectoryEntry* parent = nullptr, DataReadingMode mode = DataReadingMode::AlwaysCopy);
 	FileEntry* SaveFile(const IStream& sourceStream, const StringRef& path = StringRef::Empty, DirectoryEntry* parent = nullptr);
 	bool SaveFile(FileEntry& fileEntry,const IStream& sourceStream);
 
@@ -164,9 +165,10 @@ protected:
 //SIREN_HEADER_SCHEMA_BEGIN
 struct FileStorage::Schema
 {
-	SIREN_PROPERTY(0, 0, Required, FileStorage, DirectoryEntry, mRootDir);
-	SIREN_PROPERTY_DICTIONARY(1, 1, Optional, FileStorage, HeapString, uint64, mCodeRules);
-	SIREN_PROPERTIES_2(void,FileStorage);
-};//SIREN_HEADER_SCHEMA_END
+	SIREN_FIELD(0, 0, Required, FileStorage, DirectoryEntry, mRootDir);
+	SIREN_FIELD_DICTIONARY(1, 1, Optional, FileStorage, HeapString, uint64, mCodeRules);
+	SIREN_FIELDS_2(void,FileStorage);
+};
+//SIREN_HEADER_SCHEMA_END
 
 MEDUSA_END;

@@ -12,7 +12,7 @@ class Aes256Decoder :public ICoder
 {
 public:
 	Aes256Decoder(const IEventArg& e);
-	Aes256Decoder(const MemoryByteData& key);
+	Aes256Decoder(const MemoryData& key);
 
 public:
 	using ICoder::Code;
@@ -21,9 +21,9 @@ public:
 	virtual CoderFlags Flags()const override { return CoderFlags::Block; }
 	virtual bool Validate()const override { return mKey.IsValid(); }
 protected:
-	virtual size_t OnCode(const MemoryByteData& input, MemoryByteData& output)const override;
+	virtual size_t OnCode(const MemoryData& input, MemoryData& output)const override;
 private:
-	static void Decrypt(MemoryByteData& rkey, const MemoryByteData& key, const MemoryByteData& salt, unsigned char *buffer);
+	static void Decrypt(MemoryData& rkey, const MemoryData& key, const MemoryData& salt, unsigned char *buffer);
 
 	static void expand_dec_key(byte* rkey, unsigned char *rc);
 
@@ -33,7 +33,7 @@ private:
 private:
 	const static byte sboxinv[256];
 private:
-	MemoryByteData mKey;
+	MemoryData mKey;
 };
 
 MEDUSA_END;

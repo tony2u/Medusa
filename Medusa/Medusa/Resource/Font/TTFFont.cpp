@@ -17,29 +17,9 @@
 #include "Resource/Texture/TextureFactory.h"
 #include "Resource/TextureAtlas/TextureAtlas.h"
 #include "Resource/TextureAtlas/TextureAtlasPage.h"
-
+#include "Geometry/GeometryFactory.h"
 
 MEDUSA_BEGIN;
-
-TTFFont::TTFFont(const FontId& fontId) :IFont(fontId)
-{
-	mFace = nullptr;
-}
-
-TTFFont::TTFFont(const FontId& fontId, const MemoryByteData& data) : IFont(fontId), mFontData(data)
-{
-	mFace = nullptr;
-
-	mInitialImageSize = 1024;
-	mMaxImageSize = Render::Instance().GetInteger(GraphicsIntegerName::MaxTextureSize);
-
-}
-
-
-TTFFont::~TTFFont(void)
-{
-	FT_Done_Face(mFace);
-}
 
 bool TTFFont::InitializeLibrary()
 {
@@ -68,21 +48,14 @@ bool TTFFont::UninitializeLibrary()
 TTFFont* TTFFont::CreateFromFile(const FontId& fontId)
 {
 	auto data = FileSystem::Instance().ReadAllData(fontId);
-	TTFFont* font = new TTFFont(fontId, data);
-	if (!font->Initialize())
-	{
-		SAFE_DELETE(font);
-	}
-
-	return font;
-
+	return CreateFromData(fontId, data);
 }
 
 
-TTFFont* TTFFont::CreateFromData(const FontId& fontId, const MemoryByteData& data)
+TTFFont* TTFFont::CreateFromData(const FontId& fontId, const MemoryData& data)
 {
-	TTFFont* font = new TTFFont(fontId, data);
-	if (!font->Initialize())
+	TTFFont* font = new TTFFont(fontId);
+	if (!font->Initialize(data))
 	{
 		SAFE_DELETE(font);
 	}
@@ -90,15 +63,39 @@ TTFFont* TTFFont::CreateFromData(const FontId& fontId, const MemoryByteData& dat
 	return font;
 }
 
+TTFFont::TTFFont(const FontId& fontId) :IFont(fontId)
+{
+	mFace = nullptr;
+	mInitialImageSize = 1024;
+	mMaxImageSize = Render::Instance().GetInteger(GraphicsIntegerName::MaxTextureSize);
+}
 
-bool TTFFont::Initialize()
+
+
+TTFFont::~TTFFont(void)
+{
+	if (mStroker != nullptr)
+	{
+		FT_Stroker_Done(mStroker);
+		mStroker = nullptr;
+	}
+
+	if (mFace != nullptr)
+	{
+		FT_Done_Face(mFace);
+		mFace = nullptr;
+	}
+}
+
+
+bool TTFFont::Initialize(const MemoryData& data)
 {
 	RETURN_FALSE_IF_FALSE(InitializeLibrary());
-
+	mFontData = data;
 	FT_Error err;
-	if (!mFontData.IsNull())
+	if (!data.IsNull())
 	{
-		err = FT_New_Memory_Face(mLibrary, mFontData.Data(), (FT_Long)mFontData.ByteSize(), 0, &mFace);
+		err = FT_New_Memory_Face(mLibrary, data.Data(), (FT_Long)data.ByteSize(), 0, &mFace);
 		if (err)
 		{
 			Log::Error("Error face");
@@ -115,41 +112,40 @@ bool TTFFont::Initialize()
 	//init some face metrics
 	mFamilyName = mFace->family_name;
 	mStyleName = mFace->style_name;
-	mAscender = FontUnitToPixelSize(mFace->ascender);
-	mDescender = FontUnitToPixelSize(mFace->descender);
+
 	mTotalCharCount = (uint)mFace->num_glyphs;
-	mFlags.SetOrRemoveIf(FontFlags::HasHorizontal, FT_HAS_HORIZONTAL(mFace) != 0);
-	mFlags.SetOrRemoveIf(FontFlags::HasVertical, FT_HAS_VERTICAL(mFace) != 0);
-	mFlags.SetOrRemoveIf(FontFlags::HasKerning, FT_HAS_KERNING(mFace) != 0);
-	mFlags.SetOrRemoveIf(FontFlags::IsScalable, FT_IS_SCALABLE(mFace) != 0);
-	mFlags.SetOrRemoveIf(FontFlags::IsItalic, (mFace->style_flags&FT_STYLE_FLAG_ITALIC) != 0);
-	mFlags.SetOrRemoveIf(FontFlags::IsBold, (mFace->style_flags&FT_STYLE_FLAG_BOLD) != 0);
-	mLineHeight = FontUnitToPixelSize(mFace->height);
-	mMaxAdvance.Width = (uint)FontUnitToPixelSize(mFace->max_advance_width);
-	mMaxAdvance.Height = (uint)FontUnitToPixelSize(mFace->max_advance_height);
-	mUnderlinePosition = FontUnitToPixelSize(mFace->underline_position);
-	if (mUnderlinePosition > -2)
-	{
-		mUnderlinePosition = -2;
-	}
+	MEDUSA_FLAG_ENABLE(mFlags,FontFlags::HasHorizontal, FT_HAS_HORIZONTAL(mFace) != 0);
+	MEDUSA_FLAG_ENABLE(mFlags,FontFlags::HasVertical, FT_HAS_VERTICAL(mFace) != 0);
+	MEDUSA_FLAG_ENABLE(mFlags,FontFlags::HasKerning, FT_HAS_KERNING(mFace) != 0);
+	MEDUSA_FLAG_ENABLE(mFlags,FontFlags::IsScalable, FT_IS_SCALABLE(mFace) != 0);
+	MEDUSA_FLAG_ENABLE(mFlags,FontFlags::IsItalic, (mFace->style_flags&FT_STYLE_FLAG_ITALIC) != 0);
+	MEDUSA_FLAG_ENABLE(mFlags,FontFlags::IsBold, (mFace->style_flags&FT_STYLE_FLAG_BOLD) != 0);
 
-	mUnderlineTickness = FontUnitToPixelSize(mFace->underline_thickness);
-	if (mUnderlineTickness < 1)
-	{
-		mUnderlineTickness = 1;
-	}
-
-
-	err = FT_Select_Charmap(mFace, FT_ENCODING_UNICODE);
+	err = FT_Select_Charmap(mFace, mEncoding);
 	if (err)
 	{
-		Log::Error("Cannot select unicode charmap");
-		return false;
+		bool isSuccess = false;
+		//try to find other encoding
+		FOR_EACH_INT32(i, mFace->num_charmaps)
+		{
+			if (mFace->charmaps[i]->encoding != FT_ENCODING_NONE)
+			{
+				mEncoding = mFace->charmaps[i]->encoding;
+				err = FT_Select_Charmap(mFace, mEncoding);
+				isSuccess = (err == 0);
+				break;
+			}
+		}
+
+		if (!isSuccess)
+		{
+			Log::Error("Cannot select unicode charmap");
+			return false;
+		}
 	}
 
 	OnUpdateFontId();
 
-	mSpaceFontChar = OnLoadChar(' ');
 	return true;
 }
 
@@ -158,13 +154,45 @@ intp TTFFont::FontUnitToPixelSize(intp fontUnitSize) const
 	return (int)mFontId.Size()*fontUnitSize / (int)mFace->units_per_EM;
 }
 
-intp TTFFont::FixedPointToPixelSize(intp val) const
+Rect2I TTFFont::BBoxToRect(const FT_BBox& val)
 {
-	return val / 64;
-
+	Rect2I result;
+	result.Origin.X = FixedPointToPixelSize(val.xMin);
+	result.Origin.Y = FixedPointToPixelSize(val.yMin);
+	result.Size.Width = FixedPointToPixelSize(val.xMax - val.xMin);
+	result.Size.Height = FixedPointToPixelSize(val.yMax - val.yMin);
+	return result;
 }
+
 bool TTFFont::OnUpdateFontId()
 {
+	FT_Error err;
+	if (mFontId.HasOutline())
+	{
+		if (mStroker == nullptr)
+		{
+			err = FT_Stroker_New(mLibrary, &mStroker);
+			if (err)
+			{
+				Log::Error("Error FT_Stroker_New");
+				FT_Stroker_Done(mStroker);
+				return false;
+			}
+		}
+
+		FT_Stroker_Set(mStroker, (int)(mFontId.OutlineThickness() * 64), FT_STROKER_LINECAP_ROUND, FT_STROKER_LINEJOIN_ROUND, 0);
+	}
+	else
+	{
+		if (mStroker != nullptr)
+		{
+			FT_Stroker_Done(mStroker);
+			mStroker = nullptr;
+		}
+	}
+
+
+
 	/*The character widths and heights are specified in 1/64th of points. A point is a physical distance,
 	equaling 1/72th of an inch. Normally, it is not equivalent to a pixel.*/
 	/*character size is set to 16pt for a 300 * 300dpi*/
@@ -175,7 +203,7 @@ bool TTFFont::OnUpdateFontId()
 	Log::LogError("Error char size");
 	}*/
 
-	FT_Error err = FT_Set_Pixel_Sizes(mFace, mFontId.Size(), mFontId.Size());
+	err = FT_Set_Pixel_Sizes(mFace, mFontId.Size(), mFontId.Size());
 	if (err)
 	{
 		Log::Error("Error pixel size");
@@ -184,7 +212,7 @@ bool TTFFont::OnUpdateFontId()
 
 	//int maxPixelsX = ::FT_MulFix((mFace->bbox.xMax - mFace->bbox.xMin), mFace->size->metrics.x_scale);
 	//int maxPixelsY = ::FT_MulFix((mFace->bbox.yMax - mFace->bbox.yMin), mFace->size->metrics.y_scale);
-	
+
 
 	const Matrix2& matrix = mFontId.Matrix();
 	//Coefficients of the matrix are otherwise in 16.16 fixed-point units.
@@ -202,32 +230,25 @@ bool TTFFont::OnUpdateFontId()
 		FT_Set_Transform(mFace, &ftMatrix, &ftTranslate);
 	}
 
-	//update load flags
-	mGlyphLoadFlags = 0;
-	if (mFontId.HasOutline())
+	mAscender = FontUnitToPixelSize(mFace->ascender);
+	mDescender = FontUnitToPixelSize(mFace->descender);
+	mLineHeight = FontUnitToPixelSize(mFace->height);
+	mMaxAdvance.Width = (uint)FontUnitToPixelSize(mFace->max_advance_width);
+	mMaxAdvance.Height = (uint)FontUnitToPixelSize(mFace->max_advance_height);
+	mUnderlinePosition = FontUnitToPixelSize(mFace->underline_position);
+	if (mUnderlinePosition > -2)
 	{
-		mGlyphLoadFlags |= FT_LOAD_NO_BITMAP;
-	}
-	else
-	{
-		if (mFontId.Depth() == FontImageDepth::MonoChrome)
-		{
-			mGlyphLoadFlags |= FT_LOAD_MONOCHROME;
-		}
-		else
-		{
-			mGlyphLoadFlags |= FT_LOAD_RENDER;
-		}
+		mUnderlinePosition = -2;
 	}
 
-	if (mFontId.HasHinting())
+	mUnderlineTickness = FontUnitToPixelSize(mFace->underline_thickness);
+	if (mUnderlineTickness < 1)
 	{
-		mGlyphLoadFlags |= FT_LOAD_FORCE_AUTOHINT;
+		mUnderlineTickness = 1;
 	}
-	else
-	{
-		mGlyphLoadFlags |= FT_LOAD_NO_HINTING | FT_LOAD_NO_AUTOHINT;
-	}
+
+
+	//update load flags
 
 	if (mFontId.HasLCDFiltering())
 	{
@@ -242,25 +263,63 @@ bool TTFFont::OnUpdateFontId()
 			FT_Library_SetLcdFilterWeights(mLibrary, (byte*)FontId::DefaultLCDFilter);
 		}
 
-		mGlyphLoadFlags |= FT_LOAD_TARGET_LCD;
 	}
 	else
 	{
-		FT_Library_SetLcdFilter(mLibrary, FT_LCD_FILTER_NONE);
+		//FT_Library_SetLcdFilter(mLibrary, FT_LCD_FILTER_NONE);
 	}
+
+	mSpaceFontChar = OnLoadChar(' ');
 
 	return true;
 
 }
+
+
+FT_UInt32 TTFFont::GetGlyphLoadFlags(bool outline/*=false*/, bool hinting/*=false*/, bool lcdFiltering/*=false*/) const
+{
+	FT_UInt32 glyphLoadFlags = 0;
+
+	if (outline)
+	{
+		glyphLoadFlags |= FT_LOAD_NO_BITMAP;
+	}
+	else
+	{
+		glyphLoadFlags |= FT_LOAD_RENDER;
+	}
+
+	if (hinting)
+	{
+		glyphLoadFlags |= FT_LOAD_FORCE_AUTOHINT;
+	}
+	else
+	{
+		glyphLoadFlags |= FT_LOAD_NO_HINTING | FT_LOAD_NO_AUTOHINT;
+	}
+
+	if (lcdFiltering)
+	{
+		glyphLoadFlags |= FT_LOAD_TARGET_LCD;
+	}
+
+	return glyphLoadFlags;
+}
+
 const FontChar* TTFFont::OnLoadChar(wchar_t c)
 {
+	auto glyphLoadFlags = GetGlyphLoadFlags();
+
 	FT_UInt glyphIndex = FT_Get_Char_Index(mFace, c);
-	FT_Error err = FT_Load_Glyph(mFace, glyphIndex, mGlyphLoadFlags);
+	FT_Error err = FT_Load_Glyph(mFace, glyphIndex, glyphLoadFlags);
+
 	if (err)
 	{
 		Log::Error("Error FT_Load_Glyph");
 		return nullptr;
 	}
+
+
 
 	std::unique_ptr<FontChar> fontChar(new FontChar(c));
 	/*    metrics           :: The metrics of the last loaded glyph in the   */
@@ -272,112 +331,187 @@ const FontChar* TTFFont::OnLoadChar(wchar_t c)
 	/*                         Note that even when the glyph image is        */
 	/*                         transformed, the metrics are not.             */
 
-	FT_BitmapGlyph bitmapGlyph = nullptr;
 	FT_GlyphSlot slot = mFace->glyph;
+	fontChar->HAdvance = (ushort)FixedPointToPixelSize(slot->advance.x);
+	fontChar->VAdvance = (ushort)FixedPointToPixelSize(slot->advance.y);
+	fontChar->HBearing.X = slot->bitmap_left;
+	fontChar->HBearing.Y = slot->bitmap_top;
 
-
-	FT_Bitmap bitmap;
-
-	if (!mFontId.HasOutline())
+	if (slot->bitmap.width == 0 || slot->bitmap.rows == 0)
 	{
-		bitmap = slot->bitmap;
+		//empty char
 		fontChar->HBearing.X = slot->bitmap_left;
 		fontChar->HBearing.Y = slot->bitmap_top;
 	}
 	else
 	{
-		FT_Stroker stroker;
-		err = FT_Stroker_New(mLibrary, &stroker);
-		if (err)
+		if (!mFontId.HasOutline())
 		{
-			Log::Error("Error FT_Stroker_New");
-			FT_Stroker_Done(stroker);
-			return nullptr;
-		}
+			fontChar->HBearing.X = slot->bitmap_left;
+			fontChar->HBearing.Y = slot->bitmap_top;
 
-		FT_Stroker_Set(stroker, (int)(mFontId.OutlineThickness() * 64), FT_STROKER_LINECAP_ROUND, FT_STROKER_LINEJOIN_ROUND, 0);
-		err = FT_Get_Glyph(slot, (FT_Glyph*)&bitmapGlyph);
-		if (err)
-		{
-			Log::Error("Error FT_Get_Glyph");
-			FT_Stroker_Done(stroker);
-			return nullptr;
-		}
+			// We want each glyph to be separated by at least one black pixel,but font factory already has spacing 1
 
-		if (mFontId.OutlineType() == FontOutlineType::Line)
-		{
-			err = FT_Glyph_Stroke((FT_Glyph*)&bitmapGlyph, stroker, 1);
-
-		}
-		else if (mFontId.OutlineType() == FontOutlineType::Inner)
-		{
-			err = FT_Glyph_StrokeBorder((FT_Glyph*)&bitmapGlyph, stroker, 1, 1);
-
-		}
-		else if (mFontId.OutlineType() == FontOutlineType::Outer)
-		{
-			err = FT_Glyph_StrokeBorder((FT_Glyph*)&bitmapGlyph, stroker, 0, 1);
-		}
-
-		if (err)
-		{
-			Log::Error("Error FT_Glyph_Stroke");
-			FT_Stroker_Done(stroker);
-			return nullptr;
-		}
-
-		if (mFontId.Depth() == FontImageDepth::MonoChrome)
-		{
-			err = FT_Glyph_To_Bitmap((FT_Glyph*)&bitmapGlyph, FT_RENDER_MODE_MONO, 0, 1);
+			Size2U gylphSize(slot->bitmap.width + 1, slot->bitmap.rows + 1);
+			auto* region = AddGlyphImage(c, PixelType::A8, gylphSize, slot->bitmap.pitch, MemoryData::FromStatic(slot->bitmap.buffer, 0), PixelType::A8);
+			if (region == nullptr)
+			{
+				return nullptr;
+			}
+			fontChar->SetRegion(region);
 		}
 		else
 		{
-			err = FT_Glyph_To_Bitmap((FT_Glyph*)&bitmapGlyph, FT_RENDER_MODE_LCD, 0, 1);
-		}
+			FT_BitmapGlyph originalBitmapGlyph = nullptr;
+			FT_Glyph outlineGlyph = nullptr;
 
-		if (err)
-		{
-			Log::Error("Error FT_Glyph_To_Bitmap");
-			FT_Stroker_Done(stroker);
-			return nullptr;
-		}
-
-		FT_Stroker_Done(stroker);
-
-		bitmap = bitmapGlyph->bitmap;
-		fontChar->HBearing.X = bitmapGlyph->left;
-		fontChar->HBearing.Y = bitmapGlyph->top;
-	}
-
-	if (bitmap.width != 0 && bitmap.rows != 0)	//empty char
-	{
-		// We want each glyph to be separated by at least one black pixel,but font factory already has spacing 1
-		uint bitmapDepth = bitmap.pixel_mode != FT_PIXEL_MODE_BGRA ? 1 : 3;
-		Size2U gylphSize(bitmap.width / bitmapDepth + 1, bitmap.rows + 1);
-		auto* region = AddGlyphImage(c,mFontId.Depth(), gylphSize, bitmap.pitch, MemoryByteData::FromStatic(bitmap.buffer, 0), (FontImageDepth)bitmapDepth);
-
-		if (region == nullptr)
-		{
-			if (bitmapGlyph != nullptr)
+			do
 			{
-				FT_Done_Glyph((FT_Glyph)bitmapGlyph);
+				//copy original bitmap
+				err = FT_Get_Glyph(slot, (FT_Glyph*)&originalBitmapGlyph);
+				if (err)
+				{
+					Log::Error("Error FT_Get_Glyph");
+					return nullptr;
+				}
+
+				FT_BBox originalBox;
+				FT_Glyph_Get_CBox(*(FT_Glyph*)&originalBitmapGlyph, FT_GLYPH_BBOX_GRIDFIT, &originalBox);
+
+				//load new outline char
+				glyphLoadFlags = GetGlyphLoadFlags(true);
+				err = FT_Load_Glyph(mFace, glyphIndex, glyphLoadFlags);
+				if (err)
+				{
+					Log::Error("Error FT_Load_Glyph");
+					break;
+				}
+				slot = mFace->glyph;
+				if (slot->format != FT_GLYPH_FORMAT_OUTLINE)
+				{
+					Log::Error("Error FT_Load_Glyph outline");
+					break;
+				}
+
+				err = FT_Get_Glyph(slot, (FT_Glyph*)&outlineGlyph);
+				if (err)
+				{
+					Log::Error("Error FT_Get_Glyph");
+					break;
+				}
+
+				if (mFontId.OutlineType() == FontOutlineType::Line)
+				{
+					err = FT_Glyph_Stroke((FT_Glyph*)&outlineGlyph, mStroker, 1);
+				}
+				else if (mFontId.OutlineType() == FontOutlineType::Inner)
+				{
+					err = FT_Glyph_StrokeBorder((FT_Glyph*)&outlineGlyph, mStroker, 1, 1);
+				}
+				else if (mFontId.OutlineType() == FontOutlineType::Outer)
+				{
+					err = FT_Glyph_StrokeBorder((FT_Glyph*)&outlineGlyph, mStroker, 0, 1);
+				}
+
+				if (err)
+				{
+					Log::Error("Error FT_Glyph_Stroke");
+					break;
+				}
+				if (outlineGlyph->format != FT_GLYPH_FORMAT_OUTLINE)
+				{
+					Log::Error("Error FT_Load_Glyph outline");
+					break;
+				}
+				FT_Outline *outline = &reinterpret_cast<FT_OutlineGlyph>(outlineGlyph)->outline;
+				FT_BBox outlineBox;
+				FT_Glyph_Get_CBox(outlineGlyph, FT_GLYPH_BBOX_GRIDFIT, &outlineBox);
+				auto width = FixedPointToPixelSize(outlineBox.xMax - outlineBox.xMin);
+				auto rows = FixedPointToPixelSize(outlineBox.yMax - outlineBox.yMin);
+
+				FT_Bitmap bmp;
+				bmp.buffer = new byte[width * rows];
+				memset(bmp.buffer, 0, width * rows);
+				bmp.width = (int)width;
+				bmp.rows = (int)rows;
+				bmp.pitch = (int)width;
+				bmp.pixel_mode = FT_PIXEL_MODE_GRAY;
+				bmp.num_grays = 256;
+
+				FT_Raster_Params params;
+				memset(&params, 0, sizeof(params));
+				params.source = outline;
+				params.target = &bmp;
+				params.flags = FT_RASTER_FLAG_AA;
+				FT_Outline_Translate(outline, -outlineBox.xMin, -outlineBox.yMin);
+				FT_Outline_Render(mLibrary, outline, &params);
+
+				//blend 2 bitmaps
+				originalBitmapGlyph->bitmap.rows;
+				Rect2I originalRect = BBoxToRect(originalBox);
+				Rect2I outlineRect = BBoxToRect(outlineBox);
+				Rect2I blendRect = Rect2I::Union(originalRect, outlineRect);
+				MemoryData blendImageData = MemoryData::AllocZero(blendRect.Area() * 2);//IA
+				byte* blendImage = (byte*)blendImageData.MutableData();
+
+				//expand original image to blend
+				//align images at left-bottom
+				auto blendDeltaX = originalRect.Left() - blendRect.Left();
+				auto blendDeltaY = blendRect.Top() - originalRect.Top();
+
+				FOR_EACH_INT32(x, originalRect.Width())
+				{
+					FOR_EACH_INT32(y, originalRect.Height())
+					{
+						auto blendIndex = (blendDeltaX + x) + (blendDeltaY + y)*blendRect.Width();
+						auto originalIndex = x + y*originalRect.Width();
+						auto alpha = originalBitmapGlyph->bitmap.buffer[originalIndex];
+						blendImage[2 * blendIndex+1] = alpha;	//text alpha at a
+					}
+				}
+
+				blendDeltaX = outlineRect.Left() - blendRect.Left();
+				blendDeltaY = blendRect.Top() - outlineRect.Top();
+				FOR_EACH_INT32(x, outlineRect.Width())
+				{
+					FOR_EACH_INT32(y, outlineRect.Height())
+					{
+						auto blendIndex = (blendDeltaX + x) + (blendDeltaY + y)*blendRect.Width();
+						auto originalIndex = x + y*outlineRect.Width();
+						auto alpha = bmp.buffer[originalIndex];
+						blendImage[2 * blendIndex] = alpha;	//text alpha at i(r)
+					}
+				}
+
+				fontChar->HBearing.X -=2*(originalRect.Left()- blendRect.Left());
+				fontChar->HBearing.Y +=(blendRect.Top()-originalRect.Top());
+
+				// We want each glyph to be separated by at least one black pixel,but font factory already has spacing 1
+				Size2U gylphSize(blendRect.Width() + 1, blendRect.Height() + 1);
+				
+				auto* region = AddGlyphImage(c, PixelType::IA88, gylphSize, blendRect.Width() * 2, blendImageData, PixelType::IA88);
+				if (region == nullptr)
+				{
+					break;
+				}
+				fontChar->SetRegion(region);
+
+
+			} while (0);
+
+			if (originalBitmapGlyph != nullptr)
+			{
+				FT_Done_Glyph((FT_Glyph)originalBitmapGlyph);
 			}
 
-			return nullptr;
+			if (outlineGlyph != nullptr)
+			{
+				FT_Done_Glyph((FT_Glyph)outlineGlyph);
+			}
+
 		}
-		fontChar->SetRegion(region);
 	}
 
-	if (bitmapGlyph != nullptr)
-	{
-		FT_Done_Glyph((FT_Glyph)bitmapGlyph);
-	}
-
-	// Discard hinting to get advance
-	FT_Load_Glyph(mFace, glyphIndex, FT_LOAD_RENDER | FT_LOAD_NO_HINTING);
-	slot = mFace->glyph;
-	fontChar->HAdvance = (ushort)FixedPointToPixelSize(slot->advance.x);
-	fontChar->VAdvance = (ushort)FixedPointToPixelSize(slot->advance.y);
 
 	mChars.Add(fontChar->Id, fontChar.get());
 
@@ -420,67 +554,17 @@ uint TTFFont::Preload(const WStringRef& str)
 }
 
 
-TextureAtlasRegion* TTFFont::AddGlyphImage(wchar_t c,FontImageDepth destDepth, const Size2U& size, int pitch, const MemoryByteData& imageData, FontImageDepth srcDepth)
+TextureAtlasRegion* TTFFont::AddGlyphImage(wchar_t c, PixelType destPixelType, const Size2U& size, int pitch, const MemoryData& imageData, PixelType srcPixelType)
 {
 	RETURN_NULL_IF(size > mMaxImageSize);
 
-	GraphicsInternalFormat destInternalFormat = GraphicsInternalFormat::RGBA;
-	GraphicsPixelFormat destPixelFormat = GraphicsPixelFormat::RGBA;
-	GraphicsPixelDataType destDataType;
+	Rect2U outRect = Rect2U::Zero;
 
-	switch (destDepth)
-	{
-	case FontImageDepth::RGBA:
-		destInternalFormat = GraphicsInternalFormat::RGBA;
-		destPixelFormat = GraphicsPixelFormat::RGBA;
-		destDataType = GraphicsPixelDataType::Byte;
-		break;
-	case FontImageDepth::RGB:
-		destInternalFormat = GraphicsInternalFormat::RGB;
-		destPixelFormat = GraphicsPixelFormat::RGB;
-		destDataType = GraphicsPixelDataType::Byte;
-		break;
-	case FontImageDepth::MonoChrome:
-		destInternalFormat = GraphicsInternalFormat::Alpha;
-		destPixelFormat = GraphicsPixelFormat::Alpha;
-		destDataType = GraphicsPixelDataType::Byte;
-		break;
-	default:
-		break;
-	}
-
-	//GraphicsInternalFormat srcInternalFormat;
-	GraphicsPixelFormat srcPixelFormat = GraphicsPixelFormat::RGBA;
-	GraphicsPixelDataType srcDataType;
-	switch (srcDepth)
-	{
-	case FontImageDepth::RGBA:
-		//srcInternalFormat = GraphicsInternalFormat::RGBA;
-		srcPixelFormat = GraphicsPixelFormat::RGBA;
-		srcDataType = GraphicsPixelDataType::Byte;
-		break;
-	case FontImageDepth::RGB:
-		//srcInternalFormat = GraphicsInternalFormat::RGB;
-		srcPixelFormat = GraphicsPixelFormat::RGB;
-		srcDataType = GraphicsPixelDataType::Byte;
-		break;
-	case FontImageDepth::MonoChrome:
-		//srcInternalFormat = GraphicsInternalFormat::Alpha;
-		srcPixelFormat = GraphicsPixelFormat::Alpha;
-		srcDataType = GraphicsPixelDataType::Byte;
-
-		break;
-	default:
-		break;
-	}
-
-	Rect2U outRect=Rect2U::Zero;
-
-	auto& pages= mAtlas->Pages();
-	for (auto* page:pages)
+	auto& pages = mAtlas->Pages();
+	for (auto* page : pages)
 	{
 		DynamicAtlasRGBAImage* image = (DynamicAtlasRGBAImage*)page->GetTexture()->Image();
-		if (image->AddImageRect(size, pitch, imageData, srcPixelFormat, srcDataType, outRect, true, GraphicsPixelConvertMode::Alpha))
+		if (image->AddImageRect(size, pitch, imageData, srcPixelType, outRect, true, GraphicsPixelConvertMode::Normal))
 		{
 			page->SetPageSize(image->Size());
 
@@ -493,17 +577,19 @@ TextureAtlasRegion* TTFFont::AddGlyphImage(wchar_t c,FontImageDepth destDepth, c
 		}
 	}
 
+	FileId imageFileId = mAtlas->GetFileId();
+	imageFileId.Name.AppendFormat("@{}", mAtlas->PageCount());
 
 	//at this time all current material is full, add a new image
-	DynamicAtlasRGBAImage* image = new DynamicAtlasRGBAImage("TTFFontImage", mInitialImageSize, mMaxImageSize, destInternalFormat, destPixelFormat, false);
-	ImageTexture* texture = new ImageTexture(image->GetFileId(), image, ShaderSamplerNames::Texture, GraphicsTextureUnits::Texture0);
+	DynamicAtlasRGBAImage* image = new DynamicAtlasRGBAImage(imageFileId, mInitialImageSize, mMaxImageSize, destPixelType, false);
+	ImageTexture* texture = new ImageTexture(imageFileId, image, ShaderSamplerNames::Texture, GraphicsTextureUnits::Texture0);
 	texture->ResetDefaultParameters();
 
 	TextureAtlasPage* page = new TextureAtlasPage(mAtlas->PageCount());
 	page->SetTexture(texture);
 	mAtlas->AddPage(page);
 
-	if (image->AddImageRect(size, pitch, imageData, srcPixelFormat, srcDataType, outRect,  true, GraphicsPixelConvertMode::Alpha))
+	if (image->AddImageRect(size, pitch, imageData, srcPixelType, outRect, true, GraphicsPixelConvertMode::Normal))
 	{
 		page->SetPageSize(image->Size());
 
@@ -516,6 +602,7 @@ TextureAtlasRegion* TTFFont::AddGlyphImage(wchar_t c,FontImageDepth destDepth, c
 	}
 	return nullptr;
 }
+
 
 
 FT_Library TTFFont::mLibrary = nullptr;

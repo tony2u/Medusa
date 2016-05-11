@@ -6,7 +6,6 @@
 #include "Core/IO/FileDefines.h"
 #include "Core/System/PublishTarget.h"
 #include "PackageDefines.h"
-#include "PackageFlags.h"
 #include "Core/Pattern/IInitializable.h"
 #include "Core/Coder/CoderDefines.h"
 #include "Core/Coder/CoderChain.h"
@@ -38,13 +37,13 @@ public:
 
 	virtual PackageType Type()const = 0;
 public:
-	virtual bool IsReadOnly()const override { return Flags().IsReadonly(); }
+	virtual bool IsReadOnly()const override { return MEDUSA_FLAG_HAS(Flags(),PackageFlags::Readonly); }
 	void SetReadonly(bool val);
-	bool IsEncryptFileNames()const { return Flags().IsEncryptFileNames(); }
+	bool IsEncryptFileNames()const { return MEDUSA_FLAG_HAS(Flags(), PackageFlags::EncryptFileNames); }
 	void EnableEncryptFileNames(bool val);
-	bool IsWriteSaltData()const { return Flags().IsWriteSaltData(); }
+	bool IsWriteSaltData()const { return MEDUSA_FLAG_HAS(Flags(), PackageFlags::WriteSaltData); }
 	void EnableWriteSaltData(bool val);
-	virtual bool IsWholeFileCoding()const override { return Flags().IsWholeFileCoding(); }
+	virtual bool IsWholeFileCoding()const override { return MEDUSA_FLAG_HAS(Flags(), PackageFlags::WholeFileCoding); }
 	void EnableWholeFileCoding(bool val);
 
 

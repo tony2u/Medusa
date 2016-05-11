@@ -3,11 +3,7 @@
 // license that can be found in the LICENSE file.
 #pragma  once
 #include "Graphics/State/IRenderState.h"
-#include "Core/Geometry/Rect2.h"
-
-#include "Graphics/GraphicsFace.h"
-#include "Graphics/GraphicsFrontFace.h"
-#include "Graphics/GraphicsColorMask.h"
+#include "Geometry/Rect2.h"
 
 MEDUSA_BEGIN;
 

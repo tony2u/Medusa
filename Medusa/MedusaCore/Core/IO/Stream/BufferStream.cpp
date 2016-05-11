@@ -97,7 +97,7 @@ uintp BufferStream::Position() const
 
 bool BufferStream::CanRead() const
 {
-	if (MEDUSA_HAS_FLAG(Operations(), StreamDataOperation::Read))
+	if (MEDUSA_FLAG_HAS(Operations(), StreamDataOperation::Read))
 	{
 		return !IsEnd();
 	}
@@ -106,17 +106,17 @@ bool BufferStream::CanRead() const
 
 bool BufferStream::CanWrite() const
 {
-	return MEDUSA_HAS_FLAG(Operations(), StreamDataOperation::Write);
+	return MEDUSA_FLAG_HAS(Operations(), StreamDataOperation::Write);
 }
 
 StreamDataOperation BufferStream::Operations() const
 {
-	return mIsSourceReadonly ? MEDUSA_AND_FLAG(StreamDataOperation::ReadSeek, mSourceStream->Operations()) : mSourceStream->Operations();
+	return mIsSourceReadonly ? MEDUSA_FLAG_AND(StreamDataOperation::ReadSeek, mSourceStream->Operations()) : mSourceStream->Operations();
 }
 
 bool BufferStream::IsReadWrite() const
 {
-	return MEDUSA_HAS_FLAG(Operations(), StreamDataOperation::ReadWrite);
+	return MEDUSA_FLAG_HAS(Operations(), StreamDataOperation::ReadWrite);
 
 }
 
@@ -172,7 +172,7 @@ bool BufferStream::SetLength(uintp val)
 }
 
 
-size_t BufferStream::ReadDataTo(MemoryByteData& outData, DataReadingMode mode/*=DataReadingMode::AlwaysCopy*/)const
+size_t BufferStream::ReadDataTo(MemoryData& outData, DataReadingMode mode/*=DataReadingMode::AlwaysCopy*/)const
 {
 	RETURN_ZERO_IF_FALSE(CanRead());
 	FlushOnReadWrite(StreamDataOperation::Read);
@@ -185,7 +185,7 @@ size_t BufferStream::ReadDataTo(MemoryByteData& outData, DataReadingMode mode/*=
 	if (bufferLeftLength != 0)
 	{
 		size_t readSize = Math::Min(bufferLeftLength, outSize);
-		MemoryByteData tempData = MemoryByteData::FromStatic(outData.MutableData() + outPos, readSize);
+		MemoryData tempData = MemoryData::FromStatic(outData.MutableData() + outPos, readSize);
 		readSize = mBuffer.ReadDataTo(tempData, DataReadingMode::AlwaysCopy);
 		outPos += readSize;
 		outSize -= readSize;
@@ -196,7 +196,7 @@ size_t BufferStream::ReadDataTo(MemoryByteData& outData, DataReadingMode mode/*=
 	size_t blockCount = outSize / blockSize;
 	FOR_EACH_SIZE(i, blockCount)
 	{
-		MemoryByteData tempData = MemoryByteData::FromStatic(outData.MutableData() + outPos, blockSize);
+		MemoryData tempData = MemoryData::FromStatic(outData.MutableData() + outPos, blockSize);
 		size_t readSize = mSourceStream->ReadDataTo(tempData);
 		outPos += readSize;
 		outSize -= readSize;
@@ -218,7 +218,7 @@ size_t BufferStream::ReadDataTo(MemoryByteData& outData, DataReadingMode mode/*=
 
 		bufferLeftLength = mBufferLength - mBuffer.Position();
 		size_t readSize = Math::Min(bufferLeftLength, outSize);
-		MemoryByteData tempData = MemoryByteData::FromStatic(outData.MutableData() + outPos, readSize);
+		MemoryData tempData = MemoryData::FromStatic(outData.MutableData() + outPos, readSize);
 		readSize = mBuffer.ReadDataTo(tempData, DataReadingMode::AlwaysCopy);
 		outPos += readSize;
 		outSize -= readSize;
@@ -227,7 +227,7 @@ size_t BufferStream::ReadDataTo(MemoryByteData& outData, DataReadingMode mode/*=
 	return outPos;
 }
 
-size_t BufferStream::WriteData(const MemoryByteData& data, DataReadingMode mode /*= DataReadingMode::AlwaysCopy*/)
+size_t BufferStream::WriteData(const MemoryData& data, DataReadingMode mode /*= DataReadingMode::AlwaysCopy*/)
 {
 	RETURN_ZERO_IF_FALSE(CanWrite());
 	FlushOnReadWrite(StreamDataOperation::Write);
@@ -239,7 +239,7 @@ size_t BufferStream::WriteData(const MemoryByteData& data, DataReadingMode mode 
 	{
 		size_t bufferLeftLength = mBuffer.LeftLength();
 		size_t writeSize = Math::Min(bufferLeftLength, dataSize);
-		MemoryByteData tempData = MemoryByteData::FromStatic(data.Data() + dataPos, writeSize);
+		MemoryData tempData = MemoryData::FromStatic(data.Data() + dataPos, writeSize);
 		writeSize = mBuffer.WriteData(tempData);
 		dataPos += writeSize;
 		dataSize -= writeSize;
@@ -263,7 +263,7 @@ size_t BufferStream::WriteData(const MemoryByteData& data, DataReadingMode mode 
 	size_t blockCount = dataSize / blockSize;
 	FOR_EACH_SIZE(i, blockCount)
 	{
-		MemoryByteData tempData = MemoryByteData::FromStatic(data.Data() + dataPos, blockSize);
+		MemoryData tempData = MemoryData::FromStatic(data.Data() + dataPos, blockSize);
 		size_t writeSize = mSourceStream->WriteData(tempData);
 		dataPos += writeSize;
 		dataSize -= writeSize;
@@ -272,7 +272,7 @@ size_t BufferStream::WriteData(const MemoryByteData& data, DataReadingMode mode 
 	//write left data
 	if (dataSize > 0)
 	{
-		MemoryByteData tempData = MemoryByteData::FromStatic(data.Data() + dataPos, blockSize);
+		MemoryData tempData = MemoryData::FromStatic(data.Data() + dataPos, blockSize);
 		size_t writeSize = mBuffer.WriteData(tempData);
 		dataPos += writeSize;
 		dataSize -= writeSize;
@@ -340,7 +340,7 @@ int BufferStream::ReadWChar()const
 	FlushOnReadWrite(StreamDataOperation::Read);
 
 	wchar_t c;
-	MemoryByteData tempData = MemoryByteData::FromStatic((byte*)&c, sizeof(wchar_t));
+	MemoryData tempData = MemoryData::FromStatic((byte*)&c, sizeof(wchar_t));
 	size_t readSize = ReadDataTo(tempData);
 	if (readSize != sizeof(wchar_t))
 	{
@@ -389,14 +389,14 @@ bool BufferStream::WriteChar(wchar val)
 		{
 			if (bufferLeftLength > 0)	//< wchar_t
 			{
-				auto tempData = MemoryByteData::FromStatic((byte*)&val, bufferLeftLength);
+				auto tempData = MemoryData::FromStatic((byte*)&val, bufferLeftLength);
 				mBuffer.WriteData(tempData);
 
 				mSourceStream->WriteData(mBuffer.CurrentBuffer());
 				mBuffer.Rewind();
 				mBufferLength = 0;
 
-				tempData = MemoryByteData::FromStatic((byte*)&val + bufferLeftLength, sizeof(wchar_t) - bufferLeftLength);
+				tempData = MemoryData::FromStatic((byte*)&val + bufferLeftLength, sizeof(wchar_t) - bufferLeftLength);
 				mBuffer.WriteData(tempData);
 				return true;
 			}
@@ -504,12 +504,12 @@ size_t BufferStream::ReadStringTo(WHeapString& outString)const
 		{
 			//some data still left, size < sizeof(wchar_t)
 			//copy left data to top
-			MemoryByteData& buffer2 = mBuffer.MutableBuffer();
+			MemoryData& buffer2 = mBuffer.MutableBuffer();
 			Memory::SafeCopy(buffer2.MutableData(), buffer2.Size(), buffer2.Data() + mBuffer.Position(), bufferLeftLength);
 			mBuffer.SetPosition(bufferLeftLength);
 
 			//read need data
-			MemoryByteData tempData = MemoryByteData::FromStatic(buffer2.Data(), mBuffer.Length() - bufferLeftLength);
+			MemoryData tempData = MemoryData::FromStatic(buffer2.Data(), mBuffer.Length() - bufferLeftLength);
 			mBufferLength = mSourceStream->ReadDataTo(tempData) + bufferLeftLength;
 			mBuffer.Rewind();
 		}
@@ -825,12 +825,12 @@ size_t BufferStream::ReadLineToString(WHeapString& outString, bool includeNewLin
 		{
 			//some data still left, size < sizeof(wchar_t)
 			//copy left data to top
-			MemoryByteData& buffer2 = mBuffer.MutableBuffer();
+			MemoryData& buffer2 = mBuffer.MutableBuffer();
 			Memory::SafeCopy(buffer2.MutableData(), buffer2.Size(), buffer2.Data() + mBuffer.Position(), bufferLeftLength);
 			mBuffer.SetPosition(bufferLeftLength);
 
 			//read need data
-			MemoryByteData tempData = MemoryByteData::FromStatic(buffer2.Data(), mBuffer.Length() - bufferLeftLength);
+			MemoryData tempData = MemoryData::FromStatic(buffer2.Data(), mBuffer.Length() - bufferLeftLength);
 			mBufferLength = mSourceStream->ReadDataTo(tempData) + bufferLeftLength;
 			mBuffer.Rewind();
 		}
@@ -843,13 +843,11 @@ size_t BufferStream::WriteString(const StringRef& str, bool withNullTermitated /
 {
 	RETURN_ZERO_IF_FALSE(CanWrite());
 	FlushOnReadWrite(StreamDataOperation::Write);
-	MemoryByteData data = str.ToData().Cast<byte>();
-
+	MemoryData data = str.ToData().Cast<byte>();
 	size_t size = WriteData(data);
 	if (withNullTermitated)
 	{
-		WriteChar('\0');
-		++size;
+		size += WriteChar('\0') ? sizeof(char) : 0;
 	}
 	return size;
 }
@@ -858,12 +856,11 @@ size_t BufferStream::WriteString(const WStringRef& str, bool withNullTermitated 
 {
 	RETURN_ZERO_IF_FALSE(CanWrite());
 	FlushOnReadWrite(StreamDataOperation::Write);
-	MemoryByteData data = str.ToData().Cast<byte>();
+	MemoryData data = str.ToData().Cast<byte>();
 	size_t size = WriteData(data);
 	if (withNullTermitated)
 	{
-		WriteChar('\0');
-		++size;
+		size += WriteChar(L'\0') ? sizeof(wchar_t) : 0;
 	}
 	return size;
 }

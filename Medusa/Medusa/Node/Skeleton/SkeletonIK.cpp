@@ -8,7 +8,7 @@
 #include "Core/Log/Log.h"
 #include "ISkeleton.h"
 #include "SkeletonBone.h"
-#include "Core/Algorithm/IK/IKSolver2D.h"
+#include "Geometry/IK/IKSolver2D.h"
 
 
 MEDUSA_BEGIN;

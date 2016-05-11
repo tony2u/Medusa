@@ -48,7 +48,7 @@ public:
 
 	virtual bool Remove(const FileIdRef& fileId)override
 	{
-		T* item=mItems.RemoveOtherKeyWithValueReturned(fileId,fileId.HashCode(),nullptr);
+		T* item=mItems.RemoveOtherKeyOptional(fileId,fileId.HashCode(),nullptr);
 		RETURN_FALSE_IF_NULL(item);
 		item->Release();
 		return true;
@@ -60,7 +60,7 @@ public:
 		{
 			return nullptr;
 		}
-		return mItems.TryGetValueWithFailedByOtherKey(fileId,fileId.HashCode(),nullptr);
+		return mItems.GetOptionalByOtherKey(fileId,fileId.HashCode(),nullptr);
 	}
 
 	virtual bool Add(T* val, ResourceShareType shareType = ResourceShareType::Share)override

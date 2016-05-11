@@ -36,7 +36,7 @@ namespace Memory
 		return 0.0;
 	}
 
-	template <typename T, typename TCompare=DefaultCompare<T>>
+	template <typename T, typename TCompare = DefaultCompare<T>>
 	inline typename std::enable_if<Compile::TypeTraits<T>::IsPOD, int>::type Compare(const T* first, const T* second, size_t count)
 	{
 		return memcmp(first, second, count);
@@ -53,7 +53,7 @@ namespace Memory
 		return 0;
 	}
 
-	template <typename T, size_t N, typename TCompare=DefaultCompare<T>>
+	template <typename T, size_t N, typename TCompare = DefaultCompare<T>>
 	inline int Compare(const T(&first)[N], const T(&second)[N])
 	{
 		return Compare<T, TCompare>(first, second, N);
@@ -65,9 +65,9 @@ namespace Memory
 		inline void SafeCopy_Imp(T* dest, size_t destSize, const T* src, size_t count, std::true_type)
 		{
 #ifdef MEDUSA_WINDOWS
-			memmove_s(dest, destSize*sizeof(T), src, count*sizeof(T));
+			memmove_s(dest, destSize * sizeof(T), src, count * sizeof(T));
 #else
-			memmove((void*)dest, (void*)src, count*sizeof(T));
+			memmove((void*)dest, (void*)src, count * sizeof(T));
 #endif
 		}
 
@@ -153,9 +153,15 @@ namespace Memory
 	}
 
 	template<typename T>
+	inline T* AllocZero(size_t count)
+	{
+		return (T*)calloc(count, sizeof(T));
+	}
+
+	template<typename T>
 	inline T* Alloc(size_t count)
 	{
-		return (T*)malloc(count*sizeof(T));
+		return (T*)malloc(count * sizeof(T));
 	}
 
 	template<typename T>
@@ -173,7 +179,7 @@ namespace Memory
 	template <typename T>
 	inline typename std::enable_if<Compile::TypeTraits<T>::IsPOD, void>::type Copy(T* dest, const T* src, size_t count)
 	{
-		memcpy(dest, src, count*sizeof(T));
+		memcpy(dest, src, count * sizeof(T));
 	}
 
 	template <typename T>
@@ -189,13 +195,13 @@ namespace Memory
 	template <typename T>
 	inline void SafeCopyShallowOne(T* dest, const T* src)
 	{
-		MemoryPrivate::SafeCopyOne_Imp(dest, src, std::integral_constant<bool,Compile::TypeTraits<T>::IsArithmetic || Compile::TypeTraits<T>::IsPOD>());
+		MemoryPrivate::SafeCopyOne_Imp(dest, src, std::integral_constant<bool, Compile::TypeTraits<T>::IsArithmetic || Compile::TypeTraits<T>::IsPOD>());
 	}
 
 	template <typename T>
 	inline void SafeCopy(T* dest, size_t destSize, const T* src, size_t count)
 	{
-		MemoryPrivate::SafeCopy_Imp(dest, destSize, src, count, std::integral_constant<bool,Compile::TypeTraits<T>::IsPOD>());
+		MemoryPrivate::SafeCopy_Imp(dest, destSize, src, count, std::integral_constant<bool, Compile::TypeTraits<T>::IsPOD>());
 	}
 
 	template <typename T>
@@ -214,7 +220,7 @@ namespace Memory
 	inline typename std::enable_if<sizeof(TValue) == 1, void>::type Set(T* src, TValue val, size_t count)
 	{
 		assert(sizeof(TValue) == 1);
-		memset(src, *reinterpret_cast<int*>(&val), count*sizeof(T));
+		memset(src, *reinterpret_cast<int*>(&val), count * sizeof(T));
 	}
 
 	template <typename T, typename TValue>
@@ -229,7 +235,7 @@ namespace Memory
 		const static char compareBlock[sizeof(TValue)] = { 0 };
 		if (Compare((const char*)compareBlock, (const char*)&val, sizeof(TValue)) == 0)
 		{
-			memset((void*)src, 0, count*sizeof(T));
+			memset((void*)src, 0, count * sizeof(T));
 		}
 		else
 		{
@@ -248,9 +254,15 @@ namespace Memory
 	}
 
 	template <typename T>
+	inline void ClearZero(T* src, size_t count)
+	{
+		memset(src, 0, count * sizeof(T));
+	}
+
+	template <typename T>
 	inline typename std::enable_if<Compile::TypeTraits<T>::IsPOD, void>::type SetZero(T* src, size_t count)
 	{
-		memset(src, 0, count*sizeof(T));
+		memset(src, 0, count * sizeof(T));
 	}
 
 	template <typename T>
@@ -270,7 +282,7 @@ namespace Memory
 	}
 
 	template <typename T>
-	inline bool EqualsAll(const T* first, size_t count,const T& val)
+	inline bool EqualsAll(const T* first, size_t count, const T& val)
 	{
 		FOR_EACH_SIZE(i, count)
 		{
@@ -325,8 +337,8 @@ namespace Memory
 		return EqualsAll(first, N, val);
 	}
 
-	template<typename T,typename... TArgs>
-	inline void Construct(T* p,TArgs&&... args)
+	template<typename T, typename... TArgs>
+	inline void Construct(T* p, TArgs&&... args)
 	{
 		::new (static_cast<void*>(p)) T(std::forward<TArgs>(args)...);
 	}
@@ -336,7 +348,7 @@ namespace Memory
 	{
 		FOR_EACH_SIZE(i, size)
 		{
-			::new (static_cast<void*>(p+i)) T(std::forward<TArgs>(args)...);
+			::new (static_cast<void*>(p + i)) T(std::forward<TArgs>(args)...);
 		}
 	}
 
@@ -356,7 +368,7 @@ namespace Memory
 	template<typename T, typename TP>
 	inline typename std::enable_if<Compile::TypeTraits<T>::IsPOD, void>::type CopyConstructRange(T* p, TP val, size_t size)
 	{
-		Set(p, val,size);
+		Set(p, val, size);
 	}
 
 	template<typename T, typename TP>
@@ -424,18 +436,18 @@ namespace Memory
 	}
 
 
-	
+
 	inline size_t FillCharArray(char* buffer, wchar_t wchar)
 	{
 		*buffer++ = (char)(int)wchar;
 		*buffer++ = (char)((int)wchar >> 8);
 
-		if (sizeof(wchar_t)==4)	//will be optimized
+		if (sizeof(wchar_t) == 4)	//will be optimized
 		{
 			*buffer++ = (char)((int)wchar >> 16);
 			*buffer = (char)((int)wchar >> 24);
 		}
-		
+
 		return sizeof(wchar_t);
 	}
 

@@ -4,7 +4,7 @@
 #include "MedusaPreCompiled.h"
 #include "ListPanel.h"
 #include "Node/DataSource/IListDataSource.h"
-#include "Core/Math/Model/IScrollMathModel.h"
+#include "Geometry/Scroll/IScrollMathModel.h"
 #include "Core/Log/Log.h"
 
 MEDUSA_BEGIN;

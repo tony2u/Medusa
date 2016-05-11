@@ -11,6 +11,8 @@
 #include "AnalyticsPaymentType.h"
 #include "AnalyticsRewardType.h"
 
+#include "Core/String/HeapString.h"
+
 MEDUSA_BEGIN;
 
 class IAnalyzer:public IInitializable

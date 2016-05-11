@@ -188,10 +188,10 @@ const Version Version::Zero;
 
 
 SIREN_METADATA(Version, 7);
-SIREN_PROPERTY_METADATA(0, Version, Major, 5, 0);
-SIREN_PROPERTY_METADATA(1, Version, Minor, 5, 0);
-SIREN_PROPERTY_METADATA(2, Version, Revision, 8, 0);
-SIREN_PROPERTY_METADATA(3, Version, Build, 5, 0);
+SIREN_FIELD_METADATA(0, Version, Major, 5, 0,false);
+SIREN_FIELD_METADATA(1, Version, Minor, 5, 0,false);
+SIREN_FIELD_METADATA(2, Version, Revision, 8, 0,false);
+SIREN_FIELD_METADATA(3, Version, Build, 5, 0,false);
 
 
 

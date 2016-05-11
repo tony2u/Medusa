@@ -4,6 +4,8 @@
 #pragma once
 #include "Resource/Font/IFont.h"
 #include "Core/Memory/MemoryData.h"
+#include "Graphics/GraphicsTypes.h"
+#include "Graphics/PixelType.h"
 
 #include "Lib/Common/freetype/ft2build.h"
 #include FT_FREETYPE_H
@@ -20,14 +22,16 @@ public:
 	static bool UninitializeLibrary();
 
 	static TTFFont* CreateFromFile(const FontId& fontId);
-	static TTFFont* CreateFromData(const FontId& fontId,const MemoryByteData& data);
+	static TTFFont* CreateFromData(const FontId& fontId,const MemoryData& data);
 
 public:
 	TTFFont(const FontId& fontId);
-	TTFFont(const FontId& fontId,const MemoryByteData& data);
 
 	virtual ~TTFFont(void);
-	virtual bool Initialize();
+	virtual bool IsBitmap()const override { return false; }
+
+	bool Initialize(const MemoryData& data);
+
 	virtual uint Preload(const WStringRef& str);
 	virtual bool IsFixed()const{ return false; }
 protected:
@@ -37,17 +41,20 @@ protected:
 
 private:
 	inline intp FontUnitToPixelSize(intp fontUnitSize)const;
-	inline intp FixedPointToPixelSize(intp val)const;
+	static intp FixedPointToPixelSize(intp val) { return val / 64; }
+	static Rect2I BBoxToRect(const FT_BBox& val);
 
-	TextureAtlasRegion* AddGlyphImage(wchar_t c,FontImageDepth destDepth, const Size2U& size, int pitch, const MemoryByteData& imageData, FontImageDepth srcDepth);
-
+	TextureAtlasRegion* AddGlyphImage(wchar_t c, PixelType destPixelType, const Size2U& size, int pitch, const MemoryData& imageData, PixelType srcPixelType);
+	FT_UInt32 GetGlyphLoadFlags(bool outline = false, bool hinting = false, bool lcdFiltering = false)const;
 private:
 	static FT_Library mLibrary;
-	FT_Face mFace;
+	FT_Face mFace=nullptr;
+	FT_Stroker mStroker=nullptr;
+	FT_Encoding mEncoding=FT_ENCODING_UNICODE;
 
-	FT_UInt32 mGlyphLoadFlags=0;
+	bool mDistanceFieldEnabled = false;	//Not implemented
 
-	MemoryByteData mFontData;
+	MemoryData mFontData;	//should keep this as mFace ref to memory data
 
 	Size2U mInitialImageSize;	//default image size
 	Size2U mMaxImageSize;

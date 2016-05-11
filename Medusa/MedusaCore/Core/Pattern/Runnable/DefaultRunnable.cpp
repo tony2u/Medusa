@@ -62,10 +62,9 @@ bool DefaultRunnable::Stop()
 {
 	switch (mState)
 	{
-		case RunningState::Running:
-			return true;
 		case RunningState::Done:
 			return false;
+		case RunningState::Running:
 		default:
 			mState = RunningState::Done;
 			return true;

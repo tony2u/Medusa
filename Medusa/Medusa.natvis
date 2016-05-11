@@ -16,17 +16,279 @@
 	s		Zero-terminated string		pVar,s		   "Hello world"
 	su		Unicode string				pVar,su		   "Hello world"
 More:	http://msdn.microsoft.com/en-us/library/vstudio/75w45ekt.aspx	
+https://msdn.microsoft.com/en-us/library/jj620914.aspx
 -->
 
-  <Type Name="Medusa::StringRef">
-    <DisplayString Condition="mLength==0xFFFFFFFF">{mBuffer}</DisplayString>
-    <DisplayString Condition="mLength==0">Empty</DisplayString>
+  <Type Name="Medusa::TStringRef&lt;char&gt;">
+    <DisplayString Condition="mLength==0xFFFFFFFF">{mBuffer}[?]</DisplayString>
+    <DisplayString Condition="mLength==0">{mBuffer}[0]</DisplayString>
     <DisplayString>{mBuffer}[{mLength}]</DisplayString>
-    <StringView>mBuffer</StringView>
+    <StringView>mBuffer,s</StringView>
+    <Expand>
+      <Item Name="[Buffer]">mBuffer</Item>
+      <Item Name="[Length]" Condition="mLength!=0xFFFFFFFF">mLength</Item>
+    </Expand>
+  </Type>
+  <Type Name="Medusa::TStringRef&lt;wchar_t&gt;">
+    <DisplayString Condition="mLength==0xFFFFFFFF">{mBuffer}[?]</DisplayString>
+    <DisplayString Condition="mLength==0">{mBuffer}[0]</DisplayString>
+    <DisplayString>{mBuffer}[{mLength}]</DisplayString>
+    <StringView>mBuffer,su</StringView>
     <Expand>
       <Item Name="[Buffer]">mBuffer</Item>
       <Item Name="[Length]" Condition="mLength!=0xFFFFFFFF">mLength</Item>
     </Expand>
   </Type>
 
+  <Type Name="Medusa::THeapString&lt;char&gt;">
+    <DisplayString Condition="mLength==0xFFFFFFFF">{mBuffer}[?]</DisplayString>
+    <DisplayString Condition="mLength==0">{mBuffer}[0]</DisplayString>
+    <DisplayString>{mBuffer}[{mLength}]</DisplayString>
+    <StringView>mBuffer,s</StringView>
+    <Expand>
+      <Item Name="[Buffer]">mBuffer</Item>
+      <Item Name="[Length]" Condition="mLength!=0xFFFFFFFF">mLength</Item>
+    </Expand>
+  </Type>
+  <Type Name="Medusa::THeapString&lt;wchar_t&gt;">
+    <DisplayString Condition="mLength==0xFFFFFFFF">{mBuffer}[?]</DisplayString>
+    <DisplayString Condition="mLength==0">{mBuffer}[0]</DisplayString>
+    <DisplayString>{mBuffer}[{mLength}]</DisplayString>
+    <StringView>mBuffer,su</StringView>
+    <Expand>
+      <Item Name="[Buffer]">mBuffer</Item>
+      <Item Name="[Length]" Condition="mLength!=0xFFFFFFFF">mLength</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="Medusa::List&lt;*&gt;">
+    <DisplayString>[{mCount}],Size={mSize}</DisplayString>
+    <Expand>
+      <ArrayItems>
+        <Size>mCount</Size>
+        <ValuePointer>mItems</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+    <Type Name="Medusa::SortedList&lt;*&gt;">
+      <DisplayString>[{mCount}],Size={mSize}</DisplayString>
+    <Expand>
+      <ArrayItems>
+        <Size>mCount</Size>
+        <ValuePointer>mItems</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+  <Type Name="Medusa::Dictionary&lt;*,*&gt;">
+    <DisplayString>[{mCount}],Size={mSize}</DisplayString>
+    <Expand>
+      <ArrayItems>
+        <Size>mSize</Size>
+        <ValuePointer>mEntries</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+
+  <Type Name="Medusa::Color3B">
+    <DisplayString>{R},{G},{B}</DisplayString>
+    <Expand>
+      <Item Name="R">R</Item>
+      <Item Name="G">G</Item>
+      <Item Name="B">B</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="Medusa::Color3F">
+    <DisplayString>{R},{G},{B}</DisplayString>
+    <Expand>
+      <Item Name="R">R</Item>
+      <Item Name="G">G</Item>
+      <Item Name="B">B</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="Medusa::Color4B">
+    <DisplayString>{R},{G},{B},{A}</DisplayString>
+    <Expand>
+      <Item Name="R">R</Item>
+      <Item Name="G">G</Item>
+      <Item Name="B">B</Item>
+      <Item Name="A">A</Item>
+    </Expand>
+  </Type>
+  
+  <Type Name="Medusa::Color4F">
+    <DisplayString>{R},{G},{B},{A}</DisplayString>
+    <Expand>
+      <Item Name="R">R</Item>
+      <Item Name="G">G</Item>
+      <Item Name="B">B</Item>
+      <Item Name="A">A</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="Medusa::Matrix2">
+    <DisplayString>{M11},{M12},{M21},{M22},{M31},{M32}</DisplayString>
+    <Expand>
+      <Item Name="M11">M11</Item>
+      <Item Name="M12">M12</Item>
+      <Item Name="M21">M21</Item>
+      <Item Name="M22">M22</Item>
+      <Item Name="M31">M31</Item>
+      <Item Name="M32">M32</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="Medusa::Matrix4">
+    <DisplayString>{M11},{M12},{M13},{M14},{M21},{M22},{M23},{M24},{M31},{M32},{M33},{M34},{M41},{M42},{M43},{M44}</DisplayString>
+    <Expand>
+      <Item Name="M11">M11</Item>
+      <Item Name="M12">M12</Item>
+      <Item Name="M13">M13</Item>
+      <Item Name="M14">M14</Item>
+      <Item Name="M21">M21</Item>
+      <Item Name="M22">M22</Item>
+      <Item Name="M23">M23</Item>
+      <Item Name="M24">M24</Item>
+      <Item Name="M31">M31</Item>
+      <Item Name="M32">M32</Item>
+      <Item Name="M33">M33</Item>
+      <Item Name="M34">M34</Item>
+      <Item Name="M41">M41</Item>
+      <Item Name="M42">M42</Item>
+      <Item Name="M43">M43</Item>
+      <Item Name="M44">M44</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="Medusa::Padding4&lt;*&gt;">
+    <DisplayString>{Left},{Right},{Up},{Down}</DisplayString>
+    <Expand>
+      <Item Name="Left">Left</Item>
+      <Item Name="Right">Right</Item>
+      <Item Name="Up">Up</Item>
+      <Item Name="Down">Down</Item>
+    </Expand>
+  </Type>
+  
+  <Type Name="Medusa::Point2&lt;*&gt;">
+    <DisplayString>{X},{Y}</DisplayString>
+    <Expand>
+      <Item Name="X">X</Item>
+      <Item Name="Y">Y</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="Medusa::Point3&lt;*&gt;">
+    <DisplayString>{X},{Y},{Z}</DisplayString>
+    <Expand>
+      <Item Name="X">X</Item>
+      <Item Name="Y">Y</Item>
+      <Item Name="Z">Z</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="Medusa::Point4&lt;*&gt;">
+    <DisplayString>{X},{Y},{Z},{W}</DisplayString>
+    <Expand>
+      <Item Name="X">X</Item>
+      <Item Name="Y">Y</Item>
+      <Item Name="Z">Z</Item>
+      <Item Name="W">W</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="Medusa::Quad&lt;*&gt;">
+    <DisplayString>{LeftBottom},{RightBottom},{RightTop},{LeftTop}</DisplayString>
+    <Expand>
+      <Item Name="LeftBottom">LeftBottom</Item>
+      <Item Name="RightBottom">RightBottom</Item>
+      <Item Name="RightTop">RightTop</Item>
+      <Item Name="LeftTop">LeftTop</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="Medusa::Range&lt;*&gt;">
+    <DisplayString>{Min},{Max}</DisplayString>
+    <Expand>
+      <Item Name="Min">Min</Item>
+      <Item Name="Max">Max</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="Medusa::Rect2&lt;*&gt;">
+    <DisplayString>{Origin},{Size}</DisplayString>
+    <Expand>
+      <Item Name="Origin">Origin</Item>
+      <Item Name="Size">Size</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="Medusa::Rotation2&lt;*&gt;">
+    <DisplayString>{X},{Y}</DisplayString>
+    <Expand>
+      <Item Name="X">X</Item>
+      <Item Name="Y">Y</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="Medusa::Rotation3&lt;*&gt;">
+    <DisplayString>{X},{Y},{Z}</DisplayString>
+    <Expand>
+      <Item Name="X">X</Item>
+      <Item Name="Y">Y</Item>
+      <Item Name="Z">Z</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="Medusa::Scale2&lt;*&gt;">
+    <DisplayString>{X},{Y}</DisplayString>
+    <Expand>
+      <Item Name="X">X</Item>
+      <Item Name="Y">Y</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="Medusa::Scale3&lt;*&gt;">
+    <DisplayString>{X},{Y},{Z}</DisplayString>
+    <Expand>
+      <Item Name="X">X</Item>
+      <Item Name="Y">Y</Item>
+      <Item Name="Z">Z</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="Medusa::Segment&lt;*&gt;">
+    <DisplayString>{Position},{Length}</DisplayString>
+    <Expand>
+      <Item Name="Position">Position</Item>
+      <Item Name="Length">Length</Item>
+    </Expand>
+  </Type>
+  
+  <Type Name="Medusa::Size2&lt;*&gt;">
+    <DisplayString>{Width},{Height}</DisplayString>
+    <Expand>
+      <Item Name="Width">Width</Item>
+      <Item Name="Height">Height</Item>
+    </Expand>
+  </Type>
+  <Type Name="Medusa::Size3&lt;*&gt;">
+    <DisplayString>{Width},{Height},{Depth}</DisplayString>
+    <Expand>
+      <Item Name="Width">Width</Item>
+      <Item Name="Height">Height</Item>
+      <Item Name="Depth">Depth</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="Medusa::Thickness&lt;*&gt;">
+    <DisplayString>{Left},{Right},{Bottom},{Top}</DisplayString>
+    <Expand>
+      <Item Name="Left">Left</Item>
+      <Item Name="Right">Right</Item>
+      <Item Name="Bottom">Bottom</Item>
+      <Item Name="Top">Top</Item>
+    </Expand>
+  </Type>
 </AutoVisualizer>

@@ -7,23 +7,23 @@
 MEDUSA_BEGIN;
 
 
-MemoryByteData IStream::ReadBeginToCurrent(DataReadingMode mode/*=DataReadingMode::AlwaysCopy*/)const
+MemoryData IStream::ReadBeginToCurrent(DataReadingMode mode/*=DataReadingMode::AlwaysCopy*/)const
 {
 	uintp pos = Position();
 	Rewind();
 	return ReadData((size_t)pos, mode);
 }
 
-MemoryByteData IStream::ReadToEnd(DataReadingMode mode/*=DataReadingMode::AlwaysCopy*/)const
+MemoryData IStream::ReadToEnd(DataReadingMode mode/*=DataReadingMode::AlwaysCopy*/)const
 {
 	return ReadData((size_t)LeftLength(), mode);
 }
 
-MemoryByteData IStream::ReadData(size_t size, DataReadingMode mode/*=DataReadingMode::AlwaysCopy*/)const
+MemoryData IStream::ReadData(size_t size, DataReadingMode mode/*=DataReadingMode::AlwaysCopy*/)const
 {
 	if (LeftLength() >= size)
 	{
-		if (Ptr()==nullptr)	//not support direct move
+		if (Ptr() == nullptr)	//not support direct move
 		{
 			mode = DataReadingMode::AlwaysCopy;
 		}
@@ -32,8 +32,8 @@ MemoryByteData IStream::ReadData(size_t size, DataReadingMode mode/*=DataReading
 		{
 		case DataReadingMode::AlwaysCopy:
 		{
-			MemoryByteData data = MemoryByteData::Alloc(size);
-			size_t readSize= ReadDataTo(data, mode);
+			MemoryData data = MemoryData::Alloc(size);
+			size_t readSize = ReadDataTo(data, mode);
 			data.ForceSetSize(readSize);
 
 			return data;
@@ -41,7 +41,7 @@ MemoryByteData IStream::ReadData(size_t size, DataReadingMode mode/*=DataReading
 		break;
 		case DataReadingMode::DirectMove:
 		{
-			MemoryByteData data;
+			MemoryData data;
 			data.ForceSetSize(size);
 			size_t readSize = ReadDataTo(data, mode);
 			data.ForceSetSize(readSize);
@@ -54,7 +54,7 @@ MemoryByteData IStream::ReadData(size_t size, DataReadingMode mode/*=DataReading
 		}
 
 	}
-	return MemoryByteData::Empty;
+	return MemoryData::Empty;
 }
 
 size_t IStream::CopyTo(IStream& dest, size_t bufferSize/*=1024*/)const
@@ -64,7 +64,7 @@ size_t IStream::CopyTo(IStream& dest, size_t bufferSize/*=1024*/)const
 	size_t realBufferSize = Math::Min(LeftLength(), bufferSize);
 	size_t count = 0;
 
-	MemoryByteData buffer = MemoryByteData::Alloc(realBufferSize);
+	MemoryData buffer = MemoryData::Alloc(realBufferSize);
 	do
 	{
 		size_t readSize = ReadDataTo(buffer, DataReadingMode::AlwaysCopy);
@@ -87,7 +87,7 @@ size_t IStream::ReadToStream(size_t size, IStream& dest, size_t bufferSize/*=102
 	{
 		dest.ReserveLeftSize(size);
 		byte* buffer = dest.MutablePtr();
-		MemoryByteData destBuffer = MemoryByteData::FromStatic(buffer, size);
+		MemoryData destBuffer = MemoryData::FromStatic(buffer, size);
 		return ReadDataTo(destBuffer, DataReadingMode::AlwaysCopy);
 	}
 	else
@@ -96,7 +96,7 @@ size_t IStream::ReadToStream(size_t size, IStream& dest, size_t bufferSize/*=102
 		size_t count = 0;
 		size_t realBufferSize = Math::Min(LeftLength(), bufferSize, size);
 
-		MemoryByteData tempBuffer = MemoryByteData::Alloc(realBufferSize);
+		MemoryData tempBuffer = MemoryData::Alloc(realBufferSize);
 		do
 		{
 			size_t readSize = Math::Min(size, realBufferSize);
@@ -114,22 +114,52 @@ size_t IStream::ReadToStream(size_t size, IStream& dest, size_t bufferSize/*=102
 
 }
 
-size_t IStream::ReadDataToString(HeapString& outString)const
+size_t IStream::ReadDataToString(HeapString& outString, int readCount/*=0*/)const
 {
 	RETURN_ZERO_IF_FALSE(CanRead());
+	uintp readSize = 0;
+	if (readCount == 0)
+	{
+		readSize = Math::Min(outString.LeftLength(), LeftLength());
+	}
+	else if (readCount < 0)
+	{
+		readSize = LeftLength();
+		outString.ReserveLeftLength(readSize);
+	}
+	else
+	{
+		readSize = Math::Min((size_t)readCount, LeftLength());
+		outString.ReserveLeftLength(readSize);
+	}
 
-	uintp readSize = Math::Min(outString.LeftLength(), LeftLength());
-	MemoryByteData outData = MemoryByteData::FromStatic((const byte*)outString.LeftPtr(), readSize);
+	MemoryData outData = MemoryData::FromStatic((const byte*)outString.LeftPtr(), readSize);
 	size_t count = ReadDataTo(outData, DataReadingMode::AlwaysCopy);
 	outString.ForceAppendLength(count);
 	return count;
 }
 
-size_t IStream::ReadDataToString(WHeapString& outString)const
+size_t IStream::ReadDataToString(WHeapString& outString, int readCount/*=0*/)const
 {
 	RETURN_ZERO_IF_FALSE(CanRead());
-	uintp readSize = Math::Min(outString.LeftLength(), LeftLength());
-	MemoryByteData outData = MemoryByteData::FromStatic((const byte*)outString.LeftPtr(), readSize*sizeof(wchar_t));
+
+	uintp readSize = 0;
+	if (readCount == 0)
+	{
+		readSize = Math::Min(outString.LeftLength()*sizeof(wchar_t), LeftLength());
+	}
+	else if (readCount < 0)
+	{
+		readSize = LeftLength();
+		outString.ReserveLeftLength(readSize/sizeof(wchar_t));
+	}
+	else
+	{
+		readSize = Math::Min((size_t)readCount, LeftLength());
+		outString.ReserveLeftLength(readSize/sizeof(wchar_t));
+	}
+
+	MemoryData outData = MemoryData::FromStatic((const byte*)outString.LeftPtr(), readSize*sizeof(wchar_t));
 	size_t count = ReadDataTo(outData, DataReadingMode::AlwaysCopy);
 	outString.ForceAppendLength(count / sizeof(wchar_t));
 	return count;
@@ -143,8 +173,9 @@ size_t IStream::ReadAllLinesTo(List<HeapString>& outLines, size_t maxCount/*=102
 	while (true)
 	{
 		temp.Clear();
-		count += ReadLineToString(temp);
-		BREAK_IF_EMPTY(temp);
+		size_t readCount = ReadLineToString(temp);
+		count += readCount;
+		BREAK_IF_ZERO(readCount);
 		if (ignoreEmptyLine)
 		{
 			CONTINUE_IF_EMPTY(temp);
@@ -169,8 +200,9 @@ size_t IStream::ReadAllLinesTo(List<WHeapString>& outLines, size_t maxCount/*=10
 	while (true)
 	{
 		temp.Clear();
-		count += ReadLineToString(temp);
-		BREAK_IF_EMPTY(temp);
+		size_t readCount = ReadLineToString(temp);
+		count += readCount;
+		BREAK_IF_ZERO(readCount);
 		if (ignoreEmptyLine)
 		{
 			CONTINUE_IF_EMPTY(temp);

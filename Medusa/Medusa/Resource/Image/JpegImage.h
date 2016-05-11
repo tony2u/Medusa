@@ -10,13 +10,13 @@ MEDUSA_BEGIN;
 class JpegImage:public RGBAImage
 {
 public:
-	JpegImage(const FileIdRef& fileId,Size2U imageSize,GraphicsInternalFormat internalFormat,GraphicsPixelFormat imageFormat,bool isPreMultiplyAlpha);
+	JpegImage(const FileIdRef& fileId,Size2U imageSize,PixelType pixelType,bool isPreMultiplyAlpha);
 	virtual ~JpegImage(void);
 public:
 	virtual ImageFileType ImageType()const{return ImageFileType::jpeg;}
 
 	static JpegImage* CreateFromFile(const FileIdRef& fileId);
-	static JpegImage* CreateFromMemory(const FileIdRef& fileId,MemoryByteData data);
+	static JpegImage* CreateFromMemory(const FileIdRef& fileId, const FileEntry& fileEntry,MemoryData data);
 	bool SaveToFile(StringRef filePath)const;
 
 };

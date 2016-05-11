@@ -23,8 +23,8 @@ RandomNameConfigItem::~RandomNameConfigItem()
 
 //SIREN_BODY_METADATA_BEGIN
 SIREN_METADATA(RandomNameConfigItem, 20);
-SIREN_PROPERTY_METADATA(0, RandomNameConfigItem, Position, 8, 0);
-SIREN_PROPERTY_METADATA_STRUCT(1, RandomNameConfigItem, Value, 5);
+SIREN_FIELD_METADATA(0, RandomNameConfigItem, Position, 8, 0, false);
+SIREN_FIELD_METADATA_STRUCT(1, RandomNameConfigItem, Value, 5);
 //SIREN_BODY_METADATA_END
 
 MEDUSA_END;

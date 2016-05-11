@@ -23,9 +23,11 @@ uint Environment::GetCPUCount() const
 	return get_nprocs();
 }
 
-Size2U Environment::ScreenSize()const
+bool Environment::GetScreenSize(uint& outWidth, uint& outHeight)const
 {
-	return Size2U::Zero;
+	outWidth = 0;
+	outHeight = 0;
+	return true;
 }
 bool Environment::RequireFullScreen() const
 {

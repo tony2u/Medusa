@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>E439935D-B2A2-46AE-856D-2AA408428F33</ProjectGuid>
+    <!--$guid1$-->
+    <ProjectHome>.</ProjectHome>
+    <StartupFile>
+    </StartupFile>
+    <SearchPath>
+    </SearchPath>
+    <WorkingDirectory>.</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>true</DebugSymbols>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="Script\" />
+    <Folder Include="Script\Game\" />
+    <Folder Include="Script\Medusa\" />
+    <Folder Include="Script\Medusa\Core\" />
+    <Folder Include="Script\Medusa\Engine\" />
+    <Folder Include="Script\Medusa\Engine\Audio\" />
+    <Folder Include="Script\Medusa\Engine\Game\" />
+    <Folder Include="Script\Medusa\Engine\Geometry\" />
+    <Folder Include="Script\Medusa\Engine\Node\" />
+    <Folder Include="Script\Medusa\Engine\Node\Action\" />
+    <Folder Include="Script\Medusa\Engine\Node\Control\" />
+    <Folder Include="Script\Medusa\Engine\Node\Input\" />
+    <Folder Include="Script\Medusa\Engine\Node\Layer\" />
+    <Folder Include="Script\Medusa\Engine\Node\Panel\" />
+    <Folder Include="Script\Medusa\Engine\Node\Scene\" />
+    <Folder Include="Script\Medusa\Engine\Node\Skeleton\" />
+    <Folder Include="Script\Medusa\Engine\Resource\" />
+    <Folder Include="Script\Medusa\Extension\" />
+    <Folder Include="Script\Medusa\Lib\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Script\Game\HelloLuaGame.lua" />
+    <Compile Include="Script\Game\HelloLuaLayer.lua" />
+    <Compile Include="Script\Game\HelloLuaScene.lua" />
+    <Compile Include="Script\main.lua" />
+    <Compile Include="Script\Medusa\Core\FileSystem.lua" />
+    <Compile Include="Script\Medusa\debugger.lua" />
+    <Compile Include="Script\Medusa\Engine\Engine.lua" />
+    <Compile Include="Script\Medusa\Engine\Node\Layer\ILayer.lua" />
+    <Compile Include="Script\Medusa\Engine\Node\NodeConstants.lua" />
+    <Compile Include="Script\Medusa\Engine\Node\NodeFactory.lua" />
+    <Compile Include="Script\Medusa\Engine\Node\Scene\ISceneExtend.lua" />
+    <Compile Include="Script\Medusa\Engine\INode.lua" />
+    <Compile Include="Script\Medusa\Engine\Node\Scene\IScene.lua" />
+    <Compile Include="Script\Medusa\Engine\Node\Scene\SceneManager.lua" />
+    <Compile Include="Script\Medusa\Extension\Extension.lua" />
+    <Compile Include="Script\Medusa\Lib\bitExtend.lua" />
+    <Compile Include="Script\Medusa\Core\class.lua" />
+    <Compile Include="Script\Medusa\Core\DataBinding.lua" />
+    <Compile Include="Script\Medusa\Core\Delegate.lua" />
+    <Compile Include="Script\Medusa\Core\Event.lua" />
+    <Compile Include="Script\Medusa\Core\Log.lua" />
+    <Compile Include="Script\Medusa\Core\ObjectFactory.lua" />
+    <Compile Include="Script\Medusa\Core\ObjectPool.lua" />
+    <Compile Include="Script\Medusa\Lib\Lib.lua" />
+    <Compile Include="Script\Medusa\Lib\mathExtend.lua" />
+    <Compile Include="Script\Medusa\Platform.lua" />
+    <Compile Include="Script\Medusa\Core\Core.lua" />
+    <Compile Include="Script\Medusa\Lib\stringExtend.lua" />
+    <Compile Include="Script\Medusa\Lib\tableExtend.lua" />
+    <Compile Include="Script\Medusa\Engine\Game\IGame.lua" />
+    <Compile Include="Script\Medusa\Lib\json.lua" />
+    <Compile Include="Script\Medusa\Medusa.lua" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
+</Project>

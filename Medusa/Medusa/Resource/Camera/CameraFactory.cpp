@@ -40,8 +40,13 @@ Camera* CameraFactory::CreateDefault(StringRef name, bool isOrtho /*= false*/, b
 
 Camera* CameraFactory::CreateDefault(StringRef name, const Size2F& winSize, bool isOrtho/*=false*/, bool isResizeable /*= true*/, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
-	Camera* camera = Find(name);
-	RETURN_SELF_IF_NOT_NULL(camera);
+	Camera* camera = nullptr;
+	if (shareType!=ResourceShareType::None)
+	{
+		camera = Find(name);
+		RETURN_SELF_IF_NOT_NULL(camera);
+	}
+	
 
 	if (camera == nullptr)
 	{
@@ -61,8 +66,12 @@ Camera* CameraFactory::CreateDefault(StringRef name, const Size2F& winSize, bool
 
 Camera* CameraFactory::CreateFromModel(StringRef name, StringRef modelName, const Size2F& winSize, bool isResizeable /*= true*/, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
-	Camera* camera = Find(name);
-	RETURN_SELF_IF_NOT_NULL(camera);
+	Camera* camera = nullptr;
+	if (shareType != ResourceShareType::None)
+	{
+		camera = Find(name);
+		RETURN_SELF_IF_NOT_NULL(camera);
+	}
 
 	if (camera == nullptr)
 	{

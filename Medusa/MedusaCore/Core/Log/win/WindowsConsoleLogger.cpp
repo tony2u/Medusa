@@ -48,13 +48,13 @@ void WindowsConsoleLogger::SetLogColor(LogType logType)
 	*/
 	switch (mCurrentLogType)
 	{
-	case ILogger::LogType::Info:
+	case LogType::Info:
 		SetConsoleTextAttribute(console,FOREGROUND_INTENSITY);
 		break;
-	case ILogger::LogType::Error:
+	case LogType::Error:
 		SetConsoleTextAttribute(console,FOREGROUND_INTENSITY|FOREGROUND_RED);
 		break;
-	case ILogger::LogType::Assert:
+	case LogType::Assert:
 		SetConsoleTextAttribute(console,FOREGROUND_INTENSITY|FOREGROUND_RED);
 		break;
 	default:

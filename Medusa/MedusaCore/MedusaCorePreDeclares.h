@@ -1,30 +1,13 @@
 #pragma once
 #include "CorePlatform/CorePlatform.h"
 MEDUSA_BEGIN;
-namespace Socket
-{
-	class AddressInfo;
-	
-	class ClientSocket;
-	
-	class HostInfo;
-	
-	class ISocket;
-	
-	class ProtocolInfo;
-	
-	class ServerSocket;
-	
-	class ServiceInfo;
-	
-}
 namespace placeholder
 {
 	template <int N>
 	struct TPlaceHolder;
 	
 }
-class MedusaCoreScript;
+class MedusaCoreModule;
 
 class ActionFactory;
 
@@ -164,18 +147,7 @@ class Algorithm;
 template<typename T>
 struct InnerTypes;
 
-class IKSolver2D;
-
-struct Bone;
-
-class GuillotineBinPack;
-
-class SkylineBinPack;
-
-struct Skyline;
-
-template<typename TGraph, typename TNode, typename TUserData>
-class DijkstraPathFinder;
+class SirenLuaExtension;
 
 class CoderChain;
 
@@ -363,150 +335,7 @@ class ZipReader;
 
 struct ZipFileInfo;
 
-class AppCompatibility;
-
 class ConfigManager;
-
-class PackageInfo;
-
-class ServerConfig;
-
-class ServerConfigItem;
-
-class ServerList;
-
-class ServerListItem;
-
-class ServerUsageItem;
-
-class UpdateServer;
-
-template<typename T,template<typename T1> class TPoint>
-class AABBBox_t;
-
-class Color3F;
-
-class Color3B;
-
-class Color4F;
-
-class Color4B;
-
-template<typename T>
-class Cube;
-
-template<typename T>
-class Ellipse;
-
-class Quaternion;
-
-class Matrix3;
-
-class EulerAngle;
-
-class Geometry;
-
-class GeometryAlgorithm;
-
-class GeometryFactory;
-
-template<typename T>
-class Line2;
-
-template<typename T>
-class Line3;
-
-class Matrix2;
-
-class Matrix4;
-
-class Matrix43;
-
-template<typename T>
-class Padding4;
-
-template<typename T>
-class Point2;
-
-template<typename T>
-class Point3;
-
-template<typename T>
-class Point4;
-
-template<typename T>
-class Polygon;
-
-template<typename T>
-class Quad;
-
-template<typename T>
-class Range;
-
-template<typename T>
-class Rect2;
-
-template<typename T>
-class Rotation2;
-
-template<typename T>
-class Rotation3;
-
-template<typename T>
-class Scale2;
-
-template<typename T>
-class Scale3;
-
-struct ScrollDirection;
-
-template<typename T>
-class Segment;
-
-template<typename T>
-class Size2;
-
-template<typename T>
-class Size3;
-
-template<typename T>
-class Thickness;
-
-template<typename T,template<typename T1> class TPoint>
-class Triangle_t;
-
-class Graph;
-
-class GraphCapabilityEdge;
-
-class GraphEdge;
-
-class GraphNode;
-
-class GraphPath;
-
-class GridCell;
-
-template<typename TCell, typename TCellCompare >
-class GridMap;
-
-class BoneMoveable;
-
-class DefaultMoveable;
-
-class MatrixMoveable;
-
-class Mover;
-
-class SRTMoveable;
-
-class TransformFactory;
-
-class ShapeVertex;
-
-class TextureNormalVertex;
-
-class TextureVertex;
 
 class CRC32C;
 
@@ -535,6 +364,12 @@ class IFileLoadable;
 class MemoryFileAutoRegister;
 
 class Path;
+
+class ApplePropertyListNode;
+
+struct BinaryHeader;
+
+class ApplePropertyListReader;
 
 class FileMapNameItem;
 
@@ -588,9 +423,13 @@ class HashStream;
 
 class IStream;
 
+class IStreamable;
+
 class MemoryStream;
 
 class SpanStream;
+
+class StringStream;
 
 class CallbackLogger;
 
@@ -610,15 +449,42 @@ class WindowsConsoleLogger;
 
 class WindowsTraceLogger;
 
+class ILuaObject;
+
+template<typename TClass>
+class LuaClass;
+
+class LuaMachine;
+
+class LuaModule;
+
+template<typename T>
+struct LuaCustomObjectPtr;
+
+template<typename T>
+class LuaObjectPtr;
+
+template<typename T>
+class LuaObjectValue;
+
+class LuaRef;
+
+class LuaSelector;
+
+class LuaStack;
+
+class LuaStackAutoReset;
+
+class LuaState;
+
+class LuaTable;
+
+template<typename TDerived>
+class TLuaTable;
+
 class MathStrategy;
 
 class NormalDistribution;
-
-class IScrollMathModel;
-
-class SpringScrollMathModel;
-
-class StaticScrollMathModel;
 
 class Random;
 
@@ -633,9 +499,23 @@ struct DefaultPredicateFunc;
 class ByteBuffer;
 
 template<typename T>
-class MemoryData;
+class TMemoryData;
 
-class BaseCustomMessage;
+struct DelegateModule;
+
+class IModule;
+
+class GlobalDownloadingProgressEventArg;
+
+class HTTPClient;
+
+class HTTPFileDownloader;
+
+class HTTPMemoryDownloader;
+
+class IHTTPDownloader;
+
+class SingleDownloadingProgressEventArg;
 
 template<typename TRequest,typename TResponse>
 class BaseMessage;
@@ -651,25 +531,31 @@ class MessageEventArg;
 
 class MessageFactory;
 
-class IMessageHandler;
+class BaseSocketService;
 
-class MessageHandlerFactory;
+class BaseThreadService;
 
-class MockMessageHandler;
+class IService;
 
-class TcpMessageHandler;
+class MockService;
 
-class GlobalDownloadingProgressEventArg;
+class ServerConfig;
 
-class HTTPClient;
+class ServerConfigItem;
 
-class HTTPFileDownloader;
+class ServiceFactory;
 
-class HTTPMemoryDownloader;
+class ServiceInfo;
 
-class IHTTPDownloader;
+class TcpClientService;
 
-class SingleDownloadingProgressEventArg;
+class AddressInfo;
+
+class HostInfo;
+
+class ProtocolInfo;
+
+class Socket;
 
 template<typename T, bool TIsAtomic >
 struct AutoIncreaseId;
@@ -732,30 +618,6 @@ class Sweeper;
 template<typename T>
 class VaryValue;
 
-class BehaviorConfig;
-
-class BehaviorFactory;
-
-class IActBehavior;
-
-class IBehavior;
-
-struct IfBehavior;
-
-class IPredicateBehavior;
-
-struct SwitchBehavior;
-
-class BrainCache;
-
-class BrainFactory;
-
-class IBrain;
-
-class IBrainBody;
-
-class IBrainMemory;
-
 class ComponentFactory;
 
 class IComponent;
@@ -793,23 +655,11 @@ class SharableObjectFactory;
 template <typename TObject, typename TObjectCompare , typename TObjectNewer >
 class SingleObjectPool;
 
-struct AndPredicate;
+template<typename TId, typename FuncSignature, typename THashCoder >
+class StaticObjectFactory;
 
-struct FalsePredicate;
-
-struct IPredicate;
-
-struct NotPredicate;
-
-struct OrPredicate;
-
-class PredicateConfig;
-
-class PredicateFactory;
-
-struct TruePredicate;
-
-struct XorPredicate;
+template<typename TId, typename TBase, typename... TArgs, typename THashCoder>
+class StaticObjectFactory<TId, TBase*(TArgs...), THashCoder>;
 
 template<typename TDevided, typename T, size_t TSize>
 class EmbededPropertyUnit;
@@ -847,22 +697,6 @@ class DefaultRunnable;
 
 struct IRunnable;
 
-class IState;
-
-class IStateConnector;
-
-class StateAutoConnector;
-
-class StateEventConnector;
-
-class StateFactory;
-
-class StateMachine;
-
-class StateMachineModel;
-
-class StateMachineModelConfig;
-
 class AutoStopWatch;
 
 class PerformanceCounter;
@@ -877,10 +711,6 @@ class StopWatch;
 
 class ScriptEngine;
 
-class ScriptModule;
-
-class ScriptObject;
-
 template<typename T,bool TIsResetKey>
 class SecurityValueAutoUnlock;
 
@@ -890,51 +720,115 @@ class SecurityValue;
 template<typename T>
 class ISirenConfig;
 
-template <typename TStream>
-class BaseBinaryReader;
+class SirenObject;
 
-class BaseBinarySizeCounter;
+class BaseSirenBinaryReader;
 
-template <typename TStream>
-class BaseBinaryWriter;
+class BaseSirenBinarySizeCounter;
 
-template <typename TStream>
-class CompactBinaryReader;
+class BaseSirenBinaryWriter;
 
-class CompactBinarySizeCounter;
+class SirenCompactBinaryReader;
 
-template <typename TStream>
-class CompactBinaryWriter;
+class SirenCompactBinarySizeCounter;
 
-template <typename TStream>
-class FastBinaryReader;
+class SirenCompactBinaryWriter;
 
-class FastBinarySizeCounter;
+class SirenFastBinaryReader;
 
-template <typename TStream>
-class FastBinaryWriter;
+class SirenFastBinarySizeCounter;
 
-template <typename TStream>
-class JsonInputStream;
+class SirenFastBinaryWriter;
 
-template <typename TStream>
-class JsonOutputStream;
+class SirenJsonInputStream;
 
-template <typename TStream>
-class JsonReader;
+class SirenJsonOutputStream;
 
-template <typename TStream>
-class JsonWriter;
+class SirenJsonReader;
 
-template<typename TProperty>
-class BasicPropertyMetadata;
+class SirenJsonWriter;
 
-struct DynamicSchemaVisitor;
+class SirenLuaReader;
 
-struct StaticSchemaVisitor;
+class SirenLuaWriter;
 
-template<typename TProperty>
-class StructPropertyMetadata;
+class SirenAssembly;
+
+template<typename TField>
+class SirenBasicFieldMetadata;
+
+class SirenMachine;
+
+template<typename TField>
+class SirenStructFieldMetadata;
+
+class SirenTextParser;
+
+class ISirenAttribute;
+
+class SirenClassAttribute;
+
+class SirenEnumAttribute;
+
+class SirenFieldAttribute;
+
+class SirenField;
+
+class ISirenFunction;
+
+class SirenAttributeFunction;
+
+class BaseSirenCustomType;
+
+class ISirenType;
+
+class SirenBuildinDictionary;
+
+class SirenBuildinList;
+
+class SirenBuildinType;
+
+class SirenBuildinBool;
+
+class SirenBuildinInt8;
+
+class SirenBuildinUInt8;
+
+class SirenBuildinInt16;
+
+class SirenBuildinUInt16;
+
+class SirenBuildinInt32;
+
+class SirenBuildinUInt32;
+
+class SirenBuildinInt64;
+
+class SirenBuildinUInt64;
+
+class SirenBuildinFloat;
+
+class SirenBuildinDouble;
+
+class SirenBuildinString;
+
+class SirenBuildinBlob;
+
+class SirenCustomClass;
+
+class SirenCustomEnum;
+
+class ISirenReader;
+
+class ISirenSizeCounter;
+
+class ISirenWriter;
+
+class SirenObjectDeserializer;
+
+class SirenObjectSerializer;
+
+class SirenReaderWriter;
 
 template<typename T>
 class BaseString;
@@ -1000,6 +894,8 @@ class IWaitable;
 class Mutex;
 
 class NonRecursiveMutex;
+
+class RecursiveMutex;
 
 class NoMutex;
 
@@ -1075,86 +971,17 @@ class Version;
 #pragma region typedef
 typedef Delegate<void(void* sender, IEventArg&)> EventHandler;
 typedef Delegate<void(void*, IEventArg)> DummyEventHandler;
-typedef Cube<uint32> CubeI;
-typedef Cube<float> CubeF;
-typedef CubeF BoundingBox;
-typedef LazyValue<BoundingBox> LazyBoundingBox;
-typedef Ellipse<int> EllipseI;
-typedef Ellipse<uint> EllipseU;
-typedef Ellipse<float> EllipseF;
-typedef Line2<int> Line2I;
-typedef Line2<float> Line2F;
-typedef Line3<int> Line3I;
-typedef Line3<float> Line3F;
-typedef LazyValue<Matrix3> LazyMatrix3;
-typedef LazyValue<Matrix4> LazyMatrix4;
-typedef LazyValue<Matrix43> LazyMatrix43;
-typedef Padding4<int> Padding4I;
-typedef Padding4<float> Padding4F;
-typedef Point2<int> Point2I;
-typedef Point2<uint> Point2U;
-typedef Point2<float> Point2F;
-typedef Point2I Vector2I;
-typedef Point2F Vector2F;
-typedef Point3<int> Point3I;
-typedef Point3<float> Point3F;
-typedef Point3I Vector3I;
-typedef Point3F Vector3F;
-typedef Point4<int> Point4I;
-typedef Point4<uint> Point4U;
-typedef Point4<float> Point4F;
-typedef Point4I Vector4I;
-typedef Point4U Vector4U;
-typedef Point4F Vector4F;
-typedef Polygon<int> PolygonI;
-typedef Polygon<float> PolygonF;
-typedef Quad<Color4F> QuadColor;
-typedef Quad<Point2<float> > QuadTexCoord;
-typedef Quad<Point3<float> > QuadVertex3;
-typedef Quad<Point2<float> > QuadVertex2;
-typedef Quad<TextureVertex> QuadTextureVertex;
-typedef Quad<TextureNormalVertex> QuadTextureNormalVertex;
-typedef Quad<ShapeVertex> QuadShapeVertex;
-typedef Range<int> RangeI;
-typedef Range<uint32> RangeU;
-typedef Range<size_t> RangeS;
-typedef Range<float> RangeF;
-typedef Rect2<int> Rect2I;
-typedef Rect2<uint> Rect2U;
-typedef Rect2<float> Rect2F;
-typedef Rect2F BoundingBox2;
-typedef LazyValue<BoundingBox2> LazyBoundingBox2;
-typedef Rotation2<float> Rotation2F;
-typedef Rotation3<float> Rotation3F;
-typedef Scale2<float> Scale2F;
-typedef Scale3<int> Scale3I;
-typedef Scale3<float> Scale3F;
-typedef Segment<int> SegmentI;
-typedef Segment<uint32> SegmentU;
-typedef Segment<size_t> SegmentS;
-typedef Segment<float> SegmentF;
-typedef Size2<int> Size2I;
-typedef Size2<uint32> Size2U;
-typedef Size2<float> Size2F;
-typedef Size3<uint32> Size3U;
-typedef Size3<int> Size3I;
-typedef Size3<float> Size3F;
-typedef Thickness<float> ThicknessF;
-typedef Triangle_t<int,Point2> Triangle2I;
-typedef Triangle_t<float,Point2> Triangle2F;
-typedef Triangle_t<int,Point3> Triangle3I;
-typedef Triangle_t<float,Point3> Triangle3F;
-typedef Triangle3I Triangle;
-typedef Triangle3F TriangleF;
-typedef MemoryData<short> MemoryShortData;
-typedef MemoryData<byte> MemoryByteData;
-typedef MemoryData<char> MemoryCharData;
-typedef MemoryData<wchar_t> MemoryWCharData;
-typedef MemoryData<int> MemoryIntData;
-typedef MemoryData<uint> MemoryUIntData;
-typedef MemoryData<byte> Blob;
+typedef TMemoryData<short> MemoryShortData;
+typedef TMemoryData<byte> MemoryData;
+typedef TMemoryData<char> MemoryCharData;
+typedef TMemoryData<wchar_t> MemoryWCharData;
+typedef TMemoryData<int> MemoryIntData;
+typedef TMemoryData<uint> MemoryUIntData;
+typedef TMemoryData<float> MemoryFloatData;
+typedef TMemoryData<byte> Blob;
 typedef Delegate<void()> Action0;
 typedef Delegate<void(void*)> Action1;
+typedef Delegate<bool()> PredicateFunc;
 typedef SecurityValue<int,false> SecurityInt;
 typedef SecurityValue<int,true> StrongSecurityInt;
 typedef THeapString<char> HeapString;
@@ -1163,3 +990,12 @@ typedef TStringRef<char> StringRef;
 typedef TStringRef<wchar_t> WStringRef;
 #pragma endregion typedef
 MEDUSA_END;
+//MANUAL_BEGIN
+MEDUSA_BEGIN;
+#ifdef MEDUSA_LUA
+typedef LuaRef ScriptObject;
+typedef LuaState ScriptState;
+typedef LuaMachine ScriptMachine;
+#endif
+MEDUSA_END;
+//MANUAL_END

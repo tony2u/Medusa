@@ -10,8 +10,8 @@
 #include "Node/Input/EventArg/TouchEventArg.h"
 
 MEDUSA_BEGIN;
-PanGestureRecognizer::PanGestureRecognizer( INode* node, float minDistance,GestureFlags flags/*=GestureFlags::None*/) 
-	:IGestureRecognizer(node,flags)
+PanGestureRecognizer::PanGestureRecognizer( INode* node, float minDistance) 
+	:IGestureRecognizer(node)
 {
 	Reset();
 	mMinDistance = minDistance;
@@ -25,27 +25,28 @@ PanGestureRecognizer::~PanGestureRecognizer(void)
 
 void PanGestureRecognizer::TouchesBegan( TouchEventArg& e )
 {
+	IInputHandler::TouchesBegan(e);
 	switch(mState)
 	{
-	case GestureState::None:
+	case InputState::None:
 		if (e.IsValid())
 		{
 			mTouchEventArg.MergeValidActiveTouches(e);
 
 			mCurCenter = mTouchEventArg.GetValidActiveMiddlePoint();
-			SetState(GestureState::Begin);
+			SetState(InputState::Begin);
 			PanBeginGestureEventArg t(this);
 			OnBegin(mNode,t);
 		}
 		break;
-	case GestureState::Begin:
-	case GestureState::Valid:
+	case InputState::Begin:
+	case InputState::Valid:
 		if (e.IsValid())
 		{
 			mTouchEventArg.MergeValidActiveTouches(e);
 
 			mCurCenter = mTouchEventArg.GetValidActiveMiddlePoint();
-			SetState(GestureState::Begin);
+			SetState(InputState::Begin);
 			PanBeginGestureEventArg t(this);
 			OnBegin(mNode,t);
 		}
@@ -58,12 +59,13 @@ void PanGestureRecognizer::TouchesBegan( TouchEventArg& e )
 
 void PanGestureRecognizer::TouchesMoved( TouchEventArg& e )
 {
+	IInputHandler::TouchesMoved(e);
 	switch(mState)
 	{
-	case GestureState::None:
+	case InputState::None:
 		break;
-	case GestureState::Begin:
-	case GestureState::Recognizing:
+	case InputState::Begin:
+	case InputState::Recognizing:
 		{
 			mTouchEventArg.MoveValidActiveTouches(e);
 
@@ -73,7 +75,7 @@ void PanGestureRecognizer::TouchesMoved( TouchEventArg& e )
 			if (distance > mMinDistance)
 			{
 				// Valid
-				SetState(GestureState::Valid);
+				SetState(InputState::Valid);
 				mCurCenter = curCenter;
 				e.Handled=true;
 				PanGestureEventArg t(this,mMovement);
@@ -83,12 +85,12 @@ void PanGestureRecognizer::TouchesMoved( TouchEventArg& e )
 			else
 			{
 				// Recognizing
-				SetState(GestureState::Recognizing);
+				SetState(InputState::Recognizing);
 				mMovement = Point2F::Zero;
 			}
 		}
 		break;
-	case GestureState::Valid:
+	case InputState::Valid:
 		{
 			mTouchEventArg.MoveValidActiveTouches(e);
 
@@ -109,21 +111,22 @@ void PanGestureRecognizer::TouchesMoved( TouchEventArg& e )
 
 void PanGestureRecognizer::TouchesEnded( TouchEventArg& e )
 {
+	IInputHandler::TouchesEnded(e);
 	mTouchEventArg.RemoveValidActiveTouches(e);
 
 	switch(mState)
 	{
-	case GestureState::None:
+	case InputState::None:
 		{
-			mState=GestureState::Failed;
+			mState=InputState::Failed;
 			Reset();
 			PanEndGestureEventArg t(this);
 			OnEnd(mNode,t);
 		}
 		break;
-	case GestureState::Begin:
-	case GestureState::Recognizing:
-	case GestureState::Valid:
+	case InputState::Begin:
+	case InputState::Recognizing:
+	case InputState::Valid:
 		{
 			Reset();
 			PanEndGestureEventArg t(this);
@@ -138,6 +141,7 @@ void PanGestureRecognizer::TouchesEnded( TouchEventArg& e )
 
 void PanGestureRecognizer::TouchesCancelled( TouchEventArg& e )
 {
+	IInputHandler::TouchesCancelled(e);
 	Reset();
 }
 
@@ -145,7 +149,7 @@ bool PanGestureRecognizer::IsValid() const
 {
 	switch(mState)
 	{
-	case GestureState::Valid:
+	case InputState::Valid:
 		return true;
 	default:
 		return false;
@@ -155,7 +159,7 @@ bool PanGestureRecognizer::IsValid() const
 
 void PanGestureRecognizer::Reset()
 {
-	SetState(GestureState::None);
+	SetState(InputState::None);
 	mMovement = Point2F::Zero;
 	mCurCenter = Point2F::Zero;
 	mTouchEventArg.Clear();

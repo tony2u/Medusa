@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 #pragma once
 #include "Resource/Model/BaseSingleModel.h"
-#include "Core/Geometry/Color4.h"
+#include "Geometry/Color4.h"
 
 MEDUSA_BEGIN;
 

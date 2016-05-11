@@ -10,8 +10,8 @@
 #include "Graphics/State/ProgramRenderState.h"
 #include "Graphics/State/RenderStateMachine.h"
 #include "Resource/Effect/Shader/Parameter/ShaderAttribute.h"
-#include "Resource/Effect/Shader/Parameter/ShaderConstant.h"
-#include "Resource/Effect/Shader/Parameter/ShaderConstantInitializer.h"
+#include "Resource/Effect/Shader/Parameter/ShaderUniform.h"
+#include "Resource/Effect/Shader/Parameter/ShaderUniformInitializer.h"
 #include "Core/Log/Log.h"
 #include "Resource/ResourceNames.h"
 
@@ -126,12 +126,12 @@ bool BaseProgramRenderPass::Uninitialize()
 }
 
 
-void BaseProgramRenderPass::UpdateShaderVariables( RenderingStep step )
+void BaseProgramRenderPass::UpdateShaderUniforms( RenderingStep step )
 {
 	FOR_EACH_COLLECTION(i,mUniforms)
 	{
-		ShaderConstant* uniform=i->Value;
-		ShaderConstantInitializer::Instance().Update(step,*uniform);
+		ShaderUniform* uniform=i->Value;
+		ShaderUniformInitializer::Instance().Update(step,*uniform);
 	}
 }
 
@@ -183,13 +183,13 @@ void BaseProgramRenderPass::Link()
 		uint outDataType;
 		Render::Instance().GetActiveUniformName(program,static_cast<uint>(i),outSize,outDataType,outName);
 		int index= Render::Instance().GetUniformLocation(program,outName);	//NOTE: Cannot use i as index
-		ShaderConstant* uniform=new ShaderConstant(this,index,outName,(GraphicsUniformDataType)outDataType);
+		ShaderUniform* uniform=new ShaderUniform(this,index,outName,(GraphicsUniformDataType)outDataType);
 		mUniforms.Add(outName,uniform);
 	}
 
-	if(!mUniforms.ContainsOtherKey(ShaderConstantNames::WorldViewProjectMatrix,ShaderConstantNames::WorldViewProjectMatrix.HashCode()))
+	if(!mUniforms.ContainsOtherKey(ShaderUniformNames::WorldViewProjectMatrix,ShaderUniformNames::WorldViewProjectMatrix.HashCode()))
 	{
-		mFlags|=RenderPassFlags::SuppressWorldViewProjectMatrixUniform;
+		MEDUSA_FLAG_ADD(mFlags,RenderPassFlags::SuppressWorldViewProjectMatrixUniform);
 	}
 
 	//add all attributes
@@ -214,18 +214,18 @@ void BaseProgramRenderPass::Link()
 }
 
 
-ShaderConstant* BaseProgramRenderPass::GetConstant(const StringRef& name)const
+ShaderUniform* BaseProgramRenderPass::FindUniform(const StringRef& name)const
 {
-	return mUniforms.TryGetValueWithFailed(name,nullptr);
+	return mUniforms.GetOptional(name,nullptr);
 }
 
-ShaderAttribute* BaseProgramRenderPass::GetAttribute(const StringRef& name)const
+ShaderAttribute* BaseProgramRenderPass::FindAttribute(const StringRef& name)const
 {
-	return mAttributes.TryGetValueWithFailed(name,nullptr);
+	return mAttributes.GetOptional(name,nullptr);
 }
 
 
-ShaderAttribute* BaseProgramRenderPass::GetAttributeByIndex(ShaderAttributeIndex index) const
+ShaderAttribute* BaseProgramRenderPass::FindAttributeByIndex(ShaderAttributeIndex index) const
 {
 	return mManagedAttributes[(uint)index];
 }
@@ -234,7 +234,7 @@ void BaseProgramRenderPass::Validate()
 {
 	FOR_EACH_COLLECTION(i,mUniforms)
 	{
-		const ShaderConstant* uniform=i->Value;
+		const ShaderUniform* uniform=i->Value;
 		uniform->Validate();
 	}
 
@@ -249,7 +249,7 @@ void BaseProgramRenderPass::Invalidate()
 {
 	FOR_EACH_COLLECTION(i,mUniforms)
 	{
-		ShaderConstant* uniform=i->Value;
+		ShaderUniform* uniform=i->Value;
 		uniform->Invalidate();
 	}
 

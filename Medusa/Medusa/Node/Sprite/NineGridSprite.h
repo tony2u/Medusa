@@ -16,10 +16,18 @@ public:
 	virtual ~NineGridSprite(void);
 	virtual bool Initialize() override;
 
+	const ThicknessF& TexturePadding() const { return mTexturePadding; }
+	void SetTexturePadding(const ThicknessF& val) { mTexturePadding = val; }
+
+	bool IsNineGridEnabled() const { return mNineGridEnabled; }
+	void EnableNineGrid(bool val);
 protected:
 	virtual void OnMoveableDirty(MoveableChangedFlags changedFlags) override;
 	virtual void OnUpdateMesh();
+
 protected:
+	ThicknessF mTexturePadding;
+	bool mNineGridEnabled=true;
 	
 };
 

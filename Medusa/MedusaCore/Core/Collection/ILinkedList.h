@@ -154,7 +154,7 @@ public:
 
 	virtual void RemoveAll(TParameterType val)=0;
 
-	virtual void Add(TParameterType val)=0;
+	virtual NodePtr Add(TParameterType val)=0;
 	virtual bool Remove(TParameterType val)=0;
 	virtual void Clear()=0;
 };

@@ -3,10 +3,10 @@
 // license that can be found in the LICENSE file.
 #pragma once
 #include "Core/Pattern/Singleton.h"
-#include "Core/Geometry/Point3.h"
-#include "Core/Geometry/Size2.h"
-#include "Core/Geometry/Scale3.h"
-#include "Core/Geometry/Rect2.h"
+#include "Geometry/Point3.h"
+#include "Geometry/Size2.h"
+#include "Geometry/Scale3.h"
+#include "Geometry/Rect2.h"
 #include "Core/Pattern/IInitializable.h"
 #include "Core/Pattern/Event.h"
 #include "Core/Collection/HashSet.h"
@@ -42,6 +42,8 @@ public:
 	bool TryRemoveDirytNode(INode* node);
 
 	void UpdateLayout();
+
+	static Size2U ScreenSize();
 
 
 private:

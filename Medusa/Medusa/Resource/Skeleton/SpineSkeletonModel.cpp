@@ -41,6 +41,7 @@
 #include "CoreLib/Common/rapidjson.h"
 
 #include "Core/Math/Math.h"
+#include "Core/Utility/Endian.h"
 
 MEDUSA_BEGIN;
 
@@ -66,17 +67,17 @@ bool SpineSkeletonModel::Initialize()
 
 SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonFile(const FileIdRef& skeletonfileId, const FileIdRef& atlasFileId)
 {
-	MemoryByteData skeletonFileData = FileSystem::Instance().ReadAllData(skeletonfileId);
+	MemoryData skeletonFileData = FileSystem::Instance().ReadAllData(skeletonfileId);
 	if (skeletonFileData.IsEmpty())
 	{
 		return nullptr;
 	}
 
-	TextureAtlas* atlas = TextureAtlasFactory::Instance().Create(atlasFileId, TextureAtlasFileFormat::Spine);
+	TextureAtlas* atlas = TextureAtlasFactory::Instance().Create(atlasFileId, TextureAtlasType::Spine);
 	return CreateFromJsonData(skeletonfileId, skeletonFileData, atlas);
 }
 
-SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& fileId, const MemoryByteData& skeletonFileData, TextureAtlas* atlas)
+SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& fileId, const MemoryData& skeletonFileData, TextureAtlas* atlas)
 {
 	rapidjson::Document root;
 
@@ -133,11 +134,7 @@ SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& file
 		if (colorStr != nullptr)
 		{
 			uint val = StringParser::StringTo<uint32>(colorStr, 16);
-			if (Utility::IsLittleEndian())
-			{
-				//0x00ff04ff means rgba in spine,so we have to swap it
-				val = Utility::SwapUInt32(val);
-			}
+			val = Endian::ToLittle(val);//0x00ff04ff means rgba in spine,so we have to swap it
 			color = Color4F(val);
 		}
 		boneModel->SetColor(color);
@@ -204,11 +201,7 @@ SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& file
 		if (colorStr != nullptr)
 		{
 			uint val = StringParser::StringTo<uint32>(colorStr, 16);
-			if (Utility::IsLittleEndian())
-			{
-				//0x00ff04ff means rgba in spine,so we have to swap it
-				val = Utility::SwapUInt32(val);
-			}
+			val = Endian::ToLittle(val);//0x00ff04ff means rgba in spine,so we have to swap it
 			color = Color4F(val);
 		}
 		slotModel->SetColor(color);
@@ -242,18 +235,19 @@ SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& file
 					const char* type = attachemnt.GetString("type", "region");
 					StringRef typeString = type;
 					SkeletonAttachmentType outAttachmentType = SkeletonAttachmentType::Region;
-					if (!SkeletonAttachmentType::TryParse(outAttachmentType, typeString, true))
+
+					if (!ParseAttachmentType(outAttachmentType, typeString))
 					{
 						Log::AssertFailedFormat("Unknown attachment type:{}", typeString.c_str());
 						return nullptr;
 					}
 
 					TextureAtlasRegion* region = nullptr;
-					switch (outAttachmentType.ToUInt())
+					switch (outAttachmentType)
 					{
-						case SkeletonAttachmentType::Region.IntValue:
-						case SkeletonAttachmentType::Mesh.IntValue:
-						case SkeletonAttachmentType::SkinnedMesh.IntValue:
+						case SkeletonAttachmentType::Region:
+						case SkeletonAttachmentType::Mesh:
+						case SkeletonAttachmentType::SkinnedMesh:
 						{
 							region = atlas->FindRegion(regionName);
 							if (region == nullptr)
@@ -264,15 +258,15 @@ SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& file
 
 							break;
 						}
-						case SkeletonAttachmentType::BoundingBox.IntValue:
+						case SkeletonAttachmentType::BoundingBox:
 						default:
 							break;
 					}
 
 
-					switch (outAttachmentType.ToUInt())
+					switch (outAttachmentType)
 					{
-						case SkeletonAttachmentType::Region.IntValue:
+						case SkeletonAttachmentType::Region:
 						{
 							SkeletonRegionAttachmentModel* attachemntModel = new SkeletonRegionAttachmentModel(attachemntName, region);
 							Point3F pos = Point3F::Zero;
@@ -300,11 +294,7 @@ SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& file
 							if (colorStr != nullptr)
 							{
 								uint val = StringParser::StringTo<uint32>(colorStr, 16);
-								if (Utility::IsLittleEndian())
-								{
-									//0x00ff04ff means rgba in spine,so we have to swap it
-									val = Utility::SwapUInt32(val);
-								}
+								val = Endian::ToLittle(val);//0x00ff04ff means rgba in spine,so we have to swap it
 								color = Color4F(val);
 							}
 							attachemntModel->SetColor(color);
@@ -313,7 +303,7 @@ SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& file
 							avatarModel->AddSlotAttachment(slotModel, attachemntModel);
 							break;
 						}
-						case SkeletonAttachmentType::Mesh.IntValue:
+						case SkeletonAttachmentType::Mesh:
 						{
 							SkeletonMeshAttachmentModel* attachemntModel = new SkeletonMeshAttachmentModel(attachemntName, region);
 							rapidjson::Value::ConstMemberIterator itr = attachemnt.FindMember("vertices");
@@ -359,11 +349,7 @@ SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& file
 							if (colorStr != nullptr)
 							{
 								uint val = StringParser::StringTo<uint32>(colorStr, 16);
-								if (Utility::IsLittleEndian())
-								{
-									//0x00ff04ff means rgba in spine,so we have to swap it
-									val = Utility::SwapUInt32(val);
-								}
+								val = Endian::ToLittle(val);//0x00ff04ff means rgba in spine,so we have to swap it
 								color = Color4F(val);
 							}
 							attachemntModel->SetColor(color);
@@ -380,7 +366,7 @@ SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& file
 							break;
 
 						}
-						case SkeletonAttachmentType::SkinnedMesh.IntValue:
+						case SkeletonAttachmentType::SkinnedMesh:
 						{
 							SkeletonSkinnedMeshAttachmentModel* attachemntModel = new SkeletonSkinnedMeshAttachmentModel(attachemntName, region);
 
@@ -436,11 +422,7 @@ SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& file
 							if (colorStr != nullptr)
 							{
 								uint val = StringParser::StringTo<uint32>(colorStr, 16);
-								if (Utility::IsLittleEndian())
-								{
-									//0x00ff04ff means rgba in spine,so we have to swap it
-									val = Utility::SwapUInt32(val);
-								}
+								val = Endian::ToLittle(val);//0x00ff04ff means rgba in spine,so we have to swap it
 								color = Color4F(val);
 							}
 							attachemntModel->SetColor(color);
@@ -454,7 +436,7 @@ SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& file
 							avatarModel->AddSlotAttachment(slotModel, attachemntModel);
 						}
 						break;
-						case SkeletonAttachmentType::BoundingBox.IntValue:
+						case SkeletonAttachmentType::BoundingBox:
 						{
 							SkeletonBoundingBoxAttachmentModel* attachemntModel = new SkeletonBoundingBoxAttachmentModel(attachemntName);
 
@@ -542,11 +524,7 @@ SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& file
 								if (colorStr != nullptr)
 								{
 									uint val = StringParser::StringTo<uint32>(colorStr, 16);
-									if (Utility::IsLittleEndian())
-									{
-										//0x00ff04ff means rgba in spine,so we have to swap it
-										val = Utility::SwapUInt32(val);
-									}
+									val = Endian::ToLittle(val);//0x00ff04ff means rgba in spine,so we have to swap it
 									color = Color4F(val);
 								}
 
@@ -925,6 +903,31 @@ bool SpineSkeletonModel::HasSingleAtlasPage() const
 bool SpineSkeletonModel::CheckBlendFunc(bool& outIsAdditiveBlending) const
 {
 	return true;
+}
+
+bool SpineSkeletonModel::ParseAttachmentType(SkeletonAttachmentType& outAttachmentType,const StringRef& val)
+{
+	if (val.Compare("Region",true)==0)
+	{
+		outAttachmentType= SkeletonAttachmentType::Region;
+		return true;
+	}
+	else if (val.Compare("Mesh", true) == 0)
+	{
+		outAttachmentType = SkeletonAttachmentType::Mesh;
+		return true;
+	}
+	else if (val.Compare("SkinnedMesh", true) == 0)
+	{
+		outAttachmentType = SkeletonAttachmentType::SkinnedMesh;
+		return true;
+	}
+	else if (val.Compare("BoundingBox", true) == 0)
+	{
+		outAttachmentType = SkeletonAttachmentType::BoundingBox;
+		return true;
+	}
+	return false;
 }
 
 void SpineSkeletonModel::ParseCurve(const rapidjson::Value &frame, Math::TweenType& outTweenType, List<float>& outTweenArgs)

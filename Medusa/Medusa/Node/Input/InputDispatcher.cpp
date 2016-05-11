@@ -23,6 +23,7 @@
 #include "Node/Input/IMEHandler.h"
 #include "Node/Input/KeyboardHandler.h"
 #include "Node/INode.h"
+#include "Node/Component/NodeScriptComponent.h"
 
 
 MEDUSA_BEGIN;
@@ -54,6 +55,11 @@ IInputHandler* InputDispatcher::FindFocusHandler() const
 		}
 	}
 	return nullptr;
+}
+
+IInputHandler* InputDispatcher::FindHandler(InputType type) const
+{
+	return mHandlers[(uint)type];
 }
 
 void InputDispatcher::TouchesBegan(TouchEventArg& e)
@@ -115,13 +121,13 @@ void InputDispatcher::TouchesEnded(TouchEventArg& e)
 }
 
 
-void InputDispatcher::TryFireEvent(TouchEventArg& e)
+void InputDispatcher::MockTouch(TouchEventArg& e)
 {
 	FOR_EACH_COLLECTION(i, mHandlers)
 	{
 		IInputHandler* handler = *i;
 		CONTINUE_IF_NULL(handler);
-		handler->TryFireEvent(e);
+		handler->MockTouch(e);
 		RETURN_IF_TRUE(e.Handled);
 	}
 }
@@ -238,6 +244,8 @@ TapGestureRecognizer* InputDispatcher::AddTapGestureRecognizer()
 	if (recognizer == nullptr)
 	{
 		recognizer = new TapGestureRecognizer(mNode);
+		recognizer->AddBehaviors(mBehaviors);
+		recognizer->SetDispatcher(this);
 		mHandlers[(size_t)InputType::Tap] = recognizer;
 		IncreaseHandlerCount();
 		return recognizer;
@@ -255,6 +263,8 @@ SwipeGestureRecognizer* InputDispatcher::AddSwipeGestureRecognizer(ScrollDirecti
 	if (recognizer == nullptr)
 	{
 		recognizer = new SwipeGestureRecognizer(mNode, direction, minMovement, minVelocity);
+		recognizer->SetDispatcher(this);
+		recognizer->AddBehaviors(mBehaviors);
 		mHandlers[(size_t)InputType::Swipe] = recognizer;
 		IncreaseHandlerCount();
 		return recognizer;
@@ -272,6 +282,8 @@ PanGestureRecognizer* InputDispatcher::AddPanGestureRecognizer(float minDistance
 	if (recognizer == nullptr)
 	{
 		recognizer = new PanGestureRecognizer(mNode, minDistance);
+		recognizer->AddBehaviors(mBehaviors);
+		recognizer->SetDispatcher(this);
 		mHandlers[(size_t)InputType::Pan] = recognizer;
 		IncreaseHandlerCount();
 
@@ -290,6 +302,8 @@ PinchGestureRecognizer* InputDispatcher::AddPinchGestureRecognizer()
 	if (recognizer == nullptr)
 	{
 		recognizer = new PinchGestureRecognizer(mNode);
+		recognizer->AddBehaviors(mBehaviors);
+		recognizer->SetDispatcher(this);
 		mHandlers[(size_t)InputType::Pinch] = recognizer;
 		IncreaseHandlerCount();
 		return recognizer;
@@ -453,6 +467,8 @@ DoubleTapGestureRecognizer* InputDispatcher::AddDoubleTapGestureRecognizer(float
 	if (recognizer == nullptr)
 	{
 		recognizer = new DoubleTapGestureRecognizer(mNode, maxDuration);
+		recognizer->AddBehaviors(mBehaviors);
+		recognizer->SetDispatcher(this);
 		mHandlers[(size_t)InputType::DoubleTap] = recognizer;
 		IncreaseHandlerCount();
 		return recognizer;
@@ -522,12 +538,15 @@ void InputDispatcher::DecreaseHandlerCount()
 	}
 }
 
+
 IMEHandler* InputDispatcher::AddIMEHandler()
 {
 	IMEHandler* recognizer = (IMEHandler*)mHandlers[(size_t)InputType::IME];
 	if (recognizer == nullptr)
 	{
 		recognizer = new IMEHandler(mNode);
+		recognizer->AddBehaviors(mBehaviors);
+		recognizer->SetDispatcher(this);
 		mHandlers[(size_t)InputType::IME] = recognizer;
 		IncreaseHandlerCount();
 		return recognizer;
@@ -542,9 +561,19 @@ IMEHandler* InputDispatcher::AddIMEHandler()
 IMEHandler* InputDispatcher::AddIMEHandler(CharInputDelegate charInputHandler, KeyDownDelegate keyDownHandler, KeyUpDelegate keyUpHandler)
 {
 	IMEHandler* recognizer = AddIMEHandler();
-	recognizer->OnCharInput += charInputHandler;
-	recognizer->OnKeyDown += keyDownHandler;
-	recognizer->OnKeyUp += keyUpHandler;
+	if (charInputHandler != nullptr)
+	{
+		recognizer->OnCharInput += charInputHandler;
+	}
+	if (keyDownHandler != nullptr)
+	{
+		recognizer->OnKeyDown += keyDownHandler;
+	}
+	if (keyUpHandler != nullptr)
+	{
+		recognizer->OnKeyUp += keyUpHandler;
+	}
+
 
 	return recognizer;
 }
@@ -563,6 +592,8 @@ KeyboardHandler* InputDispatcher::AddKeyboardHandler()
 	if (recognizer == nullptr)
 	{
 		recognizer = new KeyboardHandler(mNode);
+		recognizer->SetDispatcher(this);
+		recognizer->AddBehaviors(mBehaviors);
 		mHandlers[(size_t)InputType::Keyboard] = recognizer;
 		IncreaseHandlerCount();
 		return recognizer;
@@ -593,8 +624,131 @@ bool InputDispatcher::RemoveAllKeyboardHandler()
 	return true;
 }
 
+void InputDispatcher::Monitor(InputEventType type, StringRef handlerName)
+{
+	Monitor(type).Add(handlerName);
+}
+
+List<HeapString>& InputDispatcher::Monitor(InputEventType type)
+{
+	return mEventMonitors.NewAdd(type);
+}
 
 
+bool InputDispatcher::IsMonitoring() const
+{
+	return !mEventMonitors.IsEmpty();
+}
 
+void InputDispatcher::Bind(StringRef handlerName, const NodeInputDelegate& handler)
+{
+	Bind(handlerName) += handler;
+}
+
+NodeInputEvent& InputDispatcher::Bind(StringRef handlerName)
+{
+	return mEventBindings.NewAdd(handlerName);
+}
+
+bool InputDispatcher::FireEvent(InputEventType type, INode* node /*= nullptr*/, IEventArg* e/*=nullptr*/)const
+{
+	RETURN_FALSE_IF_FALSE(IsMonitoring());
+
+	const auto* handerNames = mEventMonitors.TryGet(type);
+	RETURN_FALSE_IF_NULL(handerNames);
+	RETURN_FALSE_IF_EMPTY(*handerNames);
+	bool isHit = false;
+	for (const auto& handlerName : *handerNames)
+	{
+		auto* handlerEvent = mEventBindings.TryGet(handlerName);
+		if (handlerEvent != nullptr)
+		{
+			handlerEvent->Invoke(node, e);
+			isHit = true;
+		}
+	}
+
+	if (!isHit)
+	{
+		//try to raise up to parent node
+		INode* parent = mNode->Parent();
+		while (parent != nullptr)
+		{
+			for (const auto& handlerName : *handerNames)
+			{
+				isHit |= parent->MutableInput().FireEventHelper(type, handlerName, node, e);
+				RETURN_TRUE_IF_TRUE(e != nullptr&&e->Handled);
+			}
+
+			RETURN_TRUE_IF_TRUE(isHit);
+			parent = parent->Parent();
+		}
+
+	}
+	return isHit;
+}
+
+
+bool InputDispatcher::FireEventHelper(InputEventType type, StringRef handlerName, INode* node /*= nullptr*/, IEventArg* e /*= nullptr*/)const
+{
+	auto* handlerEvent = mEventBindings.TryGet(handlerName);
+	if (handlerEvent != nullptr)
+	{
+		handlerEvent->Invoke(node, e);
+		return true;
+	}
+
+	return false;
+}
+
+
+bool InputDispatcher::FireScriptBinding(InputEventType type, INode* node /*= nullptr*/, IEventArg* e /*= nullptr*/) const
+{
+	const auto* handerNames = mEventMonitors.TryGet(type);
+	RETURN_FALSE_IF_NULL(handerNames);
+	RETURN_FALSE_IF_EMPTY(*handerNames);
+	bool isHit = false;
+
+	for (const auto& handlerName : *handerNames)
+	{
+		auto* scriptComponent = mNode->FindComponent<NodeScriptComponent>();
+		if (scriptComponent != nullptr&& scriptComponent->HasMethod(handlerName))
+		{
+			scriptComponent->HandleEvent(type, handlerName, node, e);
+			isHit = true;
+		}
+	}
+
+
+	if (!isHit)
+	{
+		//try to raise up to parent node
+		INode* parent = mNode->Parent();
+		while (parent != nullptr)
+		{
+			for (const auto& handlerName : *handerNames)
+			{
+				isHit |= parent->MutableInput().FireScriptBindingHelper(type, handlerName, node, e);
+				RETURN_TRUE_IF_TRUE(e != nullptr&&e->Handled);
+			}
+
+			RETURN_TRUE_IF_TRUE(isHit);
+			parent = parent->Parent();
+		}
+		
+	}
+	return isHit;
+}
+
+bool InputDispatcher::FireScriptBindingHelper(InputEventType type, StringRef handlerName,INode* node /*= nullptr*/, IEventArg* e /*= nullptr*/) const
+{
+	auto* scriptComponent = mNode->FindComponent<NodeScriptComponent>();
+	if (scriptComponent != nullptr&& scriptComponent->HasMethod(handlerName))
+	{
+		scriptComponent->HandleEvent(type, handlerName, node, e);
+		return true;
+	}
+	return false;
+}
 
 MEDUSA_END;

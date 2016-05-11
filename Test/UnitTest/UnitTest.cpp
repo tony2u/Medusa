@@ -14,124 +14,44 @@
 #include "Case/CodeTest.h"
 
 #include "Core/Siren/Siren.h"
-#include "Core/Siren/Protocol/Binary/CompactBinaryWriter.h"
-#include "Core/Siren/Protocol/Binary/CompactBinaryReader.h"
-#include "Core/Siren/Protocol/Binary/FastBinaryWriter.h"
-#include "Core/Siren/Protocol/Binary/FastBinaryReader.h"
 
 
-#include "Core/Siren/Protocol/Binary/CompactBinarySizeCounter.h"
-#include "Core/Siren/Protocol/Json/JsonWriter.h"
-
-
-//#include "Core/Proto/BaseData.h"
-//#include "Core/Proto/DerivedData.h"
-
-
-
-STRONG_FLAGS_3(MyFlags, First, Second, Third);
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	//StringRef aaaaaaaaa="abc";
-	//std::string abc="Hello";
-
-	//int l=aaaaaaaaa.Length();
-
-	//aaaaaaaaa="";
-
-	//printf("%d\n",sizeof(BaseSprite));
-	//printf("%d\n",sizeof(INode));
-	//printf("%d\n",sizeof(IMoveable));
-	//printf("%d\n",sizeof(DefaultMoveable));
-
-
-	//printf("%d\n",sizeof(LazyMatrix43::TUpdateDelegateType));
-	//printf("%d\n",sizeof(LazyMatrix43));
-
-	//printf("%d\n",sizeof(Matrix43));
-
-	//printf("%d\n",sizeof(List<int*>));
-
-
-
-
-
-	//MyFlags my;
-	//my=MyFlags::Second;
-	//printf("%s\n",my.ToString().Buffer());
-
-	//my|=MyFlags::Third;
-	//printf("%s\n",my.ToString().Buffer());
-	//my|=MyFlags::First;
-
-	//printf("%s\n",my.ToString().Buffer());
-
-	//printf("%s\n",my.ToString().Buffer());
-
-	//MatrixTest::TestTransformPartial();
-	//MEDUSA_ASSERT_FAILED("Invalid enum val");
-	//CollectionTest::TestDictionary();
-
-
-	//OtherTest::TestFlag();
-	/*
 	Log::Initialize();
+	FileSystem::Instance().Initialize();
 
-	DerivedData data;
-	data.MutableFirst() = 2;
-	data.MutableSecond() = 987;
-	data.MutableThird() = "abc";
+	auto* ass = SirenMachine::Instance().NewAssembly("test");
+	ass->Parse("person.mp");
+	ass->Execute();
+	ass->Link();
 
-	data.NewForth() = 1;
-	data.NewForth() = 2;
+	auto* personType = ass->FindCustomType("person");
 
-	data.AddFifth(1, 444);
-	data.AddFifth(2, 555);
+	HeapString str("test blob data");
+	MemoryData blobData = MemoryData::FromStatic((byte*)str.c_str(), str.Length());
 
-	HeapString str("123456");
-	data.MutableSixth() = str.ToMemoryData().Cast<byte>();
+	SirenObject obj;
+	obj.SetStruct();
+	obj.NewField("id") = 123;
+	obj.NewField("name") = "abc";
+	auto& sub = obj.NewStruct("address");
+	sub.AddField("id", 456);
+	sub.AddField("address", "Beijing");
 
-	data.MutableSix() = 999;
-	data.MutableSeven() = 888.7897f;
+	obj.NewField("factor") = 5.f;
+	obj.AddEnum("gender", 1);
+	obj.AddField("data", blobData);
 
-	data.MutableOther().SetFirst(555);
-	data.MutableOther().SetSecond(666.f);
-	data.MutableOther().SetStatus(OtherDataStatus::DontUpgrade);
-	//data.MutableOther().SetTestFileType(FileType::jpeg);
-	//data.MutableOther().MutableOtherType() = Siren::SirenDataType::Dictionary;
+	HeapString printStr = obj.Print();
+	Log::Info(printStr);
 
-	data.MutableOther().MutablePos().X = 1.f;
-	data.MutableOther().MutablePos().Y = 2.f;
+	auto data = Siren::Serialize(obj, *personType);
+	SirenObject otherObj = Siren::Deserialize(data, *personType);
 
-	const MemoryByteData& bufferData = Siren::AutoSerialize(data);
-	//const MemoryByteData& bufferData = Siren::Serialize<Siren::FastBinaryWriter>(data);
-
-	//const MemoryByteData& bufferData = Siren::Serialize<Siren::SimpleJsonWriter>(data);
-	//StringRef resultStr(bufferData.Cast<char>());
-
-	DerivedData outData;
-	Siren::DeserializeBinary(bufferData, outData);
-
-
-	HeapString outStr;
-	Siren::SerializeJson(data, outStr);
-	//
-
-	DerivedData outData2;
-	Siren::DeserializeJson(outStr, outData2);
-	/*MemoryStream readStream(bufferData,false);
-	Siren::CompactBinaryReader<MemoryStream> reader(readStream);
-	DerivedData outData;
-	Siren::Deserialize(reader, outData);*/
-
-
-	
-	//Siren::Deserialize<Siren::FastBinaryReader>(bufferData, outData);
-
-	
-	//FormatTest::TestFormat();
-
+	printStr = otherObj.Print();
+	Log::Info(printStr);
 	system("PAUSE");
 
 	return 0;

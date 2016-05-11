@@ -379,7 +379,7 @@ bool StringParser::StringTo(const StringRef& inString, int base /*= 10*/)
 template<>
 short StringParser::StringTo(const StringRef& inString, int base /*= 10*/)
 {
-	return (short)strtoul(inString.c_str(), nullptr, base);
+	return (short)strtol(inString.c_str(), nullptr, base);
 }
 
 template<>
@@ -392,7 +392,7 @@ ushort StringParser::StringTo(const StringRef& inString, int base /*= 10*/)
 template<>
 int32 StringParser::StringTo(const StringRef& inString, int base /*= 10*/)
 {
-	return (int32)strtoul(inString.c_str(), nullptr, base);
+	return (int32)strtol(inString.c_str(), nullptr, base);
 }
 
 template<>
@@ -625,6 +625,42 @@ StringParser::ResultString<char, TValue> StringParser::ToString(const TValue& in
 	return ResultString<char, TValue>("");
 }
 
+
+long StringParser::ToInt(const StringRef& str)
+{
+	if (str.Contains("x")||str.Contains("X"))
+	{
+		return StringParser::StringTo<long>(str, 16);
+	}
+	return StringParser::StringTo<long>(str, 10);
+}
+
+bool StringParser::TryParseInt(const StringRef& str, long& outResult)
+{
+	if (str.Contains("x") || str.Contains("X"))
+	{
+		return str.TryParseInt(outResult, 16);
+	}
+	return str.TryParseInt(outResult);
+}
+
+ulong StringParser::ToUInt(const StringRef& str)
+{
+	if (str.Contains("x") || str.Contains("X"))
+	{
+		return StringParser::StringTo<ulong>(str, 16);
+	}
+	return StringParser::StringTo<ulong>(str, 10);
+}
+
+bool StringParser::TryParseUInt(const StringRef& str, ulong& outResult)
+{
+	if (str.Contains("x") || str.Contains("X"))
+	{
+		return str.TryParseUInt(outResult, 16);
+	}
+	return str.TryParseUInt(outResult);
+}
 
 #pragma endregion ToString
 

@@ -10,7 +10,7 @@ class TextureButton :public IButton
 {
 	MEDUSA_DECLARE_RTTI;
 public:
-	TextureButton(StringRef name, const FileIdRef& normalTextureName, const FileIdRef& selectedTextureName = FileIdRef::Empty, const FileIdRef& disabledTextureName = FileIdRef::Empty, const FileIdRef& disabledSelectedTextureName = FileIdRef::Empty);
+	TextureButton(StringRef name, const FileIdRef& normalTextureName, const FileIdRef& selectedTextureName = FileIdRef::Empty, const FileIdRef& disabledTextureName = FileIdRef::Empty, const FileIdRef& disabledSelectedTextureName = FileIdRef::Empty,bool isEnableNineGrid = false, const Size2F& targetSize = Size2F::Zero, const ThicknessF& padding = ThicknessF::Zero);
 	virtual ~TextureButton(void);
 	virtual bool Initialize() override;
 
@@ -34,6 +34,10 @@ protected:
 	FileId mSelectedTextureName;
 	FileId mDisabledTextureName;
 	FileId mDisabledSelectedTextureName;
+
+	bool mIsEnableNineGrid;
+	Size2F mTargetSize;
+	ThicknessF mPadding;
 };
 
 MEDUSA_END;

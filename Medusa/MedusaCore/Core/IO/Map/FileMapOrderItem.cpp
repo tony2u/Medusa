@@ -20,6 +20,18 @@ FileMapOrderItem::FileMapOrderItem(uint order/*=0*/)
 {
 }
 
+FileIdRef FileMapOrderItem::GetFileId() const
+{
+	if (mParent!=nullptr)
+	{
+		return FileIdRef(mParent->Name(), mOrder);
+	}
+	else
+	{
+		return FileIdRef::Empty;
+	}
+}
+
 FileMapOrderItem::~FileMapOrderItem()
 {
 	mFiles.Clear();
@@ -31,9 +43,9 @@ int FileMapOrderItem::DiffScore() const
 	return mParent->Parent()->DiffScore();
 }
 
-void FileMapOrderItem::AddFileEntry(FileEntry& fileEntry)
+void FileMapOrderItem::AddFileEntry(FileEntry& fileEntry, void* region /*= nullptr*/)
 {
-	mFiles.Add((IPackage*)fileEntry.Parent()->Storage(),&fileEntry);
+	mFiles.Add((IPackage*)fileEntry.Parent()->Storage(), FileEntryRef(&fileEntry, region));
 	UpdateFirstValidFileEntry();
 }
 
@@ -51,10 +63,12 @@ bool FileMapOrderItem::RemoveFileEntry(const FileEntry& fileEntry)
 void FileMapOrderItem::UpdateFirstValidFileEntry()
 {
 	//re search first valid
-	mFirstValidFileEntry = nullptr;
+	mFirstValidFileEntry.Entry = nullptr;
+	mFirstValidFileEntry.Region = nullptr;
+
 	for (const auto& file : mFiles)
 	{
-		if (file.second->IsValid())
+		if (file.second.Entry->IsValid())
 		{
 			mFirstValidFileEntry = file.second;
 		}

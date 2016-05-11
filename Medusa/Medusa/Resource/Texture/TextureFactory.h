@@ -7,7 +7,8 @@
 #include "Graphics/GraphicsTypes.h"
 #include "Resource/BaseResourceFactory.h"
 #include "Resource/ResourceNames.h"
-#include "Graphics/GraphicsPixelDataType.h"
+#include "ITexture.h"
+#include "Graphics/PixelType.h"
 
 MEDUSA_BEGIN;
 
@@ -29,11 +30,9 @@ public:
 		const Size2U& size,
 		GraphicsTextureType textureType=GraphicsTextureType::Texture2D,
 		GraphicsTextureTarget textureTarget=GraphicsTextureTarget::Texture2D,
-		GraphicsInternalFormat internalFormat=GraphicsInternalFormat::RGB,
+		PixelType pixelType = PixelType::RGB888,
 		int level=0,
 		int border=0,
-		GraphicsPixelFormat pixelFormat=GraphicsPixelFormat::RGB,
-		GraphicsPixelDataType pixelType=GraphicsPixelDataType::Byte,
 		StringRef samplerName=StringRef::Empty,GraphicsTextureUnits unit=GraphicsTextureUnits::Texture0,ResourceShareType shareType = ResourceShareType::Share);
 };
 

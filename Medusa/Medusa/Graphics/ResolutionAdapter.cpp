@@ -11,6 +11,7 @@
 #include "Node/Scene/SceneManager.h"
 #include "Node/Scene/IScene.h"
 #include "Resource/Camera/CameraFactory.h"
+#include "Core/System/Environment.h"
 
 MEDUSA_BEGIN;
 
@@ -43,7 +44,6 @@ bool ResolutionAdapter::Initialize(const Size2F& winSize)
 bool Medusa::ResolutionAdapter::InitializeCameras()
 {
 	mDefaultCamera2D = CameraFactory::Instance().CreateDefault(MEDUSA_PREFIX(Default2D), true, true, ResourceShareType::Share);
-
 	mDefaultCamera3D = CameraFactory::Instance().CreateDefault(MEDUSA_PREFIX(Default3D), false, true, ResourceShareType::Share);
 	return true;
 }
@@ -124,11 +124,19 @@ void ResolutionAdapter::UpdateLayout()
 	FOR_EACH_COLLECTION(i, mDirtyList)
 	{
 		INode* node = *i;
-		node->UpdateLayout();
+		node->UpdateLayout(mWinSize);
 	}
 
 	mDirtyList.Clear();
 	mIsLayoutUpdating = false;
+}
+
+Size2U ResolutionAdapter::ScreenSize()
+{
+	uint width;
+	uint height;
+	Environment::Instance().GetScreenSize(width, height);
+	return Size2U(width, height);
 }
 
 bool ResolutionAdapter::TryRemoveDirytNode(INode* node)

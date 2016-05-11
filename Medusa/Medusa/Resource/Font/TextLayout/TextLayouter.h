@@ -4,8 +4,8 @@
 #pragma once
 #include "Resource/Font/IFont.h"
 #include "Graphics/GraphicsTypes.h"
-#include "Core/Geometry/Point3.h"
-#include "Core/Geometry/Scale2.h"
+#include "Geometry/Point3.h"
+#include "Geometry/Scale2.h"
 #include "Core/String/StringRef.h"
 #include "Core/String/HeapString.h"
 

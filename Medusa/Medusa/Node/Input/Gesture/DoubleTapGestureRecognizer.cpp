@@ -9,8 +9,8 @@
 #include "Application/Application.h"
 
 MEDUSA_BEGIN;
-DoubleTapGestureRecognizer::DoubleTapGestureRecognizer( INode* node ,float maxDuration/*=0.25f*/,GestureFlags flags/*=GestureFlags::None*/) 
-	:IGestureRecognizer(node,flags),mMaxDuration(maxDuration)
+DoubleTapGestureRecognizer::DoubleTapGestureRecognizer( INode* node ,float maxDuration/*=0.25f*/) 
+	:IGestureRecognizer(node),mMaxDuration(maxDuration)
 {
 	mBeganTouch=Touch::Zero;
 	mFirstSuccessTouch=Touch::Zero;
@@ -24,18 +24,19 @@ DoubleTapGestureRecognizer::~DoubleTapGestureRecognizer(void)
 
 void DoubleTapGestureRecognizer::TouchesBegan( TouchEventArg& e )
 {
+	IInputHandler::TouchesBegan(e);
 	switch(mState)
 	{
-	case GestureState::None:
+	case InputState::None:
 		if (e.IsOneFingerValid())
 		{
 			mBeganTouch=e.FirstValidActiveTouch();
-			SetState(GestureState::Begin);
+			SetState(InputState::Begin);
 		}
 		break;
-	case GestureState::Begin:
+	case InputState::Begin:
 		break;
-	case GestureState::Recognizing:
+	case InputState::Recognizing:
 		if (e.IsOneFingerValid())
 		{
 			mBeganTouch=e.FirstValidActiveTouch();
@@ -49,16 +50,17 @@ void DoubleTapGestureRecognizer::TouchesBegan( TouchEventArg& e )
 
 void DoubleTapGestureRecognizer::TouchesMoved( TouchEventArg& e )
 {
+	IInputHandler::TouchesMoved(e);
 	switch(mState)
 	{
-	case GestureState::None:
+	case InputState::None:
 		break;
-	case GestureState::Begin:
-	case GestureState::Recognizing:
+	case InputState::Begin:
+	case InputState::Recognizing:
 		{
 			if (!e.IsValid())
 			{
-				SetState(GestureState::Failed);
+				SetState(InputState::Failed);
 				mBeganTouch=Touch::Zero;
 			}
 		}
@@ -71,16 +73,17 @@ void DoubleTapGestureRecognizer::TouchesMoved( TouchEventArg& e )
 
 void DoubleTapGestureRecognizer::TouchesEnded( TouchEventArg& e )
 {
+	IInputHandler::TouchesEnded(e);
 	switch(mState)
 	{
-	case GestureState::None:
+	case InputState::None:
 		break;
-	case GestureState::Begin:
+	case InputState::Begin:
 		{
 			if (e.IsValid()&&e.FindValidActiveTouchById(mBeganTouch.Id)!=nullptr)
 			{
 				mFirstSuccessTouch=*e.FindValidActiveTouchById(mBeganTouch.Id);
-				SetState(GestureState::Recognizing);
+				SetState(InputState::Recognizing);
 				mBeganTouch=Touch::Zero;
 				e.Handled=true;
 				CancelOtherHandlers();
@@ -89,23 +92,23 @@ void DoubleTapGestureRecognizer::TouchesEnded( TouchEventArg& e )
 			}
 			break;
 		}
-	case GestureState::Recognizing:
+	case InputState::Recognizing:
 		{
 
 			if (e.IsValid() && e.FindValidActiveTouchById(mBeganTouch.Id) != nullptr)
 			{
-				SetState(GestureState::Valid);
+				SetState(InputState::Valid);
 				double timeStamp = Application::Instance().TimeStamp()-mBeginTimeStamp;
 				if (timeStamp <= mMaxDuration)
 				{
 					DoubleTapGestureEventArg tapEventArg(this, e.FirstValidActiveTouch(), (float)timeStamp);
 					OnDoubleTap(mNode, tapEventArg);
-					SetState(GestureState::None);
+					SetState(InputState::None);
 					mBeganTouch = Touch::Zero;
 				}
 				else
 				{
-					SetState(GestureState::None);
+					SetState(InputState::None);
 					mBeginTimeStamp = 0.f;
 					TapGestureEventArg tapEventArg(this, mFirstSuccessTouch);
 					OnTap(mNode, tapEventArg);
@@ -121,17 +124,16 @@ void DoubleTapGestureRecognizer::TouchesEnded( TouchEventArg& e )
 		break;
 	}
 
-	SetState(GestureState::None);
+	SetState(InputState::None);
 
 }
 
-void DoubleTapGestureRecognizer::TryFireEvent( TouchEventArg& e )
+void DoubleTapGestureRecognizer::MockTouch( TouchEventArg& e )
 {
+	
 	if (e.IsValid())
 	{
 		double timeStamp = Application::Instance().TimeStamp() - mBeginTimeStamp;
-
-
 		DoubleTapGestureEventArg tapEventArg(this, e.FirstValidActiveTouch(), (float)timeStamp);
 		OnDoubleTap(mNode,tapEventArg);
 		e.Handled=tapEventArg.Handled;
@@ -140,18 +142,19 @@ void DoubleTapGestureRecognizer::TryFireEvent( TouchEventArg& e )
 
 void DoubleTapGestureRecognizer::TouchesCancelled( TouchEventArg& e )
 {
-	SetState(GestureState::None);
+	IInputHandler::TouchesCancelled(e);
+	SetState(InputState::None);
 	Reset();
 }
 
 bool DoubleTapGestureRecognizer::IsValid() const
 {
-	return mState==GestureState::Valid;
+	return mState==InputState::Valid;
 }
 
 void DoubleTapGestureRecognizer::Reset()
 {
-	SetState(GestureState::None);
+	SetState(InputState::None);
 	mBeginTimeStamp=0.f;
 	mBeganTouch=Touch::Zero;
 	mFirstSuccessTouch=Touch::Zero;

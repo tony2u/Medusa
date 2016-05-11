@@ -10,7 +10,7 @@
 #include "Core/Pattern/RTTI/RTTIClass.h"
 #include "Graphics/State/RenderStateSet.h"
 #include "Resource/IResource.h"
-#include "Rendering/RenderableChangedFlags.h"
+#include "Rendering/RenderingTypes.h"
 
 
 MEDUSA_BEGIN;

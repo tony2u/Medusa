@@ -27,7 +27,7 @@ size_t LZ4Decoder::GuessResultSize(const IStream& input) const
 	return size;
 }
 
-size_t LZ4Decoder::OnCode(const MemoryByteData& input, MemoryByteData& output) const
+size_t LZ4Decoder::OnCode(const MemoryData& input, MemoryData& output) const
 {
 	int size = LZ4_decompress_safe((const char*)input.Data()+sizeof(uint), (char*)output.MutableData(), (int)input.Size()- sizeof(uint), (int)output.Size());
 	if (size>0)

@@ -14,8 +14,12 @@ public:
 	TiledTileLayer();
 	~TiledTileLayer();
 	virtual TiledLayerType Type()const override { return TiledLayerType::Tile; }
+	bool Parse(const pugi::xml_node& node);
 
 	void InitializeTiles();
+
+	const List<TiledTileRef>& Tiles() const { return mTiles; }
+
 
 	const TiledTileRef& Tile(int x, int y) const { return mTiles[y * mSize.Width + x]; }
 	TiledTileRef& MutableTile(int x, int y) { return mTiles[y * mSize.Width + x]; }
@@ -23,6 +27,10 @@ public:
 	const TiledTileRef& Tile(int index)const { return mTiles[index]; }
 	TiledTileRef& MutableTile(int index) { return mTiles[index]; }
 
+	virtual ILayer* Instantiate(InstantiateMode mode = InstantiateMode::None)const override;
+
+protected:
+	void AnalyzeTiles();
 private:
 	List<TiledTileRef> mTiles;
 };

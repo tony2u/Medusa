@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    TrueType Glyph Loader (body).                                        */
 /*                                                                         */
-/*  Copyright 1996-2015 by                                                 */
+/*  Copyright 1996-2016 by                                                 */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -24,6 +24,7 @@
 #include FT_TRUETYPE_TAGS_H
 #include FT_OUTLINE_H
 #include FT_TRUETYPE_DRIVER_H
+#include FT_LIST_H
 
 #include "ttgload.h"
 #include "ttpload.h"
@@ -246,29 +247,6 @@
   }
 
 #endif /* FT_CONFIG_OPTION_INCREMENTAL */
-
-
-  /*************************************************************************/
-  /*                                                                       */
-  /* Translates an array of coordinates.                                   */
-  /*                                                                       */
-  static void
-  translate_array( FT_UInt     n,
-                   FT_Vector*  coords,
-                   FT_Pos      delta_x,
-                   FT_Pos      delta_y )
-  {
-    FT_UInt  k;
-
-
-    if ( delta_x )
-      for ( k = 0; k < n; k++ )
-        coords[k].x += delta_x;
-
-    if ( delta_y )
-      for ( k = 0; k < n; k++ )
-        coords[k].y += delta_y;
-  }
 
 
   /*************************************************************************/
@@ -682,6 +660,7 @@
     } while ( subglyph->flags & MORE_COMPONENTS );
 
     gloader->current.num_subglyphs = num_subglyphs;
+    FT_TRACE5(( "  %d components\n", num_subglyphs ));
 
 #ifdef TT_USE_BYTECODE_INTERPRETER
 
@@ -1021,12 +1000,16 @@
                                   FT_UInt      start_point,
                                   FT_UInt      num_base_points )
   {
-    FT_GlyphLoader  gloader    = loader->gloader;
-    FT_Vector*      base_vec   = gloader->base.outline.points;
-    FT_UInt         num_points = (FT_UInt)gloader->base.outline.n_points;
+    FT_GlyphLoader  gloader = loader->gloader;
+    FT_Outline      current;
     FT_Bool         have_scale;
     FT_Pos          x, y;
 
+
+    current.points   = gloader->base.outline.points +
+                         num_base_points;
+    current.n_points = gloader->base.outline.n_points -
+                         (short)num_base_points;
 
     have_scale = FT_BOOL( subglyph->flags & ( WE_HAVE_A_SCALE     |
                                               WE_HAVE_AN_XY_SCALE |
@@ -1034,17 +1017,12 @@
 
     /* perform the transform required for this subglyph */
     if ( have_scale )
-    {
-      FT_UInt  i;
-
-
-      for ( i = num_base_points; i < num_points; i++ )
-        FT_Vector_Transform( base_vec + i, &subglyph->transform );
-    }
+      FT_Outline_Transform( &current, &subglyph->transform );
 
     /* get offset */
     if ( !( subglyph->flags & ARGS_ARE_XY_VALUES ) )
     {
+      FT_UInt     num_points = (FT_UInt)gloader->base.outline.n_points;
       FT_UInt     k = (FT_UInt)subglyph->arg1;
       FT_UInt     l = (FT_UInt)subglyph->arg2;
       FT_Vector*  p1;
@@ -1149,9 +1127,7 @@
     }
 
     if ( x || y )
-      translate_array( num_points - num_base_points,
-                       base_vec + num_base_points,
-                       x, y );
+      FT_Outline_Translate( &current, x, y );
 
     return FT_Err_Ok;
   }
@@ -1421,6 +1397,11 @@
 #endif
 
 
+#ifdef FT_DEBUG_LEVEL_TRACE
+    if ( recurse_count )
+      FT_TRACE5(( "  nesting level: %d\n", recurse_count ));
+#endif
+
     /* some fonts have an incorrect value of `maxComponentDepth', */
     /* thus we allow depth 1 to catch the majority of them        */
     if ( recurse_count > 1                                   &&
@@ -1653,10 +1634,39 @@
     /* otherwise, load a composite! */
     else if ( loader->n_contours == -1 )
     {
+      FT_Memory  memory = face->root.memory;
+
       FT_UInt   start_point;
       FT_UInt   start_contour;
       FT_ULong  ins_pos;  /* position of composite instructions, if any */
 
+
+      /*
+       * We store the glyph index directly in the `node->data' pointer,
+       * following the glib solution (cf. macro `GUINT_TO_POINTER') with a
+       * double cast to make this portable.  Note, however, that this needs
+       * pointers with a width of at least 32 bits.
+       */
+
+      /* check whether we already have a composite glyph with this index */
+      if ( FT_List_Find( &loader->composites,
+                         (void*)(unsigned long)glyph_index ) )
+      {
+        FT_TRACE1(( "TT_Load_Composite_Glyph:"
+                    " infinite recursion detected\n" ));
+        error = FT_THROW( Invalid_Composite );
+        goto Exit;
+      }
+      else
+      {
+        FT_ListNode  node = NULL;
+
+
+        if ( FT_NEW( node ) )
+          goto Exit;
+        node->data = (void*)(unsigned long)glyph_index;
+        FT_List_Add( &loader->composites, node );
+      }
 
       start_point   = (FT_UInt)gloader->base.outline.n_points;
       start_contour = (FT_UInt)gloader->base.outline.n_contours;
@@ -1684,8 +1694,6 @@
         FT_Vector*  points   = NULL;
         char*       tags     = NULL;
         short*      contours = NULL;
-
-        FT_Memory  memory = face->root.memory;
 
 
         limit = (short)gloader->current.num_subglyphs;
@@ -1962,8 +1970,10 @@
     glyph->metrics.horiAdvance  = loader->pp2.x - loader->pp1.x;
 
     /* adjust advance width to the value contained in the hdmx table */
-    if ( !face->postscript.isFixedPitch  &&
-         IS_HINTED( loader->load_flags ) )
+    /* unless FT_LOAD_COMPUTE_METRICS is set                         */
+    if ( !face->postscript.isFixedPitch                    &&
+         IS_HINTED( loader->load_flags )                   &&
+         !( loader->load_flags & FT_LOAD_COMPUTE_METRICS ) )
     {
       FT_Byte*  widthp;
 
@@ -2417,7 +2427,20 @@
     loader->glyph  = (FT_GlyphSlot)glyph;
     loader->stream = stream;
 
+    loader->composites.head = NULL;
+    loader->composites.tail = NULL;
+
     return FT_Err_Ok;
+  }
+
+
+  static void
+  tt_loader_done( TT_Loader  loader )
+  {
+    FT_List_Finalize( &loader->composites,
+                      NULL,
+                      loader->face->root.memory,
+                      NULL );
   }
 
 
@@ -2477,6 +2500,7 @@
           /* for the bbox we need the header only */
           (void)tt_loader_init( &loader, size, glyph, load_flags, TRUE );
           (void)load_truetype_glyph( &loader, glyph_index, 0, TRUE );
+          tt_loader_done( &loader );
           glyph->linearHoriAdvance = loader.linear;
           glyph->linearVertAdvance = loader.vadvance;
 
@@ -2571,6 +2595,8 @@
 
       error = compute_glyph_metrics( &loader, glyph_index );
     }
+
+    tt_loader_done( &loader );
 
     /* Set the `high precision' bit flag.                           */
     /* This is _critical_ to get correct output for monochrome      */

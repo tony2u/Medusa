@@ -936,7 +936,9 @@ public:
 		}
 	}
 
-	MemoryData<T> ToData()const { return MemoryData<T>::FromStatic(this->mItems, this->mCount); }
+	TMemoryData<T> ToData()const { return TMemoryData<T>::FromStatic(this->mItems, this->mCount); }
+
+	T* ForceRelease() { T* items = this->mItems; this->mItems = nullptr; return items; }
 private:
 	bool Resize(size_t size)
 	{

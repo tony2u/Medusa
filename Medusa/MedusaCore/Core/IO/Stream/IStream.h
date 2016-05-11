@@ -23,7 +23,7 @@ public:
 	template<class T>
 	size_t ReadTo(T& outVal)const
 	{
-		MemoryByteData data = MemoryByteData::FromStatic((byte*)&outVal, sizeof(T));
+		MemoryData data = MemoryData::FromStatic((byte*)&outVal, sizeof(T));
 		return ReadDataTo(data);
 	};
 
@@ -32,7 +32,7 @@ public:
 	T Read()const
 	{
 		T outVal;
-		MemoryByteData data = MemoryByteData::FromStatic((byte*)&outVal, sizeof(T));
+		MemoryData data = MemoryData::FromStatic((byte*)&outVal, sizeof(T));
 		ReadDataTo(data);
 		return outVal;
 	};
@@ -45,28 +45,28 @@ public:
 		outItems.ReserveSize(count);
 		byte* buffer = (byte*)outItems.MutableItems();
 
-		MemoryByteData data = MemoryByteData::FromStatic(buffer, size);
+		MemoryData data = MemoryData::FromStatic(buffer, size);
 		size_t readSize = ReadDataTo(data);
 		outItems.ForceSetCount(readSize / sizeof(T));
 		return readSize;
 	}
 
-	MemoryByteData ReadBeginToCurrent(DataReadingMode mode = DataReadingMode::AlwaysCopy)const;
-	MemoryByteData ReadToEnd(DataReadingMode mode = DataReadingMode::AlwaysCopy)const;
-	MemoryByteData ReadData(size_t size, DataReadingMode mode = DataReadingMode::AlwaysCopy)const;
+	MemoryData ReadBeginToCurrent(DataReadingMode mode = DataReadingMode::AlwaysCopy)const;
+	MemoryData ReadToEnd(DataReadingMode mode = DataReadingMode::AlwaysCopy)const;
+	MemoryData ReadData(size_t size, DataReadingMode mode = DataReadingMode::AlwaysCopy)const;
 
 public:
 	template<class T>
 	size_t Write(const T& val)
 	{
-		return WriteData(MemoryByteData::FromStatic((byte*)&val, sizeof(T)));
+		return WriteData(MemoryData::FromStatic((byte*)&val, sizeof(T)));
 	}
 
 	template<class T>
 	size_t Write(const T* begin, const T* end)
 	{
 		size_t size = (end - begin)*sizeof(T);
-		return WriteData(MemoryByteData::FromStatic((byte*)begin, size));
+		return WriteData(MemoryData::FromStatic((byte*)begin, size));
 	}
 
 public:
@@ -81,8 +81,8 @@ public:
 
 	size_t ReadAllLinesTo(List<HeapString>& outLines, size_t maxCount = 1024, bool isTrim = true, bool ignoreEmptyLine = true)const;
 	size_t ReadAllLinesTo(List<WHeapString>& outLines, size_t maxCount = 1024, bool isTrim = true, bool ignoreEmptyLine = true)const;
-	size_t ReadDataToString(HeapString& outString)const;
-	size_t ReadDataToString(WHeapString& outString)const;
+	size_t ReadDataToString(HeapString& outString, int readCount=0)const;
+	size_t ReadDataToString(WHeapString& outString, int readCount = 0)const;
 
 	HeapString ReadString(size_t maxCount = 1024)const;
 	WHeapString ReadStringW(size_t maxCount = 1024)const;
@@ -113,7 +113,7 @@ public:
 	virtual uintp Length()const = 0;
 	virtual uintp Position()const = 0;
 
-	virtual size_t ReadDataTo(MemoryByteData& outData, DataReadingMode mode = DataReadingMode::AlwaysCopy) const = 0;
+	virtual size_t ReadDataTo(MemoryData& outData, DataReadingMode mode = DataReadingMode::AlwaysCopy) const = 0;
 	virtual int PeekChar() const = 0;
 	virtual int PeekWChar() const = 0;
 	virtual int ReadChar() const = 0;
@@ -131,7 +131,7 @@ public:
 
 	virtual bool WriteChar(char val) = 0;
 	virtual bool WriteChar(wchar val) = 0;
-	virtual size_t WriteData(const MemoryByteData& data, DataReadingMode mode = DataReadingMode::AlwaysCopy) = 0;
+	virtual size_t WriteData(const MemoryData& data, DataReadingMode mode = DataReadingMode::AlwaysCopy) = 0;
 
 	virtual size_t WriteString(const StringRef& str, bool withNullTermitated = true) = 0;
 	virtual size_t WriteString(const WStringRef& str, bool withNullTermitated = true) = 0;

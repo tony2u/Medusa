@@ -11,6 +11,8 @@ MEDUSA_BEGIN;
 class BMPFont :public IFont
 {
 public:
+	virtual bool IsBitmap()const override { return true; }
+
 	static BMPFont* CreateFromPVR(const FontId& fontId);
 	static BMPFont* CreateFromBMPBinary(const FontId& fontId, const IStream& stream);
 	static BMPFont* CreateFromBMPText(const FontId& fontId, const IStream& stream);

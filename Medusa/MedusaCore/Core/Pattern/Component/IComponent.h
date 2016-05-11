@@ -14,7 +14,6 @@ class IComponent :public RTTIObject, public DefaultRunnable
 	MEDUSA_DECLARE_RTTI_ROOT;
 public:
 	IComponent(const StringRef& name = StringRef::Empty, int priority = 0, void* userData = nullptr);
-
 	virtual ~IComponent() {}
 public:
 	StringRef Name() const { return mName; }
@@ -33,6 +32,11 @@ public:
 public:
 	virtual bool Update(float dt);
 	virtual bool AcceptEvent(IEventArg& eventArg) { return true; }
+	virtual bool Enter() { return true; }
+	virtual bool Exit() { return true; }
+	virtual bool UpdateLogic() { return true; }
+	virtual bool ResetLogic() { return true; }
+
 protected:
 	HeapString mName;
 	int mPriority;

@@ -11,7 +11,7 @@
 #include "Core/Action/BaseActionRunner.h"
 #include "Rendering/IRenderable.h"
 #include "Core/Pattern/Runnable/IRunnable.h"
-#include "Core/Geometry/Rect2.h"
+#include "Geometry/Rect2.h"
 #include "Core/Pattern/IClone.h"
 
 #include "Core/Pattern/RTTI/RTTIObject.h"
@@ -21,13 +21,9 @@
 
 #include "Node/NodeDefines.h"
 
-#include "NodeLayoutArrangeFlags.h"
-#include "NodeLayoutChangedFlags.h"
-#include "NodeRemoveFlags.h"
-#include "NodeUpdateFlags.h"
-#include "NodeVisitFlags.h"
 #include "Core/Command/EventArg/IEventArg.h"
 #include "Core/Collection/LinkedList.h"
+#include "Core/Pattern/Property/StringPropertySet.h"
 
 MEDUSA_BEGIN;
 
@@ -83,8 +79,14 @@ public:
 	bool IsManaged() const { return mIsManaged; }
 	void EnableManaged(bool val = true) { mIsManaged = val; }
 
+	const StringPropertySet& Properties() const { return mProperties; }
+	StringPropertySet& MutableProperties() { return mProperties; }
+
 	void RemoveFromParent();
 	void DeleteFromParent();
+
+	const NodeList& Children() const { return mNodes; }
+	NodeList& MutableChildren() { return mNodes; }
 
 	virtual void AddChild(INode* node);
 	virtual bool RemoveChild(INode* node);
@@ -95,12 +97,7 @@ public:
 
 	bool RemoveChild(const StringRef& name);
 	bool DeleteChild(const StringRef& name);
-
-
 	INode* FindChildWithId(uintp id);
-	const NodeList& Children() const { return mNodes; }
-	NodeList& MutableChildren() { return mNodes; }
-
 	INode* FindChild(StringRef name);
 	const INode* FindChild(StringRef name)const;
 	INode* FirstChild();
@@ -115,12 +112,73 @@ public:
 	INode* FindChildRecursively(StringRef name);
 	const INode* FindChildRecursively(StringRef name)const;
 
+	template<typename TChild>
+	const TChild* FindChild()const
+	{
+		for (INode* child : mNodes)
+		{
+			if (child->IsA<TChild>())
+			{
+				return (const TChild*)child;
+			}
+		}
+		return nullptr;
+	}
+
+	template<typename TChild>
+	TChild* FindChild()
+	{
+		for (INode* child : mNodes)
+		{
+			if (child->IsA<TChild>())
+			{
+				return (TChild*)child;
+			}
+		}
+		return nullptr;
+	}
+
+	template<typename TChild>
+	const TChild* FindChildRecursively()const
+	{
+		const TChild* result = FindChild<TChild>();
+		RETURN_SELF_IF_NOT_NULL(result);
+		for (INode* child : mNodes)
+		{
+			result = child->FindChildRecursively<TChild>();
+			RETURN_SELF_IF_NOT_NULL(result);
+		}
+
+		return nullptr;
+	}
+
+	template<typename TChild>
+	TChild* FindChildRecursively()const
+	{
+		TChild* result = FindChild<TChild>();
+		RETURN_SELF_IF_NOT_NULL(result);
+		for (INode* child : mNodes)
+		{
+			result = child->FindChildRecursively<TChild>();
+			RETURN_SELF_IF_NOT_NULL(result);
+		}
+
+		return nullptr;
+	}
+
+
+	template<typename TChild> bool HasChild()const { return FindChild<TChild>() != nullptr; }
+	template<typename TChild> bool HasChildRecursively()const { return FindChildRecursively<TChild>() != nullptr; }
+
 	int Depth() const { return mDepth; }
 	void SetDepth(int val) { mDepth = val; }
 	void ReorderAllChilds();
 
 	int Tag() const { return mTag; }
 	void SetTag(int val) { mTag = val; }
+
+	void* UserData() const { return mUserData; }
+	void SetUserData(void* val) { mUserData = val; }
 protected:
 #pragma region Layout
 public:
@@ -154,21 +212,22 @@ public:
 
 	bool UpdateRecursively(float dt, const NodeUpdateFlags& flag = NodeUpdateFlags::None);
 	virtual bool Update(float dt, NodeUpdateFlags flag = NodeUpdateFlags::None);
-	virtual bool BeforeUpdate(float dt, NodeUpdateFlags flag = NodeUpdateFlags::None);
-	virtual bool AfterUpdate(float dt, NodeUpdateFlags flag = NodeUpdateFlags::None);
+	virtual bool OnBeforeUpdate(float dt, NodeUpdateFlags flag = NodeUpdateFlags::None) { return true; }
+	virtual bool OnUpdate(float dt, NodeUpdateFlags flag = NodeUpdateFlags::None) { return true; }
+	virtual bool OnAfterUpdate(float dt, NodeUpdateFlags flag = NodeUpdateFlags::None) { return true; }
 
 
 	virtual bool EnterRecursively();
-	virtual bool Enter() { return true; }
+	virtual bool OnEnter() { return true; }
 
 	virtual bool ExitRecursively();
-	virtual bool Exit() { return true; }
+	virtual bool OnExit() { return true; }
 
 	virtual bool UpdateLogicRecursively();
-	virtual bool UpdateLogic() { return true; }
+	virtual bool OnUpdateLogic() { return true; }
 
 	virtual bool ResetLogicRecursively();
-	virtual bool ResetLogic() { return true; }
+	virtual bool OnResetLogic() { return true; }
 
 	virtual void VisitRecursively(IVisitor < INode* >& visitor, RenderableChangedFlags& outFlag, NodeVisitFlags nodeFlag = NodeVisitFlags::None, RenderStateType renderStateFlag = RenderStateType::None);
 
@@ -215,52 +274,50 @@ public:
 	void EnableDebugDraw(bool val);
 #pragma endregion Debug
 
+#pragma region Script
+#ifdef MEDUSA_SCRIPT
+public:
+	ScriptObject AddScriptFile(const FileIdRef& file);
+	void SetScriptObject(ScriptObject object);
+	ScriptObject GetScriptObject()const;
+#endif
+
+#pragma endregion Script
+
 protected:
 	virtual void OnMoveableDirty(MoveableChangedFlags changedFlags)override;
 	virtual void OnRenderChanged(RenderableChangedFlags flag)override;
 	virtual void OnMeshChanged(RenderableChangedFlags flag)override;
 
 protected:
-	int mDepth=0;	//used to indicate updating order
-	int mTag=0;
+	int mDepth = 0;	//used to indicate updating order
+	int mTag = 0;
+	void* mUserData = nullptr;
 
 	Dictionary<HeapString, INode*> mNodeDict;
 	NodeList mNodes;
 	NodeList mManagedNodes;	//nodes managed by engine,weak reference to mNodes
 
-	INode* mParent=nullptr;
-	bool mIsManaged=false;
+	INode* mParent = nullptr;
+	bool mIsManaged = false;
 
-	InputDispatcher* mInputDispatcher=nullptr;
+	InputDispatcher* mInputDispatcher = nullptr;
 
-	bool mInputEnabled=true;	//just for self
-	bool mInputPassingEnabled=true;	//true means to need to check all children' input dispatcher recursively.
+	bool mInputEnabled = true;	//just for self
+	bool mInputPassingEnabled = true;	//true means to need to check all children' input dispatcher recursively.
 
-	IDataSource* mDataSource=nullptr;
+	IDataSource* mDataSource = nullptr;
 
 	//Debug
-	IShape* mDebugDrawShape=nullptr;
+	IShape* mDebugDrawShape = nullptr;
 #pragma region Update
-	IScene* mScene=nullptr;
-	bool mNeedVisit=false;
-
+	IScene* mScene = nullptr;
+	bool mNeedVisit = false;
 
 #pragma endregion Update
 
+	StringPropertySet mProperties;
 };
 
 
 MEDUSA_END;
-
-#ifdef MEDUSA_SCRIPT
-MEDUSA_SCRIPT_BEGIN;
-void RegisterINode(asIScriptEngine* engine);
-
-template <class T>
-void RegisterINode_Methods(asIScriptEngine* engine, const char* typeName)
-{
-
-}
-
-MEDUSA_SCRIPT_END;
-#endif

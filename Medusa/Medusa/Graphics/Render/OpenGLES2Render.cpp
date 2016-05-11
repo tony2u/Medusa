@@ -5,12 +5,12 @@
 
 
 #include "OpenGLES2Render.h"
-#include "Core/Geometry/Rect2.h"
-#include "Core/Geometry/Color4.h"
+#include "Geometry/Rect2.h"
+#include "Geometry/Color4.h"
 #include "Core/Collection/Array.h"
-#include "Core/Geometry/Triangle.h"
-#include "Core/Geometry/Point3.h"
-#include "Core/Geometry/Point4.h"
+#include "Geometry/Triangle.h"
+#include "Geometry/Point3.h"
+#include "Geometry/Point4.h"
 
 #include "Core/Profile/ProfileSample.h"
 #include "Graphics/Render/RenderExtensionNames.h"
@@ -114,7 +114,7 @@ GraphicsErrorCode OpenGLES2Render::GetError() const
 
 void OpenGLES2Render::Clear(GraphicsBufferComponentMask clearMasks)const
 {
-	int mask = clearMasks.ToInt();
+	int mask = (int)clearMasks;
 	glClear(mask);
 	AssertSuccess();
 
@@ -128,7 +128,7 @@ void OpenGLES2Render::Clear(GraphicsBufferComponentMask clearMasks)const
 void OpenGLES2Render::Hint(GraphicsHintMode mode)
 {
 	RENDER_RETURN_IF_EQUAL(mGenerateMipmapHint, mode);
-	glHint(GL_GENERATE_MIPMAP_HINT, mode.ToUInt());
+	glHint(GL_GENERATE_MIPMAP_HINT, (uint)mode);
 	RENDER_ASSIGN_IF_SUCCESS(mGenerateMipmapHint, mode);
 
 }
@@ -235,7 +235,7 @@ void OpenGLES2Render::SetBlendEquation(GraphicsBlendEquation equation)
 #endif
 
 
-	glBlendEquation(equation.ToInt());
+	glBlendEquation((uint)equation);
 	if (AssertSuccess())
 	{
 #ifdef MEDUSA_RENDER_STATE_CACHE_ENABLED
@@ -255,7 +255,7 @@ void OpenGLES2Render::SetBlendEquationSeparate(GraphicsBlendEquation rgbEquation
 	}
 #endif
 
-	glBlendEquationSeparate(rgbEquation.ToInt(), alphaEquation.ToInt());
+	glBlendEquationSeparate((int)rgbEquation, (int)alphaEquation);
 	if (AssertSuccess())
 	{
 #ifdef MEDUSA_RENDER_STATE_CACHE_ENABLED
@@ -366,7 +366,7 @@ void OpenGLES2Render::SetStencilFunc(GraphicsFuncType func, int refValue, uint r
 		return;
 	}
 #endif
-	glStencilFunc(func.ToUInt(), refValue, readMask);
+	glStencilFunc((uint)func, refValue, readMask);
 
 	if (AssertSuccess())
 	{
@@ -387,9 +387,9 @@ void OpenGLES2Render::SetStencilFunc(GraphicsFuncType func, int refValue, uint r
 
 void OpenGLES2Render::SetStencilFuncSeparate(GraphicsFace face, GraphicsFuncType func, int refValue, uint readMask)
 {
-	switch (face.ToInt())
+	switch (face)
 	{
-	case GraphicsFace::Front.IntValue:
+	case GraphicsFace::Front:
 #ifdef MEDUSA_RENDER_STATE_CACHE_ENABLED
 
 		if (mStencilFunc == func&&mStencilRefValue == refValue&&mStencilValueMask == readMask)
@@ -398,7 +398,7 @@ void OpenGLES2Render::SetStencilFuncSeparate(GraphicsFace face, GraphicsFuncType
 		}
 #endif
 
-		glStencilFuncSeparate(face.ToUInt(), func.ToUInt(), refValue, readMask);
+		glStencilFuncSeparate((uint)face, (uint)func, refValue, readMask);
 		if (AssertSuccess())
 		{
 #ifdef MEDUSA_RENDER_STATE_CACHE_ENABLED
@@ -409,7 +409,7 @@ void OpenGLES2Render::SetStencilFuncSeparate(GraphicsFace face, GraphicsFuncType
 #endif
 		}
 		break;
-	case GraphicsFace::Back.IntValue:
+	case GraphicsFace::Back:
 #ifdef MEDUSA_RENDER_STATE_CACHE_ENABLED
 
 		if (mStencilBackFunc == func&&mStencilBackRefValue == refValue&&mStencilBackValueMask == readMask)
@@ -417,7 +417,7 @@ void OpenGLES2Render::SetStencilFuncSeparate(GraphicsFace face, GraphicsFuncType
 			return;
 		}
 #endif
-		glStencilFuncSeparate(face.ToUInt(), func.ToUInt(), refValue, readMask);
+		glStencilFuncSeparate((uint)face, (uint)func, refValue, readMask);
 		if (AssertSuccess())
 		{
 #ifdef MEDUSA_RENDER_STATE_CACHE_ENABLED
@@ -428,7 +428,7 @@ void OpenGLES2Render::SetStencilFuncSeparate(GraphicsFace face, GraphicsFuncType
 #endif
 		}
 		break;
-	case GraphicsFace::FrontAndBack.IntValue:
+	case GraphicsFace::FrontAndBack:
 #ifdef MEDUSA_RENDER_STATE_CACHE_ENABLED
 
 		if (mStencilFunc == func&&mStencilRefValue == refValue&&mStencilValueMask == readMask&&mStencilBackFunc == func&&mStencilBackRefValue == refValue&&mStencilBackValueMask == readMask)
@@ -436,7 +436,7 @@ void OpenGLES2Render::SetStencilFuncSeparate(GraphicsFace face, GraphicsFuncType
 			return;
 		}
 #endif
-		glStencilFuncSeparate(face.ToUInt(), func.ToUInt(), refValue, readMask);
+		glStencilFuncSeparate((uint)face, (uint)func, refValue, readMask);
 		if (AssertSuccess())
 		{
 #ifdef MEDUSA_RENDER_STATE_CACHE_ENABLED
@@ -452,7 +452,7 @@ void OpenGLES2Render::SetStencilFuncSeparate(GraphicsFace face, GraphicsFuncType
 		}
 		break;
 	default:
-		Log::AssertFailedFormat("Invalid GraphicsFace:{}", face.ToUInt());
+		Log::AssertFailedFormat("Invalid GraphicsFace:{}", (uint)face);
 		break;
 
 	}
@@ -484,26 +484,26 @@ void OpenGLES2Render::SetStencilWriteMask(uint mask)
 
 void OpenGLES2Render::SetStencilWriteMaskSeparate(GraphicsFace face, uint mask)
 {
-	switch (face.ToInt())
+	switch (face)
 	{
-	case GraphicsFace::Front.IntValue:
+	case GraphicsFace::Front:
 		RENDER_RETURN_IF_EQUAL(mStencilWriteMask, mask);
-		glStencilMaskSeparate(face.ToUInt(), mask);
+		glStencilMaskSeparate((uint)face, mask);
 		RENDER_ASSIGN_IF_SUCCESS(mStencilWriteMask, mask);
 		break;
-	case GraphicsFace::Back.IntValue:
+	case GraphicsFace::Back:
 		RENDER_RETURN_IF_EQUAL(mStencilBackWriteMask, mask);
-		glStencilMaskSeparate(face.ToUInt(), mask);
+		glStencilMaskSeparate((uint)face, mask);
 		RENDER_ASSIGN_IF_SUCCESS(mStencilBackWriteMask, mask);
 		break;
-	case GraphicsFace::FrontAndBack.IntValue:
+	case GraphicsFace::FrontAndBack:
 #ifdef MEDUSA_RENDER_STATE_CACHE_ENABLED
 		if (mStencilWriteMask == mask&&mStencilBackWriteMask == mask)
 		{
 			return;
 		}
 #endif
-		glStencilMaskSeparate(face.ToUInt(), mask);
+		glStencilMaskSeparate((uint)face, mask);
 
 		if (AssertSuccess())
 		{
@@ -514,7 +514,7 @@ void OpenGLES2Render::SetStencilWriteMaskSeparate(GraphicsFace face, uint mask)
 		}
 		break;
 	default:
-		Log::AssertFailedFormat("Invalid GraphicsFace:{}", face.ToUInt());
+		Log::AssertFailedFormat("Invalid GraphicsFace:{}", (uint)face);
 		break;
 
 	}
@@ -532,7 +532,7 @@ void OpenGLES2Render::SetStencilOperation(GraphicsStencilOperation testFail, Gra
 	}
 #endif
 
-	glStencilOp(testFail.ToUInt(), testPassDepthFail.ToUInt(), testPassDepthPass.ToUInt());
+	glStencilOp((uint)testFail, (uint)testPassDepthFail, (uint)testPassDepthPass);
 
 	if (AssertSuccess())
 	{
@@ -551,16 +551,16 @@ void OpenGLES2Render::SetStencilOperation(GraphicsStencilOperation testFail, Gra
 
 void OpenGLES2Render::SetStencilOperationSeparate(GraphicsFace face, GraphicsStencilOperation testFail, GraphicsStencilOperation testPassDepthFail, GraphicsStencilOperation testPassDepthPass)
 {
-	switch (face.ToInt())
+	switch (face)
 	{
-	case GraphicsFace::Front.IntValue:
+	case GraphicsFace::Front:
 #ifdef MEDUSA_RENDER_STATE_CACHE_ENABLED
 		if (mStencilFailOperation == testFail&&mStencilPassDepthFailOperation == testPassDepthFail&&mStencilPassDepthPassOperation == testPassDepthPass)
 		{
 			return;
 		}
 #endif
-		glStencilOpSeparate(face.ToUInt(), testFail.ToUInt(), testPassDepthFail.ToUInt(), testPassDepthPass.ToUInt());
+		glStencilOpSeparate((uint)face, (uint)testFail, (uint)testPassDepthFail, (uint)testPassDepthPass);
 
 		if (AssertSuccess())
 		{
@@ -571,14 +571,14 @@ void OpenGLES2Render::SetStencilOperationSeparate(GraphicsFace face, GraphicsSte
 #endif
 		}
 		break;
-	case GraphicsFace::Back.IntValue:
+	case GraphicsFace::Back:
 #ifdef MEDUSA_RENDER_STATE_CACHE_ENABLED
 		if (mStencilBackFailOperation == testFail&&mStencilBackPassDepthFailOperation == testPassDepthFail&&mStencilBackPassDepthPassOperation == testPassDepthPass)
 		{
 			return;
 		}
 #endif
-		glStencilOpSeparate(face.ToUInt(), testFail.ToUInt(), testPassDepthFail.ToUInt(), testPassDepthPass.ToUInt());
+		glStencilOpSeparate((uint)face, (uint)testFail, (uint)testPassDepthFail, (uint)testPassDepthPass);
 
 		if (AssertSuccess())
 		{
@@ -589,7 +589,7 @@ void OpenGLES2Render::SetStencilOperationSeparate(GraphicsFace face, GraphicsSte
 #endif
 		}
 		break;
-	case GraphicsFace::FrontAndBack.IntValue:
+	case GraphicsFace::FrontAndBack:
 #ifdef MEDUSA_RENDER_STATE_CACHE_ENABLED
 		if (mStencilFailOperation == testFail&&mStencilPassDepthFailOperation == testPassDepthFail&&mStencilPassDepthPassOperation == testPassDepthPass&&
 			mStencilBackFailOperation == testFail&&mStencilBackPassDepthFailOperation == testPassDepthFail&&mStencilBackPassDepthPassOperation == testPassDepthPass)
@@ -597,7 +597,7 @@ void OpenGLES2Render::SetStencilOperationSeparate(GraphicsFace face, GraphicsSte
 			return;
 		}
 #endif
-		glStencilOpSeparate(face.ToUInt(), testFail.ToUInt(), testPassDepthFail.ToUInt(), testPassDepthPass.ToUInt());
+		glStencilOpSeparate((uint)face, (uint)testFail, (uint)testPassDepthFail, (uint)testPassDepthPass);
 
 		if (AssertSuccess())
 		{
@@ -613,7 +613,7 @@ void OpenGLES2Render::SetStencilOperationSeparate(GraphicsFace face, GraphicsSte
 		}
 		break;
 	default:
-		Log::AssertFailedFormat("Invalid GraphicsFace:{}", face.ToUInt());
+		Log::AssertFailedFormat("Invalid GraphicsFace:{}", (uint)face);
 		break;
 
 	}
@@ -623,14 +623,14 @@ void OpenGLES2Render::SetStencilOperationSeparate(GraphicsFace face, GraphicsSte
 void OpenGLES2Render::SetFrontFace(GraphicsFrontFace frontFace)
 {
 	RENDER_RETURN_IF_EQUAL(mFrontFace, frontFace);
-	glFrontFace(frontFace.ToUInt());
+	glFrontFace((uint)frontFace);
 	RENDER_ASSIGN_IF_SUCCESS(mFrontFace, frontFace);
 }
 
 void OpenGLES2Render::SetDepthFunc(GraphicsFuncType func)
 {
 	RENDER_RETURN_IF_EQUAL(mDepthFunc, func);
-	glDepthFunc(func.ToInt());
+	glDepthFunc((uint)func);
 	RENDER_ASSIGN_IF_SUCCESS(mDepthFunc, func);
 
 }
@@ -669,7 +669,7 @@ void OpenGLES2Render::SetStencilClearValue(int val)
 void OpenGLES2Render::SetColorMask(GraphicsColorMask colorMask)
 {
 	RENDER_RETURN_IF_EQUAL(mColorWriteMask, colorMask);
-	glColorMask(colorMask.Has(GraphicsColorMask::R), colorMask.Has(GraphicsColorMask::G), colorMask.Has(GraphicsColorMask::B), colorMask.Has(GraphicsColorMask::A));
+	glColorMask(MEDUSA_FLAG_HAS(colorMask,GraphicsColorMask::R), MEDUSA_FLAG_HAS(colorMask, GraphicsColorMask::G), MEDUSA_FLAG_HAS(colorMask, GraphicsColorMask::B), MEDUSA_FLAG_HAS(colorMask, GraphicsColorMask::A));
 	RENDER_ASSIGN_IF_SUCCESS(mColorWriteMask, colorMask);
 }
 
@@ -739,7 +739,7 @@ void OpenGLES2Render::EnableDepthWrite(bool isEnable)
 void OpenGLES2Render::CullFace(GraphicsFace face)
 {
 	RENDER_RETURN_IF_EQUAL(mCullFaceMode, face);
-	glCullFace(face.ToInt());
+	glCullFace((int)face);
 	RENDER_ASSIGN_IF_SUCCESS(mCullFaceMode, face);
 }
 
@@ -1055,7 +1055,7 @@ void OpenGLES2Render::DeleteTextures(uint count, uint* textures)
 		FOR_EACH_SIZE(i, count)
 		{
 			uint texture = textures[i];
-			SamplerRenderState* state = mSamplerRenderStateDict.RemoveKeyWithValueReturned(texture, nullptr);
+			SamplerRenderState* state = mSamplerRenderStateDict.RemoveKeyOptional(texture, nullptr);
 			SAFE_RELEASE(state);
 		}
 #endif
@@ -1108,35 +1108,35 @@ bool OpenGLES2Render::IsTexture(uint texture) const
 	return result;
 }
 
-void OpenGLES2Render::LoadTexture(GraphicsTextureTarget textureTarget, int level, GraphicsInternalFormat internalformat, const Size2U& size, int border, GraphicsPixelFormat format, GraphicsPixelDataType type, const void *pixels) const
+void OpenGLES2Render::LoadTexture(GraphicsTextureTarget textureTarget, int level, PixelType pixelType, const Size2U& size, int border,  const void *pixels) const
 {
-	glTexImage2D((uint)textureTarget, level, (uint)internalformat, size.Width, size.Height, border, (uint)format, type.ToUInt(), pixels);
+	glTexImage2D((uint)textureTarget, level, (uint)pixelType.InternalFormat(), size.Width, size.Height, border, (uint)pixelType.Format(), (uint)pixelType.DataType(), pixels);
 	AssertSuccess();
 }
 
-void OpenGLES2Render::LoadSubTexture(GraphicsTextureTarget textureTarget, int level, const Rect2I& rect, GraphicsPixelFormat format, GraphicsPixelDataType type, const void *pixels) const
+void OpenGLES2Render::LoadSubTexture(GraphicsTextureTarget textureTarget, int level, const Rect2I& rect, PixelType pixelType, const void *pixels) const
 {
-	glTexSubImage2D((uint)textureTarget, level, rect.Origin.X, rect.Origin.Y, rect.Size.Width, rect.Size.Height, (uint)format, type.ToUInt(), pixels);
-	AssertSuccess();
-}
-
-
-void OpenGLES2Render::LoadCompressedTexture(GraphicsTextureTarget textureTarget, int level, GraphicsInternalFormat internalformat, const Size2U& size, int border, uint imageSize, const void *pixels) const
-{
-	glCompressedTexImage2D((uint)textureTarget, level, (uint)internalformat, size.Width, size.Width, border, imageSize, pixels);
-	AssertSuccess();
-}
-
-void OpenGLES2Render::LoadCompressedSubTexture(GraphicsTextureTarget textureTarget, int level, GraphicsInternalFormat internalformat, const Rect2I& rect, uint imageSize, const void *pixels) const
-{
-	glCompressedTexSubImage2D((uint)textureTarget, level, rect.Origin.X, rect.Origin.Y, rect.Size.Width, rect.Size.Height, (uint)internalformat, imageSize, pixels);
+	glTexSubImage2D((uint)textureTarget, level, rect.Origin.X, rect.Origin.Y, rect.Size.Width, rect.Size.Height, (uint)pixelType.Format(), (uint)pixelType.DataType(), pixels);
 	AssertSuccess();
 }
 
 
-void OpenGLES2Render::CopyTexture(GraphicsTextureTarget textureTarget, int level, GraphicsInternalFormat internalformat, const Rect2I& rect, int border) const
+void OpenGLES2Render::LoadCompressedTexture(GraphicsTextureTarget textureTarget, int level, PixelType pixelType, const Size2U& size, int border, uint imageSize, const void *pixels) const
 {
-	glCopyTexImage2D((uint)textureTarget, level, (uint)internalformat, rect.Origin.X, rect.Origin.Y, rect.Size.Width, rect.Size.Height, border);
+	glCompressedTexImage2D((uint)textureTarget, level, (uint)pixelType.InternalFormat(), size.Width, size.Width, border, imageSize, pixels);
+	AssertSuccess();
+}
+
+void OpenGLES2Render::LoadCompressedSubTexture(GraphicsTextureTarget textureTarget, int level, PixelType pixelType, const Rect2I& rect, uint imageSize, const void *pixels) const
+{
+	glCompressedTexSubImage2D((uint)textureTarget, level, rect.Origin.X, rect.Origin.Y, rect.Size.Width, rect.Size.Height, (uint)pixelType.InternalFormat(), imageSize, pixels);
+	AssertSuccess();
+}
+
+
+void OpenGLES2Render::CopyTexture(GraphicsTextureTarget textureTarget, int level, PixelType pixelType, const Rect2I& rect, int border) const
+{
+	glCopyTexImage2D((uint)textureTarget, level, (uint)pixelType.InternalFormat(), rect.Origin.X, rect.Origin.Y, rect.Size.Width, rect.Size.Height, border);
 	AssertSuccess();
 }
 
@@ -1164,7 +1164,7 @@ void OpenGLES2Render::SetTextureMinFilter(GraphicsTextureType textureType, Graph
 		return;
 	}
 
-	SamplerRenderState* state = mSamplerRenderStateDict.GetValue(texture);
+	SamplerRenderState* state = mSamplerRenderStateDict.Get(texture);
 	RENDER_RETURN_IF_EQUAL(state->MinFilter(), minFilter);
 #endif
 	glTexParameteri((uint)textureType, (int)GraphicsTextureParameter::MinFilter, (uint)minFilter);
@@ -1194,7 +1194,7 @@ void OpenGLES2Render::SetTextureMagFilter(GraphicsTextureType textureType, Graph
 		return;
 	}
 
-	SamplerRenderState* state = mSamplerRenderStateDict.GetValue(texture);
+	SamplerRenderState* state = mSamplerRenderStateDict.Get(texture);
 	RENDER_RETURN_IF_EQUAL(state->MagFilter(), magFilter);
 #endif
 	glTexParameteri((uint)textureType, (uint)GraphicsTextureParameter::MagFilter, (uint)magFilter);
@@ -1223,7 +1223,7 @@ void OpenGLES2Render::SetTextureWrapS(GraphicsTextureType textureType, GraphicsT
 		return;
 	}
 
-	SamplerRenderState* state = mSamplerRenderStateDict.GetValue(texture);
+	SamplerRenderState* state = mSamplerRenderStateDict.Get(texture);
 	RENDER_RETURN_IF_EQUAL(state->WrapS(), wrapS);
 #endif
 	glTexParameteri((uint)textureType, (uint)GraphicsTextureParameter::WrapS, (uint)wrapS);
@@ -1253,7 +1253,7 @@ void OpenGLES2Render::SetTextureWrapT(GraphicsTextureType textureType, GraphicsT
 		return;
 	}
 
-	SamplerRenderState* state = mSamplerRenderStateDict.GetValue(texture);
+	SamplerRenderState* state = mSamplerRenderStateDict.Get(texture);
 	RENDER_RETURN_IF_EQUAL(state->WrapT(), wrapT);
 #endif
 	glTexParameteri((uint)textureType, (uint)GraphicsTextureParameter::WrapT, (uint)wrapT);
@@ -1283,7 +1283,7 @@ int OpenGLES2Render::GetTextureParamter(GraphicsTextureType textureType, Graphic
 		return 0;
 	}
 
-	SamplerRenderState* state = mSamplerRenderStateDict.GetValue(texture);
+	SamplerRenderState* state = mSamplerRenderStateDict.Get(texture);
 	switch (parameter)
 	{
 	case GraphicsTextureParameter::MinFilter:return (int)state->MinFilter();
@@ -1493,7 +1493,7 @@ int OpenGLES2Render::GetRenderBufferParameter(GraphicsRenderBufferParameter para
 
 void OpenGLES2Render::ReadPixels(GraphicsPixelFormat format, GraphicsPixelDataType dataType, const Rect2I& rect, void* outData)
 {
-	glReadPixels(rect.Origin.X, rect.Origin.Y, rect.Size.Width, rect.Size.Height, (uint)format, dataType.ToUInt(), outData);
+	glReadPixels(rect.Origin.X, rect.Origin.Y, rect.Size.Width, rect.Size.Height, (uint)format, (uint)dataType, outData);
 	AssertSuccess();
 }
 
@@ -2042,12 +2042,12 @@ void OpenGLES2Render::GetInternalFormatParameter(GraphicsInternalFormat internal
 #pragma endregion Frame buffer
 
 #pragma region Texture
-void OpenGLES2Render::LoadTexture3D(GraphicsTextureTarget textureTarget, int level, GraphicsInternalFormat internalformat, const Size3U& size, int border, GraphicsPixelFormat format, GraphicsPixelDataType type, const void *pixels) const
+void OpenGLES2Render::LoadTexture3D(GraphicsTextureTarget textureTarget, int level, PixelType pixelType, const Size3U& size, int border,  const void *pixels) const
 {
 	MEDUSA_ASSERT_NOT_IMPLEMENT();
 }
 
-void OpenGLES2Render::LoadSubTexture3D(GraphicsTextureTarget textureTarget, int level, const CubeI& rect, GraphicsPixelFormat format, GraphicsPixelDataType type, const void *pixels) const
+void OpenGLES2Render::LoadSubTexture3D(GraphicsTextureTarget textureTarget, int level, const CubeI& rect, PixelType pixelType, const void *pixels) const
 {
 	MEDUSA_ASSERT_NOT_IMPLEMENT();
 }
@@ -2057,22 +2057,22 @@ void OpenGLES2Render::CopySubTexture3D(GraphicsTextureTarget textureTarget, int 
 	MEDUSA_ASSERT_NOT_IMPLEMENT();
 }
 
-void OpenGLES2Render::LoadCompressedTexture3D(GraphicsTextureTarget textureTarget, int level, GraphicsInternalFormat internalformat, const Size3U& size, int border, uint imageSize, const void *pixels) const
+void OpenGLES2Render::LoadCompressedTexture3D(GraphicsTextureTarget textureTarget, int level, PixelType pixelType, const Size3U& size, int border, uint imageSize, const void *pixels) const
 {
 	MEDUSA_ASSERT_NOT_IMPLEMENT();
 }
 
-void OpenGLES2Render::LoadCompressedSubTexture3D(GraphicsTextureTarget textureTarget, int level, GraphicsInternalFormat internalformat, const CubeI& rect, uint imageSize, const void *pixels) const
+void OpenGLES2Render::LoadCompressedSubTexture3D(GraphicsTextureTarget textureTarget, int level, PixelType pixelType, const CubeI& rect, uint imageSize, const void *pixels) const
 {
 	MEDUSA_ASSERT_NOT_IMPLEMENT();
 }
 
-void OpenGLES2Render::SetTextureStorage2D(GraphicsTextureTarget textureTarget, uint level, GraphicsInternalFormat internalformat, const Size2U& size) const
+void OpenGLES2Render::SetTextureStorage2D(GraphicsTextureTarget textureTarget, uint level, PixelType pixelType, const Size2U& size) const
 {
 	MEDUSA_ASSERT_NOT_IMPLEMENT();
 }
 
-void OpenGLES2Render::SetTextureStorage3D(GraphicsTextureTarget textureTarget, uint level, GraphicsInternalFormat internalformat, const Size3U& size) const
+void OpenGLES2Render::SetTextureStorage3D(GraphicsTextureTarget textureTarget, uint level, PixelType pixelType, const Size3U& size) const
 {
 	MEDUSA_ASSERT_NOT_IMPLEMENT();
 }

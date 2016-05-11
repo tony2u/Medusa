@@ -33,7 +33,7 @@ bool RenderToTextureRenderPass::Initialize()
 	const Size2F& screenSize=ResolutionAdapter::Instance().WinSize();
 	GPUTexture* texture= TextureFactory::Instance().CreateGPUTexture("RenderToTextureTexture",screenSize,GraphicsTextureType::Texture2D,
 		GraphicsTextureTarget::Texture2D,
-		GraphicsInternalFormat::RGBA,0,0,GraphicsPixelFormat::RGBA,GraphicsPixelDataType::Byte,ShaderSamplerNames::Texture);
+		PixelType::RGBA8888,0,0,ShaderSamplerNames::Texture);
 	texture->SetUnit(GraphicsTextureUnits::Texture0);
 	texture->SetMinFilter(GraphicsTextureMinFilter::Nearest);
 	texture->SetMagFilter(GraphicsTextureMagFilter::Nearest);

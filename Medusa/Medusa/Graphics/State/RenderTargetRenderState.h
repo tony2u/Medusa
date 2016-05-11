@@ -4,8 +4,8 @@
 #pragma  once
 #include "Graphics/State/IRenderState.h"
 #include "Graphics/GraphicsTypes.h"
-#include "Core/Geometry/Rect2.h"
-#include "Core/Geometry/Color4.h"
+#include "Geometry/Rect2.h"
+#include "Geometry/Color4.h"
 
 MEDUSA_BEGIN;
 

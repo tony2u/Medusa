@@ -3,12 +3,10 @@
 // license that can be found in the LICENSE file.
 #pragma once
 #include "MedusaPreDeclares.h"
-#include "Core/Geometry/Moveable/DefaultMoveable.h"
+#include "Geometry/Moveable/DefaultMoveable.h"
 #include "Resource/IResource.h"
-
-#include "Rendering/RenderingFlags.h"
 #include "ModelLoadingOptions.h"
-
+#include "Rendering/RenderingTypes.h"
 
 MEDUSA_BEGIN;
 
@@ -16,25 +14,24 @@ MEDUSA_BEGIN;
 enum class ModelType { Unknown, quad, font, pod };
 
 
-class IModel:public DefaultMoveable,public IResource
+class IModel :public DefaultMoveable, public IResource
 {
 public:
-	IModel(const FileIdRef& fileId=FileIdRef::Empty);
+	IModel(const FileIdRef& fileId = FileIdRef::Empty);
 	virtual ~IModel(void);
-	virtual ResourceType Type()const{return ResourceType::Model;}
-	static ResourceType ClassGetResourceType(){return ResourceType::Model;}
+	virtual ResourceType Type()const { return ResourceType::Model; }
+	static ResourceType ClassGetResourceType() { return ResourceType::Model; }
 	ModelType GetType() const { return mType; }
 
-	virtual bool Initialzie(ModelLoadingOptions loadingOptions=ModelLoadingOptions::None){return true;}
-	
+	virtual bool Initialize(ModelLoadingOptions loadingOptions = ModelLoadingOptions::None) { return true; }
 
- 	virtual void CustomDraw(IRenderable* node,RenderingFlags renderingFlags=RenderingFlags::None);
- 	virtual void BatchDraw(IRenderable* node,IRenderBatch* batch,RenderingFlags renderingFlags=RenderingFlags::None);
 
-	virtual void UpdateWorldMatrixRecursively(const Matrix4& parentWorldMatrix=Matrix4::Identity){}
+	virtual void CustomDraw(IRenderable* node, RenderingFlags renderingFlags = RenderingFlags::None);
+	virtual void BatchDraw(IRenderable* node, IRenderBatch* batch, RenderingFlags renderingFlags = RenderingFlags::None);
 
-	virtual INode* CreateCloneInstance()=0;
-	virtual INode* CreateReferenceInstance()=0;
+	virtual void UpdateWorldMatrixRecursively(const Matrix4& parentWorldMatrix = Matrix4::Identity) {}
+
+	virtual INode* Instantiate(InstantiateMode mode=InstantiateMode::None) const{ return nullptr; }
 
 protected:
 	ModelType mType;

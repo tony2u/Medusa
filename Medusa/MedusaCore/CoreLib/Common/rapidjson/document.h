@@ -1400,7 +1400,7 @@ public:
 	template <typename T>
 	unsigned Get(T* name, unsigned defaultVal)const
 	{
-		MemberIterator member = FindMember(name);
+		ConstMemberIterator member = FindMember(name);
 		if (member != MemberEnd() && member->value.IsUint())
 			return member->value.GetUint();
 		else

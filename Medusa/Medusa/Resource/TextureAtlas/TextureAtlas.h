@@ -5,6 +5,8 @@
 #include "MedusaPreDeclares.h"
 #include "Resource/IResource.h"
 #include "Core/Collection/Dictionary.h"
+#include "Core/IO/IFileLoadable.h"
+#include "TextureAtlasDefines.h"
 
 MEDUSA_BEGIN;
 
@@ -16,6 +18,12 @@ public:
 
 	virtual ResourceType Type()const{return ResourceType::TextureAtlas;}
 	static ResourceType ClassGetResourceType(){ return ResourceType::TextureAtlas; }
+	virtual TextureAtlasType AtlasType()const { return TextureAtlasType::None; }
+
+	bool LoadFromFileSystem(const FileIdRef& fileId);
+	bool LoadFromNameItem(const FileMapNameItem& nameItem);
+
+	virtual void Unload()override;
 public:
 	void AddPage(TextureAtlasPage* page);
 	TextureAtlasPage* GetPage(size_t index)const;
@@ -28,6 +36,13 @@ public:
 	TextureAtlasPage* FindPage(int id)const;
 
 	bool TryAddRegion(TextureAtlasRegion* region);
+
+protected:
+	virtual TextureAtlasPage* OnCreatePage(const FileIdRef& fileId,const IStream& stream) { return nullptr; }
+
+protected:
+	static bool ReadLineToValues(const IStream& stream, const StringRef& name, HeapString& outLine, List<HeapString>& outValues);
+	static bool ReadLineToValues(const IStream& stream, HeapString& outLine, List<HeapString>& outValues);
 protected:
 	List<TextureAtlasPage*> mPages;
 

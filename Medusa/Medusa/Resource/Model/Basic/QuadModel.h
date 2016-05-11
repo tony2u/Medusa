@@ -5,7 +5,7 @@
 #include "MedusaPreDeclares.h"
 #include "Resource/Model/BaseSingleTextureModel.h"
 #include "Resource/Material/IMaterial.h"
-#include "Core/Geometry/Rect2.h"
+#include "Geometry/Rect2.h"
 #include "Resource/Model/Mesh/Fixed/TextureQuadMesh.h"
 
 MEDUSA_BEGIN;
@@ -19,7 +19,7 @@ public:
 	Rect2F& MutableTextureRect() { return mTextureRect; }
 	const Rect2F& TextureRect() const { return mTextureRect; }
 	void SetTextureRect(const Rect2F& val);
-	virtual bool Initialzie(ModelLoadingOptions loadingOptions=ModelLoadingOptions::None);
+	virtual bool Initialize(ModelLoadingOptions loadingOptions=ModelLoadingOptions::None);
 
 protected:
 	Rect2F mTextureRect;

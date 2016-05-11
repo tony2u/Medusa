@@ -19,7 +19,7 @@
 #include "Resource/Model/Camera/PODCameraModelNode.h"
 #include "Resource/Model/Light/PODLightModelNode.h"
 #include "Resource/Model/Mesh/General/PODMesh.h"
-#include "Core/Geometry/EulerAngle.h"
+#include "Geometry/EulerAngle.h"
 #include "Core/IO/Stream/MemoryStream.h"
 #include "Resource/Model/Mesh/MeshModelNode.h"
 #include "Node/Sprite/Sprite.h"
@@ -56,7 +56,7 @@ void PODNode::GetMatrix( uint frameIndex,Matrix4& outMatrix ) const
 	//first get,use =
 	RETURN_IF_EMPTY(AnimationMatrixes);
 
-	if (AnimationFlags.Has(PODAnimiationFlags::HasMatrix))
+	if (MEDUSA_FLAG_HAS(AnimationFlags,PODAnimiationFlags::HasMatrix))
 	{
 		if (!AnimationMatrixIndexes.IsEmpty())
 		{
@@ -80,7 +80,7 @@ void PODNode::GetScaleMatrix( uint frameIndex,float frameBlend,Matrix4& outMatri
 
 	RETURN_IF_EMPTY(AnimationScales);
 
-	if (AnimationFlags.Has(PODAnimiationFlags::HasScale))
+	if (MEDUSA_FLAG_HAS(AnimationFlags,PODAnimiationFlags::HasScale))
 	{
 		if (!AnimationScaleIndexes.IsEmpty())
 		{
@@ -130,7 +130,7 @@ void PODNode::GetScaleMatrix( uint frameIndex,float frameBlend,Matrix4& outMatri
 void PODNode::GetRotateMatrix( uint frameIndex,float frameBlend,Matrix4& outMatrix ) const
 {
 	RETURN_IF_EMPTY(AnimationRotations);
-	if (AnimationFlags.Has(PODAnimiationFlags::HasRotation))
+	if (MEDUSA_FLAG_HAS(AnimationFlags,PODAnimiationFlags::HasRotation))
 	{
 		if (!AnimationRotationIndexes.IsEmpty())
 		{
@@ -178,7 +178,7 @@ void PODNode::GetTranslateMatrix( uint frameIndex,float frameBlend,Matrix4& outM
 {
 	RETURN_IF_EMPTY(AnimationPositions);
 
-	if (AnimationFlags.Has(PODAnimiationFlags::HasPosition))
+	if (MEDUSA_FLAG_HAS(AnimationFlags,PODAnimiationFlags::HasPosition))
 	{
 		if (!AnimationPositionIndexes.IsEmpty())
 		{
@@ -268,7 +268,7 @@ bool PODModel::TryGetWorldMatrix( PODNode* node,float frame,Matrix4& outMatrix )
 	
 }
 
-INode* PODModel::CreateCloneInstance()
+INode* PODModel::Instantiate(InstantiateMode mode /*= InstantiateMode::None*/)const
 {
 	//create self
 	Sprite* sprite = new Sprite();
@@ -285,9 +285,9 @@ INode* PODModel::CreateCloneInstance()
 	return sprite;
 }
 
-bool PODModel::Initialzie(ModelLoadingOptions loadingOptions/*=ModelLoadingOptions::None*/)
+bool PODModel::Initialize(ModelLoadingOptions loadingOptions/*=ModelLoadingOptions::None*/)
 {
-	RETURN_FALSE_IF_FALSE(BaseSceneModel::Initialzie(loadingOptions));
+	RETURN_FALSE_IF_FALSE(BaseSceneModel::Initialize(loadingOptions));
 
 	FOR_EACH_COLLECTION(i,mMaterials)
 	{
@@ -407,13 +407,13 @@ bool PODModel::Initialzie(ModelLoadingOptions loadingOptions/*=ModelLoadingOptio
 	}
 
 	//init animation
-	if (!loadingOptions.Has(ModelLoadingOptions::NoSkeletonAnimation))
+	if (!MEDUSA_FLAG_HAS(loadingOptions,ModelLoadingOptions::NoSkeletonAnimation))
 	{
 		ITimelineModel* ani= CreateSkeletonTimelineModel();
 		TimelineModelFactory::Instance().Add(ani);
 	}
 
-	if (!loadingOptions.Has(ModelLoadingOptions::NoCameraAnimation))
+	if (!MEDUSA_FLAG_HAS(loadingOptions,ModelLoadingOptions::NoCameraAnimation))
 	{
 		FOR_EACH_COLLECTION(i,mCameras)
 		{
@@ -424,7 +424,7 @@ bool PODModel::Initialzie(ModelLoadingOptions loadingOptions/*=ModelLoadingOptio
 		}
 	}
 
-	if (!loadingOptions.Has(ModelLoadingOptions::NoLightAnimation))
+	if (!MEDUSA_FLAG_HAS(loadingOptions,ModelLoadingOptions::NoLightAnimation))
 	{
 		FOR_EACH_COLLECTION(i,mLights)
 		{
@@ -556,12 +556,12 @@ ILight* PODModel::CreateLight(const FileIdRef& fileId) const
 
 PODModel* PODModel::CreateFromFile(const FileIdRef& fileId ,ModelLoadingOptions loadingOptions/*=ModelLoadingOptions::None*/)
 {
-	MemoryByteData fileData= FileSystem::Instance().ReadAllData(fileId);
+	MemoryData fileData= FileSystem::Instance().ReadAllData(fileId);
 
 	return CreateFromData(fileId,fileData,loadingOptions);
 }
 
-PODModel* PODModel::CreateFromData( const FileIdRef& fileId,MemoryByteData data ,ModelLoadingOptions loadingOptions/*=ModelLoadingOptions::None*/)
+PODModel* PODModel::CreateFromData( const FileIdRef& fileId,MemoryData data ,ModelLoadingOptions loadingOptions/*=ModelLoadingOptions::None*/)
 {
 	PODIdentifier identifier;
 	uint size=0;
@@ -622,7 +622,7 @@ PODModel* PODModel::CreateFromData( const FileIdRef& fileId,MemoryByteData data 
         return nullptr;
 	}
 
-	if(!resultModel->Initialzie(loadingOptions))
+	if(!resultModel->Initialize(loadingOptions))
 	{
 		SAFE_DELETE(resultModel);
 	}
@@ -956,10 +956,10 @@ bool PODModel::ReadMaterial( MemoryStream& stream,PODModel& model )
 			RETURN_FALSE_IF_FALSE(stream.ReadTo(material->BlendDestAlpha));
 			break;
 		case (int)PODIdentifier::MaterialBlendOperationRGB:
-			RETURN_FALSE_IF_FALSE(stream.ReadTo(material->BlendRGBEquation.ForceGetReference()));
+			RETURN_FALSE_IF_FALSE(stream.ReadTo(material->BlendRGBEquation));
 			break;
 		case (int)PODIdentifier::MaterialBlendOperationAlpha:
-			RETURN_FALSE_IF_FALSE(stream.ReadTo(material->BlendAlphaEquation.ForceGetReference()));
+			RETURN_FALSE_IF_FALSE(stream.ReadTo(material->BlendAlphaEquation));
 			break;
 		case (int)PODIdentifier::MaterialBlendColor:
 			RETURN_FALSE_IF_FALSE(stream.ReadTo(material->BlendColor));
@@ -1161,7 +1161,7 @@ bool PODModel::ReadNode( MemoryStream& stream,PODModel& model )
 			RETURN_FALSE_IF_FALSE(stream.ReadTo(node->ParentIndex));
 			break;
 		case (int)PODIdentifier::NodeAnimationFlags:
-			RETURN_FALSE_IF_FALSE(stream.ReadTo(node->AnimationFlags.ForceGetReference()));
+			RETURN_FALSE_IF_FALSE(stream.ReadTo(node->AnimationFlags));
 			break;
 		case (int)PODIdentifier::NodeAnimationPositionIndexes:
 			RETURN_FALSE_IF_FALSE(stream.ReadToList(size,node->AnimationPositionIndexes));

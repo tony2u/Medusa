@@ -17,7 +17,7 @@ public:
 	virtual CoderFlags Flags()const override { return CoderFlags::Block; }
 	virtual size_t GuessResultSize(const IStream& input)const override;
 protected:
-	virtual size_t OnCode(const MemoryByteData& input, MemoryByteData& output)const override;
+	virtual size_t OnCode(const MemoryData& input, MemoryData& output)const override;
 
 };
 

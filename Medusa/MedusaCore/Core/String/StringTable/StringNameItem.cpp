@@ -77,13 +77,13 @@ bool StringNameItem::Add(uint order, const StringRef& val)
 
 const HeapString* StringNameItem::Find(uint order) const
 {
-	return mItems.TryGetValue(order);
+	return mItems.TryGet(order);
 }
 
 
 //SIREN_BODY_METADATA_BEGIN
 SIREN_METADATA(StringNameItem, 14);
-SIREN_PROPERTY_METADATA_STRUCT(0, StringNameItem, Items, 5);
+SIREN_FIELD_METADATA_STRUCT(0, StringNameItem, Items, 5);
 //SIREN_BODY_METADATA_END
 
 MEDUSA_END;

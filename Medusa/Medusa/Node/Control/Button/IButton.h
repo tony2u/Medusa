@@ -37,7 +37,7 @@ public:
 	ButtonState GetButtonState() const { return mButtonState; }
 	void SetButtonState(ButtonState val);
 protected:
-	void OnTapStateChanged(GestureState oldState, GestureState newState);
+	void OnTapStateChanged(InputState oldState, InputState newState);
 
 	virtual void OnTapCallback(INode* sender,TapGestureEventArg& e);
 	virtual void OnButtonStateChanged();

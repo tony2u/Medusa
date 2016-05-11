@@ -40,10 +40,10 @@ void FileAttribute::UseDefaultCoder()
 
 //SIREN_BODY_METADATA_BEGIN
 SIREN_METADATA(FileAttribute, 13);
-SIREN_PROPERTY_METADATA(0, FileAttribute, Hasher, 6, (HasherType)0);
-SIREN_PROPERTY_METADATA(1, FileAttribute, ChunkSize, 9, 4096);
-SIREN_PROPERTY_METADATA(2, FileAttribute, Coders, 6, 0);
-SIREN_PROPERTY_METADATA(3, FileAttribute, Permission, 10, (FilePermission)384);
+SIREN_FIELD_METADATA(0, FileAttribute, Hasher, 6, (HasherType)0,false);
+SIREN_FIELD_METADATA(1, FileAttribute, ChunkSize, 9, 4096,true);
+SIREN_FIELD_METADATA(2, FileAttribute, Coders, 6, 0,false);
+SIREN_FIELD_METADATA(3, FileAttribute, Permission, 10, (FilePermission)384,true);
 //SIREN_BODY_METADATA_END
 
 const FileAttribute FileAttribute::Empty;

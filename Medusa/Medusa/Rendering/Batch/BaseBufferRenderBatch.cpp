@@ -117,29 +117,29 @@ void BaseBufferRenderBatch::AddNodeToBuffer(uint& refVertexIndex, uint& refIndex
 void BaseBufferRenderBatch::UpdateNodeToBuffer(uint& refVertexIndex, uint& refIndexIndex, IRenderable& node, RenderableChangedFlags changedFlags)
 {
 	IMesh* mesh = node.Mesh();
-	if (changedFlags.IsNewVertex())
+	if (MEDUSA_FLAG_HAS(changedFlags,RenderableChangedFlags::NewVertex))
 	{
 		const Matrix4& newMatrix = node.WorldMatrix();
 		mesh->AddToVertexBufferObject(mVertexBufferObject, refVertexIndex,  newMatrix);
 	}
 
-	if (changedFlags.IsNewNormal())
+	if (MEDUSA_FLAG_HAS(changedFlags, RenderableChangedFlags::NewNormal))
 	{
 		const Matrix4& newMatrix = node.WorldMatrix();
 		mesh->AddToNormalBufferObject(mNormalBufferObject, refVertexIndex,  newMatrix);
 	}
 
-	if (changedFlags.IsNewTexCoord())
+	if (MEDUSA_FLAG_HAS(changedFlags, RenderableChangedFlags::NewTexCoord))
 	{
 		mesh->AddToTexCoordBufferObject(mTexcoordBufferObject, refVertexIndex);
 	}
 
-	if (changedFlags.IsNewColor())
+	if (MEDUSA_FLAG_HAS(changedFlags, RenderableChangedFlags::NewColor))
 	{
 		mesh->AddToColorBufferObject(mColorBufferObject, refVertexIndex, node.WorldColor());
 	}
 
-	if (changedFlags.IsNewIndex())
+	if (MEDUSA_FLAG_HAS(changedFlags, RenderableChangedFlags::NewIndex))
 	{
 		mesh->AddToIndexBufferObject(mIndexBufferObject, refVertexIndex, refIndexIndex);
 	}
@@ -230,28 +230,28 @@ void BaseBufferRenderBatch::Apply()
 	RETURN_IF_FALSE(RenderingContext::Instance().IsBatchStep());
 	BaseProgramRenderPass* pass = RenderingContext::Instance().ProgramRenderPass();
 	//set model view matrix
-	ShaderAttribute* texCoords = pass->GetAttributeByIndex(ShaderAttributeIndex::TexCoordArray);
+	ShaderAttribute* texCoords = pass->FindAttributeByIndex(ShaderAttributeIndex::TexCoordArray);
 	if (texCoords != nullptr)
 	{
 		mTexcoordBufferObject.Apply();
 		texCoords->SetPointerFromBufferObject(mTexcoordBufferObject);
 	}
 
-	ShaderAttribute* vertices = pass->GetAttributeByIndex(ShaderAttributeIndex::VertexArray);
+	ShaderAttribute* vertices = pass->FindAttributeByIndex(ShaderAttributeIndex::VertexArray);
 	if (vertices != nullptr)
 	{
 		mVertexBufferObject.Apply();
 		vertices->SetPointerFromBufferObject(mVertexBufferObject);
 	}
 
-	ShaderAttribute* colors = pass->GetAttributeByIndex(ShaderAttributeIndex::ColorArray);
+	ShaderAttribute* colors = pass->FindAttributeByIndex(ShaderAttributeIndex::ColorArray);
 	if (colors != nullptr)
 	{
 		mColorBufferObject.Apply();
 		colors->SetPointerFromBufferObject(mColorBufferObject);
 	}
 
-	ShaderAttribute* normals = pass->GetAttributeByIndex(ShaderAttributeIndex::NormalArray);
+	ShaderAttribute* normals = pass->FindAttributeByIndex(ShaderAttributeIndex::NormalArray);
 	if (normals != nullptr)
 	{
 		mNormalBufferObject.Apply();
@@ -266,7 +266,7 @@ void BaseBufferRenderBatch::Restore()
 	mIndexBufferObject.Restore();
 	BaseProgramRenderPass* pass = RenderingContext::Instance().ProgramRenderPass();
 
-	ShaderAttribute* normals = pass->GetAttributeByIndex(ShaderAttributeIndex::NormalArray);
+	ShaderAttribute* normals = pass->FindAttributeByIndex(ShaderAttributeIndex::NormalArray);
 	if (normals != nullptr)
 	{
 
@@ -274,21 +274,21 @@ void BaseBufferRenderBatch::Restore()
 		normals->EnableArray(false);
 	}
 
-	ShaderAttribute* colors = pass->GetAttributeByIndex(ShaderAttributeIndex::ColorArray);
+	ShaderAttribute* colors = pass->FindAttributeByIndex(ShaderAttributeIndex::ColorArray);
 	if (colors != nullptr)
 	{
 		mColorBufferObject.Restore();
 		colors->EnableArray(false);
 	}
 
-	ShaderAttribute* vertices = pass->GetAttributeByIndex(ShaderAttributeIndex::VertexArray);
+	ShaderAttribute* vertices = pass->FindAttributeByIndex(ShaderAttributeIndex::VertexArray);
 	if (vertices != nullptr)
 	{
 		mVertexBufferObject.Restore();
 		vertices->EnableArray(false);
 	}
 
-	ShaderAttribute* texCoords = pass->GetAttributeByIndex(ShaderAttributeIndex::TexCoordArray);
+	ShaderAttribute* texCoords = pass->FindAttributeByIndex(ShaderAttributeIndex::TexCoordArray);
 	if (texCoords != nullptr)
 	{
 		mTexcoordBufferObject.Restore();

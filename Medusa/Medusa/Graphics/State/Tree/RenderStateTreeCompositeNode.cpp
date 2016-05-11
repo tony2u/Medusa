@@ -23,7 +23,7 @@ RenderStateTreeCompositeNode::~RenderStateTreeCompositeNode(void)
 
 RenderStateTreeLeafNode* RenderStateTreeCompositeNode::FindUniqueNode(const RenderStateSet& stateSet, RenderStateType type)
 {
-	RenderStateType lastType = (RenderStateType)(((uint32)RenderStateType::Count - 1)<<1);
+	RenderStateType lastType = (RenderStateType)(1<<((uint32)RenderStateType::Count - 1));
 	RenderStateType nextType = (RenderStateType)((uint32)type <<1);
 	bool isMiddle = type < lastType;
 

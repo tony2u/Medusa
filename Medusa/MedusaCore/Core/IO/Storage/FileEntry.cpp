@@ -1,4 +1,4 @@
-// Copyright (c) 2015 fjz13. All rights reserved.
+﻿// Copyright (c) 2015 fjz13. All rights reserved.
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 #include "MedusaCorePreCompiled.h"
@@ -16,7 +16,7 @@ FileEntry::FileEntry()
 {
 	//SIREN_BODY_CONSTRUCT_BEGIN
 	mPermission = (FilePermission)384;
-	mFirstBlockId = 4294967295;
+	mFirstBlockId = 0xFFFFFFFF;
 	mOriginalSize = 0;
 	mSize = 0;
 	mOperations = (EntryOperation)0;
@@ -36,7 +36,7 @@ FileEntry::FileEntry(uint id, const StringRef& name)
 	mOperations = (EntryOperation)0;
 }
 
-MemoryByteData FileEntry::ReadAllData(DataReadingMode mode /*= DataReadingMode::AlwaysCopy*/) const
+MemoryData FileEntry::ReadAllData(DataReadingMode mode /*= DataReadingMode::AlwaysCopy*/) const
 {
 	return mStorage->ReadAllData(*this, mode);
 }
@@ -88,11 +88,11 @@ bool FileEntry::Extract(const StringRef& outDir) const
 HeapString FileEntry::ConvertToString(FilePermission val)
 {
 	HeapString str;
-	if (MEDUSA_HAS_FLAG(val,FilePermission::Read))
+	if (MEDUSA_FLAG_HAS(val,FilePermission::Read))
 	{
 		str += "R";
 	}
-	if (MEDUSA_HAS_FLAG(val, FilePermission::Write))
+	if (MEDUSA_FLAG_HAS(val, FilePermission::Write))
 	{
 		str += "W";
 	}
@@ -102,15 +102,15 @@ HeapString FileEntry::ConvertToString(FilePermission val)
 HeapString FileEntry::ConvertToString(EntryOperation val)
 {
 	HeapString str;
-	if (MEDUSA_HAS_FLAG(val, EntryOperation::Add))
+	if (MEDUSA_FLAG_HAS(val, EntryOperation::Add))
 	{
 		str += "A";
 	}
-	if (MEDUSA_HAS_FLAG(val, EntryOperation::Delete))
+	if (MEDUSA_FLAG_HAS(val, EntryOperation::Delete))
 	{
 		str += "D";
 	}
-	if (MEDUSA_HAS_FLAG(val, EntryOperation::Update))
+	if (MEDUSA_FLAG_HAS(val, EntryOperation::Update))
 	{
 		str += "U";
 	}
@@ -136,14 +136,14 @@ bool FileEntry::Initialize(FileStorage* storage, DirectoryEntry* parent)
 
 //SIREN_BODY_METADATA_BEGIN
 SIREN_METADATA(FileEntry, 9);
-SIREN_PROPERTY_METADATA_STRUCT(0, FileEntry, Name, 4);
-SIREN_PROPERTY_METADATA(1, FileEntry, Permission, 10, (FilePermission)384);
-SIREN_PROPERTY_METADATA(2, FileEntry, FirstBlockId, 12, 4294967295);
-SIREN_PROPERTY_METADATA(3, FileEntry, OriginalSize, 12, 0);
-SIREN_PROPERTY_METADATA(4, FileEntry, Size, 4, 0);
-SIREN_PROPERTY_METADATA_STRUCT(5, FileEntry, Signature, 9);
-SIREN_PROPERTY_METADATA(6, FileEntry, Operations, 10, (EntryOperation)0);
-SIREN_PROPERTY_METADATA_STRUCT(7, FileEntry, CoderOffsets, 12);
+SIREN_FIELD_METADATA_STRUCT(0, FileEntry, Name, 4);
+SIREN_FIELD_METADATA(1, FileEntry, Permission, 10, (FilePermission)384, true);
+SIREN_FIELD_METADATA(2, FileEntry, FirstBlockId, 12, 0xFFFFFFFF, true);
+SIREN_FIELD_METADATA(3, FileEntry, OriginalSize, 12, 0, true);
+SIREN_FIELD_METADATA(4, FileEntry, Size, 4, 0, true);
+SIREN_FIELD_METADATA_STRUCT(5, FileEntry, Signature, 9);
+SIREN_FIELD_METADATA(6, FileEntry, Operations, 10, (EntryOperation)0, true);
+SIREN_FIELD_METADATA_STRUCT(7, FileEntry, CoderOffsets, 12);
 //SIREN_BODY_METADATA_END
 
 MEDUSA_END;

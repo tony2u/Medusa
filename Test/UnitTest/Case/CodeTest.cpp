@@ -16,7 +16,7 @@
 
 void CodeTest::TestLZMA()
 {
-	MemoryByteData testData = MemoryByteData::Alloc(1024 * 100);	//100K data
+	MemoryData testData = MemoryData::Alloc(1024 * 100);	//100K data
 	byte* buffer= testData.MutableData();
 	FOR_EACH_SIZE(i, 100)
 	{
@@ -28,7 +28,7 @@ void CodeTest::TestLZMA()
 
 	//Random::Global().NextBytes(testData);
 
-	MemoryStream input((const MemoryByteData&)testData);
+	MemoryStream input((const MemoryData&)testData);
 	MemoryStream output;
 
 	LZMAEncoder encoder;
@@ -50,7 +50,7 @@ void CodeTest::TestLZMA()
 
 void CodeTest::TestLZ4()
 {
-	MemoryByteData testData = MemoryByteData::Alloc(1024 * 100);	//100K data
+	MemoryData testData = MemoryData::Alloc(1024 * 100);	//100K data
 	byte* buffer = testData.MutableData();
 	FOR_EACH_SIZE(i, 100)
 	{
@@ -62,7 +62,7 @@ void CodeTest::TestLZ4()
 
 	//Random::Global().NextBytes(testData);
 
-	MemoryStream input((const MemoryByteData&)testData);
+	MemoryStream input((const MemoryData&)testData);
 	MemoryStream output;
 
 	LZ4Encoder encoder;
@@ -84,11 +84,11 @@ void CodeTest::TestLZ4()
 
 void CodeTest::TestAES256()
 {
-	MemoryByteData key = MemoryByteData::Alloc(Aes256Encoder::KeyMaxSize);
+	MemoryData key = MemoryData::Alloc(Aes256Encoder::KeyMaxSize);
 	Random::Global().NextBytes(key);
 
 
-	MemoryByteData testData = MemoryByteData::Alloc(1024 * 100);	//100K data
+	MemoryData testData = MemoryData::Alloc(1024 * 100);	//100K data
 	byte* buffer = testData.MutableData();
 	FOR_EACH_SIZE(i, 100)
 	{
@@ -100,7 +100,7 @@ void CodeTest::TestAES256()
 
 	//Random::Global().NextBytes(testData);
 
-	MemoryStream input((const MemoryByteData&)testData);
+	MemoryStream input((const MemoryData&)testData);
 	MemoryStream output;
 
 	Aes256Encoder encoder(key);

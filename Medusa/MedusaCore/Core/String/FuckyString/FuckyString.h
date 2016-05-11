@@ -28,7 +28,7 @@ public:
 //SIREN_HEADER_METHOD_END
 	bool Initialize(const FileIdRef& fileId, uint format = 0);
 
-	virtual bool LoadFromData(StringRef path, const MemoryByteData& data, uint format = 0)override;
+	virtual bool LoadFromData(const FileIdRef& fileId, const MemoryData& data, uint format = 0)override;
 	virtual void Unload()override;
 
 
@@ -45,8 +45,9 @@ protected:
 //SIREN_HEADER_SCHEMA_BEGIN
 struct FuckyString::Schema
 {
-	SIREN_PROPERTY_DICTIONARY(0, 0, Required, FuckyString, int, FuckyStringNode, mRootNodes);
-	SIREN_PROPERTIES_1(void,FuckyString);
-};//SIREN_HEADER_SCHEMA_END
+	SIREN_FIELD_DICTIONARY(0, 0, Required, FuckyString, int, FuckyStringNode, mRootNodes);
+	SIREN_FIELDS_1(void,FuckyString);
+};
+//SIREN_HEADER_SCHEMA_END
 
 MEDUSA_END;

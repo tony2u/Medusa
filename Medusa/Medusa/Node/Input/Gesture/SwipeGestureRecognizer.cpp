@@ -13,8 +13,8 @@
 
 
 MEDUSA_BEGIN;
-SwipeGestureRecognizer::SwipeGestureRecognizer( INode* node,ScrollDirection direction,float minMovement,float minVelocity,GestureFlags flags/*=GestureFlags::None*/) 
-	:IGestureRecognizer(node,flags),
+SwipeGestureRecognizer::SwipeGestureRecognizer( INode* node,ScrollDirection direction,float minMovement,float minVelocity) 
+	:IGestureRecognizer(node),
 	mDirection(direction),
 	mMinMovement(minMovement),
 	mMinVelocity(minVelocity)
@@ -40,9 +40,10 @@ void SwipeGestureRecognizer::Reset()
 
 void SwipeGestureRecognizer::TouchesBegan( TouchEventArg& e )
 {
+	IInputHandler::TouchesBegan(e);
 	switch(mState)
 	{
-	case GestureState::None:
+	case InputState::None:
 		if (e.IsValid())
 		{
 			mBeginPos=e.GetActiveMiddlePoint();
@@ -53,7 +54,7 @@ void SwipeGestureRecognizer::TouchesBegan( TouchEventArg& e )
 			mPrevTimeStamp=mBeginTimeStamp;
 
 
-			SetState(GestureState::Begin);
+			SetState(InputState::Begin);
 			//e.Handled=true;
 
 			//swipe begin event
@@ -68,11 +69,12 @@ void SwipeGestureRecognizer::TouchesBegan( TouchEventArg& e )
 
 void SwipeGestureRecognizer::TouchesMoved( TouchEventArg& e )
 {
+	IInputHandler::TouchesMoved(e);
 	switch(mState)
 	{
-	case GestureState::None:
+	case InputState::None:
 		break;
-	case GestureState::Begin:
+	case InputState::Begin:
 		{
 			mPrevTimeStamp=mEndTimeStamp;
 			mPrevPos=mCurrentPos;
@@ -88,7 +90,7 @@ void SwipeGestureRecognizer::TouchesMoved( TouchEventArg& e )
 			else
 			{
 				//first move
-				SetState(GestureState::Valid);
+				SetState(InputState::Valid);
 
 				SwipeMovedGestureEventArg e2(this);
 				OnSwipeMoved(mNode,e2);
@@ -99,7 +101,7 @@ void SwipeGestureRecognizer::TouchesMoved( TouchEventArg& e )
 
 		break;
 
-	case GestureState::Valid:
+	case InputState::Valid:
 		{
 			//first move
 			mPrevPos=mCurrentPos;
@@ -122,17 +124,18 @@ void SwipeGestureRecognizer::TouchesMoved( TouchEventArg& e )
 
 void SwipeGestureRecognizer::TouchesEnded( TouchEventArg& e )
 {
+	IInputHandler::TouchesEnded(e);
 	switch(mState)
 	{
-	case GestureState::None:
-	case GestureState::Begin:
+	case InputState::None:
+	case InputState::Begin:
 		{
-			SetState(GestureState::Failed);
+			SetState(InputState::Failed);
 			SwipeFailedGestureEventArg e2(this);
 			OnSwipeFailed(mNode,e2);
 		}
 		break;
-	case GestureState::Valid:
+	case InputState::Valid:
 		{
 
 			//////////////////////////////////////////////////////////////////////////TODO: If have to add this?
@@ -165,7 +168,7 @@ void SwipeGestureRecognizer::TouchesEnded( TouchEventArg& e )
 			}
 
 			
-			SetState(GestureState::End);
+			SetState(InputState::End);
 
 			if (directionSucceed != ScrollDirection::None)
 			{
@@ -185,13 +188,14 @@ void SwipeGestureRecognizer::TouchesEnded( TouchEventArg& e )
 	}
 
 	Reset();
-	mState=GestureState::None;
+	mState=InputState::None;
 }
 
 void SwipeGestureRecognizer::TouchesCancelled( TouchEventArg& e )
 {
+	IInputHandler::TouchesCancelled(e);
 	Reset();
-	mState=GestureState::None;
+	mState=InputState::None;
 }
 
 
@@ -253,7 +257,7 @@ bool SwipeGestureRecognizer::IsValid() const
 {
 	switch(mState)
 	{
-	case GestureState::Valid:
+	case InputState::Valid:
 		return true;
 	default:
 		return false;

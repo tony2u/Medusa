@@ -31,8 +31,8 @@ public:
 
 	bool IsValid()const{return mZipFile!=nullptr;}
 	bool Exists(StringRef fileName) const;
-	MemoryByteData ReadAllData(StringRef fileName)const;
-	static MemoryByteData DecompressGZIP(const MemoryByteData& data, size_t expectedSize);
+	MemoryData ReadAllData(StringRef fileName)const;
+	static MemoryData DecompressGZIP(const MemoryData& data, size_t expectedSize);
 
 private:
 	unzFile mZipFile;

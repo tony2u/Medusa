@@ -1,0 +1,17 @@
+<PlistInfoProjectFile>
+  <PropertyGroup Name="Poker" Type="Plist" ID="0cbf5813-0b6f-4edd-9625-afa33866d4ff" Version="3.10.0.0" />
+  <Content ExportType="Png" SortAlgorithm="MaxRects" PicturePadding="1" AllowRotation="True" AllowAnySize="True" AllowTrim="True" ctype="PlistInfoData">
+    <ImageFiles>
+      <FilePathData Path="Poker/Back.png" />
+      <FilePathData Path="Poker/Background.png" />
+      <FilePathData Path="Poker/BlackJoker.png" />
+      <FilePathData Path="Poker/Club.png" />
+      <FilePathData Path="Poker/Diamond.png" />
+      <FilePathData Path="Poker/Hearts.png" />
+      <FilePathData Path="Poker/RedJoker.png" />
+      <FilePathData Path="Poker/Rogue.png" />
+      <FilePathData Path="Poker/Spades.png" />
+    </ImageFiles>
+    <MaxSize Width="512" Height="512" />
+  </Content>
+</PlistInfoProjectFile>

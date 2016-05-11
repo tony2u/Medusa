@@ -32,14 +32,14 @@ StringTable::~StringTable()
 
 bool StringTable::Initialize(const FileIdRef& fileId, uint format /*= 0*/)
 {
-	MemoryByteData data = FileSystem::Instance().ReadAllData(fileId);
+	MemoryData data = FileSystem::Instance().ReadAllData(fileId);
 	RETURN_FALSE_IF_EMPTY(data);
-	return LoadFromData(fileId.Name, data, format);
+	return LoadFromData(fileId, data, format);
 }
 
 
 
-bool StringTable::LoadFromData(StringRef path, const MemoryByteData& data, uint format/*=0*/)
+bool StringTable::LoadFromData(const FileIdRef& fileId, const MemoryData& data, uint format/*=0*/)
 {
 	RETURN_FALSE_IF_FALSE(Siren::DeserializeBinaryTo(data, *this));
 
@@ -55,7 +55,7 @@ void StringTable::Unload()
 
 StringRef StringTable::GetString(const FileIdRef& fileId)const
 {
-	const StringNameItem* nameItem = mItems.TryGetValue(fileId.Name);
+	const StringNameItem* nameItem = mItems.TryGet(fileId.Name);
 	Log::AssertNotNullFormat(nameItem, "Cannot find string:{}", fileId.Name.c_str());
 	const HeapString* str = nameItem->Find((uint)fileId.Order);
 	Log::AssertNotNullFormat(str, "Cannot find string:{} order:{}", fileId.Name.c_str(), (int)fileId.Order);
@@ -65,7 +65,7 @@ StringRef StringTable::GetString(const FileIdRef& fileId)const
 
 bool StringTable::Contains(const FileIdRef& fileId) const
 {
-	const StringNameItem* nameItem = mItems.TryGetValue(fileId.Name);
+	const StringNameItem* nameItem = mItems.TryGet(fileId.Name);
 	RETURN_FALSE_IF_NULL(nameItem);
 	return nameItem->Contains((uint)fileId.Order);
 }
@@ -73,14 +73,14 @@ bool StringTable::Contains(const FileIdRef& fileId) const
 
 const Dictionary<uint, HeapString>* StringTable::GetAllStrings(StringRef name) const
 {
-	const StringNameItem* nameItem = mItems.TryGetValue(name);
+	const StringNameItem* nameItem = mItems.TryGet(name);
 	RETURN_NULL_IF_NULL(nameItem);
 	return &(nameItem->Items());
 }
 
 bool StringTable::Add(const FileIdRef& fileId, const StringRef& val)
 {
-	StringNameItem* nameItem = mItems.TryGetValue(fileId.Name);
+	StringNameItem* nameItem = mItems.TryGet(fileId.Name);
 	if (nameItem == nullptr)
 	{
 		nameItem = &mItems.NewAdd(fileId.Name);
@@ -97,7 +97,7 @@ bool StringTable::Add(const StringRef& name, uint order, const StringRef& val)
 
 //SIREN_BODY_METADATA_BEGIN
 SIREN_METADATA(StringTable, 11);
-SIREN_PROPERTY_METADATA_STRUCT(0, StringTable, Items, 5);
+SIREN_FIELD_METADATA_STRUCT(0, StringTable, Items, 5);
 //SIREN_BODY_METADATA_END
 
 MEDUSA_END;

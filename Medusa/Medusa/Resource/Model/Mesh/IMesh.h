@@ -5,13 +5,12 @@
 #include "MedusaPreDeclares.h"
 #include "Core/Pattern/ISharable.h"
 #include "MeshComponentVersions.h"
-#include "Core/Geometry/Color4.h"
-#include "Core/Geometry/Size3.h"
-#include "Rendering/RenderingFlags.h"
+#include "Geometry/Color4.h"
+#include "Geometry/Size3.h"
 #include "Graphics/GraphicsTypes.h"
-#include "Rendering/RenderableChangedFlags.h"
-#include "Core/Geometry/Matrix4.h"
+#include "Geometry/Matrix4.h"
 #include "Core/Pattern/Event.h"
+#include "Rendering/RenderingTypes.h"
 
 MEDUSA_BEGIN;
 

@@ -50,7 +50,7 @@ public:
 		{
 			const TKey& firstKey = i->Key;
 			const TValue& firstValue = i->Value;
-			typename IDictionary<TKey, TValue, TKeyValuePair>::TValueConstPointerType secondValuePtr = second.TryGetValue(firstKey);
+			typename IDictionary<TKey, TValue, TKeyValuePair>::TValueConstPointerType secondValuePtr = second.TryGet(firstKey);
 			RETURN_FALSE_IF(secondValuePtr == nullptr || TValueCompare::Compare(firstValue, *secondValuePtr) != 0);
 		}
 		return true;
@@ -65,7 +65,7 @@ public:
 		{
 			const TKey& firstKey = i->Key;
 			const TValue& firstValue = i->Value;
-			typename Dictionary<TKey, TValue, TKeyHashCoder, TValueHashCoder, TKeyCompare, TValueCompare>::TValueConstPointerType secondValuePtr = second.TryGetValue(firstKey);
+			typename Dictionary<TKey, TValue, TKeyHashCoder, TValueHashCoder, TKeyCompare, TValueCompare>::TValueConstPointerType secondValuePtr = second.TryGet(firstKey);
 			RETURN_FALSE_IF(secondValuePtr == nullptr || TValueCompare::Compare(firstValue, *secondValuePtr) != 0);
 		}
 		return true;

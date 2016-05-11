@@ -16,9 +16,8 @@ bool ICommand::Execute()
 	RETURN_FALSE_IF_FALSE(OnEnter());
 	if (!mBeforeCommands.IsEmpty())
 	{
-		FOR_EACH_COLLECTION(i, mBeforeCommands)
+		for(auto* item: mBeforeCommands)
 		{
-			ICommand* item = *i;
 			RETURN_FALSE_IF_FALSE(item->Execute());
 		}
 	}
@@ -27,9 +26,8 @@ bool ICommand::Execute()
 
 	if (!mAfterCommands.IsEmpty())
 	{
-		FOR_EACH_COLLECTION(i, mAfterCommands)
+		for (auto* item : mAfterCommands)
 		{
-			ICommand* item = *i;
 			RETURN_FALSE_IF_FALSE(item->Execute());
 		}
 	}

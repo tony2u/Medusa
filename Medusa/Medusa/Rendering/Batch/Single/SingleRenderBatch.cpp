@@ -35,14 +35,14 @@ bool SingleRenderBatch::Update()
 	if (originalBatch == this)
 	{
 		RenderableChangedFlags changeFlag = node->RenderableChangedFlag();
-		if (changeFlag.IsZero())
+		if (changeFlag==RenderableChangedFlags::None)
 		{
 			const SegmentU& originalVertexSegment = node->VertexSegment();
 			const SegmentU& originalIndexSegment = node->IndexSegment();
 			if (refVertexIndex != originalVertexSegment.Position || originalVertexSegment.Length != mesh->VertexCount()
 				|| refIndexIndex != originalIndexSegment.Position || originalIndexSegment.Length != mesh->IndexCount())
 			{
-				changeFlag |= RenderableChangedFlags::DataTotalChanged;
+				MEDUSA_FLAG_ADD(changeFlag, RenderableChangedFlags::DataTotalChanged);
 			}
 			else
 			{
@@ -51,7 +51,7 @@ bool SingleRenderBatch::Update()
 			}
 		}
 
-		if (changeFlag.IsDataTotalChanged())
+		if (MEDUSA_FLAG_HAS(changeFlag,RenderableChangedFlags::DataTotalChanged))
 		{
 			AddNodeToBuffer(refVertexIndex, refIndexIndex, *node);
 		}

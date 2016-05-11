@@ -10,21 +10,21 @@ MEDUSA_BEGIN;
 
 MemoryStream::MemoryStream(size_t capacity/*=0*/, bool isExpandable /*= true*/) :mPos(0)
 {
-	mData = MemoryByteData::Alloc(capacity);
+	mData = MemoryData::Alloc(capacity);
 	mSupportedOperation = StreamDataOperation::ReadWriteSeek;
 	if (isExpandable)
 	{
-		MEDUSA_ADD_FLAG(mSupportedOperation, StreamDataOperation::Grow);
+		MEDUSA_FLAG_ADD(mSupportedOperation, StreamDataOperation::Grow);
 	}
 }
 
-MemoryStream::MemoryStream(MemoryByteData& data)
+MemoryStream::MemoryStream(MemoryData& data)
 	: mData(data), mPos(0)
 {
 	mSupportedOperation = StreamDataOperation::ReadWriteSeek;
 }
 
-MemoryStream::MemoryStream(const MemoryByteData& data)
+MemoryStream::MemoryStream(const MemoryData& data)
 	: mData(data), mPos(0)
 {
 	mSupportedOperation = StreamDataOperation::ReadSeek;
@@ -32,7 +32,8 @@ MemoryStream::MemoryStream(const MemoryByteData& data)
 
 MemoryStream::MemoryStream(const MemoryStream& other)
 	: mData(other.mData),
-	mPos(other.mPos)
+	mPos(other.mPos),
+	mSupportedOperation(other.mSupportedOperation)
 {
 }
 
@@ -43,6 +44,7 @@ MemoryStream& MemoryStream::operator=(const MemoryStream& other)
 		Close();
 		mData = other.mData;
 		mPos = other.mPos;
+		mSupportedOperation = other.mSupportedOperation;
 	}
 	return *this;
 }
@@ -51,7 +53,8 @@ MemoryStream& MemoryStream::operator=(const MemoryStream& other)
 
 MemoryStream::MemoryStream(MemoryStream&& other)
 	: mData(std::move(other.mData)),
-	mPos(other.mPos)
+	mPos(other.mPos),
+	mSupportedOperation(other.mSupportedOperation)
 {
 
 }
@@ -65,8 +68,11 @@ MemoryStream& MemoryStream::operator=(MemoryStream&& other)
 		Close();
 		mData = std::move(other.mData);
 		mPos = other.mPos;
+		mSupportedOperation = other.mSupportedOperation;
 
 		other.mPos = 0;
+		other.mSupportedOperation = StreamDataOperation::None;
+
 	}
 	return *this;
 }
@@ -77,12 +83,12 @@ MemoryStream::~MemoryStream(void)
 	Close();
 }
 
-MemoryStream MemoryStream::OpenReadWrite(MemoryByteData& data)
+MemoryStream MemoryStream::OpenReadWrite(MemoryData& data)
 {
 	return MemoryStream(data);
 }
 
-MemoryStream MemoryStream::OpenRead(const MemoryByteData& data)
+MemoryStream MemoryStream::OpenRead(const MemoryData& data)
 {
 	return MemoryStream(data);
 }
@@ -111,7 +117,7 @@ bool MemoryStream::Close()
 {
 	mPos = 0;
 	mSupportedOperation = StreamDataOperation::None;
-	mData = MemoryByteData::Empty;
+	mData = MemoryData::Empty;
 
 	return true;
 }
@@ -166,7 +172,7 @@ bool MemoryStream::SetLength(uintp val)
 
 bool MemoryStream::CanGrow() const
 {
-	return MEDUSA_HAS_FLAG(mSupportedOperation, StreamDataOperation::Grow);
+	return MEDUSA_FLAG_HAS(mSupportedOperation, StreamDataOperation::Grow);
 }
 
 bool MemoryStream::Resize(size_t size)
@@ -181,7 +187,7 @@ bool MemoryStream::Resize(size_t size)
 	return true;
 }
 
-size_t MemoryStream::ReadDataTo(MemoryByteData& outData, DataReadingMode mode/*=DataReadingMode::AlwaysCopy*/)const
+size_t MemoryStream::ReadDataTo(MemoryData& outData, DataReadingMode mode/*=DataReadingMode::AlwaysCopy*/)const
 {
 	RETURN_ZERO_IF_FALSE(CanRead());
 	size_t readSize = Math::Min(mData.Size() - (size_t)mPos, outData.Size());
@@ -192,7 +198,7 @@ size_t MemoryStream::ReadDataTo(MemoryByteData& outData, DataReadingMode mode/*=
 		Memory::SafeCopy(outData.MutableData(), outData.Size(), mData.Data() + mPos, readSize);
 		break;
 	case DataReadingMode::DirectMove:
-		outData = MemoryByteData::FromStatic(mData.Data() + mPos, readSize);
+		outData = MemoryData::FromStatic(mData.Data() + mPos, readSize);
 		break;
 	default:
 		break;
@@ -202,7 +208,7 @@ size_t MemoryStream::ReadDataTo(MemoryByteData& outData, DataReadingMode mode/*=
 	return readSize;
 }
 
-size_t MemoryStream::WriteData(const MemoryByteData& data, DataReadingMode mode /*= DataReadingMode::AlwaysCopy*/)
+size_t MemoryStream::WriteData(const MemoryData& data, DataReadingMode mode /*= DataReadingMode::AlwaysCopy*/)
 {
 	RETURN_ZERO_IF_FALSE(CanWrite());
 
@@ -475,39 +481,31 @@ size_t MemoryStream::ReadLineToString(WHeapString& outString, bool includeNewLin
 size_t MemoryStream::WriteString(const StringRef& str, bool withNullTermitated /*= true*/)
 {
 	RETURN_ZERO_IF_FALSE(CanWrite());
-	RETURN_ZERO_IF_EMPTY(str);
-	const byte* buffer = (const byte*)str.c_str();
-	size_t length = str.Length() + (withNullTermitated ? 1 : 0);	//+1 to copy '\0'
-	size_t offset = 0;
-	do
-	{
-		MemoryByteData data = MemoryByteData::FromStatic(buffer + offset, length - offset);
-		size_t num = WriteData(data);
-		offset += num;
-	} while (offset < length);
 
-	return offset;
+	MemoryData data = str.ToData().Cast<byte>();
+	size_t size = WriteData(data);
+	if (withNullTermitated)
+	{
+		size += WriteChar('\0') ? sizeof(char) : 0;
+	}
+	return size;
 }
 
 size_t MemoryStream::WriteString(const WStringRef& str, bool withNullTermitated /*= true*/)
 {
 	RETURN_ZERO_IF_FALSE(CanWrite());
-	const byte* buffer = (const byte*)str.c_str();
-	size_t length = (str.Length() + (withNullTermitated ? 1 : 0))*sizeof(wchar_t);//+1 to copy '\0'
-	size_t offset = 0;
-	do
+	MemoryData data = str.ToData().Cast<byte>();
+	size_t size = WriteData(data);
+	if (withNullTermitated)
 	{
-		MemoryByteData data = MemoryByteData::FromStatic(buffer + offset, length - offset);
-		size_t num = WriteData(data);
-		offset += num;
-	} while (offset < length);
-
-	return offset;
+		size += WriteChar(L'\0') ? sizeof(wchar_t) : 0;
+	}
+	return size;
 }
 
 bool MemoryStream::CanRead() const
 {
-	if (MEDUSA_HAS_FLAG(mSupportedOperation, StreamDataOperation::Read))
+	if (MEDUSA_FLAG_HAS(mSupportedOperation, StreamDataOperation::Read))
 	{
 		return mPos < mData.Size();
 	}
@@ -516,7 +514,7 @@ bool MemoryStream::CanRead() const
 
 bool MemoryStream::CanWrite() const
 {
-	if (MEDUSA_HAS_FLAG(mSupportedOperation, StreamDataOperation::Write))
+	if (MEDUSA_FLAG_HAS(mSupportedOperation, StreamDataOperation::Write))
 	{
 		return (CanGrow() || mPos < mData.Size());
 	}
@@ -525,7 +523,7 @@ bool MemoryStream::CanWrite() const
 
 bool MemoryStream::CanSeek() const
 {
-	return MEDUSA_HAS_FLAG(mSupportedOperation, StreamDataOperation::Seek);
+	return MEDUSA_FLAG_HAS(mSupportedOperation, StreamDataOperation::Seek);
 }
 
 StreamDataOperation MemoryStream::Operations() const

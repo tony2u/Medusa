@@ -2,57 +2,37 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 #include "MedusaPreCompiled.h"
-#include "Application/Window/ios/IOSWindow.h"
-#include "Application/Window/win/WinWindow.h"
-#include "Core/Log/win/WindowsTraceLogger.h"
-#include "Core/Log/win/WindowsConsoleLogger.h"
 #include "Application/Application.h"
 #include "Core/Log/Log.h"
-#include "Application/Window/WindowFactory.h"
-#include "Graphics/Render/Render.h"
-#include "Resource/ResourceManager.h"
-#include "Core/Profile/ProfileSample.h"
-#include "Rendering/RenderEngine.h"
 #include "Game/IGame.h"
-#include "Node/Input/InputManager.h"
-#include "Graphics/ResolutionAdapter.h"
-#include "Audio/AudioEngine.h"
 #include "Application/ApplicationStatics.h"
-#include "Graphics/GraphicsContext.h"
-#include "Node/Scene/SceneManager.h"
-#include "Core/Profile/StopWatch.h"
-#include "Node/Action/Animation/AnimationManager.h"
-#include "Node/Particle/ParticleManager.h"
-#include "Core/Profile/PerformanceCounter.h"
 #include "Core/Threading/Thread.h"
-#include "Game/Settings/IGameClientSettings.h"
-#include "Core/Threading/ThreadPool.h"
-#include "Application/FrameAutoStopWatch.h"
-#include "Core/Command/Processor/MainCommandProcessor.h"
-#include "Application/View/ViewFactory.h"
-#include "Node/NodeSweeper.h"
-#include "Node/Scene/SceneSweeper.h"
-#include "Application/View/BaseRenderView.h"
-#include "Core/System/Environment.h"
+#include "Application/Compat/AppCompatibilityModule.h"
+#include "Application/Window/IWindow.h"
+#include "Application/Settings/ApplicationSettings.h"
+
 
 MEDUSA_BEGIN;
 
 
-Application::Application() :mGame(nullptr), mWindow(nullptr)
+Application::Application()
+	:IModule("Application")
 {
 	mTimeStamp = 0.f;
 	mFrameCount = 0;
-	mRootView = nullptr;
 	mFrameInterval = MEDUSA_FRAME_INTERVAL;
 	mFrameIntervalRestore = mFrameInterval;
 	mIsInitialized = false;
+
+	mCore.Retain();	//prevent release
+	mEngine.Retain();	//prevent release
+
 }
 
 
 Application::~Application(void)
 {
-	SAFE_DELETE(mGame);
-	SAFE_DELETE(mWindow);
+	
 
 }
 void Application::RegisterGame(Delegate<IGame*()> val)
@@ -60,152 +40,97 @@ void Application::RegisterGame(Delegate<IGame*()> val)
 	mCreateGameCallback = val;
 }
 
-void Application::SetGame(IGame* val)
-{
-	RETURN_IF_EQUAL(mGame, val);
-	SAFE_DELETE(mGame);
-	mGame = val;
-
-}
 
 bool Application::Initialize()
 {
-	RETURN_TRUE_IF_NOT_NULL(mWindow);
-
-	mMainThread = Thread::Current();
-	ThreadPool::Instance().Initialize();
-	Log::Initialize();
-
-	//3.create game
+	RETURN_TRUE_IF_TRUE(mIsInitialized);
+	
 	if (mCreateGameCallback != nullptr)
 	{
 		mGame = mCreateGameCallback();
+		SAFE_RETAIN(mGame);
 	}
 
 	Log::AssertNotNullFormat(mGame, "Cannot create game,forget to set new game callback?");
-	MEDUSA_ASSERT_TRUE(mGame->Initialize(), "");
 
-	if (mGame->BaseSettings()!=nullptr)
+	AddPrevModule(&mCore);
+
+	AddPrevModule(ApplicationSettings::InstancePtr());
+	AddPrevModule(new AppCompatibilityModule(), false);
+	AddPrevModule(&mEngine);
+
+	if (mExtension!=nullptr)
 	{
-		mEngineFeatures = mGame->BaseSettings()->EngineFeature();
+		AddPrevModule(mExtension);
+		mExtension->Release();
 	}
 
-	//3.init render engine
-	InitializeRenderEngine();
+	AddNextModule(mGame);
+	mGame->Release();
 
-
-	ResolutionAdapter::Instance().InitializeCameras();
-
-#ifdef MEDUSA_DEBUG
-	if (mGame->BaseSettings()!=nullptr)
-	{
-		ApplicationStatics::Instance().Initialize(mGame->BaseSettings()->DebugInfo());
-	}
-	else
-	{
-		ApplicationStatics::Instance().Initialize(ApplicationDebugInfoFlags::None);
-	}
-#else
-	ApplicationStatics::Instance().Initialize(ApplicationDebugInfoFlags::None);
-
-#endif
-
-	//4.init update component,order is important
-	mUpdateSystemStage.Add(&ResourceManager::Instance());
-	mUpdateSystemStage.Add(&AnimationManager::Instance());
-	mUpdateSystemStage.Add(&ParticleManager::Instance());
-	mUpdateSystemStage.Add(&InputManager::Instance());
-	mUpdateSystemStage.Add(&AudioEngine::Instance());	//must be after resource manager
-
-	mUpdateSystemStage.Initialize();
-	mUpdateSystemStage.ApplyOptionToAll(!mEngineFeatures.IsMultipleThreadUpdating() ? ExecuteOption::Sync : ExecuteOption::Async);
-
-	//5.update scene
-	SceneManager::Instance().Initialize(!mEngineFeatures.IsMultipleThreadRendering());
-	ApplicationStatics::Instance().UpdateLabels();
-	mIsInitialized = true;
-	return true;
-}
-
-bool Application::InitializeRenderEngine()
-{
-	RenderEngine::Instance().InitializeBeforeWindow(!mEngineFeatures.IsMultipleThreadRendering());
-
-	//1. create window
-	mWindow = WindowFactory::Create((MedusaWindowHandle)nullptr, mGame->Name());
-	MEDUSA_ASSERT_NOT_NULL(mWindow, "");
-	mWindow->SetSize(ResolutionAdapter::Instance().WinSize());
-	MEDUSA_ASSERT_TRUE(mWindow->Initialize(), "");
-
-	//2.create egl view
-	mRootView = ViewFactory::CreateGLView(mGame->Name());
-	mWindow->AddView(mRootView);
-	MEDUSA_ASSERT_NOT_NULL(mRootView, "");
-	mRootView->SetSize(ResolutionAdapter::Instance().WinSize());
-	MEDUSA_ASSERT_TRUE(mRootView->Initialize(), "");
-
-	//show window
-	mWindow->Show();
-
-	RenderEngine::Instance().InitializeAfterWindow(!mEngineFeatures.IsMultipleThreadRendering());
-
-	/*Render::Instance().EnableFeature(GraphicsFeatures::DepthTest, true);
-	Render::Instance().SetDepthFunc(GraphicsFuncType::LessOrEqual);
-	Render::Instance().SetClearDepth(1.f);*/
-
-	//Render::Instance().EnableFeature(GraphicsFeatures::DepthWritable, true);
-
-	//Render::Instance().EnableFeature(GraphicsFeatures::Blend, true);
 
 	return true;
 }
 
-
-bool Application::UninitializeRenderEngine()
-{
-
-	RenderEngine::Instance().UninitializeBeforeWindow();
-
-	mRootView->Uninitialize();
-	mWindow->Uninitialize();
-
-	SAFE_DELETE(mWindow);
-	RenderEngine::Instance().UninitializeAfterWindow();
-
-	return true;
-}
 
 bool Application::Uninitialize()
 {
-	//complete all works
-	SceneSweeper::Instance().Release();
-	NodeSweeper::Instance().Release();
-	ThreadPool::Instance().Uninitialzie();
-	MainCommandProcessor::Instance().Clear();
-
-	mGame->Uninitialize();
-	SAFE_DELETE(mGame);
-
-	SceneManager::Instance().Uninitialize();
-	ResolutionAdapter::Instance().Uninitialize();
-
-	mUpdateSystemStage.Uninitialize();
-
-	//this order is important
-	ApplicationStatics::Instance().Uninitialize();
-
-
-	UninitializeRenderEngine();
-
-
-
-	Log::Uninitialize();
-
-
-	MEDUSA_PROFILE_PRINT();
+	ClearModules();
 	return true;
 }
 
+bool Application::OnBeforeLoad(IEventArg& e /*= IEventArg::Empty*/)
+{
+	Log::Initialize();
+	mMainThread = Thread::Current();
+
+	return true;
+}
+
+bool Application::OnLoad(IEventArg& e /*= IEventArg::Empty*/)
+{
+	ApplicationStatics::Instance().Initialize(ApplicationSettings::Instance().ResultDebugInfo());
+	ApplicationStatics::Instance().UpdateLabels();
+
+	return true;
+}
+
+
+bool Application::OnAfterLoad(IEventArg& e /*= IEventArg::Empty*/)
+{
+	mIsInitialized = true;
+
+	Log::Info("*****Application Load*****");
+	PublishTarget resultTag = ApplicationSettings::Instance().ResultTag();
+	HeapString versionStr = resultTag.Version.ToString();
+	HeapString deviceStr = resultTag.Device.ToString();
+	HeapString languageStr = resultTag.Language.ToString();
+	Log::FormatInfo("Version:{}", versionStr.c_str());
+	Log::FormatInfo("Device:{}", deviceStr.c_str());
+	Log::FormatInfo("Language:{}", languageStr.c_str());
+	auto winSize = ApplicationSettings::Instance().ResultWinSize();
+	Log::FormatInfo("WinSize:{},{}", (uint)winSize.Width, (uint)winSize.Height);
+	return true;
+}
+
+bool Application::OnUnload(IEventArg& e /*= IEventArg::Empty*/)
+{
+	ApplicationStatics::Instance().Uninitialize();
+
+	return true;
+}
+
+bool Application::OnAfterUnload(IEventArg& e /*= IEventArg::Empty*/)
+{
+	mGame = nullptr;	//release before
+	Log::Uninitialize();
+	return true;
+}
+
+bool Application::OnReload(IEventArg& e /*= IEventArg::Empty*/)
+{
+	return true;
+}
 
 bool Application::UpdateAndDraw(float dt)
 {
@@ -225,41 +150,27 @@ bool Application::UpdateAndDraw(float dt)
 	return true;
 }
 
-
 bool Application::Update(float dt)
 {
-	SceneSweeper::Instance().Release();
-	NodeSweeper::Instance().Release();
-	MainCommandProcessor::Instance().WaitForComplete();
-
-	{
-		FrameAutoStopWatch watch(ApplicationStatics::Instance().UpdateWatch(), FrameStep::UpdateSystem);
-		mUpdateSystemStage.UpdateAndWait(dt);
-	}
+	//order is import
+	mCore.BeforeUpdate(dt);
+	mEngine.BeforeUpdate(dt);
 
 	mGame->Update(dt);
-	SceneManager::Instance().Update(dt);
-	RenderEngine::Instance().Update(dt);
+
+	mCore.AfterUpdate(dt);
+	mEngine.AfterUpdate(dt);
 
 	return true;
 }
 
 void Application::Draw(float dt)
 {
-
-	SceneManager::Instance().Draw(dt);
-
+	mEngine.BeforeDraw(dt);
 	ApplicationStatics::Instance().Update(dt);
 	ApplicationStatics::Instance().Draw(dt);
 	ApplicationStatics::Instance().Reset();
-
-	RenderEngine::Instance().Draw(dt);
-
-	
-	{
-		FrameAutoStopWatch watch(ApplicationStatics::Instance().UpdateWatch(), FrameStep::SwapBuffer);
-		mRootView->SwapBuffers();
-	}
+	mEngine.AfterDraw(dt);
 }
 
 bool Application::Step()
@@ -267,12 +178,10 @@ bool Application::Step()
 	return Update(mFrameInterval);
 }
 
-
-
 bool Application::Run()
 {
 	RETURN_FALSE_IF_FALSE(mGame->Start());
-	mWindow->Start();
+	mEngine.Window()->Start();
 	return true;
 
 }
@@ -280,7 +189,7 @@ bool Application::Run()
 bool Application::Start()
 {
 	RETURN_FALSE_IF_FALSE(mGame->Start());
-	mWindow->Start();
+	mEngine.Window()->Start();
 	return true;
 
 }
@@ -288,7 +197,7 @@ bool Application::Start()
 bool Application::Pause()
 {
 	RETURN_FALSE_IF_FALSE(mGame->Pause());
-	mWindow->Pause();
+	mEngine.Window()->Pause();
 
 	return true;
 }
@@ -296,7 +205,7 @@ bool Application::Pause()
 bool Application::Resume()
 {
 	RETURN_FALSE_IF_FALSE(mGame->Resume());
-	mWindow->Resume();
+	mEngine.Window()->Resume();
 
 	return true;
 }
@@ -305,7 +214,7 @@ bool Application::Resume()
 bool Application::Stop()
 {
 	RETURN_FALSE_IF_FALSE(mGame->Stop());
-	mWindow->Stop();
+	mEngine.Window()->Stop();
 
 	return true;
 }
@@ -351,3 +260,4 @@ void Application::Redraw()
 
 
 MEDUSA_END;
+

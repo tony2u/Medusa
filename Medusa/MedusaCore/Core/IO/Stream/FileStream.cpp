@@ -90,32 +90,32 @@ bool FileStream::Open(StringRef inFileName, FileOpenMode openMode, FileDataType 
 	{
 	case FileOpenMode::ReadOnly:
 		openModeString = "r";	//read
-		MEDUSA_ADD_FLAG(mSupportedOperation, StreamDataOperation::Read);
+		MEDUSA_FLAG_ADD(mSupportedOperation, StreamDataOperation::Read);
 		break;
 	case FileOpenMode::DestoryWriteOrCreate:
 		openModeString = "w";	//write
-		MEDUSA_ADD_FLAG(mSupportedOperation, StreamDataOperation::Write);
-		MEDUSA_ADD_FLAG(mSupportedOperation, StreamDataOperation::Grow);
+		MEDUSA_FLAG_ADD(mSupportedOperation, StreamDataOperation::Write);
+		MEDUSA_FLAG_ADD(mSupportedOperation, StreamDataOperation::Grow);
 		break;
 	case FileOpenMode::AppendWriteKeepEOFOrCreate:
 		openModeString = "a";	//write
-		MEDUSA_ADD_FLAG(mSupportedOperation, StreamDataOperation::Write);
-		MEDUSA_ADD_FLAG(mSupportedOperation, StreamDataOperation::Grow);
+		MEDUSA_FLAG_ADD(mSupportedOperation, StreamDataOperation::Write);
+		MEDUSA_FLAG_ADD(mSupportedOperation, StreamDataOperation::Grow);
 		break;
 	case FileOpenMode::ReadWrite:
 		openModeString = "r+";	//read write
-		MEDUSA_ADD_FLAG(mSupportedOperation, StreamDataOperation::ReadWrite);
-		MEDUSA_ADD_FLAG(mSupportedOperation, StreamDataOperation::Grow);
+		MEDUSA_FLAG_ADD(mSupportedOperation, StreamDataOperation::ReadWrite);
+		MEDUSA_FLAG_ADD(mSupportedOperation, StreamDataOperation::Grow);
 		break;
 	case FileOpenMode::DestoryReadWriteOrCreate:
 		openModeString = "w+";	//read write
-		MEDUSA_ADD_FLAG(mSupportedOperation, StreamDataOperation::ReadWrite);
-		MEDUSA_ADD_FLAG(mSupportedOperation, StreamDataOperation::Grow);
+		MEDUSA_FLAG_ADD(mSupportedOperation, StreamDataOperation::ReadWrite);
+		MEDUSA_FLAG_ADD(mSupportedOperation, StreamDataOperation::Grow);
 		break;
 	case FileOpenMode::AppendReadWriteClearEOFOrCreate:
 		openModeString = "a+";	//read write
-		MEDUSA_ADD_FLAG(mSupportedOperation, StreamDataOperation::ReadWrite);
-		MEDUSA_ADD_FLAG(mSupportedOperation, StreamDataOperation::Grow);
+		MEDUSA_FLAG_ADD(mSupportedOperation, StreamDataOperation::ReadWrite);
+		MEDUSA_FLAG_ADD(mSupportedOperation, StreamDataOperation::Grow);
 		break;
 	default:
 		break;
@@ -165,14 +165,14 @@ bool FileStream::IsEnd() const
 	return feof(mFile) != 0;
 }
 
-size_t FileStream::WriteData(const MemoryByteData& data, DataReadingMode mode /*= DataReadingMode::AlwaysCopy*/)
+size_t FileStream::WriteData(const MemoryData& data, DataReadingMode mode /*= DataReadingMode::AlwaysCopy*/)
 {
 	RETURN_ZERO_IF_FALSE(CanWrite());
 	FlushOnReadWrite(StreamDataOperation::Write);
 	return fwrite(data.Data(), 1, data.Size(), mFile);
 }
 
-size_t FileStream::ReadDataTo(MemoryByteData& outData, DataReadingMode mode/*=DataReadingMode::AlwaysCopy*/)const
+size_t FileStream::ReadDataTo(MemoryData& outData, DataReadingMode mode/*=DataReadingMode::AlwaysCopy*/)const
 {
 	RETURN_ZERO_IF_FALSE(CanRead());
 	FlushOnReadWrite(StreamDataOperation::Read);
@@ -392,37 +392,31 @@ size_t FileStream::WriteString(const StringRef& str, bool withNullTermitated /*=
 {
 	RETURN_ZERO_IF_FALSE(CanWrite());
 	FlushOnReadWrite(StreamDataOperation::Write);
-	if (fputs(str.c_str(), mFile) == EOF)
-	{
-		return 0;
-	}
-
+	MemoryData data = str.ToData().Cast<byte>();
+	size_t size = WriteData(data);
 	if (withNullTermitated)
 	{
-		fputc('\0', mFile);	//fputs won't copy '\0'
+		size += WriteChar('\0') ? sizeof(char) : 0;
 	}
-	return str.Length();
+	return size;
 }
 
 size_t FileStream::WriteString(const WStringRef& str, bool withNullTermitated /*= true*/)
 {
 	RETURN_ZERO_IF_FALSE(CanWrite());
 	FlushOnReadWrite(StreamDataOperation::Write);
-	if (fputws(str.c_str(), mFile) == EOF)
-	{
-		return 0;
-	}
-
+	MemoryData data = str.ToData().Cast<byte>();
+	size_t size = WriteData(data);
 	if (withNullTermitated)
 	{
-		fputwc(L'\0', mFile);	//fputws won't copy '\0'
+		size += WriteChar(L'\0') ? sizeof(wchar_t) : 0;
 	}
-	return str.Length();
+	return size;
 }
 
 bool FileStream::CanWrite() const
 {
-	return MEDUSA_HAS_FLAG(mSupportedOperation, StreamDataOperation::Write);
+	return MEDUSA_FLAG_HAS(mSupportedOperation, StreamDataOperation::Write);
 }
 
 StreamDataOperation FileStream::Operations() const
@@ -432,7 +426,7 @@ StreamDataOperation FileStream::Operations() const
 
 bool FileStream::CanRead() const
 {
-	if (MEDUSA_HAS_FLAG(mSupportedOperation, StreamDataOperation::Read))
+	if (MEDUSA_FLAG_HAS(mSupportedOperation, StreamDataOperation::Read))
 	{
 		return !IsEnd();
 	}
@@ -441,7 +435,7 @@ bool FileStream::CanRead() const
 
 bool FileStream::IsReadWrite() const
 {
-	return MEDUSA_HAS_FLAG(mSupportedOperation, StreamDataOperation::ReadWrite);
+	return MEDUSA_FLAG_HAS(mSupportedOperation, StreamDataOperation::ReadWrite);
 }
 
 void FileStream::FlushOnReadWrite(StreamDataOperation curOperation)const

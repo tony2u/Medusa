@@ -58,7 +58,7 @@ size_t Base91Decoder::GuessResultSize(const IStream& input) const
 }
 
 
-size_t Base91Decoder::OnCode(const MemoryByteData& input, MemoryByteData& output) const
+size_t Base91Decoder::OnCode(const MemoryData& input, MemoryData& output) const
 {
 	RETURN_TRUE_IF_EMPTY(input);
 	const unsigned char *ib = (unsigned char *)input.Data();

@@ -4,7 +4,7 @@
 #pragma once
 #include "MedusaPreDeclares.h"
 #include "Core/Collection/List.h"
-#include "Core/Geometry/Point2.h"
+#include "Geometry/Point2.h"
 #include "Node/Input/Touch.h"
 #include "Core/Command/EventArg/IEventArg.h"
 

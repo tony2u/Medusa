@@ -7,13 +7,13 @@
 #include "Node/Input/Gesture/EventArg/LongPressBeganGestureEventArg.h"
 #include "Node/Input/Gesture/EventArg/LongPressFailedGestureEventArg.h"
 MEDUSA_BEGIN;
-LongPressGestureRecognizer::LongPressGestureRecognizer( INode* node,float minPressDuration,float allowMovement ,GestureFlags flags/*=GestureFlags::None*/) 
-	:IGestureRecognizer(node,flags)
+LongPressGestureRecognizer::LongPressGestureRecognizer( INode* node,float minPressDuration,float allowMovement) 
+	:IGestureRecognizer(node)
 {
 	mMinPressDuration=minPressDuration;
 	mAllowMovement=allowMovement;
 	mBeginTimeStamp=0.f;
-	mState=GestureState::None;
+	mState=InputState::None;
 	mBeganTouch=Touch::Zero;
 }
 
@@ -26,17 +26,18 @@ LongPressGestureRecognizer::~LongPressGestureRecognizer(void)
 
 void LongPressGestureRecognizer::TouchesBegan( TouchEventArg& e )
 {
+	IInputHandler::TouchesBegan(e);
 	switch(mState)
 	{
-	case GestureState::None:
+	case InputState::None:
 		if (e.IsOneFingerValid())
 		{
 			mBeganTouch=e.FirstValidActiveTouch();
 			mBeginTimeStamp=0.f;
-			SetState(GestureState::Begin);
+			SetState(InputState::Begin);
 		}
 		break;
-	case GestureState::Valid:
+	case InputState::Valid:
 		break;
 	default:
 		break;
@@ -46,11 +47,12 @@ void LongPressGestureRecognizer::TouchesBegan( TouchEventArg& e )
 
 void LongPressGestureRecognizer::TouchesMoved( TouchEventArg& e )
 {
+	IInputHandler::TouchesMoved(e);
 	switch(mState)
 	{
-	case GestureState::None:
+	case InputState::None:
 		break;
-	case GestureState::Begin:
+	case InputState::Begin:
 		{
 			auto nextTouch=e.FindValidActiveTouchById(mBeganTouch.Id);
 			if (nextTouch!=nullptr)
@@ -58,13 +60,13 @@ void LongPressGestureRecognizer::TouchesMoved( TouchEventArg& e )
 				float distance=Point2F::Distance(mBeganTouch.Pos,nextTouch->Pos);
 				if (distance>mAllowMovement)
 				{
-					SetState(GestureState::None);
+					SetState(InputState::None);
 				}
 			}
 		}
 
 		break;
-	case GestureState::Valid:
+	case InputState::Valid:
 		break;
 	default:
 		break;
@@ -74,12 +76,13 @@ void LongPressGestureRecognizer::TouchesMoved( TouchEventArg& e )
 
 void LongPressGestureRecognizer::TouchesEnded( TouchEventArg& e )
 {
+	IInputHandler::TouchesEnded(e);
 	switch(mState)
 	{
-	case GestureState::None:
-	case GestureState::Begin:
+	case InputState::None:
+	case InputState::Begin:
 		{
-			SetState(GestureState::Failed);
+			SetState(InputState::Failed);
 
 			LongPressFailedGestureEventArg longPressFailedGestureEventArg(this);
 			OnLongPressFailed(mNode,longPressFailedGestureEventArg);
@@ -87,9 +90,9 @@ void LongPressGestureRecognizer::TouchesEnded( TouchEventArg& e )
 		}
 
 		break;
-	case GestureState::Valid:
+	case InputState::Valid:
 		{
-			SetState(GestureState::End);
+			SetState(InputState::End);
 		}
 		
 		break;
@@ -97,26 +100,27 @@ void LongPressGestureRecognizer::TouchesEnded( TouchEventArg& e )
 		break;
 	}
 
-	SetState(GestureState::None);
+	SetState(InputState::None);
 
 }
 
 void LongPressGestureRecognizer::TouchesCancelled( TouchEventArg& e )
 {
-	SetState(GestureState::None);
+	IInputHandler::TouchesCancelled(e);
+	SetState(InputState::None);
 }
 
 bool LongPressGestureRecognizer::Update( float dt )
 {
 	switch(mState)
 	{
-	case GestureState::None:
+	case InputState::None:
 		break;
-	case GestureState::Begin:
+	case InputState::Begin:
 		mBeginTimeStamp+=dt;
 		if (mBeginTimeStamp>mMinPressDuration)
 		{
-			SetState(GestureState::Valid);
+			SetState(InputState::Valid);
 			mBeginTimeStamp=0.f;
 
 			LongPressBeganGestureEventArg longPressBeganGestureEventArg(this);
@@ -126,7 +130,7 @@ bool LongPressGestureRecognizer::Update( float dt )
 		}
 
 		break;
-	case GestureState::Valid:
+	case InputState::Valid:
 
 	default:
 		break;
@@ -139,13 +143,13 @@ bool LongPressGestureRecognizer::Update( float dt )
 void LongPressGestureRecognizer::Reset()
 {
 	mBeginTimeStamp=0.f;
-	SetState(GestureState::None);
+	SetState(InputState::None);
 	mBeganTouch=Touch::Zero;
 }
 
 bool LongPressGestureRecognizer::IsValid() const
 {
-	return mState==GestureState::Valid;
+	return mState==InputState::Valid;
 }
 
 MEDUSA_END;

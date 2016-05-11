@@ -26,7 +26,7 @@ size_t LZ4Encoder::GuessResultSize(const IStream& input) const
 	return (size_t)LZ4_compressBound((int)size) + sizeof(uint);	//to store length
 }
 
-size_t LZ4Encoder::OnCode(const MemoryByteData& input, MemoryByteData& output) const
+size_t LZ4Encoder::OnCode(const MemoryData& input, MemoryData& output) const
 {
 	MemoryStream outputStream(output);
 	outputStream.Write((uint)input.Size());

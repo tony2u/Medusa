@@ -13,13 +13,13 @@ class PngImage:public RGBAImage
 {
 	
 public:
-	PngImage(const FileIdRef& fileId,Size2U imageSize,GraphicsInternalFormat internalFormat,GraphicsPixelFormat imageFormat,bool isPreMultiplyAlpha);
+	PngImage(const FileIdRef& fileId,Size2U imageSize, PixelType pixelType,bool isPreMultiplyAlpha);
 	virtual ~PngImage(void);
 public:
 	virtual ImageFileType ImageType()const{return ImageFileType::png;}
 
 	static PngImage* CreateFromFile(const FileIdRef& fileId);
-	static PngImage* CreateFromMemory(const FileIdRef& fileId,MemoryByteData data);
+	static PngImage* CreateFromMemory(const FileIdRef& fileId,const FileEntry& fileEntry,MemoryData data);
 	bool SaveToFile(StringRef filePath)const;
 
 };

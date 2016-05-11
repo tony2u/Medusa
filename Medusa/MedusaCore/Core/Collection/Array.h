@@ -80,7 +80,7 @@ public:
 		else
 		{
 			size_t index = 0;
-			FOR_EACH_COLLECTION(i, items)
+			FOR_EACH_COLLECTION_VIRTUAL(i, items)
 			{
 				Set(index++, *i);
 			}

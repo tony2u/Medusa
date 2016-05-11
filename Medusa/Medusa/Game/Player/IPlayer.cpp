@@ -6,10 +6,7 @@
 
 MEDUSA_BEGIN;
 
-
-
 IPlayer::IPlayer()
-	:mIsChanged(false), mIsLogined(false)
 {
 
 }
@@ -19,16 +16,10 @@ IPlayer::~IPlayer()
 
 }
 
-bool IPlayer::Load()
-{
-	return true;
-}
-
 bool IPlayer::Save(bool isForceToSave /*= false*/)
 {
 	if (!isForceToSave)
 	{
-		RETURN_TRUE_IF_FALSE(mIsLogined);
 		RETURN_TRUE_IF_FALSE(mIsChanged);
 	}
 
@@ -38,7 +29,6 @@ bool IPlayer::Save(bool isForceToSave /*= false*/)
 
 void IPlayer::ResetToDefault()
 {
-	mIsLogined = false;
 	MarkChanged();
 }
 

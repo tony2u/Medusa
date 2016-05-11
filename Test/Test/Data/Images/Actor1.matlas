@@ -1,0 +1,13 @@
+Actor1.png,408,34,RGBA8888,NearestNeighbour,false,false
+ActorDown1-0.png,false,0,0,32,32,1,1,32,32
+ActorDown1-1.png,false,0,0,32,32,35,1,32,32
+ActorDown1-2.png,false,0,0,32,32,69,1,32,32
+ActorLeft1-0.png,false,0,0,32,32,103,1,32,32
+ActorLeft1-1.png,false,0,0,32,32,137,1,32,32
+ActorLeft1-2.png,false,0,0,32,32,171,1,32,32
+ActorRight1-0.png,false,0,0,32,32,205,1,32,32
+ActorRight1-1.png,false,0,0,32,32,239,1,32,32
+ActorRight1-2.png,false,0,0,32,32,273,1,32,32
+ActorUp1-0.png,false,0,0,32,32,307,1,32,32
+ActorUp1-1.png,false,0,0,32,32,341,1,32,32
+ActorUp1-2.png,false,0,0,32,32,375,1,32,32

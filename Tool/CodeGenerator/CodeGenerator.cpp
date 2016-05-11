@@ -93,11 +93,10 @@ void AdjustEnumStr(HeapString &str, StringRef path, StringRef name)
 	}
 
 
-	HeapString temp;
-	File::ReadAllTextTo(path, temp);
+	HeapString temp = File::ReadAllText(path);
 	if (temp != str)
 	{
-		File::WriteAllTextTo(path, str);
+		File::WriteAllText(path, str);
 	}
 
 }
@@ -152,11 +151,10 @@ void AdjustFlagStr(HeapString &str, StringRef path, StringRef name)
 		str.Insert(prevIndex, "MEDUSA_ASSERT_FAILED(\"Invalid flags names\")");
 	}
 
-	HeapString temp;
-	File::ReadAllTextTo(path, temp);
+	HeapString temp = File::ReadAllText(path);
 	if (temp != str)
 	{
-		File::WriteAllTextTo(path, str);
+		File::WriteAllText(path, str);
 	}
 }
 
@@ -818,8 +816,7 @@ void ReplaceStr(HeapString& str, StringRef begin, StringRef end, StringRef targe
 
 void ModifyEnum(StringRef path)
 {
-	HeapString temp;
-	File::ReadAllTextTo(path, temp);
+	HeapString temp = File::ReadAllText(path);
 	HeapString str = temp;
 
 
@@ -831,7 +828,7 @@ void ModifyEnum(StringRef path)
 
 	if (str != temp)
 	{
-		bool isSuccess = File::WriteAllTextTo(path, str);
+		bool isSuccess = File::WriteAllText(path, str);
 		if (!isSuccess)
 		{
 			Log::FormatError("Cannot find path:{}", path.c_str());
@@ -844,8 +841,7 @@ void ModifyEnum(StringRef path)
 
 void ModifyFlags(StringRef path)
 {
-	HeapString temp;
-	File::ReadAllTextTo(path, temp);
+	HeapString temp = File::ReadAllText(path);
 	HeapString str = temp;
 
 	int count = 10;
@@ -856,7 +852,7 @@ void ModifyFlags(StringRef path)
 
 	if (str != temp)
 	{
-		File::WriteAllTextTo(path, str);
+		File::WriteAllText(path, str);
 	}
 
 
@@ -864,8 +860,7 @@ void ModifyFlags(StringRef path)
 
 void ModifyTuple(StringRef path)
 {
-	HeapString temp;
-	File::ReadAllTextTo(path, temp);
+	HeapString temp = File::ReadAllText(path);
 	HeapString str = temp;
 
 
@@ -873,7 +868,7 @@ void ModifyTuple(StringRef path)
 
 	if (str != temp)
 	{
-		File::WriteAllTextTo(path, str);
+		File::WriteAllText(path, str);
 	}
 }
 
@@ -881,9 +876,9 @@ void ModifyTuple(StringRef path)
 
 
 
-void GenerateSirenDataType(StringRef corePath, StringRef medusaPath)
+void GenerateSirenTypeId(StringRef corePath, StringRef medusaPath)
 {
-	const HeapString path = corePath + "Core\\Siren\\SirenDataType.h";
+	const HeapString path = corePath + "Core\\Siren\\Schema\\Type\\SirenTypeId.h";
 
 	HeapString str;
 	str.AppendLine("#pragma once");
@@ -891,1038 +886,22 @@ void GenerateSirenDataType(StringRef corePath, StringRef medusaPath)
 	str.AppendLine("#include \"MedusaCorePreDeclares.h\"");
 	str.AppendLine("#include \"Core/String/StringRef.h\"");
 	str.AppendLine("MEDUSA_BEGIN;");
-	str.AppendLine("//STRONG_ENUM_17(SirenDataType, StructEnd,Bool, Int8, UInt8, Int16, UInt16, Int32, UInt32, Int64, UInt64, Float, Double, String, List,Blob, Dictionary, Struct));");
-	str.AppendLine(MACRO_TO_STRING(STRONG_ENUM_17(SirenDataType, StructEnd,Bool, Int8, UInt8, Int16, UInt16, Int32, UInt32, Int64, UInt64, Float, Double, String, Blob, List, Dictionary, Struct)));
+	str.AppendLine("//STRONG_ENUM_18(SirenTypeId, Null,Bool, Int8, UInt8, Int16, UInt16, Int32, UInt32, Int64, UInt64, Float, Double, String,Blob, Enum,List, Dictionary, Struct));");
+	str.AppendLine(MACRO_TO_STRING(STRONG_ENUM_18(SirenTypeId, Null, Bool, Int8, UInt8, Int16, UInt16, Int32, UInt32, Int64, UInt64, Float, Double, String, Blob, Enum, List, Dictionary, Struct)));
 	str.AppendLine("MEDUSA_END;");
-	AdjustEnumStr(str, path, MACRO_TO_STRING(SirenDataType));
+	AdjustEnumStr(str, path, MACRO_TO_STRING(SirenTypeId));
 
 
 }
 
 
-void GenerateFileUpdaterMessageType(StringRef corePath, StringRef medusaPath)
-{
-	const HeapString path = corePath + "Core\\IO\\Updater\\FileUpdaterMessageType.h";
-
-	HeapString str;
-	str.AppendLine("#pragma once");
-	str.AppendLine("//[IGNORE_PRE_DECLARE_FILE]");
-	str.AppendLine("#include \"MedusaCorePreDeclares.h\"");
-	str.AppendLine("#include \"Core/String/StringRef.h\"");
-	str.AppendLine("MEDUSA_BEGIN;");
-	str.AppendLine("//STRONG_ENUM_6(FileUpdaterMessageType, FileUpdaterNetworkError, FileUpdaterDontUpgragde, FileUpdaterServerMaintain, FileUpdaterIncompatiableClient, FileUpdaterSeverError, FileUpdaterDownloadingInterrupted);");
-	str.AppendLine(MACRO_TO_STRING(STRONG_ENUM_6(FileUpdaterMessageType, FileUpdaterNetworkError, FileUpdaterDontUpgragde, FileUpdaterServerMaintain, FileUpdaterIncompatiableClient, FileUpdaterSeverError, FileUpdaterDownloadingInterrupted)));
-	str.AppendLine("MEDUSA_END;");
-	AdjustEnumStr(str, path, MACRO_TO_STRING(FileUpdaterMessageType));
-
-
-}
-
-
-void GenerateGraphicsHintMode(StringRef corePath, StringRef medusaPath)
-{
-	const HeapString path = medusaPath + "Graphics\\GraphicsHintMode.h";
-
-	HeapString str;
-	str.AppendLine("#pragma once");
-	str.AppendLine("//[IGNORE_PRE_DECLARE_FILE]");
-	str.AppendLine("#include \"MedusaPreDeclares.h\"");
-	str.AppendLine("#include \"Core/String/StringRef.h\"");
-	str.AppendLine("MEDUSA_BEGIN;");
-	str.AppendLine("//STRONG_ENUM_CUSTOM_3(GraphicsHintMode, Fastest, GL_FASTEST, Nicest, GL_NICEST, DontCare, GL_DONT_CARE);");
-	str.AppendLine(MACRO_TO_STRING(STRONG_ENUM_CUSTOM_3(GraphicsHintMode, Fastest, GL_FASTEST, Nicest, GL_NICEST, DontCare, GL_DONT_CARE)));
-	str.AppendLine("MEDUSA_END;");
-	AdjustEnumStr(str, path, MACRO_TO_STRING(GraphicsHintMode));
-
-
-}
-
-void GenerateGraphicsBlendEquation(StringRef corePath, StringRef medusaPath)
-{
-	const HeapString path = medusaPath + "Graphics\\GraphicsBlendEquation.h";
-
-	HeapString str;
-	str.AppendLine("#pragma once");
-	str.AppendLine("//[IGNORE_PRE_DECLARE_FILE]");
-	str.AppendLine("#include \"MedusaPreDeclares.h\"");
-	str.AppendLine("#include \"Core/String/StringRef.h\"");
-	str.AppendLine("MEDUSA_BEGIN;");
-	str.AppendLine("//STRONG_ENUM_CUSTOM_3(GraphicsBlendEquation,Add, GL_FUNC_ADD,Subtract, GL_FUNC_SUBTRACT,ReverserSubtract, GL_FUNC_REVERSE_SUBTRACT);");
-	str.AppendLine(MACRO_TO_STRING(STRONG_ENUM_CUSTOM_3(GraphicsBlendEquation, Add, GL_FUNC_ADD, Subtract, GL_FUNC_SUBTRACT, ReverserSubtract, GL_FUNC_REVERSE_SUBTRACT)));
-	str.AppendLine("MEDUSA_END;");
-	AdjustEnumStr(str, path, MACRO_TO_STRING(GraphicsBlendEquation));
-
-}
-
-
-void GenerateGraphicsPixelDataType(StringRef corePath, StringRef medusaPath)
-{
-	const HeapString path = medusaPath + "Graphics\\GraphicsPixelDataType.h";
-
-	HeapString str;
-	str.AppendLine("#pragma once");
-	str.AppendLine("//[IGNORE_PRE_DECLARE_FILE]");
-	str.AppendLine("#include \"MedusaPreDeclares.h\"");
-	str.AppendLine("#include \"Core/String/StringRef.h\"");
-	str.AppendLine("MEDUSA_BEGIN;");
-	str.AppendLine("//STRONG_ENUM_CUSTOM_7(GraphicsPixelDataType,Byte, GL_UNSIGNED_BYTE,UnsignedShort565, GL_UNSIGNED_SHORT_5_6_5,UnsignedShort4444, GL_UNSIGNED_SHORT_4_4_4_4,UnsignedShort5551, GL_UNSIGNED_SHORT_5_5_5_1,HalfFloatOES, GL_HALF_FLOAT_OES,FloatOES, GL_FLOAT,UInt, GL_UNSIGNED_INT);");
-	str.AppendLine(MACRO_TO_STRING(STRONG_ENUM_CUSTOM_7(GraphicsPixelDataType, Byte, GL_UNSIGNED_BYTE, UnsignedShort565, GL_UNSIGNED_SHORT_5_6_5, UnsignedShort4444, GL_UNSIGNED_SHORT_4_4_4_4, UnsignedShort5551, GL_UNSIGNED_SHORT_5_5_5_1, HalfFloatOES, GL_HALF_FLOAT_OES, FloatOES, GL_FLOAT, UInt, GL_UNSIGNED_INT)));
-	str.AppendLine("MEDUSA_END;");
-	AdjustEnumStr(str, path, MACRO_TO_STRING(GraphicsPixelDataType));
-
-}
-
-void GenerateGraphicsFuncType(StringRef corePath, StringRef medusaPath)
-{
-	const HeapString path = medusaPath + "Graphics\\GraphicsFuncType.h";
-
-	HeapString str;
-	str.AppendLine("#pragma once");
-	str.AppendLine("//[IGNORE_PRE_DECLARE_FILE]");
-	str.AppendLine("#include \"MedusaPreDeclares.h\"");
-	str.AppendLine("#include \"Core/String/StringRef.h\"");
-	str.AppendLine("MEDUSA_BEGIN;");
-	str.AppendLine("//STRONG_ENUM_CUSTOM_8(GraphicsFuncType,Never, GL_NEVER,Less, GL_LESS,Equal, GL_EQUAL,LessOrEqual, GL_LEQUAL,Greater, GL_GREATER,NotEqual, GL_NOTEQUAL,GreaterOrEqual, GL_GEQUAL,Always, GL_ALWAYS);");
-	str.AppendLine(MACRO_TO_STRING(STRONG_ENUM_CUSTOM_8(GraphicsFuncType, Never, GL_NEVER, Less, GL_LESS, Equal, GL_EQUAL, LessOrEqual, GL_LEQUAL, Greater, GL_GREATER, NotEqual, GL_NOTEQUAL, GreaterOrEqual, GL_GEQUAL, Always, GL_ALWAYS)));
-	str.AppendLine("MEDUSA_END;");
-
-	AdjustEnumStr(str, path, MACRO_TO_STRING(GraphicsFuncType));
-}
-
-
-void GenerateGraphicsStencilOperation(StringRef corePath, StringRef medusaPath)
-{
-	const HeapString path = medusaPath + "Graphics\\GraphicsStencilOperation.h";
-
-
-	HeapString str;
-	str.AppendLine("#pragma once");
-	str.AppendLine("//[IGNORE_PRE_DECLARE_FILE]");
-	str.AppendLine("#include \"MedusaPreDeclares.h\"");
-	str.AppendLine("#include \"Core/String/StringRef.h\"");
-	str.AppendLine("MEDUSA_BEGIN;");
-	str.AppendLine("//STRONG_ENUM_CUSTOM_8(GraphicsStencilOperation,Keep, GL_KEEP,Zero, GL_ZERO,ReplaceToRef, GL_REPLACE,Increase, GL_INCR,IncreaseWrap, GL_INCR_WRAP,Decrease, GL_DECR,DecreaseWrap, GL_DECR_WRAP,Invert, GL_INVERT);");
-	str.AppendLine(MACRO_TO_STRING(STRONG_ENUM_CUSTOM_8(GraphicsStencilOperation, Keep, GL_KEEP, Zero, GL_ZERO, ReplaceToRef, GL_REPLACE, Increase, GL_INCR, IncreaseWrap, GL_INCR_WRAP, Decrease, GL_DECR, DecreaseWrap, GL_DECR_WRAP, Invert, GL_INVERT)));
-	str.AppendLine("MEDUSA_END;");
-
-	AdjustEnumStr(str, path, MACRO_TO_STRING(GraphicsStencilOperation));
-
-
-}
-
-void GenerateGraphicsFrontFace(StringRef corePath, StringRef medusaPath)
-{
-	const HeapString path = medusaPath + "Graphics\\GraphicsFrontFace.h";
-
-	HeapString str;
-	str.AppendLine("#pragma once");
-	str.AppendLine("//[IGNORE_PRE_DECLARE_FILE]");
-	str.AppendLine("#include \"MedusaPreDeclares.h\"");
-	str.AppendLine("#include \"Core/String/StringRef.h\"");
-	str.AppendLine("MEDUSA_BEGIN;");
-	str.AppendLine("//STRONG_ENUM_CUSTOM_2(GraphicsFrontFace, ClockWise, GL_CW, CounterClockWise, GL_CCW);");
-	str.AppendLine(MACRO_TO_STRING(STRONG_ENUM_CUSTOM_2(GraphicsFrontFace, ClockWise, GL_CW, CounterClockWise, GL_CCW)));
-	str.AppendLine("MEDUSA_END;");
-
-	AdjustEnumStr(str, path, MACRO_TO_STRING(GraphicsFrontFace));
-
-
-}
-
-void GenerateGraphicsFace(StringRef corePath, StringRef medusaPath)
-{
-	const HeapString path = medusaPath + "Graphics\\GraphicsFace.h";
-
-	HeapString str;
-	str.AppendLine("#pragma once");
-	str.AppendLine("//[IGNORE_PRE_DECLARE_FILE]");
-	str.AppendLine("#include \"MedusaPreDeclares.h\"");
-	str.AppendLine("#include \"Core/String/StringRef.h\"");
-	str.AppendLine("MEDUSA_BEGIN;");
-	str.AppendLine("//STRONG_ENUM_CUSTOM_3(GraphicsFace, Front, GL_FRONT, Back, GL_BACK, FrontAndBack, GL_FRONT_AND_BACK);");
-	str.AppendLine(MACRO_TO_STRING(STRONG_ENUM_CUSTOM_3(GraphicsFace, Front, GL_FRONT, Back, GL_BACK, FrontAndBack, GL_FRONT_AND_BACK)));
-	str.AppendLine("MEDUSA_END;");
-
-	AdjustEnumStr(str, path, MACRO_TO_STRING(GraphicsFace));
-
-
-}
-
-
-void GenerateSkeletonAttachmentType(StringRef corePath, StringRef medusaPath)
-{
-	const HeapString path = medusaPath + "Resource\\Skeleton\\Attachment\\SkeletonAttachmentType.h";
-
-	HeapString str;
-	str.AppendLine("#pragma once");
-	str.AppendLine("//[IGNORE_PRE_DECLARE_FILE]");
-	str.AppendLine("#include \"MedusaPreDeclares.h\"");
-	str.AppendLine("#include \"Core/String/StringRef.h\"");
-	str.AppendLine("MEDUSA_BEGIN;");
-	str.AppendLine("//STRONG_ENUM_4(SkeletonAttachmentType, Region, Mesh, SkinnedMesh, BoundingBox);");
-	str.AppendLine(MACRO_TO_STRING(STRONG_ENUM_4(SkeletonAttachmentType, Region, Mesh, SkinnedMesh, BoundingBox)));
-	str.AppendLine("MEDUSA_END;");
-
-	AdjustEnumStr(str, path, MACRO_TO_STRING(SkeletonAttachmentType));
-
-
-}
-
-void GenerateAnalyticsCurrencyType(StringRef corePath, StringRef medusaPath)
-{
-	const HeapString path = medusaPath + "Analytics\\AnalyticsCurrencyType.h";
-
-	HeapString str;
-	str.AppendLine("#pragma once");
-	str.AppendLine("//[IGNORE_PRE_DECLARE_FILE]");
-	str.AppendLine("#include \"MedusaExtensionPreDeclares.h\"");
-	str.AppendLine("#include \"Core/String/StringRef.h\"");
-	str.AppendLine("MEDUSA_BEGIN;");
-	str.AppendLine("//STRONG_ENUM_3(AnalyticsCurrencyType, CNY, USD, EUR);");
-	str.AppendLine(MACRO_TO_STRING(STRONG_ENUM_3(AnalyticsCurrencyType, CNY, USD, EUR)));
-	str.AppendLine("MEDUSA_END;");
-	AdjustEnumStr(str, path, MACRO_TO_STRING(AnalyticsCurrencyType));
-
-
-}
-
-void GenerateAnalyticsPaymentType(StringRef corePath, StringRef medusaPath)
-{
-	const HeapString path = medusaPath + "Analytics\\AnalyticsPaymentType.h";
-
-	HeapString str;
-	str.AppendLine("#pragma once");
-	str.AppendLine("//[IGNORE_PRE_DECLARE_FILE]");
-	str.AppendLine("#include \"MedusaExtensionPreDeclares.h\"");
-	str.AppendLine("#include \"Core/String/StringRef.h\"");
-	str.AppendLine("MEDUSA_BEGIN;");
-	str.AppendLine("//STRONG_ENUM_8(AnalyticsPaymentType, AppStore, AliPay, WebBank, QQPay, ChinaMobile, Unicom, Telecom, Paypal);");
-	str.AppendLine(MACRO_TO_STRING(STRONG_ENUM_8(AnalyticsPaymentType, AppStore, AliPay, WebBank, QQPay, ChinaMobile, Unicom, Telecom, Paypal)));
-	str.AppendLine("MEDUSA_END;");
-	AdjustEnumStr(str, path, MACRO_TO_STRING(AnalyticsPaymentType));
-
-
-}
-
-void GenerateAnalyticsRewardType(StringRef corePath, StringRef medusaPath)
-{
-	const HeapString path = medusaPath + "Analytics\\AnalyticsRewardType.h";
-
-	HeapString str;
-	str.AppendLine("#pragma once");
-	str.AppendLine("//[IGNORE_PRE_DECLARE_FILE]");
-	str.AppendLine("#include \"MedusaExtensionPreDeclares.h\"");
-	str.AppendLine("#include \"Core/String/StringRef.h\"");
-	str.AppendLine("MEDUSA_BEGIN;");
-	str.AppendLine("//STRONG_ENUM_3(AnalyticsRewardType, FromPlayer, FromCompany, FromGame);");
-	str.AppendLine(MACRO_TO_STRING(STRONG_ENUM_3(AnalyticsRewardType, FromPlayer, FromCompany, FromGame)));
-	str.AppendLine("MEDUSA_END;");
-	AdjustEnumStr(str, path, MACRO_TO_STRING(AnalyticsRewardType));
-
-
-}
 
 #pragma endregion Enums
 
 #pragma region Flags
 
-void GenerateGameFeatures(StringRef corePath, StringRef medusaPath)
-{
-	const HeapString path = medusaPath + "Game\\GameFeatures.h";
 
-	HeapString str;
-	str.AppendLine("#pragma once");
-	str.AppendLine("//[IGNORE_PRE_DECLARE_FILE]");
-	str.AppendLine("#include \"MedusaPreDeclares.h\"");
-	str.AppendLine("#include \"Core/String/StringRef.h\"");
-	str.AppendLine("#include \"Core/String/StringParser.h\"");
-	str.AppendLine("#include \"Core/String/HeapString.h\"");
-	str.AppendLine("MEDUSA_BEGIN;");
-	str.AppendLine("//STRONG_FLAGS_5(GameFeatures, SupportThreadEvent, SupportMessage,SupportScript, SupportFileUpdating,SupportSceneEditor);");
-	str.AppendLine(MACRO_TO_STRING(STRONG_FLAGS_5(GameFeatures, SupportThreadEvent, SupportMessage, SupportScript, SupportFileUpdating, SupportSceneEditor)));
-	str.AppendLine("MEDUSA_END;");
 
-	AdjustFlagStr(str, path, MACRO_TO_STRING(GameFeatures));
-
-
-}
-
-void GenerateGraphicsBufferComponentMask(StringRef corePath, StringRef medusaPath)
-{
-	const HeapString path = medusaPath + "Graphics\\GraphicsBufferComponentMask.h";
-
-	HeapString str;
-	str.AppendLine("#pragma once");
-	str.AppendLine("//[IGNORE_PRE_DECLARE_FILE]");
-	str.AppendLine("#include \"MedusaPreDeclares.h\"");
-	str.AppendLine("#include \"Core/String/StringRef.h\"");
-	str.AppendLine("#include \"Core/String/StringParser.h\"");
-	str.AppendLine("#include \"Core/String/HeapString.h\"");
-	str.AppendLine("MEDUSA_BEGIN;");
-	str.AppendLine("//STRONG_FLAGS_CUSTOM_3(GraphicsBufferComponentMask, Depth, GL_DEPTH_BUFFER_BIT, Stencil, GL_STENCIL_BUFFER_BIT, Color, GL_COLOR_BUFFER_BIT);");
-	str.AppendLine(MACRO_TO_STRING(STRONG_FLAGS_CUSTOM_3(GraphicsBufferComponentMask, Depth, GL_DEPTH_BUFFER_BIT, Stencil, GL_STENCIL_BUFFER_BIT, Color, GL_COLOR_BUFFER_BIT)));
-	str.AppendLine("MEDUSA_END;");
-
-	AdjustFlagStr(str, path, MACRO_TO_STRING(GraphicsBufferComponentMask));
-
-
-}
-
-void GenerateGraphicsColorMask(StringRef corePath, StringRef medusaPath)
-{
-	const HeapString path = medusaPath + "Graphics\\GraphicsColorMask.h";
-
-	HeapString str;
-	str.AppendLine("#pragma once");
-	str.AppendLine("//[IGNORE_PRE_DECLARE_FILE]");
-	str.AppendLine("#include \"MedusaPreDeclares.h\"");
-	str.AppendLine("#include \"Core/String/StringRef.h\"");
-	str.AppendLine("#include \"Core/String/StringParser.h\"");
-	str.AppendLine("#include \"Core/String/HeapString.h\"");
-	str.AppendLine("MEDUSA_BEGIN;");
-	str.AppendLine("//STRONG_FLAGS_4(GraphicsColorMask, R, G, B, A);");
-	str.AppendLine(MACRO_TO_STRING(STRONG_FLAGS_4(GraphicsColorMask, R, G, B, A)));
-	str.AppendLine("MEDUSA_END;");
-
-
-	AdjustFlagStr(str, path, MACRO_TO_STRING(GraphicsColorMask));
-
-
-}
-
-void GenerateGraphicsMapBufferMask(StringRef corePath, StringRef medusaPath)
-{
-	const HeapString path = medusaPath + "Graphics\\GraphicsMapBufferMask.h";
-
-	HeapString str;
-	str.AppendLine("#pragma once");
-	str.AppendLine("//[IGNORE_PRE_DECLARE_FILE]");
-	str.AppendLine("#include \"MedusaPreDeclares.h\"");
-	str.AppendLine("#include \"Core/String/StringRef.h\"");
-	str.AppendLine("#include \"Core/String/StringParser.h\"");
-	str.AppendLine("#include \"Core/String/HeapString.h\"");
-	str.AppendLine("MEDUSA_BEGIN;");
-	str.AppendLine("//STRONG_FLAGS_CUSTOM_6(GraphicsMapBufferMask, Read, GL_MAP_READ_BIT, Write, GL_MAP_WRITE_BIT, InvalidateRange, GL_MAP_INVALIDATE_RANGE_BIT, InvalidateBuffer, GL_MAP_INVALIDATE_BUFFER_BIT, FlushExplicit, GL_MAP_FLUSH_EXPLICIT_BIT, Unsynchronized, GL_MAP_UNSYNCHRONIZED_BIT);");
-	str.AppendLine(MACRO_TO_STRING(STRONG_FLAGS_CUSTOM_6(GraphicsMapBufferMask, Read, GL_MAP_READ_BIT, Write, GL_MAP_WRITE_BIT, InvalidateRange, GL_MAP_INVALIDATE_RANGE_BIT, InvalidateBuffer, GL_MAP_INVALIDATE_BUFFER_BIT, FlushExplicit, GL_MAP_FLUSH_EXPLICIT_BIT, Unsynchronized, GL_MAP_UNSYNCHRONIZED_BIT)));
-	str.AppendLine("MEDUSA_END;");
-
-
-	AdjustFlagStr(str, path, MACRO_TO_STRING(GraphicsMapBufferMask));
-
-
-}
-
-void GenerateGraphicsSyncMask(StringRef corePath, StringRef medusaPath)
-{
-	const HeapString path = medusaPath + "Graphics\\GraphicsSyncMask.h";
-
-	HeapString str;
-	str.AppendLine("#pragma once");
-	str.AppendLine("//[IGNORE_PRE_DECLARE_FILE]");
-	str.AppendLine("#include \"MedusaPreDeclares.h\"");
-	str.AppendLine("#include \"Core/String/StringRef.h\"");
-	str.AppendLine("#include \"Core/String/StringParser.h\"");
-	str.AppendLine("#include \"Core/String/HeapString.h\"");
-	str.AppendLine("MEDUSA_BEGIN;");
-	str.AppendLine("//STRONG_FLAGS_CUSTOM_1(GraphicsSyncMask, FlushCommands, GL_SYNC_FLUSH_COMMANDS_BIT);");
-	str.AppendLine(MACRO_TO_STRING(STRONG_FLAGS_CUSTOM_1(GraphicsSyncMask, FlushCommands, GL_SYNC_FLUSH_COMMANDS_BIT)));
-	str.AppendLine("MEDUSA_END;");
-
-
-	AdjustFlagStr(str, path, MACRO_TO_STRING(GraphicsSyncMask));
-
-
-}
-
-
-void GenerateMeshComponents(StringRef corePath, StringRef medusaPath)
-{
-	const HeapString path = medusaPath + "Resource\\Model\\Mesh\\MeshComponents.h";
-
-	HeapString str;
-	str.AppendLine("#pragma once");
-	str.AppendLine("//[IGNORE_PRE_DECLARE_FILE]");
-	str.AppendLine("#include \"MedusaPreDeclares.h\"");
-	str.AppendLine("#include \"Core/String/StringRef.h\"");
-	str.AppendLine("#include \"Core/String/StringParser.h\"");
-	str.AppendLine("#include \"Core/String/HeapString.h\"");
-	str.AppendLine("MEDUSA_BEGIN;");
-	str.AppendLine("//STRONG_FLAGS_5(MeshComponents, Vertex, Normal, Color, Texcoord, Index);");
-	str.AppendLine(MACRO_TO_STRING(STRONG_FLAGS_5(MeshComponents, Vertex, Normal, Color, Texcoord, Index)));
-	str.AppendLine("MEDUSA_END;");
-
-
-	AdjustFlagStr(str, path, MACRO_TO_STRING(MeshComponents));
-
-
-}
-
-void GenerateRenderingFlags(StringRef corePath, StringRef medusaPath)
-{
-	const HeapString path = medusaPath + "Rendering\\RenderingFlags.h";
-
-	HeapString str;
-	str.AppendLine("#pragma once");
-	str.AppendLine("//[IGNORE_PRE_DECLARE_FILE]");
-	str.AppendLine("#include \"MedusaPreDeclares.h\"");
-	str.AppendLine("#include \"Core/String/StringRef.h\"");
-	str.AppendLine("#include \"Core/String/StringParser.h\"");
-	str.AppendLine("#include \"Core/String/HeapString.h\"");
-	str.AppendLine("MEDUSA_BEGIN;");
-	str.AppendLine("//STRONG_FLAGS_1(RenderingFlags, KeepRenderTarget);");
-	str.AppendLine(MACRO_TO_STRING(STRONG_FLAGS_1(RenderingFlags, KeepRenderTarget)));
-	str.AppendLine("MEDUSA_END;");
-
-
-	AdjustFlagStr(str, path, MACRO_TO_STRING(RenderingFlags));
-
-
-}
-
-
-void GenerateRenderPassFlags(StringRef corePath, StringRef medusaPath)
-{
-	const HeapString path = medusaPath + "Graphics\\RenderPassFlags.h";
-
-	HeapString str;
-	str.AppendLine("#pragma once");
-	str.AppendLine("//[IGNORE_PRE_DECLARE_FILE]");
-	str.AppendLine("#include \"MedusaPreDeclares.h\"");
-	str.AppendLine("#include \"Core/String/StringRef.h\"");
-	str.AppendLine("#include \"Core/String/StringParser.h\"");
-	str.AppendLine("#include \"Core/String/HeapString.h\"");
-	str.AppendLine("MEDUSA_BEGIN;");
-	str.AppendLine("//STRONG_FLAGS_1(RenderPassFlags, SuppressWorldViewProjectMatrixUniform);");
-	str.AppendLine(MACRO_TO_STRING(STRONG_FLAGS_1(RenderPassFlags, SuppressWorldViewProjectMatrixUniform)));
-	str.AppendLine("MEDUSA_END;");
-
-
-	AdjustFlagStr(str, path, MACRO_TO_STRING(RenderPassFlags));
-
-
-}
-
-
-void GenerateBufferObjectChangeFlags(StringRef corePath, StringRef medusaPath)
-{
-	const HeapString path = medusaPath + "Graphics\\Buffer\\BufferObjectChangeFlags.h";
-
-	HeapString str;
-	str.AppendLine("#pragma once");
-	str.AppendLine("//[IGNORE_PRE_DECLARE_FILE]");
-	str.AppendLine("#include \"MedusaPreDeclares.h\"");
-	str.AppendLine("#include \"Core/String/StringRef.h\"");
-	str.AppendLine("#include \"Core/String/StringParser.h\"");
-	str.AppendLine("#include \"Core/String/HeapString.h\"");
-	str.AppendLine("MEDUSA_BEGIN;");
-	str.AppendLine("//STRONG_FLAGS_4(BufferObjectChangeFlags,Vertex,TexCoord,Color,Indices);");
-	str.AppendLine(MACRO_TO_STRING(STRONG_FLAGS_4(BufferObjectChangeFlags, Vertex, TexCoord, Color, Indices)));
-	str.AppendLine("MEDUSA_END;");
-
-
-	AdjustFlagStr(str, path, MACRO_TO_STRING(BufferObjectChangeFlags));
-
-
-}
-
-
-void GenerateGestureFlags(StringRef corePath, StringRef medusaPath)
-{
-	const HeapString path = medusaPath + "Node\\Input\\Gesture\\GestureFlags.h";
-
-	HeapString str;
-	str.AppendLine("#pragma once");
-	str.AppendLine("//[IGNORE_PRE_DECLARE_FILE]");
-	str.AppendLine("#include \"MedusaPreDeclares.h\"");
-	str.AppendLine("#include \"Core/String/StringRef.h\"");
-	str.AppendLine("#include \"Core/String/StringParser.h\"");
-	str.AppendLine("#include \"Core/String/HeapString.h\"");
-	str.AppendLine("MEDUSA_BEGIN;");
-	str.AppendLine("//STRONG_FLAGS_2(GestureFlags,SuppressTouchBegan,SuppressAudio);");
-	str.AppendLine(MACRO_TO_STRING(STRONG_FLAGS_2(GestureFlags, SuppressTouchBegan, SuppressAudio)));
-	str.AppendLine("MEDUSA_END;");
-
-
-	AdjustFlagStr(str, path, MACRO_TO_STRING(GestureFlags));
-
-
-}
-
-
-void GenerateLayerCreateFlags(StringRef corePath, StringRef medusaPath)
-{
-	const HeapString path = medusaPath + "Node\\Layer\\LayerCreateFlags.h";
-
-	HeapString str;
-	str.AppendLine("#pragma once");
-	str.AppendLine("//[IGNORE_PRE_DECLARE_FILE]");
-	str.AppendLine("#include \"MedusaPreDeclares.h\"");
-	str.AppendLine("#include \"Core/String/StringRef.h\"");
-	str.AppendLine("#include \"Core/String/StringParser.h\"");
-	str.AppendLine("#include \"Core/String/HeapString.h\"");
-	str.AppendLine("MEDUSA_BEGIN;");
-	str.AppendLine("//STRONG_FLAGS_1(LayerCreateFlags,AlwaysCreate);");
-	str.AppendLine(MACRO_TO_STRING(STRONG_FLAGS_1(LayerCreateFlags, AlwaysCreate)));
-	str.AppendLine("MEDUSA_END;");
-
-
-	AdjustFlagStr(str, path, MACRO_TO_STRING(LayerCreateFlags));
-
-
-}
-
-void GenerateLayerDeleteFlags(StringRef corePath, StringRef medusaPath)
-{
-	const HeapString path = medusaPath + "Node\\Layer\\LayerDeleteFlags.h";
-
-	HeapString str;
-	str.AppendLine("#pragma once");
-	str.AppendLine("//[IGNORE_PRE_DECLARE_FILE]");
-	str.AppendLine("#include \"MedusaPreDeclares.h\"");
-	str.AppendLine("#include \"Core/String/StringRef.h\"");
-	str.AppendLine("#include \"Core/String/StringParser.h\"");
-	str.AppendLine("#include \"Core/String/HeapString.h\"");
-	str.AppendLine("MEDUSA_BEGIN;");
-	str.AppendLine("//STRONG_FLAGS_1(LayerDeleteFlags,Async);");
-	str.AppendLine(MACRO_TO_STRING(STRONG_FLAGS_1(LayerDeleteFlags, Async)));
-	str.AppendLine("MEDUSA_END;");
-
-
-	AdjustFlagStr(str, path, MACRO_TO_STRING(LayerDeleteFlags));
-
-
-}
-
-void GenerateLayerPushFlags(StringRef corePath, StringRef medusaPath)
-{
-	const HeapString path = medusaPath + "Node\\Layer\\LayerPushFlags.h";
-
-	HeapString str;
-	str.AppendLine("#pragma once");
-	str.AppendLine("//[IGNORE_PRE_DECLARE_FILE]");
-	str.AppendLine("#include \"MedusaPreDeclares.h\"");
-	str.AppendLine("#include \"Core/String/StringRef.h\"");
-	str.AppendLine("#include \"Core/String/StringParser.h\"");
-	str.AppendLine("#include \"Core/String/HeapString.h\"");
-	str.AppendLine("MEDUSA_BEGIN;");
-	str.AppendLine("//STRONG_FLAGS_6(LayerPushFlags,ShowPrevLayer,SuppressUpdateLogic,AlwaysCreate,DisableTouch,HideAllPrevLayers,SaveStatusBeforePush);");
-	str.AppendLine(MACRO_TO_STRING(STRONG_FLAGS_6(LayerPushFlags, ShowPrevLayer, SuppressUpdateLogic, AlwaysCreate, DisableTouch, HideAllPrevLayers, SaveStatusBeforePush)));
-	str.AppendLine("MEDUSA_END;");
-
-
-	AdjustFlagStr(str, path, MACRO_TO_STRING(LayerPushFlags));
-
-
-}
-
-void GenerateLayerPopFlags(StringRef corePath, StringRef medusaPath)
-{
-	const HeapString path = medusaPath + "Node\\Layer\\LayerPopFlags.h";
-
-	HeapString str;
-	str.AppendLine("#pragma once");
-	str.AppendLine("//[IGNORE_PRE_DECLARE_FILE]");
-	str.AppendLine("#include \"MedusaPreDeclares.h\"");
-	str.AppendLine("#include \"Core/String/StringRef.h\"");
-	str.AppendLine("#include \"Core/String/StringParser.h\"");
-	str.AppendLine("#include \"Core/String/HeapString.h\"");
-	str.AppendLine("MEDUSA_BEGIN;");
-	str.AppendLine("//STRONG_FLAGS_7(LayerPopFlags,ShowCurrentLayer,SuppressUpdateLogic,DisableTouch,IgnorePrevLayer,DeleteCurrentLayer,DeleteCurrentLayerAsync,RestoreStatusAfterPop);");
-	str.AppendLine(MACRO_TO_STRING(STRONG_FLAGS_7(LayerPopFlags, ShowCurrentLayer, SuppressUpdateLogic, DisableTouch, IgnorePrevLayer, DeleteCurrentLayer, DeleteCurrentLayerAsync, RestoreStatusAfterPop)));
-	str.AppendLine("MEDUSA_END;");
-
-
-	AdjustFlagStr(str, path, MACRO_TO_STRING(LayerPopFlags));
-
-
-}
-
-void GenerateScenePushFlags(StringRef corePath, StringRef medusaPath)
-{
-	const HeapString path = medusaPath + "Node\\Scene\\ScenePushFlags.h";
-
-	HeapString str;
-	str.AppendLine("#pragma once");
-	str.AppendLine("//[IGNORE_PRE_DECLARE_FILE]");
-	str.AppendLine("#include \"MedusaPreDeclares.h\"");
-	str.AppendLine("#include \"Core/String/StringRef.h\"");
-	str.AppendLine("#include \"Core/String/StringParser.h\"");
-	str.AppendLine("#include \"Core/String/HeapString.h\"");
-	str.AppendLine("MEDUSA_BEGIN;");
-	str.AppendLine("//STRONG_FLAGS_4(ScenePushFlags,ShowPrevScene,SuppressUpdateLogic,DisableTouch,HideAllPrevScenes);");
-	str.AppendLine(MACRO_TO_STRING(STRONG_FLAGS_4(ScenePushFlags, ShowPrevScene, SuppressUpdateLogic, DisableTouch, HideAllPrevScenes)));
-	str.AppendLine("MEDUSA_END;");
-
-
-	AdjustFlagStr(str, path, MACRO_TO_STRING(ScenePushFlags));
-
-
-}
-
-void GenerateScenePopFlags(StringRef corePath, StringRef medusaPath)
-{
-	const HeapString path = medusaPath + "Node\\Scene\\ScenePopFlags.h";
-
-	HeapString str;
-	str.AppendLine("#pragma once");
-	str.AppendLine("//[IGNORE_PRE_DECLARE_FILE]");
-	str.AppendLine("#include \"MedusaPreDeclares.h\"");
-	str.AppendLine("#include \"Core/String/StringRef.h\"");
-	str.AppendLine("#include \"Core/String/StringParser.h\"");
-	str.AppendLine("#include \"Core/String/HeapString.h\"");
-	str.AppendLine("MEDUSA_BEGIN;");
-	str.AppendLine("//STRONG_FLAGS_6(ScenePopFlags,ShowCurrentScene, SuppressUpdateLogic, DisableTouch, IgnorePrevScene, DeleteCurrentScene, DeleteCurrentSceneAsync);");
-	str.AppendLine(MACRO_TO_STRING(STRONG_FLAGS_6(ScenePopFlags, ShowCurrentScene, SuppressUpdateLogic, DisableTouch, IgnorePrevScene, DeleteCurrentScene, DeleteCurrentSceneAsync)));
-	str.AppendLine("MEDUSA_END;");
-
-
-	AdjustFlagStr(str, path, MACRO_TO_STRING(ScenePopFlags));
-
-
-}
-
-void GenerateNodeLayoutArrangeFlags(StringRef corePath, StringRef medusaPath)
-{
-	const HeapString path = medusaPath + "Node\\NodeLayoutArrangeFlags.h";
-
-	HeapString str;
-	str.AppendLine("#pragma once");
-	str.AppendLine("//[IGNORE_PRE_DECLARE_FILE]");
-	str.AppendLine("#include \"MedusaPreDeclares.h\"");
-	str.AppendLine("#include \"Core/String/StringRef.h\"");
-	str.AppendLine("#include \"Core/String/StringParser.h\"");
-	str.AppendLine("#include \"Core/String/HeapString.h\"");
-	str.AppendLine("MEDUSA_BEGIN;");
-	str.AppendLine("//STRONG_FLAGS_2(NodeLayoutArrangeFlags, SuppressArrangeSelf, SuppressArrangeChildren);");
-	str.AppendLine(MACRO_TO_STRING(STRONG_FLAGS_2(NodeLayoutArrangeFlags, SuppressArrangeSelf, SuppressArrangeChildren)));
-	str.AppendLine("MEDUSA_END;");
-
-
-	AdjustFlagStr(str, path, MACRO_TO_STRING(NodeLayoutArrangeFlags));
-
-
-}
-
-void GenerateNodeLayoutChangedFlags(StringRef corePath, StringRef medusaPath)
-{
-	const HeapString path = medusaPath + "Node\\NodeLayoutChangedFlags.h";
-
-	HeapString str;
-	str.AppendLine("#pragma once");
-	str.AppendLine("//[IGNORE_PRE_DECLARE_FILE]");
-	str.AppendLine("#include \"MedusaPreDeclares.h\"");
-	str.AppendLine("#include \"Core/String/StringRef.h\"");
-	str.AppendLine("#include \"Core/String/StringParser.h\"");
-	str.AppendLine("#include \"Core/String/HeapString.h\"");
-	str.AppendLine("MEDUSA_BEGIN;");
-	str.AppendLine("//STRONG_FLAGS_8(NodeLayoutChangedFlags, SizeChanged, ChildAdded, ChildRemoved, ChildCleard, ChildOrderChanged,PositionChanged,ArrangeChanged,CollapseChanged);");
-	str.AppendLine(MACRO_TO_STRING(STRONG_FLAGS_8(NodeLayoutChangedFlags, SizeChanged, ChildAdded, ChildRemoved, ChildCleard, ChildOrderChanged, PositionChanged, ArrangeChanged, CollapseChanged)));
-	str.AppendLine("MEDUSA_END;");
-
-
-	AdjustFlagStr(str, path, MACRO_TO_STRING(NodeLayoutChangedFlags));
-
-
-}
-
-void GenerateNodeRemoveFlags(StringRef corePath, StringRef medusaPath)
-{
-	const HeapString path = medusaPath + "Node\\NodeRemoveFlags.h";
-
-	HeapString str;
-	str.AppendLine("#pragma once");
-	str.AppendLine("//[IGNORE_PRE_DECLARE_FILE]");
-	str.AppendLine("#include \"MedusaPreDeclares.h\"");
-	str.AppendLine("#include \"Core/String/StringRef.h\"");
-	str.AppendLine("#include \"Core/String/StringParser.h\"");
-	str.AppendLine("#include \"Core/String/HeapString.h\"");
-	str.AppendLine("MEDUSA_BEGIN;");
-	str.AppendLine("//STRONG_FLAGS_2(NodeRemoveFlags, OnlyChildren, OnlyManaged);");
-	str.AppendLine(MACRO_TO_STRING(STRONG_FLAGS_2(NodeRemoveFlags, OnlyChildren, OnlyManaged)));
-	str.AppendLine("MEDUSA_END;");
-
-
-	AdjustFlagStr(str, path, MACRO_TO_STRING(NodeRemoveFlags));
-
-
-}
-
-void GenerateNodeUpdateFlags(StringRef corePath, StringRef medusaPath)
-{
-	const HeapString path = medusaPath + "Node\\NodeUpdateFlags.h";
-
-	HeapString str;
-	str.AppendLine("#pragma once");
-	str.AppendLine("//[IGNORE_PRE_DECLARE_FILE]");
-	str.AppendLine("#include \"MedusaPreDeclares.h\"");
-	str.AppendLine("#include \"Core/String/StringRef.h\"");
-	str.AppendLine("#include \"Core/String/StringParser.h\"");
-	str.AppendLine("#include \"Core/String/HeapString.h\"");
-	str.AppendLine("MEDUSA_BEGIN;");
-	str.AppendLine("//STRONG_FLAGS_2(NodeUpdateFlags, SuppressRunningAction, SuppressDispatchingInput);");
-	str.AppendLine(MACRO_TO_STRING(STRONG_FLAGS_2(NodeUpdateFlags, SuppressRunningAction, SuppressDispatchingInput)));
-	str.AppendLine("MEDUSA_END;");
-
-
-	AdjustFlagStr(str, path, MACRO_TO_STRING(NodeUpdateFlags));
-
-
-}
-
-void GenerateNodeVisitFlags(StringRef corePath, StringRef medusaPath)
-{
-	const HeapString path = medusaPath + "Node\\NodeVisitFlags.h";
-
-	HeapString str;
-	str.AppendLine("#pragma once");
-	str.AppendLine("//[IGNORE_PRE_DECLARE_FILE]");
-	str.AppendLine("#include \"MedusaPreDeclares.h\"");
-	str.AppendLine("#include \"Core/String/StringRef.h\"");
-	str.AppendLine("#include \"Core/String/StringParser.h\"");
-	str.AppendLine("#include \"Core/String/HeapString.h\"");
-	str.AppendLine("MEDUSA_BEGIN;");
-	str.AppendLine("//STRONG_FLAGS_2(NodeVisitFlags, ForceUpdateWorldMatrix, ForceUpdateWorldColor);");
-	str.AppendLine(MACRO_TO_STRING(STRONG_FLAGS_2(NodeVisitFlags, ForceUpdateWorldMatrix, ForceUpdateWorldColor)));
-	str.AppendLine("MEDUSA_END;");
-
-
-	AdjustFlagStr(str, path, MACRO_TO_STRING(NodeVisitFlags));
-
-
-}
-
-
-void GenerateRenderableChangedFlags(StringRef corePath, StringRef medusaPath)
-{
-	const HeapString path = medusaPath + "Rendering\\RenderableChangedFlags.h";
-
-	HeapString str;
-	str.AppendLine("#pragma once");
-	str.AppendLine("//[IGNORE_PRE_DECLARE_FILE]");
-	str.AppendLine("#include \"MedusaPreDeclares.h\"");
-	str.AppendLine("#include \"Core/String/StringRef.h\"");
-	str.AppendLine("#include \"Core/String/StringParser.h\"");
-	str.AppendLine("#include \"Core/String/HeapString.h\"");
-	str.AppendLine("MEDUSA_BEGIN;");
-	str.AppendLine("//STRONG_FLAGS_8(RenderableChangedFlags, RenderQueueChanged,BatchChanged,DataTotalChanged, NewVertex, NewNormal, NewTexCoord, NewColor, NewIndex);");
-	str.AppendLine(MACRO_TO_STRING(STRONG_FLAGS_8(RenderableChangedFlags, RenderQueueChanged, BatchChanged, DataTotalChanged, NewVertex, NewNormal, NewTexCoord, NewColor, NewIndex)));
-	str.AppendLine("MEDUSA_END;");
-
-
-	AdjustFlagStr(str, path, MACRO_TO_STRING(RenderableChangedFlags));
-
-
-}
-
-void GenerateApplicationDebugInfoFlags(StringRef corePath, StringRef medusaPath)
-{
-	const HeapString path = medusaPath + "Application\\ApplicationDebugInfoFlags.h";
-
-	HeapString str;
-	str.AppendLine("#pragma once");
-	str.AppendLine("//[IGNORE_PRE_DECLARE_FILE]");
-	str.AppendLine("#include \"MedusaPreDeclares.h\"");
-	str.AppendLine("#include \"Core/String/StringRef.h\"");
-	str.AppendLine("#include \"Core/String/StringParser.h\"");
-	str.AppendLine("#include \"Core/String/HeapString.h\"");
-	str.AppendLine("MEDUSA_BEGIN;");
-	str.AppendLine("//STRONG_FLAGS_3(ApplicationDebugInfoFlags, Performance, GPU, Touch);");
-	str.AppendLine(MACRO_TO_STRING(STRONG_FLAGS_3(ApplicationDebugInfoFlags, Performance, GPU, Touch)));
-	str.AppendLine("MEDUSA_END;");
-
-
-	AdjustFlagStr(str, path, MACRO_TO_STRING(ApplicationDebugInfoFlags));
-
-
-}
-
-void GenerateFontMarkupFlags(StringRef corePath, StringRef medusaPath)
-{
-	const HeapString path = medusaPath + "Resource\\Font\\FontMarkupFlags.h";
-
-	HeapString str;
-	str.AppendLine("#pragma once");
-	str.AppendLine("//[IGNORE_PRE_DECLARE_FILE]");
-	str.AppendLine("#include \"MedusaPreDeclares.h\"");
-	str.AppendLine("#include \"Core/String/StringRef.h\"");
-	str.AppendLine("#include \"Core/String/StringParser.h\"");
-	str.AppendLine("#include \"Core/String/HeapString.h\"");
-	str.AppendLine("MEDUSA_BEGIN;");
-	str.AppendLine("//STRONG_FLAGS_7(FontMarkupFlags,IsItalic,IsBold,HasUnderLine,HasOverline,HasStrikethrough,DisableAutoHint,DisableKerning);");
-	str.AppendLine(MACRO_TO_STRING(STRONG_FLAGS_7(FontMarkupFlags, IsItalic, IsBold, HasUnderLine, HasOverline, HasStrikethrough, DisableAutoHint, DisableKerning)));
-	str.AppendLine("MEDUSA_END;");
-
-
-	AdjustFlagStr(str, path, MACRO_TO_STRING(FontMarkupFlags));
-
-
-}
-
-void GenerateFontFlags(StringRef corePath, StringRef medusaPath)
-{
-	const HeapString path = medusaPath + "Resource\\Font\\FontFlags.h";
-
-	HeapString str;
-	str.AppendLine("#pragma once");
-	str.AppendLine("//[IGNORE_PRE_DECLARE_FILE]");
-	str.AppendLine("#include \"MedusaPreDeclares.h\"");
-	str.AppendLine("#include \"Core/String/StringRef.h\"");
-	str.AppendLine("#include \"Core/String/StringParser.h\"");
-	str.AppendLine("#include \"Core/String/HeapString.h\"");
-	str.AppendLine("MEDUSA_BEGIN;");
-	str.AppendLine("//STRONG_FLAGS_6(FontFlags,HasHorizontal,HasVertical,HasKerning,IsScalable,IsItalic,IsBold);");
-	str.AppendLine(MACRO_TO_STRING(STRONG_FLAGS_6(FontFlags, HasHorizontal, HasVertical, HasKerning, IsScalable, IsItalic, IsBold)));
-	str.AppendLine("MEDUSA_END;");
-
-
-	AdjustFlagStr(str, path, MACRO_TO_STRING(FontFlags));
-
-
-}
-
-void GeneratePngImageColorType(StringRef corePath, StringRef medusaPath)
-{
-	const HeapString path = medusaPath + "Resource\\Image\\PngImageColorType.h";
-
-	HeapString str;
-	str.AppendLine("#pragma once");
-	str.AppendLine("//[IGNORE_PRE_DECLARE_FILE]");
-	str.AppendLine("#include \"MedusaPreDeclares.h\"");
-	str.AppendLine("#include \"Core/String/StringRef.h\"");
-	str.AppendLine("#include \"Core/String/StringParser.h\"");
-	str.AppendLine("#include \"Core/String/HeapString.h\"");
-	str.AppendLine("MEDUSA_BEGIN;");
-	str.AppendLine("//STRONG_FLAGS_CUSTOM_5(PngImageColorType,Grey,0,RGB,2,Palette,3,GreyWithAlpha,4,RGBA,6);");
-	str.AppendLine(MACRO_TO_STRING(STRONG_FLAGS_CUSTOM_5(PngImageColorType, Grey, 0, RGB, 2, Palette, 3, GreyWithAlpha, 4, RGBA, 6)));
-	str.AppendLine("MEDUSA_END;");
-
-
-	AdjustFlagStr(str, path, MACRO_TO_STRING(PngImageColorType));
-
-
-}
-
-
-
-void GeneratePODAnimiationFlags(StringRef corePath, StringRef medusaPath)
-{
-	const HeapString path = medusaPath + "Resource\\Model\\Scene\\PODAnimiationFlags.h";
-
-	HeapString str;
-	str.AppendLine("#pragma once");
-	str.AppendLine("//[IGNORE_PRE_DECLARE_FILE]");
-	str.AppendLine("#include \"MedusaPreDeclares.h\"");
-	str.AppendLine("#include \"Core/String/StringRef.h\"");
-	str.AppendLine("#include \"Core/String/StringParser.h\"");
-	str.AppendLine("#include \"Core/String/HeapString.h\"");
-	str.AppendLine("MEDUSA_BEGIN;");
-	str.AppendLine("//STRONG_FLAGS_4(PODAnimiationFlags,HasPosition,HasRotation,HasScale,HasMatrix);");
-	str.AppendLine(MACRO_TO_STRING(STRONG_FLAGS_4(PODAnimiationFlags, HasPosition, HasRotation, HasScale, HasMatrix)));
-	str.AppendLine("MEDUSA_END;");
-
-
-	AdjustFlagStr(str, path, MACRO_TO_STRING(PODAnimiationFlags));
-
-
-}
-
-void GenerateModelLoadingOptions(StringRef corePath, StringRef medusaPath)
-{
-	const HeapString path = medusaPath + "Resource\\Model\\ModelLoadingOptions.h";
-
-	HeapString str;
-	str.AppendLine("#pragma once");
-	str.AppendLine("//[IGNORE_PRE_DECLARE_FILE]");
-	str.AppendLine("#include \"MedusaPreDeclares.h\"");
-	str.AppendLine("#include \"Core/String/StringRef.h\"");
-	str.AppendLine("#include \"Core/String/StringParser.h\"");
-	str.AppendLine("#include \"Core/String/HeapString.h\"");
-	str.AppendLine("MEDUSA_BEGIN;");
-	str.AppendLine("//STRONG_FLAGS_3(ModelLoadingOptions,NoCameraAnimation,NoSkeletonAnimation,NoLightAnimation);");
-	str.AppendLine(MACRO_TO_STRING(STRONG_FLAGS_3(ModelLoadingOptions, NoCameraAnimation, NoSkeletonAnimation, NoLightAnimation)));
-	str.AppendLine("MEDUSA_END;");
-
-
-	AdjustFlagStr(str, path, MACRO_TO_STRING(ModelLoadingOptions));
-
-
-}
-
-void GenerateFlipMask(StringRef corePath, StringRef medusaPath)
-{
-	const HeapString path = corePath + "Core\\Geometry\\FlipMask.h";
-
-	HeapString str;
-	str.AppendLine("#pragma once");
-	str.AppendLine("//[IGNORE_PRE_DECLARE_FILE]");
-	str.AppendLine("#include \"MedusaCorePreDeclares.h\"");
-	str.AppendLine("#include \"Core/String/StringRef.h\"");
-	str.AppendLine("#include \"Core/String/StringParser.h\"");
-	str.AppendLine("#include \"Core/String/HeapString.h\"");
-	str.AppendLine("MEDUSA_BEGIN;");
-	str.AppendLine("//STRONG_FLAGS_3(FlipMask, X, Y, Z);");
-	str.AppendLine(MACRO_TO_STRING(STRONG_FLAGS_3(FlipMask, X, Y, Z)));
-	str.AppendLine("MEDUSA_END;");
-
-
-	AdjustFlagStr(str, path, MACRO_TO_STRING(FlipMask));
-
-
-}
-
-void GenerateMatrixFlags(StringRef corePath, StringRef medusaPath)
-{
-	const HeapString path = corePath + "Core\\Geometry\\MatrixFlags.h";
-
-	HeapString str;
-	str.AppendLine("#pragma once");
-	str.AppendLine("//[IGNORE_PRE_DECLARE_FILE]");
-	str.AppendLine("#include \"MedusaCorePreDeclares.h\"");
-	str.AppendLine("#include \"Core/String/StringRef.h\"");
-	str.AppendLine("#include \"Core/String/StringParser.h\"");
-	str.AppendLine("#include \"Core/String/HeapString.h\"");
-	str.AppendLine("MEDUSA_BEGIN;");
-	str.AppendLine("//STRONG_FLAGS_2(MatrixFlags, Affine, Is2D);");
-	str.AppendLine(MACRO_TO_STRING(STRONG_FLAGS_2(MatrixFlags, Affine, Is2D)));
-	str.AppendLine("MEDUSA_END;");
-
-
-	AdjustFlagStr(str, path, MACRO_TO_STRING(MatrixFlags));
-
-
-}
-
-void GenerateMoveableInheritFlags(StringRef corePath, StringRef medusaPath)
-{
-	const HeapString path = corePath + "Core\\Geometry\\MoveableInheritFlags.h";
-
-	HeapString str;
-	str.AppendLine("#pragma once");
-	str.AppendLine("//[IGNORE_PRE_DECLARE_FILE]");
-	str.AppendLine("#include \"MedusaCorePreDeclares.h\"");
-	str.AppendLine("#include \"Core/String/StringRef.h\"");
-	str.AppendLine("#include \"Core/String/StringParser.h\"");
-	str.AppendLine("#include \"Core/String/HeapString.h\"");
-	str.AppendLine("MEDUSA_BEGIN;");
-	str.AppendLine("//STRONG_FLAGS_3(MoveableInheritFlags, IgnoreScale, IgnoreRotation, IgnoreFlip);");
-	str.AppendLine(MACRO_TO_STRING(STRONG_FLAGS_3(MoveableInheritFlags, IgnoreScale, IgnoreRotation, IgnoreFlip)));
-	str.AppendLine("MEDUSA_END;");
-
-
-	AdjustFlagStr(str, path, MACRO_TO_STRING(MoveableInheritFlags));
-
-
-}
-
-void GenerateMoveableChangedFlags(StringRef corePath, StringRef medusaPath)
-{
-	const HeapString path = corePath + "Core\\Geometry\\MoveableChangedFlags.h";
-
-	HeapString str;
-	str.AppendLine("#pragma once");
-	str.AppendLine("//[IGNORE_PRE_DECLARE_FILE]");
-	str.AppendLine("#include \"MedusaCorePreDeclares.h\"");
-	str.AppendLine("#include \"Core/String/StringRef.h\"");
-	str.AppendLine("#include \"Core/String/StringParser.h\"");
-	str.AppendLine("#include \"Core/String/HeapString.h\"");
-	str.AppendLine("MEDUSA_BEGIN;");
-	str.AppendLine("//STRONG_FLAGS_9(MoveableChangedFlags, SizeChanged, PositionChanged, RotationChanged, ScaleChanged, AnchorChanged, FlipChanged, MatrixChanged, WorldMatrixChanged,InheritChanged);");
-	str.AppendLine(MACRO_TO_STRING(STRONG_FLAGS_9(MoveableChangedFlags, SizeChanged, PositionChanged, RotationChanged, ScaleChanged, AnchorChanged, FlipChanged, MatrixChanged, WorldMatrixChanged, InheritChanged)));
-	str.AppendLine("MEDUSA_END;");
-
-
-	AdjustFlagStr(str, path, MACRO_TO_STRING(MoveableChangedFlags));
-
-
-}
-
-void GenerateOrientationMask(StringRef corePath, StringRef medusaPath)
-{
-	const HeapString path = corePath + "Core\\Geometry\\OrientationMask.h";
-
-	HeapString str;
-	str.AppendLine("#pragma once");
-	str.AppendLine("//[IGNORE_PRE_DECLARE_FILE]");
-	str.AppendLine("#include \"MedusaCorePreDeclares.h\"");
-	str.AppendLine("#include \"Core/String/StringRef.h\"");
-	str.AppendLine("#include \"Core/String/StringParser.h\"");
-	str.AppendLine("#include \"Core/String/HeapString.h\"");
-	str.AppendLine("MEDUSA_BEGIN;");
-	str.AppendLine("//STRONG_FLAGS_CUSTOM_7(OrientationMask,Up, 1,Down, 2,Left, 4,Right, 8,UpAndDown, 3,LeftAndRight, 12,AllButDown, 13);");
-	str.AppendLine(MACRO_TO_STRING(STRONG_FLAGS_CUSTOM_7(OrientationMask, Up, 1, Down, 2, Left, 4, Right, 8, UpAndDown, 3, LeftAndRight, 12, AllButDown, 13)));
-	str.AppendLine("MEDUSA_END;");
-
-
-	AdjustFlagStr(str, path, MACRO_TO_STRING(OrientationMask));
-
-
-}
-
-void GeneratePackageFlags(StringRef corePath, StringRef medusaPath)
-{
-	const HeapString path = corePath + "Core\\IO\\Package\\PackageFlags.h";
-
-	HeapString str;
-	str.AppendLine("#pragma once");
-	str.AppendLine("//[IGNORE_PRE_DECLARE_FILE]");
-	str.AppendLine("#include \"MedusaCorePreDeclares.h\"");
-	str.AppendLine("#include \"Core/String/StringRef.h\"");
-	str.AppendLine("#include \"Core/String/StringParser.h\"");
-	str.AppendLine("#include \"Core/String/HeapString.h\"");
-	str.AppendLine("MEDUSA_BEGIN;");
-	str.AppendLine("//STRONG_FLAGS_4(PackageFlags,Readonly,EncryptFileNames,WriteSaltData,WholeFileCoding);");
-	str.AppendLine(MACRO_TO_STRING(STRONG_FLAGS_4(PackageFlags, Readonly,EncryptFileNames,WriteSaltData,WholeFileCoding)));
-	str.AppendLine("MEDUSA_END;");
-
-
-	AdjustFlagStr(str, path, MACRO_TO_STRING(PackageFlags));
-
-
-}
-
-void GenerateLogLevel(StringRef corePath, StringRef medusaPath)
-{
-	const HeapString path = corePath + "Core\\Log\\LogLevel.h";
-
-	HeapString str;
-	str.AppendLine("#pragma once");
-	str.AppendLine("//[IGNORE_PRE_DECLARE_FILE]");
-	str.AppendLine("#include \"MedusaCorePreDeclares.h\"");
-	str.AppendLine("#include \"Core/String/StringRef.h\"");
-	str.AppendLine("#include \"Core/String/StringParser.h\"");
-	str.AppendLine("#include \"Core/String/HeapString.h\"");
-	str.AppendLine("MEDUSA_BEGIN;");
-	str.AppendLine("//STRONG_FLAGS_CUSTOM_2(LogLevel,Info,0x1,Error,0x2);");
-	str.AppendLine(MACRO_TO_STRING(STRONG_FLAGS_CUSTOM_2(LogLevel, Info, 0x1, Error, 0x2)));
-	str.AppendLine("MEDUSA_END;");
-
-
-	AdjustFlagStr(str, path, MACRO_TO_STRING(LogLevel));
-
-
-}
-
-void GenerateMessageErrorReportSuppress(StringRef corePath, StringRef medusaPath)
-{
-	const HeapString path = corePath + "Core\\Message\\MessageErrorReportSuppress.h";
-
-	HeapString str;
-	str.AppendLine("#pragma once");
-	str.AppendLine("//[IGNORE_PRE_DECLARE_FILE]");
-	str.AppendLine("#include \"MedusaCorePreDeclares.h\"");
-	str.AppendLine("#include \"Core/String/StringRef.h\"");
-	str.AppendLine("#include \"Core/String/StringParser.h\"");
-	str.AppendLine("#include \"Core/String/HeapString.h\"");
-	str.AppendLine("MEDUSA_BEGIN;");
-	str.AppendLine("//STRONG_FLAGS_6(MessageErrorReportSuppress,ConnectFail,AuthFailed,ServerFailed,SwitchUI,UpdateLogic,HideActivityIndicator);");
-	str.AppendLine(MACRO_TO_STRING(STRONG_FLAGS_6(MessageErrorReportSuppress, ConnectFail, AuthFailed, ServerFailed, SwitchUI, UpdateLogic, HideActivityIndicator)));
-	str.AppendLine("MEDUSA_END;");
-
-
-	AdjustFlagStr(str, path, MACRO_TO_STRING(MessageErrorReportSuppress));
-
-
-}
 
 void GeneratePublishVersions(StringRef corePath, StringRef medusaPath)
 {
@@ -1990,27 +969,6 @@ void GeneratePublishLanguages(StringRef corePath, StringRef medusaPath)
 
 }
 
-void GenerateEngineFeatures(StringRef corePath, StringRef medusaPath)
-{
-	const HeapString path = medusaPath + "Platform\\EngineFeatures.h";
-
-	HeapString str;
-	str.AppendLine("#pragma once");
-	str.AppendLine("//[IGNORE_PRE_DECLARE_FILE]");
-	str.AppendLine("#include \"MedusaPreDeclares.h\"");
-	str.AppendLine("#include \"Core/String/StringRef.h\"");
-	str.AppendLine("#include \"Core/String/StringParser.h\"");
-	str.AppendLine("#include \"Core/String/HeapString.h\"");
-	str.AppendLine("MEDUSA_BEGIN;");
-	str.AppendLine("//EngineFeatures, MultipleThreadUpdating,MultipleThreadRendering);");
-	str.AppendLine(MACRO_TO_STRING(STRONG_FLAGS_2(EngineFeatures, MultipleThreadUpdating, MultipleThreadRendering)));
-	str.AppendLine("MEDUSA_END;");
-
-
-	AdjustFlagStr(str, path, MACRO_TO_STRING(EngineFeatures));
-
-
-}
 #pragma endregion Flags
 
 
@@ -2019,7 +977,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	System::Instance().Initialize();
 	Log::Initialize();
 	HeapString appPath = System::Instance().ApplicationPath();
-	HeapString rootpath = appPath.SubString(0, appPath.IndexOf("Engine") + 7);
+	intp index = appPath.IndexOf("\\Tool\\CodeGenerator");
+	HeapString rootpath = appPath.SubString(0, index);
 
 	const HeapString corePath = rootpath + HeapString("\\Medusa\\MedusaCore\\");
 	const HeapString medusaPath = rootpath + HeapString("\\Medusa\\Medusa\\");
@@ -2042,74 +1001,12 @@ int _tmain(int argc, _TCHAR* argv[])
 	ModifyTuple(tuplePath);
 
 
-	GenerateSirenDataType(corePath, medusaPath);
-	GenerateFileUpdaterMessageType(corePath, medusaPath);
-
-	GenerateGraphicsHintMode(corePath, medusaPath);
-	GenerateGraphicsBlendEquation(corePath, medusaPath);
-	GenerateGraphicsPixelDataType(corePath, medusaPath);
-	GenerateGraphicsFuncType(corePath, medusaPath);
-	GenerateGraphicsStencilOperation(corePath, medusaPath);
-	GenerateGraphicsFrontFace(corePath, medusaPath);
-	GenerateGraphicsFace(corePath, medusaPath);
-	GenerateSkeletonAttachmentType(corePath, medusaPath);
-	GenerateAnalyticsCurrencyType(corePath, medusaExtensionPath);
-	GenerateAnalyticsPaymentType(corePath, medusaExtensionPath);
-	GenerateAnalyticsRewardType(corePath, medusaExtensionPath);
-
-
-	GenerateGameFeatures(corePath, medusaPath);
-	GenerateGraphicsBufferComponentMask(corePath, medusaPath);
-	GenerateGraphicsColorMask(corePath, medusaPath);
-	GenerateGraphicsMapBufferMask(corePath, medusaPath);
-	GenerateGraphicsSyncMask(corePath, medusaPath);
-	GenerateMeshComponents(corePath, medusaPath);
-	GenerateRenderingFlags(corePath, medusaPath);
-	GenerateRenderPassFlags(corePath, medusaPath);
-	GenerateBufferObjectChangeFlags(corePath, medusaPath);
-	GenerateGestureFlags(corePath, medusaPath);
-	GenerateLayerCreateFlags(corePath, medusaPath);
-	GenerateLayerDeleteFlags(corePath, medusaPath);
-	GenerateLayerPushFlags(corePath, medusaPath);
-	GenerateLayerPopFlags(corePath, medusaPath);
-
-	GenerateScenePushFlags(corePath, medusaPath);
-	GenerateScenePopFlags(corePath, medusaPath);
-
-	GenerateNodeLayoutArrangeFlags(corePath, medusaPath);
-	GenerateNodeLayoutChangedFlags(corePath, medusaPath);
-	GenerateNodeRemoveFlags(corePath, medusaPath);
-	GenerateNodeUpdateFlags(corePath, medusaPath);
-	GenerateNodeVisitFlags(corePath, medusaPath);
-
-
-
-	GenerateRenderableChangedFlags(corePath, medusaPath);
-	GenerateApplicationDebugInfoFlags(corePath, medusaPath);
-
-
-	GenerateFontMarkupFlags(corePath, medusaPath);
-	GenerateFontFlags(corePath, medusaPath);
-	GeneratePngImageColorType(corePath, medusaPath);
-	GeneratePODAnimiationFlags(corePath, medusaPath);
-	GenerateModelLoadingOptions(corePath, medusaPath);
-
-	GenerateFlipMask(corePath, medusaPath);
-	GenerateMatrixFlags(corePath, medusaPath);
-	GenerateMoveableInheritFlags(corePath, medusaPath);
-	GenerateMoveableChangedFlags(corePath, medusaPath);
-	GenerateOrientationMask(corePath, medusaPath);
-
-	GeneratePackageFlags(corePath, medusaPath);
-	GenerateLogLevel(corePath, medusaPath);
-	GenerateMessageErrorReportSuppress(corePath, medusaPath);
-
+	GenerateSirenTypeId(corePath, medusaPath);
 
 	GeneratePublishVersions(corePath, medusaPath);
 	GeneratePublishDevices(corePath, medusaPath);
 	GeneratePublishLanguages(corePath, medusaPath);
 
-	GenerateEngineFeatures(corePath, medusaPath);
 
 	return 0;
 }
