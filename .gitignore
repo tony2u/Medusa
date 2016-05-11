@@ -166,3 +166,4 @@
 /External/jpeg/win/Debug
 /External/jpeg/win/x64/Debug
 /External/png/x86/Release
+*.opendb
