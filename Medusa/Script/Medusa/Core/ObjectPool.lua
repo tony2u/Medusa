@@ -35,3 +35,5 @@ function _M:ReleaseAll(func)
 
 	self.items = { }
 end
+
+return _M;

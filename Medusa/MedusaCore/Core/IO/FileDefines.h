@@ -15,7 +15,6 @@ enum class FileMode { File, Directory };
 
 enum class FileType :char
 {
-	Unknown = -1,
 	None = 0,
 
 	rawimg = 1,

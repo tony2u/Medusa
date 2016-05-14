@@ -18,14 +18,13 @@ MedusaExtensionModule::MedusaExtensionModule()
 
 bool MedusaExtensionModule::Initialize()
 {
+	NodeEditorFactory::Instance().Register<Cocos::BinaryEditor>();
+	NodeEditorFactory::Instance().Register<Cocos::JsonEditor>();
 	return true;
 }
 
 bool MedusaExtensionModule::OnLoad(IEventArg& e /*= IEventArg::Empty*/)
 {
-	NodeEditorFactory::Instance().Register<Cocos::BinaryEditor>();
-
-	NodeEditorFactory::Instance().Register<Cocos::JsonEditor>();
 
 	return true;
 }

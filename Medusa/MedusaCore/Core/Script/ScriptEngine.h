@@ -28,7 +28,7 @@ public:
 
 	static ScriptState* State();
 
-
+	static bool ExistsScriptFile(StringRef name);
 protected:
 	virtual bool OnLoad(IEventArg& e = IEventArg::Empty) override;
 	virtual bool OnUnload(IEventArg& e = IEventArg::Empty) override;

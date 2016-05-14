@@ -6,7 +6,8 @@
 
 #include "ScriptEngine.h"
 #include "Core/Command/EventArg/UserDataEventArg.h"
-
+#include "Core/IO/FileId.h"
+#include "Core/IO/FileSystem.h"
 MEDUSA_BEGIN;
 
 ScriptEngine::ScriptEngine()
@@ -79,6 +80,16 @@ ScriptState* ScriptEngine::State()
 	}
 	return nullptr;
 }
+
+bool ScriptEngine::ExistsScriptFile(StringRef name)
+{
+	FileId fileId;
+#ifdef MEDUSA_LUA
+	fileId.Name = name + FileExtensions::lua;
+#endif
+	return FileSystem::Instance().Exists(fileId);
+}
+
 
 MEDUSA_END;
 

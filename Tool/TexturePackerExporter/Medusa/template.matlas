@@ -1,2 +1,3 @@
 {{texture.fullName}},{{texture.size.width}},{{texture.size.height}},{{settings.outputFormat}},{{settings.ditherType}},{{settings.flipPVR}},{{settings.premultiplyAlpha}}{% for sprite in texture.allSprites %}
-{{sprite.fullName}},{{sprite.rotated}},{{sprite.sourceRect.x}},{{sprite.sourceRect.y}},{{sprite.untrimmedSize.width}},{{sprite.untrimmedSize.height}},{{sprite.frameRect.x}},{{sprite.frameRect.y}},{{sprite.frameRect.width}},{{sprite.frameRect.height}},{{sprite.aliasList}}{% endfor %}
+{{sprite.fullName}},{{sprite.rotated}},{{sprite.sourceRect.x}},{{sprite.sourceRect.y}},{{sprite.untrimmedSize.width}},{{sprite.untrimmedSize.height}},{{sprite.frameRect.x}},{{sprite.frameRect.y}},{{sprite.frameRect.width}},{{sprite.frameRect.height}},{{sprite.aliasList}},[{% for vertex in sprite.vertices %}{{vertex.x}},{{vertex.y}},{% endfor %}],[{% for vertex in sprite.verticesUV %}{{vertex.x}},{{vertex.y}},{% endfor %}],{{sprite.triangleIndices}}{% endfor %}
+

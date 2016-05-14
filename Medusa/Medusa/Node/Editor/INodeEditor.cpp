@@ -7,4 +7,25 @@
 
 MEDUSA_BEGIN;
 
+NodeCreateFlags INodeEditor::GetChildrenCreateFlags(NodeCreateFlags val)
+{
+	if (MEDUSA_FLAG_HAS(val,NodeCreateFlags::BindScriptRecursively))
+	{
+		return val;
+	}
+
+	if (MEDUSA_FLAG_HAS(val, NodeCreateFlags::BindScriptSelf))
+	{
+		MEDUSA_FLAG_REMOVE(val, NodeCreateFlags::BindScriptSelf);
+	}
+
+	if (MEDUSA_FLAG_HAS(val, NodeCreateFlags::BindScriptChildren))
+	{
+		MEDUSA_FLAG_ADD(val, NodeCreateFlags::BindScriptSelf);
+	}
+
+	return val;
+	
+}
+
 MEDUSA_END;

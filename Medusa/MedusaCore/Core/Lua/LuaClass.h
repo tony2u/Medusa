@@ -120,7 +120,7 @@ public:
 		}
 		else
 		{
-			SetReadOnly(name);
+			SetReadonly(name);
 		}
 
 		return *this;
@@ -130,7 +130,7 @@ public:
 	SelfType& AddMemberVariable(StringRef name, const T TClass::* val, bool writable = true)
 	{
 		SetGetter(name, LuaRef::NewFunctionWith(mState, &OnGetMemberVariable<T>, val));
-		SetReadOnly(name);
+		SetReadonly(name);
 		return *this;
 	}
 
@@ -425,7 +425,7 @@ private:
 			auto ptr = static_cast<T TClass::**>(lua_touserdata(state, lua_upvalueindex(1)));
 			assert(ptr);
 
-			const T* obj = ILuaObject::GetExactObject<TClass>(state, 1);	//1 is for obj
+			const TClass* obj = ILuaObject::GetReferenceObject<TClass>(state, 1);	//1 is for obj
 
 			LuaType<T&>::Push(state, obj->**ptr);	//always push reference of object
 			return 1;
@@ -444,7 +444,7 @@ private:
 			assert(lua_islightuserdata(state, lua_upvalueindex(1)));
 			auto ptr = static_cast<T TClass::**>(lua_touserdata(state, lua_upvalueindex(1)));
 			assert(ptr);
-			const T* obj = ILuaObject::GetExactObject<TClass>(state, 1);	//1 is for obj
+			TClass* obj = ILuaObject::GetReferenceObject<TClass>(state, 1);	//1 is for obj
 			obj->**ptr = LuaType<T>::Get(state, 2);
 			return 0;
 		}

@@ -8,7 +8,7 @@ enum class InputBehaviors
 	SuppressTouchBegan = 1,
 	PlayAudio = 2,
 	DisableEventBinding = 4,
-	ScriptBinding = 8,
+	DisableScriptBinding = 8,
 
 	All = SuppressTouchBegan | PlayAudio
 };

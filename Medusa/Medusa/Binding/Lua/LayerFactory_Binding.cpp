@@ -18,7 +18,7 @@ bool Register_LayerFactory(IEventArg& e)
 
 	auto cls = module.BeginClass<LayerFactory>();
 
-	cls.AddFunction("Create", [](const StringRef& className, const FileIdRef& editorFile)->ILayer* {return LayerFactory::Instance().Create(className, editorFile); });
+	cls.AddFunction("Create", [](const StringRef& className, const FileIdRef& editorFile, NodeCreateFlags flags)->ILayer* {return LayerFactory::Instance().Create(className, editorFile,IEventArg::Empty, flags); });
 
 	//typedef  IScene* (SceneManager::*PushPtr)(const StringRef&, ScenePushFlags, const IEventArg&);
 	//reg.AddMemberFunction("Push", (PushPtr)(&SceneManager::Push));

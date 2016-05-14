@@ -47,6 +47,26 @@ LuaModule LuaModule::BeginModule(StringRef name)
 }
 
 
+LuaTable LuaModule::BeginTable(StringRef name)
+{
+	if (name.IsEmpty())
+	{
+		Log::AssertFailed("Cannot have empty name lua table");
+	}
+
+	auto ref = mRef.Rawget(name);
+	if (ref != nullptr)
+	{
+		return LuaTable(mState, ref, name);
+	}
+	else
+	{
+		LuaTable mod(mState, name);
+		mRef.Rawset(name, mod.Ref());
+		return mod;
+	}
+}
+
 MEDUSA_END;
 
 #endif

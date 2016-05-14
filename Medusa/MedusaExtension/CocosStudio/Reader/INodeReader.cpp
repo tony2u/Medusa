@@ -4,10 +4,10 @@
 #include "Geometry/Size3.h"
 #include "Node/INode.h"
 #include "CocosStudio/CSParseBinary_generated.h"
-
+#include "Application/Settings/ApplicationSettings.h"
 MEDUSA_COCOS_BEGIN;
 
-void INodeReader::SetPropsWithFlatBuffers(INode* node, const flatbuffers::Table* nodeOptions)
+void INodeReader::SetPropsWithFlatBuffers(INode* node, const flatbuffers::Table* nodeOptions, NodeCreateFlags flags /*= NodeCreateFlags::None*/)
 {
 	auto options = (flatbuffers::WidgetOptions*)(nodeOptions);
 	const flatbuffers::LayoutComponentTable* layoutComponent = options->layoutComponent();
@@ -27,7 +27,6 @@ void INodeReader::SetPropsWithFlatBuffers(INode* node, const flatbuffers::Table*
 	float h = options->size()->height();
 	byte alpha = options->alpha();
 	Color4F color(options->color()->r(), options->color()->g(), options->color()->b(), alpha);
-	StringRef customProperty = options->customProperty()->c_str();
 	bool flipX = options->flipX() != 0;
 	bool flipY = options->flipY() != 0;
 
@@ -43,7 +42,6 @@ void INodeReader::SetPropsWithFlatBuffers(INode* node, const flatbuffers::Table*
 	node->SetTag(tag);
 	node->SetFlipX(flipX);
 	node->SetFlipY(flipY);
-	node->MutableProperties().Set(HeapString("UserData"), customProperty);
 
 	node->SetPositionX(options->position()->x());
 	node->SetPositionY(options->position()->y());
@@ -55,7 +53,7 @@ void INodeReader::SetPropsWithFlatBuffers(INode* node, const flatbuffers::Table*
 		{
 			node->SetDock(DockPoint::Percent);
 			node->SetRelativePosition(Point2F(layoutComponent->positionXPercent(), layoutComponent->positionYPercent()));
-			
+
 		}
 
 		if (layoutComponent->stretchHorizontalEnabled())
@@ -101,12 +99,23 @@ void INodeReader::SetPropsWithFlatBuffers(INode* node, const flatbuffers::Table*
 		node->SetMarginEdge(marginEdges);
 	}
 
-	
+
 	SetRotatioSkewXY(node, rotationSkewX, rotationSkewY);
+
+	StringRef frameEvent = options->frameEvent()->c_str();
+	StringRef customProperty = options->customProperty()->c_str();
+	if (!frameEvent.IsEmpty())
+	{
+		node->MutableProperties().Add(NodeProperties::FrameEvent, frameEvent);
+	}
+
+	node->MutableProperties().Parse(customProperty);
+
+	TryBindScript(node, flags);
 }
 
 
-void INodeReader::SetPropsWithJson(INode* node, const rapidjson::Value& nodeTree)
+void INodeReader::SetPropsWithJson(INode* node, const rapidjson::Value& nodeTree, NodeCreateFlags flags /*= NodeCreateFlags::None*/)
 {
 	StringRef name = nodeTree.GetString("Name", nullptr);
 	node->SetName(name);
@@ -114,14 +123,14 @@ void INodeReader::SetPropsWithJson(INode* node, const rapidjson::Value& nodeTree
 	int tag = nodeTree.Get("Tag", 0);
 	node->SetTag(tag);
 
-	bool isVisible= nodeTree.Get("VisibleForFrame", true);
+	bool isVisible = nodeTree.Get("VisibleForFrame", true);
 	node->SetVisible(isVisible);
 
-	
+
 
 
 	//int actionTag = jsonNode.Get("ActionTag", 0);
-	
+
 	const rapidjson::Value* blendNode = nodeTree.GetMember("BlendFunc");
 	if (blendNode != nullptr)
 	{
@@ -218,8 +227,8 @@ void INodeReader::SetPropsWithJson(INode* node, const rapidjson::Value& nodeTree
 		}
 	}
 
-	bool percentWidthEnable = nodeTree.Get("PercentWidthEnable", false)|| nodeTree.Get("PercentWidthEnabled", false);
-	bool percentHeightEnable = nodeTree.Get("PercentHeightEnable", false)|| nodeTree.Get("PercentHeightEnabled", false);
+	bool percentWidthEnable = nodeTree.Get("PercentWidthEnable", false) || nodeTree.Get("PercentWidthEnabled", false);
+	bool percentHeightEnable = nodeTree.Get("PercentHeightEnable", false) || nodeTree.Get("PercentHeightEnabled", false);
 	if (percentWidthEnable || percentHeightEnable)
 	{
 		node->SetStretch(Stretch::Percent);
@@ -250,16 +259,18 @@ void INodeReader::SetPropsWithJson(INode* node, const rapidjson::Value& nodeTree
 	node->SetMarginEdge(marginEdges);
 
 	StringRef userData = nodeTree.GetString("UserData", nullptr);
-	if (userData.IsEmpty())
+	if (!userData.IsEmpty())
 	{
-		node->MutableProperties().Set("UserData", userData);
+		node->MutableProperties().Parse(userData);
 	}
 
 	StringRef frameEvent = nodeTree.GetString("FrameEvent", nullptr);
-	if (frameEvent.IsEmpty())
+	if (!frameEvent.IsEmpty())
 	{
-		node->MutableProperties().Set("FrameEvent", frameEvent);
+		node->MutableProperties().Add(NodeProperties::FrameEvent, frameEvent);
 	}
+
+	TryBindScript(node, flags);
 }
 
 MarginEdges INodeReader::GetHorizontalMarginEdge(StringRef val)
@@ -350,6 +361,36 @@ Color4F INodeReader::ToColor(const rapidjson::Value* jsonNode)
 	}
 
 	return Color4F::White;	//default color
+}
+
+void INodeReader::TryBindScript(INode* node, NodeCreateFlags flags /*= NodeCreateFlags::None*/)
+{
+#ifdef MEDUSA_SCRIPT
+
+	if (ApplicationSettings::Instance().HasScriptBinding())
+	{
+		if (MEDUSA_FLAG_HAS(flags, NodeCreateFlags::BindScriptSelf))
+		{
+			StringRef customScript;
+			//re check if editor disable the script
+			if (node->Properties().Has(NodeProperties::Script))
+			{
+				customScript = node->Properties().Get(NodeProperties::Script);	//may be empty
+				if (customScript.Compare("false", true) == 0)
+				{
+					return;
+				}
+				else if (customScript.Compare("true", true) == 0)
+				{
+					customScript = StringRef::Empty;
+				}
+			}
+			node->TryAttachScriptObject(customScript);
+		}
+		
+	}
+
+#endif
 }
 
 MEDUSA_COCOS_END;

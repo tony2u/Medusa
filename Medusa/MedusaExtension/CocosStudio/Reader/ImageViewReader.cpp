@@ -13,7 +13,7 @@
 #include "Core/IO/Path.h"
 MEDUSA_COCOS_BEGIN;
 
-INode* ImageViewReader::CreateNodeWithFlatBuffers(INodeEditor& editor, const flatbuffers::Table* imageOptions, const StringRef& className)
+INode* ImageViewReader::CreateNodeWithFlatBuffers(INodeEditor& editor, const flatbuffers::Table* imageOptions, const StringRef& className, NodeCreateFlags flags /*= NodeCreateFlags::None*/)
 {
 	auto options = (flatbuffers::ImageViewOptions*)imageOptions;
 	bool isEnableNineGrid = options->scale9Enabled() != 0;
@@ -40,11 +40,11 @@ INode* ImageViewReader::CreateNodeWithFlatBuffers(INodeEditor& editor, const fla
 	auto* sprite = NodeFactory::Instance().CreateNineGridSprite(size, fullName, padding);
 	sprite->EnableNineGrid(isEnableNineGrid);
 
-	SetPropsWithFlatBuffers(sprite, (flatbuffers::Table*) options->widgetOptions());
+	SetPropsWithFlatBuffers(sprite, (flatbuffers::Table*) options->widgetOptions(), flags);
 	return sprite;
 }
 
-INode* ImageViewReader::CreateNodeWithJson(INodeEditor& editor, const rapidjson::Value& nodeTree, const StringRef& className /*= StringRef::Empty*/)
+INode* ImageViewReader::CreateNodeWithJson(INodeEditor& editor, const rapidjson::Value& nodeTree, const StringRef& className /*= StringRef::Empty*/, NodeCreateFlags flags /*= NodeCreateFlags::None*/)
 {
 	return nullptr;
 }

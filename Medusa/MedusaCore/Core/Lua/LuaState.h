@@ -9,7 +9,9 @@
 #include "Core/String/StringRef.h"
 #include "LuaStack.h"
 #include "LuaModule.h"
+#include "LuaTable.h"
 #include "LuaClass.h"
+#include "LuaEnum.h"
 #include "LuaSelector.h"
 #include "LuaObjectPtr.h"
 #include "LuaObjectValue.h"
@@ -18,7 +20,7 @@ MEDUSA_BEGIN;
 
 class LuaState
 {
-	friend class LuaEngine;
+	friend class LuaMachine;
 public:
 	LuaState(bool openDefaultLibs = true);
 	LuaState(lua_State* state, bool isOwner = false);
@@ -57,18 +59,29 @@ public:
 
 
 	bool DoFile(const FileIdRef& file, int resultCount = 0);
-	bool DoBuffer(StringRef buffer, int resultCount = 0,StringRef name=StringRef::Empty);
+	bool DoBuffer(StringRef buffer, int resultCount = 0, StringRef fileName = StringRef::Empty);
 
 	LuaRef DoFileWithReturn(const FileIdRef& file);
-	LuaRef DoBufferWithReturn(StringRef buffer, StringRef name = StringRef::Empty);
+	LuaRef DoBufferWithReturn(StringRef buffer, StringRef fileName = StringRef::Empty);
 
+	template <typename... TArgs>
+	LuaRef RequireNew(StringRef name, TArgs&&... args)
+	{
+		HeapString file = name + ".lua";
+		LuaRef classObj = DoFileWithReturn(file);
+		if (classObj == nullptr)
+		{
+			Log::FormatError("Cannot find class file:{}", file);
+		}
+		return classObj.InvokeMember<LuaRef>("new", std::forward<TArgs>(args)...);
+	}
 
 	void ForceGC();
 
-	template<typename T=LuaRef>
+	template<typename T = LuaRef>
 	T Get(StringRef name)
 	{
-		return LuaRef::EvaluateGet(mState,name).To<T>();
+		return LuaRef::EvaluateGet(mState, name).To<T>();
 	}
 
 	template<typename T>
@@ -112,6 +125,7 @@ public:
 	}
 public:
 	LuaModule BeginModule(StringRef name);
+	LuaTable BeginTable(StringRef name);
 
 	template<typename T>
 	LuaClass<T> BeginClass(StringRef name = StringRef::Empty)const
@@ -130,6 +144,29 @@ public:
 		else
 		{
 			LuaClass<T> cls(mState, name);
+			parent.Rawset(name, cls.Ref());
+			return cls;
+		}
+
+	}
+
+	template<typename T>
+	LuaEnum<T> BeginEnum(StringRef name = StringRef::Empty)const
+	{
+		if (name.IsEmpty())
+		{
+			name = LuaEnum<T>::FixedClassName();
+		}
+
+		LuaRef parent = LuaRef::Global(mState);
+		auto ref = parent.Rawget(name);
+		if (ref != nullptr)
+		{
+			return LuaEnum<T>(mState, ref, name);
+		}
+		else
+		{
+			LuaEnum<T> cls(mState, name);
 			parent.Rawset(name, cls.Ref());
 			return cls;
 		}

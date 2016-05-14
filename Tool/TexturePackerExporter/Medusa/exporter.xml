@@ -62,6 +62,10 @@
         <!-- add more <file> ... </file> tags if you need more than one output file -->
     </files>
 
+	  <!-- target framework supports rendering sprite with triangle list, not just rectangle-->
+    <supportsPolygonPacking>true</supportsPolygonPacking>
+	<spriteOrigin>BottomLeft</spriteOrigin>
+	
     <!-- target framework supports trimming -->
     <supportsTrimming>true</supportsTrimming>
 

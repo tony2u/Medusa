@@ -64,7 +64,7 @@ bool BaseFeatureLayer::OnEnter()
 	mIndex = 0;
 	StringRef layerName = mLayers[mIndex];
 	FileIdRef editorFile = mLayerEditorFiles[mIndex];
-	mCurrentLayer = (BaseCaseLayer*)LayerFactory::Instance().Create(layerName, editorFile, IEventArg::Empty, LayerCreateFlags::AlwaysCreate);
+	mCurrentLayer = (BaseCaseLayer*)LayerFactory::Instance().Create(layerName, editorFile);
 	mCurrentLayer->SetDepth(-1);
 	AddChild(mCurrentLayer);
 	mCurrentLayer->OnEnter();
@@ -77,7 +77,7 @@ void BaseFeatureLayer::OnReturn(INode* sender, TapGestureEventArg& e)
 	mCurrentLayer->OnExit();
 	DeleteChild(mCurrentLayer);
 	mCurrentLayer = nullptr;
-	SceneManager::Instance().Current()->PopLayer(LayerPopFlags::DeleteCurrentLayerAsync);
+	SceneManager::Instance().Current()->PopLayer(NodePopFlags::DeleteCurrentAsync);
 
 
 }
@@ -98,7 +98,7 @@ void BaseFeatureLayer::OnLeft(INode* sender, TapGestureEventArg& e)
 
 	DeleteChild(mCurrentLayer);
 	mCurrentLayer = nullptr;
-	mCurrentLayer = (BaseCaseLayer*)LayerFactory::Instance().Create(layerName, editorFile, IEventArg::Empty, LayerCreateFlags::AlwaysCreate);
+	mCurrentLayer = (BaseCaseLayer*)LayerFactory::Instance().Create(layerName, editorFile);
 	mCurrentLayer->SetDepth(-1);
 	AddChild(mCurrentLayer);
 }
@@ -116,7 +116,7 @@ void BaseFeatureLayer::OnRight(INode* sender, TapGestureEventArg& e)
 
 	DeleteChild(mCurrentLayer);
 	mCurrentLayer = nullptr;
-	mCurrentLayer = (BaseCaseLayer*)LayerFactory::Instance().Create(layerName, editorFile, IEventArg::Empty, LayerCreateFlags::AlwaysCreate);
+	mCurrentLayer = (BaseCaseLayer*)LayerFactory::Instance().Create(layerName, editorFile);
 	mCurrentLayer->SetDepth(-1);
 	AddChild(mCurrentLayer);
 }

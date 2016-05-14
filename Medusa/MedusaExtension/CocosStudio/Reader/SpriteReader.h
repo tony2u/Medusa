@@ -15,8 +15,8 @@ public:
 	SpriteReader() {};
 	virtual ~SpriteReader() {};
 public:
-	virtual INode* CreateNodeWithFlatBuffers(INodeEditor& editor, const flatbuffers::Table* spriteOptions, const StringRef& className = StringRef::Empty) override;
-	virtual INode* CreateNodeWithJson(INodeEditor& editor, const rapidjson::Value& nodeTree, const StringRef& className = StringRef::Empty) override;
+	virtual INode* CreateNodeWithFlatBuffers(INodeEditor& editor, const flatbuffers::Table* spriteOptions, const StringRef& className = StringRef::Empty, NodeCreateFlags flags = NodeCreateFlags::None) override;
+	virtual INode* CreateNodeWithJson(INodeEditor& editor, const rapidjson::Value& nodeTree, const StringRef& className = StringRef::Empty, NodeCreateFlags flags = NodeCreateFlags::None) override;
 };
 
 MEDUSA_COCOS_END;

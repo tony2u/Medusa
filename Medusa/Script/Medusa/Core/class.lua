@@ -68,7 +68,7 @@ function globalclass(name, super)
 	local lastPart = string.LastPart(name);
 	local _M = class(lastPart, super);
 	_G[lastPart] = _M;
-	package.loaded[name] = _M;
+	package.loaded[name] = _M;	--only apply to require
 	_M.__path = name;
 	_M.__name = lastPart;
 	_M.__dir = string.PrevPart(name);

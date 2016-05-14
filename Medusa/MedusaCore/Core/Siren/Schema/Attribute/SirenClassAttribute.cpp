@@ -18,48 +18,48 @@ bool SirenClassAttribute::OnLoaded()
 {
 	StringPropertySet copy = mKeyValues;
 
-	if (mKeyValues.ContainsKey(StringRef("Generate")))
+	if (mKeyValues.Has("Generate"))
 	{
 		MEDUSA_FLAG_ADD(mMode, SirenClassGenerateMode::Generate);
-		copy.RemoveKey(StringRef("Generate"));
+		copy.RemoveKey("Generate");
 	}
 
-	if (mKeyValues.ContainsKey(StringRef("Suppress")))
+	if (mKeyValues.Has("Suppress"))
 	{
 		MEDUSA_FLAG_ADD(mMode, SirenClassGenerateMode::Suppress);
 		MEDUSA_FLAG_REMOVE(mMode, SirenClassGenerateMode::Generate);
 
-		copy.RemoveKey(StringRef("Suppress"));
+		copy.RemoveKey("Suppress");
 	}
 
-	if (mKeyValues.ContainsKey(StringRef("Embeded")))
+	if (mKeyValues.Has("Embeded"))
 	{
 		MEDUSA_FLAG_ADD(mMode, SirenClassGenerateMode::Embeded);
-		copy.RemoveKey(StringRef("Embeded"));
+		copy.RemoveKey("Embeded");
 	}
 
-	if (mKeyValues.ContainsKey(StringRef("SuppressCompare")))
+	if (mKeyValues.Has("SuppressCompare"))
 	{
 		MEDUSA_FLAG_ADD(mMode, SirenClassGenerateMode::SuppressCompare);
-		copy.RemoveKey(StringRef("SuppressCompare"));
+		copy.RemoveKey("SuppressCompare");
 	}
 
-	if (mKeyValues.ContainsKey(StringRef("SuppressCopy")))
+	if (mKeyValues.Has("SuppressCopy"))
 	{
 		MEDUSA_FLAG_ADD(mMode, SirenClassGenerateMode::SuppressCopy);
-		copy.RemoveKey(StringRef("SuppressCopy"));
+		copy.RemoveKey("SuppressCopy");
 	}
 
-	if (mKeyValues.ContainsKey(StringRef("SirenConfig")))
+	if (mKeyValues.Has("SirenConfig"))
 	{
 		MEDUSA_FLAG_ADD(mMode, SirenClassGenerateMode::SirenConfig);
-		copy.RemoveKey(StringRef("SirenConfig"));
+		copy.RemoveKey("SirenConfig");
 	}
 
-	if (mKeyValues.ContainsKey(StringRef("Dir")))
+	if (mKeyValues.Has("Dir"))
 	{
-		mDir = mKeyValues.Get(StringRef("Dir"));
-		copy.RemoveKey(StringRef("Dir"));
+		mDir = mKeyValues.Get("Dir");
+		copy.RemoveKey("Dir");
 	}
 
 	for (auto& keyValuePair : copy)

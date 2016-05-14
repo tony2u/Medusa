@@ -7,36 +7,36 @@
 MEDUSA_COCOS_BEGIN;
 
 
-INode* SceneReader::CreateNodeWithFlatBuffers(INodeEditor& editor, const flatbuffers::Table* nodeOptions, const StringRef& className /*= StringRef::Empty*/)
+INode* SceneReader::CreateNodeWithFlatBuffers(INodeEditor& editor, const flatbuffers::Table* nodeOptions, const StringRef& className /*= StringRef::Empty*/, NodeCreateFlags flags /*= NodeCreateFlags::None*/)
 {
 	IScene* node = nullptr;
 	if (className.IsEmpty())
 	{
-		node = SceneFactory::Instance().Create<UIScene>();
+		node = SceneFactory::Instance().Create<UIScene>(IEventArg::Empty,flags);
 	}
 	else
 	{
-		node = SceneFactory::Instance().Create(className, FileIdRef::Empty);
+		node = SceneFactory::Instance().Create(className, FileIdRef::Empty,IEventArg::Empty,flags);
 	}
 
-	SetPropsWithFlatBuffers(node, nodeOptions);
+	SetPropsWithFlatBuffers(node, nodeOptions, flags);
 
 	return node;
 }
 
-INode* SceneReader::CreateNodeWithJson(INodeEditor& editor, const rapidjson::Value& nodeTree, const StringRef& className /*= StringRef::Empty*/)
+INode* SceneReader::CreateNodeWithJson(INodeEditor& editor, const rapidjson::Value& nodeTree, const StringRef& className /*= StringRef::Empty*/, NodeCreateFlags flags /*= NodeCreateFlags::None*/)
 {
 	IScene* node = nullptr;
 	if (className.IsEmpty())
 	{
-		node = SceneFactory::Instance().Create<UIScene>();
+		node = SceneFactory::Instance().Create<UIScene>(IEventArg::Empty,flags);
 	}
 	else
 	{
-		node = SceneFactory::Instance().Create(className, FileIdRef::Empty);
+		node = SceneFactory::Instance().Create(className, FileIdRef::Empty,IEventArg::Empty,flags);
 	}
 
-	SetPropsWithJson(node, nodeTree);
+	SetPropsWithJson(node, nodeTree, flags);
 	return node;
 }
 

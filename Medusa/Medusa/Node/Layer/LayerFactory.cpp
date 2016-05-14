@@ -11,12 +11,12 @@
 
 MEDUSA_BEGIN;
 
-ILayer* LayerFactory::Create(const StringRef& className, const FileIdRef& editorFile, const IEventArg& e /*= IEventArg::Empty*/, LayerCreateFlags createFlags /*= LayerCreateFlags::None*/)
+ILayer* LayerFactory::Create(const StringRef& className, const FileIdRef& editorFile, const IEventArg& e /*= IEventArg::Empty*/, NodeCreateFlags flags /*= LayerCreateFlags::None*/)
 {
 	ILayer* layer = nullptr;
 	if (editorFile.IsValid())
 	{
-		layer = (ILayer*)NodeEditorFactory::Instance().Create(className, editorFile, e);
+		layer = (ILayer*)NodeEditorFactory::Instance().Create(className, editorFile, e,flags);
 		RETURN_SELF_IF_NOT_NULL(layer);
 	}
 

@@ -28,6 +28,7 @@ public:
 		mRef.Rawset(LuaMetaMethods::Index, &TLuaTable<TDerived>::OnIndex);	//<_G>,<table>
 		mRef.Rawset(LuaMetaMethods::NewIndex, &TLuaTable<TDerived>::OnNewIndex);	//<_G>,<table>
 	}
+
 	TLuaTable(lua_State* state, const LuaRef& self, const StringRef& name = StringRef::Empty)
 		: mState(state), mRef(self), mName(name)
 	{

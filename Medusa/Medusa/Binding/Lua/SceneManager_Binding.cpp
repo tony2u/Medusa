@@ -18,11 +18,11 @@ bool Register_SceneManager(IEventArg& e)
 
 	auto cls = module.BeginClass<SceneManager>();
 
-	cls.AddFunction("Push", [](const StringRef& className, ScenePushFlags pushFlag)->IScene* {return SceneManager::Instance().Push(className, pushFlag); });
-	cls.AddFunction("PushObject", [](IScene* scene, ScenePushFlags pushFlag) {SceneManager::Instance().Push(scene, pushFlag); });
+	cls.AddFunction("Push", [](const StringRef& className, NodePushFlags pushFlag)->IScene* {return SceneManager::Instance().Push(className, pushFlag); });
+	cls.AddFunction("PushObject", [](IScene* scene, NodePushFlags pushFlag) {SceneManager::Instance().Push(scene, pushFlag); });
 
 
-	//typedef  IScene* (SceneManager::*PushPtr)(const StringRef&, ScenePushFlags, const IEventArg&);
+	//typedef  IScene* (SceneManager::*PushPtr)(const StringRef&, NodePushFlags, const IEventArg&);
 	//reg.AddMemberFunction("Push", (PushPtr)(&SceneManager::Push));
 
 	return true;

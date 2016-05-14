@@ -6,26 +6,22 @@
 #include "Resource/Model/Mesh/Fixed/TextureQuadMesh.h"
 #include "Rendering/RenderingObjectFactory.h"
 #include "Resource/Material/IMaterial.h"
+#include "Resource/Model/Mesh/Fixed/TextureNineGridMesh.h"
 
 MEDUSA_BEGIN;
 
 
-Medusa::TextureButton::TextureButton(StringRef name, 
+TextureButton::TextureButton(StringRef name, 
 							const FileIdRef& normalTextureName, 
 							const FileIdRef& selectedTextureName /*= FileIdRef::Empty*/, 
 							const FileIdRef& disabledTextureName /*= FileIdRef::Empty*/, 
-							const FileIdRef& disabledSelectedTextureName /*= FileIdRef::Empty*/, 
-							bool isEnableNineGrid /*= false*/, 
-							const Size2F& targetSize /*= Size2F::Zero*/, 
-							const ThicknessF& padding /*= ThicknessF::Zero*/)
+							const FileIdRef& disabledSelectedTextureName /*= FileIdRef::Empty*/)
 							:IButton(name),
 							mNormalTextureName(normalTextureName),
 							mSelectedTextureName(selectedTextureName),
 							mDisabledTextureName(disabledTextureName),
 							mDisabledSelectedTextureName(disabledSelectedTextureName),
-							mIsEnableNineGrid(isEnableNineGrid),
-							mTargetSize(targetSize),
-							mPadding(padding)
+							mTexturePadding(ThicknessF::Zero)
 {
 
 }
@@ -48,6 +44,23 @@ void TextureButton::SetDisabledSelectedTextureName(const FileIdRef& val)
 {
 	mDisabledSelectedTextureName = val;
 	if (mButtonState == ButtonState::DisabledSelected)
+	{
+		OnUpdateMesh();
+	}
+}
+
+void TextureButton::EnableNineGrid(bool val)
+{
+	RETURN_IF_EQUAL(mIsNineGridEnabled, val);
+	mIsNineGridEnabled = val;
+	OnUpdateMesh();
+}
+
+void TextureButton::SetTexturePadding(const ThicknessF& val)
+{
+	RETURN_IF_EQUAL(mTexturePadding, val);
+	mTexturePadding = val;
+	if (mIsNineGridEnabled)
 	{
 		OnUpdateMesh();
 	}
@@ -80,6 +93,16 @@ void TextureButton::SetNormalTextureName(const FileIdRef& val)
 	}
 }
 
+
+void TextureButton::OnMoveableDirty(MoveableChangedFlags changedFlags)
+{
+	INode::OnMoveableDirty(changedFlags);
+
+	if (MEDUSA_FLAG_HAS(changedFlags, MoveableChangedFlags::SizeChanged)&& mIsNineGridEnabled)
+	{
+		OnUpdateMesh();
+	}
+}
 
 void TextureButton::OnUpdateMesh()
 {
@@ -114,10 +137,18 @@ void TextureButton::OnUpdateMesh()
 
 void TextureButton::SetImage(const FileIdRef& image)
 {
-	auto renderingObject = mIsEnableNineGrid ? RenderingObjectFactory::Instance().CreateNineGridTexture(mTargetSize, image, mPadding) : RenderingObjectFactory::Instance().CreateFromTexture(image);
+	auto renderingObject = mIsNineGridEnabled ? RenderingObjectFactory::Instance().CreateNineGridTexture(mSize.To2D(), image, mTexturePadding) : RenderingObjectFactory::Instance().CreateFromTexture(image);
 	SetRenderingObject(renderingObject);
 	Size2U textureSize = renderingObject.Material()->FirstTexture()->Size();
 	SetSize(textureSize);
+
+	if (mIsNineGridEnabled)
+	{
+		TextureNineGridMesh* mesh = (TextureNineGridMesh*)mRenderingObject.Mesh();
+		RETURN_IF_NULL(mesh);
+		mesh->UpdateToNewTargetSize(mSize.To2D());
+	}
+	
 }
 
 void TextureButton::OnButtonStateChanged()
@@ -126,7 +157,4 @@ void TextureButton::OnButtonStateChanged()
 }
 
 MEDUSA_IMPLEMENT_RTTI(TextureButton, IButton);
-
-
-
 MEDUSA_END;

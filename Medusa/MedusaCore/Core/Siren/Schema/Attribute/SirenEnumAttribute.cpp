@@ -16,38 +16,38 @@ SirenEnumAttribute::~SirenEnumAttribute(void)
 bool SirenEnumAttribute::OnLoaded()
 {
 	StringPropertySet copy = mKeyValues;
-	if (mKeyValues.ContainsKey(StringRef("Generate")))
+	if (mKeyValues.Has("Generate"))
 	{
 		MEDUSA_FLAG_ADD(mMode, SirenEnumGenerateMode::Generate);
-		copy.RemoveKey(StringRef("Generate"));
+		copy.RemoveKey("Generate");
 	}
 
-	if (mKeyValues.ContainsKey(StringRef("Suppress")))
+	if (mKeyValues.Has("Suppress"))
 	{
 		MEDUSA_FLAG_ADD(mMode, SirenEnumGenerateMode::Suppress);
 		MEDUSA_FLAG_REMOVE(mMode, SirenEnumGenerateMode::Generate);
 
-		copy.RemoveKey(StringRef("Suppress"));
+		copy.RemoveKey("Suppress");
 
 	}
 
-	if (mKeyValues.ContainsKey(StringRef("CustomEnum")))
+	if (mKeyValues.Has("CustomEnum"))
 	{
 		MEDUSA_FLAG_ADD(mMode, SirenEnumGenerateMode::CustomEnum);
-		copy.RemoveKey(StringRef("CustomEnum"));
+		copy.RemoveKey("CustomEnum");
 
 	}
 
-	if (mKeyValues.ContainsKey(StringRef("CustomFlag")))
+	if (mKeyValues.Has("CustomFlag"))
 	{
 		MEDUSA_FLAG_ADD(mMode, SirenEnumGenerateMode::CustomFlag);
-		copy.RemoveKey(StringRef("CustomFlag"));
+		copy.RemoveKey("CustomFlag");
 
 	}
-	if (mKeyValues.ContainsKey(StringRef("Dir")))
+	if (mKeyValues.Has("Dir"))
 	{
-		mDir = mKeyValues.Get(StringRef("Dir"));
-		copy.RemoveKey(StringRef("Dir"));
+		mDir = mKeyValues.Get("Dir");
+		copy.RemoveKey("Dir");
 	}
 
 	for (auto& keyValuePair : copy)

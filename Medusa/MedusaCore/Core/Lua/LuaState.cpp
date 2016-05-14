@@ -7,6 +7,7 @@
 #include "Core/Log/Log.h"
 #include "Core/String/StringParser.h"
 #include "Core/IO/FileSystem.h"
+#include "Core/IO/Path.h"
 
 
 MEDUSA_BEGIN;
@@ -72,6 +73,28 @@ LuaModule LuaState::BeginModule(StringRef name)
 		return mod;
 	}
 }
+
+LuaTable LuaState::BeginTable(StringRef name)
+{
+	if (name.IsEmpty())
+	{
+		Log::AssertFailed("Cannot have empty name lua table");
+	}
+
+	LuaRef parent = LuaRef::Global(mState);
+	auto ref = parent.Rawget(name);
+	if (ref != nullptr)
+	{
+		return LuaTable(mState, ref, name);
+	}
+	else
+	{
+		LuaTable mod(mState, name);
+		parent.Rawset(name, mod.Ref());
+		return mod;
+	}
+}
+
 
 void LuaState::AddPackagePath(const StringRef& path)
 {
@@ -195,12 +218,16 @@ bool LuaState::DoFile(const FileIdRef& file, int resultCount/*=0*/)
 		//we can find a file on disk and has no coding. use loadfile to enable lua debugging
 
 		LuaStack s(mState);
+		
 		int errorFunc = s.SetErrorHandler();
-
 		int result = luaL_loadfile(mState, realPath.c_str());
 		if (result == LUA_OK)
 		{
-			result = lua_pcall(mState, 0, resultCount, errorFunc);
+			HeapString pureName = Path::GetFileNameWithoutExtension(file.Name);
+			s.Push(pureName);
+
+			//push file name as arg
+			result = lua_pcall(mState, 1, resultCount, errorFunc);
 		}
 
 		if (result != LUA_OK)
@@ -211,6 +238,7 @@ bool LuaState::DoFile(const FileIdRef& file, int resultCount/*=0*/)
 		}
 
 		lua_remove(mState, -(resultCount + 1));		//remove error func
+
 		return true;
 	}
 	else
@@ -226,18 +254,19 @@ bool LuaState::DoFile(const FileIdRef& file, int resultCount/*=0*/)
 
 }
 
-bool LuaState::DoBuffer(StringRef buffer, int resultCount/*=0*/, StringRef name /*= StringRef::Empty*/)
+bool LuaState::DoBuffer(StringRef buffer, int resultCount/*=0*/, StringRef fileName /*= StringRef::Empty*/)
 {
 	LuaStack s(mState);
 	int errorFunc = s.SetErrorHandler();
-	if (name.IsEmpty())
-	{
-		name = "LuaState::DoBuffer()";
-	}
-	int result = luaL_loadbuffer(mState, buffer.c_str(), buffer.Length(), name.c_str());
+
+	int result = luaL_loadbuffer(mState, buffer.c_str(), buffer.Length(), fileName.c_str());
 	if (result == LUA_OK)
 	{
-		result = lua_pcall(mState, 0, resultCount, errorFunc);
+		//push name as arg
+		HeapString pureName = Path::GetFileNameWithoutExtension(fileName);
+		s.Push(pureName);
+
+		result = lua_pcall(mState, 1, resultCount, errorFunc);
 	}
 
 	if (result != LUA_OK)
@@ -262,14 +291,15 @@ LuaRef LuaState::DoFileWithReturn(const FileIdRef& file)
 	return nullptr;
 }
 
-LuaRef LuaState::DoBufferWithReturn(StringRef buffer, StringRef name /*= StringRef::Empty*/)
+LuaRef LuaState::DoBufferWithReturn(StringRef buffer, StringRef fileName /*= StringRef::Empty*/)
 {
-	if (DoBuffer(buffer, 1, name))
+	if (DoBuffer(buffer, 1, fileName))
 	{
 		return LuaRef::PopFromStack(mState);
 	}
 	return nullptr;
 }
+
 
 void LuaState::DumpGlobals()
 {

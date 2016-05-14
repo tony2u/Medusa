@@ -12,25 +12,25 @@
 
 MEDUSA_COCOS_BEGIN;
 
-INode* ProjectNodeReader::CreateNodeWithFlatBuffers(INodeEditor& editor, const flatbuffers::Table* nodeOptions, const StringRef& className )
+INode* ProjectNodeReader::CreateNodeWithFlatBuffers(INodeEditor& editor, const flatbuffers::Table* nodeOptions, const StringRef& className, NodeCreateFlags flags /*= NodeCreateFlags::None*/)
 {
 	auto projectNodeOptions = (flatbuffers::ProjectNodeOptions*)nodeOptions;
 	StringRef filePath = projectNodeOptions->fileName()->c_str();
 	filePath = Path::GetFileName(filePath);
 	RETURN_NULL_IF_FALSE(FileSystem::Instance().AssertExists(filePath));
-	INode* node = editor.Create("", filePath);
-	SetPropsWithFlatBuffers(node, (flatbuffers::Table*)(projectNodeOptions->nodeOptions()));
+	INode* node = editor.Create("", filePath,IEventArg::Empty, flags);
+	SetPropsWithFlatBuffers(node, (flatbuffers::Table*)(projectNodeOptions->nodeOptions()), flags);
 	return node;
 }
 
-INode* ProjectNodeReader::CreateNodeWithJson(INodeEditor& editor, const rapidjson::Value& nodeTree, const StringRef& className /*= StringRef::Empty*/)
+INode* ProjectNodeReader::CreateNodeWithJson(INodeEditor& editor, const rapidjson::Value& nodeTree, const StringRef& className /*= StringRef::Empty*/, NodeCreateFlags flags /*= NodeCreateFlags::None*/)
 {
 	const rapidjson::Value& fileDataNode = nodeTree["FileData"];
 	StringRef filePath = fileDataNode.GetString("Path", nullptr);
 	filePath = Path::GetFileName(filePath);
 	RETURN_NULL_IF_FALSE(FileSystem::Instance().AssertExists(filePath));
-	INode* node = editor.Create("", filePath);
-	SetPropsWithJson(node, nodeTree);
+	INode* node = editor.Create("", filePath,IEventArg::Empty,flags);
+	SetPropsWithJson(node, nodeTree, flags);
 	return node;
 }
 

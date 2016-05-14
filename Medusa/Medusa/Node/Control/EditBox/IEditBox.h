@@ -8,12 +8,6 @@
 
 MEDUSA_BEGIN;
 
-enum class CursorVisibility
-{
-	Disabled = -1,
-	Auto = 0,	//only visible on editing
-	AlwaysVisible = 2,
-};
 
 class IEditBox :public INode
 {
@@ -25,8 +19,8 @@ public:
 	InputMode GetInputMode() const { return mInputMode; }
 	void SetInputMode(InputMode val) { mInputMode = val; }
 
-	InputFlag GetInputFlag() const { return mInputFlag; }
-	void SetInputFlag(InputFlag val) { mInputFlag = val; }
+	TextInputFlag GetInputFlag() const { return mInputFlag; }
+	void SetInputFlag(TextInputFlag val) { mInputFlag = val; }
 
 	uint MaxCharCount() const { return mMaxCharCount; }
 	void SetMaxCharCount(uint val) { mMaxCharCount = val; }
@@ -98,7 +92,7 @@ protected:
 
 protected:
 	InputMode mInputMode=InputMode::Any;
-	InputFlag mInputFlag=InputFlag::Sensitive;
+	TextInputFlag mInputFlag=TextInputFlag::Sensitive;
 	uint mMaxCharCount= Math::UIntMaxValue;
 
 	//text

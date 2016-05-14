@@ -1453,6 +1453,15 @@ public:
 		}
 	}
 	template <typename T>
+	const Ch* Get(T* name, const Ch* defaultVal)const
+	{
+		ConstMemberIterator member = FindMember(name);
+		if (member != MemberEnd() && member->value.IsString())
+			return (const Ch*)member->value.GetString();
+		return defaultVal;
+	}
+
+	template <typename T>
 	const Ch* GetString(T* name, const Ch* defaultVal)const
 	{
 		ConstMemberIterator member = FindMember(name);

@@ -48,3 +48,5 @@ function _M:FireEvent(...)
 		self.parent:FireEvent(...);
 	end
 end
+
+return _M;

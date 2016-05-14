@@ -52,8 +52,8 @@ public:
 	//operator StringRef() const { return RetrieveGet(1).To<StringRef>(); }
 
 	//have to specify const char*
-	bool operator==(const char* val)const { return RetrieveGet(1).To<StringRef>() == val; }
-	friend bool operator==(const char* val, const LuaSelector& sel) { return (StringRef)sel == val; }
+	bool operator==(const char* val)const { return RetrieveGet(1).To<StringRef>() == StringRef(val); }
+	friend bool operator==(const char* val, const LuaSelector& sel) { return (StringRef)sel == StringRef(val); }
 
 	template <typename T>
 	inline bool operator==(T&& t) const { return T(*this) == t; }

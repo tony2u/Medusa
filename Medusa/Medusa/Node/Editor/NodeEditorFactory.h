@@ -23,15 +23,21 @@ public:
 	void Register(){ Register(new T());}
 
 	void Register(INodeEditor* editor);
-public:
-	INodeEditor* FindEditor(FileType type)const;
-	INodeEditor* FindEditor(const StringRef& type)const;
-	INodeEditor* FindEditorEnabled(FileType type)const;
 
-	INode* Create(const StringRef& className, const FileIdRef& editorFile, const IEventArg& e = IEventArg::Empty)const;
+	const Medusa::Dictionary<HeapString, INodeEditor*>& Editors() const { return mEditors; }
+public:
+	INodeEditor* Find(FileType type)const;
+	INodeEditor* Find(const StringRef& type)const;
+	INodeEditor* FindEnabled(FileType type)const;
+
+	bool Enable(FileType type, bool val);
+	bool Enable(const StringRef& type, bool val);
+	void EnableAll(bool val);
+
+	INode* Create(const StringRef& className, const FileIdRef& editorFile, const IEventArg& e = IEventArg::Empty,NodeCreateFlags flags=NodeCreateFlags::None)const;
 private:
 	Dictionary<HeapString, INodeEditor*> mEditors;
-
+	
 };
 
 MEDUSA_END;

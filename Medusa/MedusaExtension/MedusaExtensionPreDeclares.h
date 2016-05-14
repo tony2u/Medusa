@@ -9,6 +9,8 @@ namespace Cocos
 	
 	class ButtonReader;
 	
+	class ImageViewReader;
+	
 	class INodeReader;
 	
 	class LayerReader;

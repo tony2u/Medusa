@@ -162,7 +162,7 @@ struct LuaTypeMappingExists
 };
 
 template <typename T>
-struct LuaType : std::conditional <Compile::TypeTraits<T>::IsFunction, LuaUserDataTypeMapping<T>,
+struct LuaType : std::conditional <Compile::TypeTraits<T>::IsFunction|| std::is_member_pointer<T>::value, LuaUserDataTypeMapping<T>,
 	typename std::conditional <Compile::IsCustomEnum<T>::Value, LuaIntegerTypeMapping<T>,
 	typename std::conditional <
 	std::is_class<typename std::decay<T>::type>::value && !LuaTypeMappingExists<typename std::decay<T>::type>::value,

@@ -19,8 +19,9 @@ public:
 
 	virtual StringRef Type()const override { return "CocosBinary"; }
 	virtual FileType Extension()const override { return FileType::csb; }
-	virtual INode* Create(const StringRef& className, const FileIdRef& editorFile, const IEventArg& e = IEventArg::Empty) override;
-	INode* NodeWithFlatBuffers(const StringRef& className, const flatbuffers::NodeTree *nodeTree);
+	virtual StringRef ExtensionString()const override { return FileExtensions::csb; }
+	virtual INode* Create(const StringRef& className, const FileIdRef& editorFile, const IEventArg& e = IEventArg::Empty, NodeCreateFlags flags = NodeCreateFlags::None) override;
+	INode* NodeWithFlatBuffers(const StringRef& className, const flatbuffers::NodeTree *nodeTree, NodeCreateFlags flags = NodeCreateFlags::None);
 protected:
 	static StringRef GetReaderName(const StringRef &name, const flatbuffers::Options* options);
 };

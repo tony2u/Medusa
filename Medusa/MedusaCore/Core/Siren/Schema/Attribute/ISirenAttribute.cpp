@@ -27,30 +27,7 @@ ISirenAttribute::~ISirenAttribute(void)
 
 bool ISirenAttribute::Load(const StringRef& str)
 {
-	//Key=Value,...
-	List<StringRef> outPairs;
-	StringParser::Split(str, ",", outPairs);
-
-	List<StringRef> keyValuePair;
-	for (auto& optionPair : outPairs)
-	{
-		keyValuePair.Clear();
-		StringParser::Split(optionPair, "=", keyValuePair);
-		if (keyValuePair.Count() == 2)
-		{
-			mKeyValues.Add(keyValuePair[0], keyValuePair[1]);
-		}
-		else if (keyValuePair.Count() == 1)
-		{
-			mKeyValues.Add(keyValuePair[0], HeapString::Empty);
-		}
-		else
-		{
-			Log::FormatError("Invalid attribute str:{} in {}", optionPair.c_str(), str.c_str());
-			return false;
-		}
-	}
-
+	RETURN_FALSE_IF_FALSE(mKeyValues.Parse(str));
 	return OnLoaded();
 }
 

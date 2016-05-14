@@ -28,6 +28,16 @@ public:
 		return StringParser::StringTo<T>(val);
 	}
 
+	bool Has(const StringRef& key)const
+	{
+		return this->ContainsOtherKey(key, key.HashCode());
+	}
+
+
+	bool RemoveKey(const StringRef& key)
+	{
+		return this->RemoveOtherKey(key, key.HashCode());
+	}
 
 	StringRef Get(const StringRef& key)const
 	{
@@ -40,6 +50,11 @@ public:
 		//avoid: recursive on all control paths, function will cause runtime stack overflow
 		PropertySet < HeapString, HeapString>::Set(HeapString(key), HeapString(val));	
 	}
+
+	bool ToBool(const StringRef& key,bool optional=false)const;
+
+	bool Parse(const StringRef& str);
+
 };
 
 MEDUSA_END;

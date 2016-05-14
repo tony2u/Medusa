@@ -277,6 +277,8 @@ public:
 #pragma region Script
 #ifdef MEDUSA_SCRIPT
 public:
+	bool TryAttachScriptObject(StringRef customName=StringRef::Empty);
+
 	ScriptObject AddScriptFile(const FileIdRef& file);
 	void SetScriptObject(ScriptObject object);
 	ScriptObject GetScriptObject()const;

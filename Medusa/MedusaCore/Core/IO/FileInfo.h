@@ -37,9 +37,10 @@ public:
 	static bool IsScriptFile(FileType fileType);
 	static bool IsShaderFile(FileType fileType);
 
-	
-private:
+	static StringRef FileTypeToString(FileType fileType);
 	static FileType CheckFileType(StringRef fileExt);
+
+private:
 	static void OnInitFileExtDict();
 	
 public:

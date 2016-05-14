@@ -18,9 +18,11 @@ public:
 
 	virtual StringRef Type()const override { return "CocosJson"; }
 	virtual FileType Extension()const override { return FileType::json; }
-	virtual INode* Create(const StringRef& className, const FileIdRef& editorFile, const IEventArg& e = IEventArg::Empty) override;
-	INode* NodeWithJsonRoot(const StringRef& className, const rapidjson::Value& nodeTree);
-	INode* NodeWithJson(const rapidjson::Value& jsonNode);
+	virtual StringRef ExtensionString()const override { return FileExtensions::json; }
+
+	virtual INode* Create(const StringRef& className, const FileIdRef& editorFile, const IEventArg& e = IEventArg::Empty, NodeCreateFlags flags = NodeCreateFlags::None) override;
+	INode* NodeWithJsonRoot(const StringRef& className, const rapidjson::Value& nodeTree, NodeCreateFlags flags = NodeCreateFlags::None);
+	INode* NodeWithJson(const rapidjson::Value& jsonNode, NodeCreateFlags flags = NodeCreateFlags::None);
 
 protected:
 	static StringRef GetReaderName(const StringRef& name, const rapidjson::Value& nodeTree);

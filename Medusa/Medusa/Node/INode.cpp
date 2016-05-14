@@ -1154,7 +1154,6 @@ void INode::EnableDebugDraw(bool val)
 			mDebugDrawShape->EnableManaged();
 			AddChild(mDebugDrawShape);
 		}
-
 	}
 	else
 	{
@@ -1167,21 +1166,55 @@ void INode::EnableDebugDraw(bool val)
 }
 
 #ifdef MEDUSA_SCRIPT
+
+bool INode::TryAttachScriptObject(StringRef customName /*= StringRef::Empty*/)
+{
+	if (customName.IsEmpty())
+	{
+		customName = mName;
+	}
+	RETURN_TRUE_IF_EMPTY(customName);
+	NodeScriptComponent* com = this->FindComponent<NodeScriptComponent>();
+	RETURN_TRUE_IF_NOT_NULL(com);
+
+	if (ScriptEngine::ExistsScriptFile(customName))
+	{
+		ScriptObject sc = ScriptEngine::State()->RequireNew(customName);
+		if (sc == nullptr)
+		{
+			Log::AssertFailedFormat("Cannot load script: {}", customName);
+			return nullptr;
+		}
+
+		com = this->AddComponent<NodeScriptComponent>();
+		com->SetScriptObject(sc);
+		return true;
+
+	}
+	return false;
+}
+
+
 ScriptObject INode::AddScriptFile(const FileIdRef& file)
 {
 	if (file.IsEmpty())
 	{
 		return nullptr;
 	}
-
-	ScriptObject sc = ScriptEngine::State()->DoFileWithReturn(file);
-	if (sc == nullptr)
+	NodeScriptComponent* com = this->FindComponent<NodeScriptComponent>();
+	if (com!=nullptr)
 	{
-		Log::AssertFailedFormat("Cannot load script: {}", file.ToString());
-		return nullptr;
+		return com->GetScriptObject();
 	}
 
-	auto* com = this->AddComponent<NodeScriptComponent>();
+
+	ScriptObject classObj = ScriptEngine::State()->DoFileWithReturn(file);
+	if (classObj == nullptr)
+	{
+		Log::FormatError("Cannot find class file:{}", file);
+	}
+	ScriptObject sc= classObj.InvokeMember<LuaRef>("new");
+	com = this->AddComponent<NodeScriptComponent>();
 	com->SetScriptObject(sc);
 	return sc;
 }

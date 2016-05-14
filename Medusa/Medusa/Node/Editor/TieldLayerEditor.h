@@ -13,9 +13,10 @@ public:
 	virtual ~TieldLayerEditor(void);
 	virtual StringRef Type()const override { return "Tiled"; }
 	virtual FileType Extension()const override { return FileType::tmx; }
+	virtual StringRef ExtensionString()const override { return FileExtensions::tmx; }
 public:
 	using INodeEditor::Create;
-	virtual INode* Create(const StringRef& className, const FileIdRef& editorFile, const IEventArg& e = IEventArg::Empty)override;
+	virtual INode* Create(const StringRef& className, const FileIdRef& editorFile, const IEventArg& e = IEventArg::Empty, NodeCreateFlags flags = NodeCreateFlags::None)override;
 };
 
 MEDUSA_END;

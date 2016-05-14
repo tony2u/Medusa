@@ -42,3 +42,5 @@ function handler(obj, method)
         return method(obj, ...)
     end
 end
+
+return _M;

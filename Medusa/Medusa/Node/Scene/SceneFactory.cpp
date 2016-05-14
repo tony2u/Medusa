@@ -12,12 +12,12 @@
 
 MEDUSA_BEGIN;
 
-IScene* SceneFactory::Create(const StringRef& className, const FileIdRef& editorFile, const IEventArg& e /*= IEventArg::Empty*/)
+IScene* SceneFactory::Create(const StringRef& className, const FileIdRef& editorFile, const IEventArg& e /*= IEventArg::Empty*/, NodeCreateFlags flags /*= NodeCreateFlags::None*/)
 {
 	IScene* scene = nullptr;
 	if (editorFile.IsValid())
 	{
-		scene = (IScene*)NodeEditorFactory::Instance().Create(className, editorFile, e);
+		scene = (IScene*)NodeEditorFactory::Instance().Create(className, editorFile, e,flags);
 		RETURN_SELF_IF_NOT_NULL(scene);
 	}
 

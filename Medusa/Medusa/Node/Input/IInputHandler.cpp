@@ -99,12 +99,9 @@ bool IInputHandler::RaiseEvent(InputEventType type, IEventArg* e/*=nullptr*/) co
 		mDispatcher->FireEvent(type, mNode, e);
 	}
 
-	if (ApplicationSettings::Instance().HasScriptBinding())
+	if (ApplicationSettings::Instance().HasScriptBinding()&& !MEDUSA_FLAG_HAS(mBehaviors, InputBehaviors::DisableScriptBinding))
 	{
-		if (MEDUSA_FLAG_HAS(mBehaviors, InputBehaviors::ScriptBinding))
-		{
-
-		}
+		mDispatcher->FireScriptBinding(type, mNode, e);
 	}
 	
 

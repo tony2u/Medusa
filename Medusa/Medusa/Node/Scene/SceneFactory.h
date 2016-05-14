@@ -26,8 +26,8 @@ public:
 
 	
 	template<typename T>
-	T* Create(const IEventArg& e = IEventArg::Empty) { return (T*)Create(T::ClassNameStatic(), T::EditorFileNameStatic(), e); }
-	IScene* Create(const StringRef& className, const FileIdRef& editorFile, const IEventArg& e = IEventArg::Empty);
+	T* Create(const IEventArg& e = IEventArg::Empty, NodeCreateFlags flags = NodeCreateFlags::None) { return (T*)Create(T::ClassNameStatic(), T::EditorFileNameStatic(), e,flags); }
+	IScene* Create(const StringRef& className, const FileIdRef& editorFile, const IEventArg& e = IEventArg::Empty,NodeCreateFlags flags=NodeCreateFlags::None);
 };
 
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 #pragma once
-
-#include "MedusaPreCompiled.h"
+#include "MedusaPreDeclares.h"
+#include "Core/String/StringRef.h"
 
 MEDUSA_BEGIN;
 
@@ -231,7 +231,7 @@ enum class InputMode
 	SingleLine,	//The user is allowed to enter any text, except for line breaks.
 };
 
-enum class InputFlag
+enum class TextInputFlag
 {
 	/**
 	* Indicates that the text entered is confidential data that should be
@@ -264,6 +264,14 @@ enum class InputFlag
 	*/
 	InitialCapsAllChrarcters,
 };
+
+enum class CursorVisibility
+{
+	Disabled = -1,
+	Auto = 0,	//only visible on editing
+	AlwaysVisible = 2,
+};
+
 
 enum class ToastPosition
 {
@@ -300,7 +308,7 @@ enum class NodeRemoveFlags
 	None = 0,
 	OnlyChildren = 1,
 	OnlyManaged = 2,
-	All= OnlyChildren| OnlyManaged
+	All = OnlyChildren | OnlyManaged
 };
 
 enum class NodeUpdateFlags
@@ -318,60 +326,61 @@ enum class NodeVisitFlags
 };
 
 
-enum class LayerCreateFlags
+enum class NodeCreateFlags
 {
 	None = 0,
-	AlwaysCreate = 1,
-	All = AlwaysCreate
+	BindScriptSelf = 1,
+	BindScriptChildren = 2,
+
+	BindScriptRecursively = BindScriptSelf | BindScriptChildren,	//bind script to self and children
+
+	All= BindScriptRecursively,
+	Count=2,
 };
 
-enum class LayerDeleteFlags
+enum class NodeDeleteFlags
 {
 	None = 0,
 	Async = 1,
 	All = Async
 };
 
-enum class LayerPopFlags
+
+enum class NodePushFlags
 {
 	None = 0,
-	ShowCurrentLayer = 1,
+	//create
+	BindScriptSelf = 1,
+	BindScriptChildren = 2,
+
+	BindScriptRecursively = BindScriptSelf | BindScriptChildren,	//bind script to self and children
+	//push
+
+	ShowPrev = 1<<((uint)NodeCreateFlags::Count),
+	SuppressUpdateLogic = 1 << ((uint)NodeCreateFlags::Count+1),
+	DisableTouch = 1 << ((uint)NodeCreateFlags::Count + 2),
+	HideAllPrevs = 1 << ((uint)NodeCreateFlags::Count + 3),
+	SaveStatusBeforePush = 1 << ((uint)NodeCreateFlags::Count + 4),
+};
+
+enum class NodePopFlags
+{
+	None = 0,
+	ShowCurrent = 1,
 	SuppressUpdateLogic = 2,
 	DisableTouch = 4,
-	IgnorePrevLayer = 8,
-	DeleteCurrentLayer = 16,
-	DeleteCurrentLayerAsync = 32,
+	IgnorePrev = 8,
+	DeleteCurrent = 16,
+	DeleteCurrentAsync = 32,
 	RestoreStatusAfterPop = 64,
 };
 
-enum class LayerPushFlags
-{
-	None = 0,
-	ShowPrevLayer = 1,
-	SuppressUpdateLogic = 2,
-	AlwaysCreate = 4,
-	DisableTouch = 8,
-	HideAllPrevLayers = 16,
-	SaveStatusBeforePush = 32,
-};
 
-enum class ScenePopFlags
+namespace NodeProperties
 {
-	None = 0,
-	ShowCurrentScene = 1,
-	SuppressUpdateLogic = 2,
-	DisableTouch = 4,
-	IgnorePrevScene = 8,
-	DeleteCurrentScene = 16,
-	DeleteCurrentSceneAsync = 32,
-};
+	const extern StringRef FrameEvent;	//string
+	const extern StringRef UserData;	//string
+	const extern StringRef Script;	//string,	empty ? auto bind script : it's will be used as custom script file name, true==empty, false to disable scirpt
+}
 
-enum class ScenePushFlags
-{
-	None = 0,
-	ShowPrevScene = 1,
-	SuppressUpdateLogic = 2,
-	DisableTouch = 4,
-	HideAllPrevScenes = 8,
-};
 MEDUSA_END;

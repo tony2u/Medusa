@@ -11,7 +11,7 @@
 #include "CocosStudio/CSParseBinary_generated.h"
 MEDUSA_COCOS_BEGIN;
 
-INode* TextReader::CreateNodeWithFlatBuffers(INodeEditor& editor, const flatbuffers::Table* projectNodeOptions, const StringRef& className)
+INode* TextReader::CreateNodeWithFlatBuffers(INodeEditor& editor, const flatbuffers::Table* projectNodeOptions, const StringRef& className, NodeCreateFlags flags /*= NodeCreateFlags::None*/)
 {
 	auto options = (flatbuffers::TextOptions*)projectNodeOptions;
 	FontId fontId;
@@ -33,13 +33,13 @@ INode* TextReader::CreateNodeWithFlatBuffers(INodeEditor& editor, const flatbuff
 	ILabel* label = NodeFactory::Instance().CreateSingleLineLabel(fontId, options->text()->c_str());
 	label->SetAlignment((Alignment)(options->vAlignment() * 3 + options->hAlignment()));
 
-	SetPropsWithFlatBuffers(label, (flatbuffers::Table*) options->widgetOptions());
+	SetPropsWithFlatBuffers(label, (flatbuffers::Table*) options->widgetOptions(), flags);
 	label->SetColor(Color4F::White);	//reset default,use node color as font color
 	return label;
 }
 
 
-INode* TextReader::CreateNodeWithJson(INodeEditor& editor, const rapidjson::Value& nodeTree, const StringRef& className /*= StringRef::Empty*/)
+INode* TextReader::CreateNodeWithJson(INodeEditor& editor, const rapidjson::Value& nodeTree, const StringRef& className /*= StringRef::Empty*/, NodeCreateFlags flags /*= NodeCreateFlags::None*/)
 {
 	const rapidjson::Value& fileDataNode = nodeTree["FontResource"];
 	StringRef path = fileDataNode.GetString("Path", nullptr);
@@ -80,7 +80,7 @@ INode* TextReader::CreateNodeWithJson(INodeEditor& editor, const rapidjson::Valu
 
 	ILabel* label = NodeFactory::Instance().CreateSingleLineLabel(fontId, text);
 	label->SetAlignment(align);
-	SetPropsWithJson(label, nodeTree);
+	SetPropsWithJson(label, nodeTree, flags);
 	label->SetColor(Color4F::White);	//reset default,use node color as font color
 	return label;
 

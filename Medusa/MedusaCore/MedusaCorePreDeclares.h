@@ -454,6 +454,9 @@ class ILuaObject;
 template<typename TClass>
 class LuaClass;
 
+template<typename TEnum>
+class LuaEnum;
+
 class LuaMachine;
 
 class LuaModule;

@@ -27,8 +27,8 @@ public:
 
 	
 	template<typename T>
-	T* Create(const IEventArg& e = IEventArg::Empty, LayerCreateFlags createFlags = LayerCreateFlags::None) { return (T*)Create(T::ClassNameStatic(), T::EditorFileNameStatic(), e, createFlags); }
-	ILayer* Create(const StringRef& className, const FileIdRef& editorFile, const IEventArg& e = IEventArg::Empty, LayerCreateFlags createFlags = LayerCreateFlags::None);
+	T* Create(const IEventArg& e = IEventArg::Empty, NodeCreateFlags flags = NodeCreateFlags::None) { return (T*)Create(T::ClassNameStatic(), T::EditorFileNameStatic(), e, flags); }
+	ILayer* Create(const StringRef& className, const FileIdRef& editorFile, const IEventArg& e = IEventArg::Empty, NodeCreateFlags flags = NodeCreateFlags::None);
 
 };
 

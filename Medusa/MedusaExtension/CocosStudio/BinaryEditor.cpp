@@ -21,14 +21,15 @@ BinaryEditor::~BinaryEditor()
 
 }
 
-INode* BinaryEditor::Create(const StringRef& className, const FileIdRef& editorFile, const IEventArg& e /*= IEventArg::Empty*/)
+INode* BinaryEditor::Create(const StringRef& className, const FileIdRef& editorFile, const IEventArg& e /*= IEventArg::Empty*/, NodeCreateFlags flags /*= NodeCreateFlags::None*/)
 {
 	auto data = FileSystem::Instance().ReadAllData(editorFile);
+	RETURN_NULL_IF_EMPTY(data);
 	auto csParsebinary = flatbuffers::GetCSParseBinary(data.Data());
-	return NodeWithFlatBuffers(className, csParsebinary->nodeTree());
+	return NodeWithFlatBuffers(className, csParsebinary->nodeTree(), flags);
 }
 
-INode* BinaryEditor::NodeWithFlatBuffers(const StringRef& className, const flatbuffers::NodeTree *nodeTree)
+INode* BinaryEditor::NodeWithFlatBuffers(const StringRef& className, const flatbuffers::NodeTree *nodeTree, NodeCreateFlags flags /*= NodeCreateFlags::None*/)
 {
 	RETURN_NULL_IF_FALSE(nodeTree);
 	auto options = nodeTree->options();
@@ -44,15 +45,17 @@ INode* BinaryEditor::NodeWithFlatBuffers(const StringRef& className, const flatb
 	auto reader = ReaderFactory::Instance().Create(readerName);
 	RETURN_NULL_IF_NULL(reader);
 
-	INode* node = reader->CreateNodeWithFlatBuffers(*this, options->data(), className);
+	INode* node = reader->CreateNodeWithFlatBuffers(*this, options->data(), className, flags);
 	RETURN_NULL_IF_NULL(node);
+
+	flags = GetChildrenCreateFlags(flags);
 
 	auto children = nodeTree->children();
 	int size = children->size();
 	for (int i = 0; i < size; ++i)
 	{
 		auto subNodeTree = children->Get(i);
-		auto child = NodeWithFlatBuffers(StringRef::Empty, subNodeTree);
+		auto child = NodeWithFlatBuffers(StringRef::Empty, subNodeTree, flags);
 		if (node->IsA<IScene>() && child->IsA<ILayer>())
 		{
 			((IScene*)node)->PushLayer((ILayer*)child);

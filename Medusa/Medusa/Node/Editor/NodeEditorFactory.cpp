@@ -7,12 +7,14 @@
 #include "Core/IO/FileInfo.h"
 #include "Core/Log/Log.h"
 #include "Core/IO/FileIdRef.h"
+#include "Application/Settings/ApplicationSettings.h"
+#include "Core/IO/FileSystem.h"
 
 MEDUSA_BEGIN;
 
 NodeEditorFactory::NodeEditorFactory()
 {
-	
+
 }
 
 NodeEditorFactory::~NodeEditorFactory()
@@ -22,7 +24,6 @@ NodeEditorFactory::~NodeEditorFactory()
 
 bool NodeEditorFactory::Initialize()
 {
-	Uninitialize();
 	Register<TieldLayerEditor>();
 
 	return true;
@@ -31,7 +32,7 @@ bool NodeEditorFactory::Initialize()
 bool NodeEditorFactory::Uninitialize()
 {
 	SAFE_DELETE_DICTIONARY_VALUE(mEditors);
-	
+
 	return true;
 }
 
@@ -40,14 +41,14 @@ void NodeEditorFactory::Register(INodeEditor* editor)
 	mEditors.TryAdd(editor->Type(), editor);
 }
 
-INodeEditor* NodeEditorFactory::FindEditor(const StringRef& type) const
+INodeEditor* NodeEditorFactory::Find(const StringRef& type) const
 {
 	return mEditors.GetOptional(type, nullptr);
 }
 
-INodeEditor* NodeEditorFactory::FindEditor(FileType type) const
+INodeEditor* NodeEditorFactory::Find(FileType type) const
 {
-	for(auto& kv : mEditors )
+	for (auto& kv : mEditors)
 	{
 		INodeEditor* editor = kv.Value;
 		if (editor != nullptr&& editor->Extension() == type)
@@ -60,7 +61,7 @@ INodeEditor* NodeEditorFactory::FindEditor(FileType type) const
 }
 
 
-INodeEditor* NodeEditorFactory::FindEditorEnabled(FileType type) const
+INodeEditor* NodeEditorFactory::FindEnabled(FileType type) const
 {
 	for (auto& kv : mEditors)
 	{
@@ -75,22 +76,72 @@ INodeEditor* NodeEditorFactory::FindEditorEnabled(FileType type) const
 }
 
 
-INode* NodeEditorFactory::Create(const StringRef& className, const FileIdRef& editorFile, const IEventArg& e /*= IEventArg::Empty*/) const
+bool NodeEditorFactory::Enable(FileType type, bool val)
+{
+	auto editor = Find(type);
+	RETURN_FALSE_IF_NULL(editor);
+	editor->Enable(val);
+	return true;
+}
+
+bool NodeEditorFactory::Enable(const StringRef& type, bool val)
+{
+	auto editor = Find(type);
+	RETURN_FALSE_IF_NULL(editor);
+	editor->Enable(val);
+	return true;
+}
+
+void NodeEditorFactory::EnableAll(bool val)
+{
+	for (auto kv : mEditors)
+	{
+		kv.Value->Enable(val);
+	}
+}
+
+INode* NodeEditorFactory::Create(const StringRef& className, const FileIdRef& editorFile, const IEventArg& e /*= IEventArg::Empty*/, NodeCreateFlags flags /*= NodeCreateFlags::None*/) const
 {
 	RETURN_NULL_IF_EMPTY(editorFile);
 
 	INodeEditor* editor = nullptr;
 	auto type = FileInfo::ExtractType(editorFile.Name);
-	editor = FindEditorEnabled(type);
-
-	if (editor == nullptr)
+	if (type != FileType::None)
 	{
-		Log::FormatError("Cannot create layer:{}", editorFile.Name);
-		return nullptr;
-	}
+		editor = FindEnabled(type);
+		if (editor == nullptr)
+		{
+			Log::FormatError("Cannot create layer:{}", editorFile.Name);
+			return nullptr;
+		}
 
-	INode* node= editor->Create(className, editorFile, e);
-	return node;
+		INode* node = editor->Create(className, editorFile, e, flags);
+		return node;
+	}
+	else
+	{
+		//no extension,use applicate node editors to find
+		FileId editorFileId;
+		editorFileId.Order = editorFile.Order;
+		const auto nodeEditors = ApplicationSettings::Instance().NodeEditors();
+		for (auto& editorExtension : nodeEditors)
+		{
+			type = FileInfo::CheckFileType(editorExtension);
+			editor = Find(type);
+			if (editor != nullptr)
+			{
+				editorFileId.Name = editorFile.Name + editorExtension;
+				if (FileSystem::Instance().Exists(editorFileId))
+				{
+					return editor->Create(className, editorFileId, e, flags);
+				}
+				editor = nullptr;	//reset to null
+			}
+		}
+
+		Log::FormatError("Cannot create layer:{}", editorFile.Name);
+	}
+	return nullptr;
 }
 
 MEDUSA_END;

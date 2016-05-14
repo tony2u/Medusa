@@ -18,10 +18,10 @@ JsonEditor::~JsonEditor()
 
 }
 
-INode* JsonEditor::Create(const StringRef& className, const FileIdRef& editorFile, const IEventArg& e /*= IEventArg::Empty*/)
+INode* JsonEditor::Create(const StringRef& className, const FileIdRef& editorFile, const IEventArg& e /*= IEventArg::Empty*/, NodeCreateFlags flags /*= NodeCreateFlags::None*/)
 {
 	auto data = FileSystem::Instance().ReadAllData(editorFile);
-
+	RETURN_NULL_IF_EMPTY(data);
 	rapidjson::Document root;
 	const char* beginDoc = (const char*)data.Data();
 	root.Parse<rapidjson::kParseStopWhenDoneFlag>(beginDoc);
@@ -31,18 +31,19 @@ INode* JsonEditor::Create(const StringRef& className, const FileIdRef& editorFil
 		Log::AssertFailedFormat("Invalid json format:{}. ErrorCode:{}", editorFile.Name, errorCode);
 		return nullptr;
 	}
-	return NodeWithJsonRoot(className, root);
+	return NodeWithJsonRoot(className, root,flags);
 }
 
-INode* JsonEditor::NodeWithJsonRoot(const StringRef& className, const rapidjson::Value& root)
+INode* JsonEditor::NodeWithJsonRoot(const StringRef& className, const rapidjson::Value& root, NodeCreateFlags flags/* = NodeCreateFlags::None*/)
 {
 	StringRef type = root.GetString("Type", nullptr);
 	StringRef readerName = GetReaderName(type, root);
 	auto reader = ReaderFactory::Instance().Create(readerName);
 	RETURN_NULL_IF_NULL(reader);
 
-	INode* node = reader->CreateNodeWithJson(*this, root, className);
+	INode* node = reader->CreateNodeWithJson(*this, root, className,flags);
 	RETURN_NULL_IF_NULL(node);
+	flags = GetChildrenCreateFlags(flags);
 
 	const rapidjson::Value& nodeCentent = root["Content"]["Content"];
 	//const rapidjson::Value& nodeAnimation = nodeCentent["Animation"];
@@ -59,7 +60,7 @@ INode* JsonEditor::NodeWithJsonRoot(const StringRef& className, const rapidjson:
 	{
 		for (auto& subNodeTree : *childrenArray)
 		{
-			auto child = NodeWithJson(subNodeTree);
+			auto child = NodeWithJson(subNodeTree,flags);
 			if (node->IsA<IScene>()&&child->IsA<ILayer>())
 			{
 				((IScene*)node)->PushLayer((ILayer*)child);
@@ -76,22 +77,24 @@ INode* JsonEditor::NodeWithJsonRoot(const StringRef& className, const rapidjson:
 }
 
 
-INode* JsonEditor::NodeWithJson(const rapidjson::Value& jsonNode)
+INode* JsonEditor::NodeWithJson(const rapidjson::Value& jsonNode, NodeCreateFlags flags /*= NodeCreateFlags::None*/)
 {
 	StringRef type = jsonNode.GetString("ctype", nullptr);
 	StringRef readerName = GetReaderName(type,jsonNode);
 	auto reader = ReaderFactory::Instance().Create(readerName);
 	RETURN_NULL_IF_NULL(reader);
 
-	INode* node = reader->CreateNodeWithJson(*this, jsonNode);
+	INode* node = reader->CreateNodeWithJson(*this, jsonNode,StringRef::Empty,flags);
 	RETURN_NULL_IF_NULL(node);
+
+	flags = GetChildrenCreateFlags(flags);
 
 	const rapidjson::Value* childrenArray = jsonNode.GetMember("Children");
 	if (childrenArray != nullptr)
 	{
 		for (auto& subNodeTree : *childrenArray)
 		{
-			auto child = NodeWithJson(subNodeTree);
+			auto child = NodeWithJson(subNodeTree,flags);
 			node->AddChild(child);
 		}
 	}

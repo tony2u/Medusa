@@ -49,10 +49,10 @@ bool Register_IScene(IEventArg& e)
 	auto cls = module.BeginClass<IScene>();
 	cls.InheritFrom<INode>();
 
-	typedef  void (IScene::*PushObjectPtr)(ILayer* layer, LayerPushFlags pushFlags);
+	typedef  void (IScene::*PushObjectPtr)(ILayer* layer, NodePushFlags pushFlags);
 	cls.AddMemberFunction("PushObject", (PushObjectPtr)&IScene::PushLayer);
 
-	auto pushDelegate = [](IScene* scene, const StringRef& className, LayerPushFlags pushFlags)->ILayer* {return scene->PushLayer(className, pushFlags); };
+	auto pushDelegate = [](IScene* scene, const StringRef& className, NodePushFlags pushFlags)->ILayer* {return scene->PushLayer(className, pushFlags); };
 	cls.AddFunctionAsMember("PushName", pushDelegate);
 
 	return true;
@@ -89,6 +89,8 @@ bool Register_UIScene(IEventArg& e)
 
 	return true;
 }
+
+
 MEDUSA_SCRIPT_BINDING_END;
 
 #endif

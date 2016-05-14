@@ -80,34 +80,34 @@ public://Stack
 	ILayer* CurrentLayer()const;
 
 	template<typename T>
-	T* PushLayer(LayerPushFlags pushFlags = LayerPushFlags::None, const IEventArg& e = IEventArg::Empty) { return (T*)PushLayerEx(T::ClassNameStatic(), T::EditorFileNameStatic(), T::ScriptFileNameStatic(), pushFlags,e); }
+	T* PushLayer(NodePushFlags pushFlags = NodePushFlags::None, const IEventArg& e = IEventArg::Empty) { return (T*)PushLayerEx(T::ClassNameStatic(), T::EditorFileNameStatic(), T::ScriptFileNameStatic(), pushFlags,e); }
 
-	ILayer* PopLayer(LayerPopFlags popFlags = LayerPopFlags::None);
-	void PopAllLayer(LayerPopFlags popFlags = LayerPopFlags::IgnorePrevLayer);
+	ILayer* PopLayer(NodePopFlags popFlags = NodePopFlags::None);
+	void PopAllLayer(NodePopFlags popFlags = NodePopFlags::IgnorePrev);
 
 	template<typename T>
-	T* ReplaceToLayer(LayerPopFlags popFlags = LayerPopFlags::None, LayerPushFlags pushFlags = LayerPushFlags::None, const IEventArg& e = IEventArg::Empty) { return (T*)ReplaceToLayerEx(T::ClassNameStatic(), T::EditorFileNameStatic(), T::ScriptFileNameStatic(), popFlags, pushFlags,e); }
+	T* ReplaceToLayer(NodePopFlags popFlags = NodePopFlags::None, NodePushFlags pushFlags = NodePushFlags::None, const IEventArg& e = IEventArg::Empty) { return (T*)ReplaceToLayerEx(T::ClassNameStatic(), T::EditorFileNameStatic(), T::ScriptFileNameStatic(), popFlags, pushFlags,e); }
 
 	template<typename T>
 	T* FindLayer() { return (T*)FindChild(T::ClassNameStatic().Name); }
 public:
-	ILayer* PushLayer(const StringRef& className, LayerPushFlags pushFlags = LayerPushFlags::None, const IEventArg& e = IEventArg::Empty);
-	ILayer* ReplaceToLayer(const StringRef& className, LayerPopFlags popFlags = LayerPopFlags::None, LayerPushFlags pushFlags = LayerPushFlags::None, const IEventArg& e = IEventArg::Empty);
+	ILayer* PushLayer(const StringRef& className, NodePushFlags pushFlags = NodePushFlags::None, const IEventArg& e = IEventArg::Empty);
+	ILayer* ReplaceToLayer(const StringRef& className, NodePopFlags popFlags = NodePopFlags::None, NodePushFlags pushFlags = NodePushFlags::None, const IEventArg& e = IEventArg::Empty);
 
-	ILayer* PushLayerEx(const StringRef& className, const FileIdRef& editorFile = FileIdRef::Empty, const FileIdRef& scriptFile = FileIdRef::Empty, LayerPushFlags pushFlags = LayerPushFlags::None, const IEventArg& e = IEventArg::Empty);
-	ILayer* ReplaceToLayerEx(const StringRef& className, const FileIdRef& editorFile = FileIdRef::Empty, const FileIdRef& scriptFile = FileIdRef::Empty, LayerPopFlags popFlags = LayerPopFlags::None, LayerPushFlags pushFlags = LayerPushFlags::None, const IEventArg& e = IEventArg::Empty);
+	ILayer* PushLayerEx(const StringRef& className, const FileIdRef& editorFile = FileIdRef::Empty, const FileIdRef& scriptFile = FileIdRef::Empty, NodePushFlags pushFlags = NodePushFlags::None, const IEventArg& e = IEventArg::Empty);
+	ILayer* ReplaceToLayerEx(const StringRef& className, const FileIdRef& editorFile = FileIdRef::Empty, const FileIdRef& scriptFile = FileIdRef::Empty, NodePopFlags popFlags = NodePopFlags::None, NodePushFlags pushFlags = NodePushFlags::None, const IEventArg& e = IEventArg::Empty);
 
 
-	void PushLayer(ILayer* layer, LayerPushFlags pushFlags = LayerPushFlags::None);
-	ILayer* ReplaceToLayer(ILayer* toLayer, LayerPopFlags popFlags = LayerPopFlags::None, LayerPushFlags pushFlags = LayerPushFlags::None);
+	void PushLayer(ILayer* layer, NodePushFlags pushFlags = NodePushFlags::None);
+	ILayer* ReplaceToLayer(ILayer* toLayer, NodePopFlags popFlags = NodePopFlags::None, NodePushFlags pushFlags = NodePushFlags::None);
 
 protected:
 
 	template<typename T>
-	void DeleteLayer(LayerDeleteFlags deleteFlags = LayerDeleteFlags::None) { DeleteLayer(T::ClassNameStatic().Name); }
-	void DeleteLayers(const List<StringRef>& names, LayerDeleteFlags deleteFlags = LayerDeleteFlags::None);
-	bool DeleteLayer(StringRef name, LayerDeleteFlags deleteFlags = LayerDeleteFlags::None);
-	bool DeleteLayer(ILayer* layer, LayerDeleteFlags deleteFlags = LayerDeleteFlags::None);
+	void DeleteLayer(NodeDeleteFlags deleteFlags = NodeDeleteFlags::None) { DeleteLayer(T::ClassNameStatic().Name); }
+	void DeleteLayers(const List<StringRef>& names, NodeDeleteFlags deleteFlags = NodeDeleteFlags::None);
+	bool DeleteLayer(StringRef name, NodeDeleteFlags deleteFlags = NodeDeleteFlags::None);
+	bool DeleteLayer(ILayer* layer, NodeDeleteFlags deleteFlags = NodeDeleteFlags::None);
 
 private:
 	void OnSaveStatus();

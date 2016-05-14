@@ -10,6 +10,7 @@
 #include "Core/IO/FileSystem.h"
 #include "IJsonSettings.h"
 #include "Application/Application.h"
+#include "Node/Editor/NodeEditorFactory.h"
 
 MEDUSA_BEGIN;
 
@@ -129,7 +130,12 @@ bool ApplicationSettings::OnLoad(IEventArg& e /*= IEventArg::Empty*/)
 			mTag.Device = (PublishDevices)settings.Optional("Device", PublishDevices::hd.IntValue);
 			mFeatures = (EngineFeatures)settings.Optional("Features", (uint)EngineFeatures::None);
 			mIsDebug = settings.Optional("IsDebug", false);
-
+			StringRef nodeEditors = settings.Optional("NodeEditors", StringRef::Empty);
+			StringParser::Split(nodeEditors, ".", mNodeEditors);
+			for (auto& str : mNodeEditors)
+			{
+				str.Push('.');
+			}
 		}
 		else if (type == FileType::lua)
 		{
@@ -142,6 +148,13 @@ bool ApplicationSettings::OnLoad(IEventArg& e /*= IEventArg::Empty*/)
 			mTag.Device = (PublishDevices)settings.Optional("Device", PublishDevices::hd.IntValue);
 			mFeatures = (EngineFeatures)settings.Optional("Features", (uint)EngineFeatures::None);
 			mIsDebug = settings.Optional("IsDebug", false);
+			StringRef nodeEditors= settings.Optional("NodeEditors", StringRef::Empty);
+			StringParser::Split(nodeEditors, ".", mNodeEditors);
+			for (auto& str:mNodeEditors)
+			{
+				str.Push('.');
+			}
+
 #else
 			Log::AssertFailedFormat("Engine not enable lua feature for :{}", mSettingsFile.Name);
 			return false;
@@ -159,7 +172,19 @@ bool ApplicationSettings::OnLoad(IEventArg& e /*= IEventArg::Empty*/)
 	Application::Instance().EnableModule("Core.Message", MEDUSA_FLAG_HAS(mFeatures, EngineFeatures::SupportMessage));
 	Application::Instance().EnableModule("Core.FileUpdater", MEDUSA_FLAG_HAS(mFeatures, EngineFeatures::SupportFileUpdating));
 
+	Apply();
 	return true;
+}
+
+
+
+void ApplicationSettings::Apply() const
+{
+	NodeEditorFactory::Instance().EnableAll(false);
+	for (auto editor:mNodeEditors)
+	{
+		NodeEditorFactory::Instance().Enable(editor, true);
+	}
 }
 
 MEDUSA_END;

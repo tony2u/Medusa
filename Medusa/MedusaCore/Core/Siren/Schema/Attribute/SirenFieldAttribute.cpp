@@ -24,34 +24,34 @@ bool SirenFieldAttribute::IsRequired() const
 bool SirenFieldAttribute::OnLoaded()
 {
 	StringPropertySet copy = mKeyValues;
-	if (mKeyValues.ContainsKey(StringRef("Optional")))
+	if (mKeyValues.Has("Optional"))
 	{
 		MEDUSA_FLAG_ADD(mMode, SirenFieldGenerateMode::Optional);
-		copy.RemoveKey(StringRef("Optional"));
+		copy.RemoveKey("Optional");
 	}
 
-	if (mKeyValues.ContainsKey(StringRef("ForceKeyToPtr")))
+	if (mKeyValues.Has("ForceKeyToPtr"))
 	{
 		MEDUSA_FLAG_ADD(mMode, SirenFieldGenerateMode::ForceKeyToPtr);
-		copy.RemoveKey(StringRef("ForceKeyToPtr"));
+		copy.RemoveKey("ForceKeyToPtr");
 	}
 
-	if (mKeyValues.ContainsKey(StringRef("ForceValueToPtr")))
+	if (mKeyValues.Has("ForceValueToPtr"))
 	{
 		MEDUSA_FLAG_ADD(mMode, SirenFieldGenerateMode::ForceValueToPtr);
-		copy.RemoveKey(StringRef("ForceValueToPtr"));
+		copy.RemoveKey("ForceValueToPtr");
 	}
 
-	if (mKeyValues.ContainsKey(StringRef("AddDictionaryMethods")))
+	if (mKeyValues.Has("AddDictionaryMethods"))
 	{
 		MEDUSA_FLAG_ADD(mMode, SirenFieldGenerateMode::AddDictionaryMethods);
-		copy.RemoveKey(StringRef("AddDictionaryMethods"));
+		copy.RemoveKey("AddDictionaryMethods");
 	}
 
-	if (mKeyValues.ContainsKey(StringRef("SuppressMethod")))
+	if (mKeyValues.Has("SuppressMethod"))
 	{
 		MEDUSA_FLAG_ADD(mMode, SirenFieldGenerateMode::SuppressMethod);
-		copy.RemoveKey(StringRef("SuppressMethod"));
+		copy.RemoveKey("SuppressMethod");
 	}
 
 	for (auto& keyValuePair : copy)

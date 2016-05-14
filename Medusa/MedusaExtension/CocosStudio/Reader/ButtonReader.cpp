@@ -17,7 +17,7 @@
 
 MEDUSA_COCOS_BEGIN;
 
-INode* ButtonReader::CreateNodeWithFlatBuffers(INodeEditor& editor, const flatbuffers::Table* nodeOptions, const StringRef& className)
+INode* ButtonReader::CreateNodeWithFlatBuffers(INodeEditor& editor, const flatbuffers::Table* nodeOptions, const StringRef& className, NodeCreateFlags flags /*= NodeCreateFlags::None*/)
 {
 	auto options = (flatbuffers::ButtonOptions*)nodeOptions;
 	ILabel* label = nullptr;
@@ -70,7 +70,12 @@ INode* ButtonReader::CreateNodeWithFlatBuffers(INodeEditor& editor, const flatbu
 			auto capInset = options->capInsets();
 			padding = ThicknessF(capInset->x(), size.Width - capInset->width() - capInset->x(), size.Height - capInset->height() - capInset->y(), capInset->y());
 		}
-		button = NodeFactory::Instance().CreateTextureButton(normalImage, pressedImage, disabledImage, FileIdRef::Empty, isEnableNineGrid, size, padding);
+		auto* textureButton = NodeFactory::Instance().CreateTextureButton(normalImage, pressedImage, disabledImage);
+		textureButton->SetSize(size);
+		textureButton->EnableNineGrid(isEnableNineGrid);
+		textureButton->SetTexturePadding(padding);
+
+		button = textureButton;
 		if (label)
 			button->AddChild(label);
 	}
@@ -91,12 +96,12 @@ INode* ButtonReader::CreateNodeWithFlatBuffers(INodeEditor& editor, const flatbu
 	StringRef callbackType = widgetOptions->callBackType()->c_str();
 	SetButtonEvent(button, callbackType, callBackName);
 
-	SetPropsWithFlatBuffers(button, (flatbuffers::Table*) options->widgetOptions());
+	SetPropsWithFlatBuffers(button, (flatbuffers::Table*) options->widgetOptions(), flags);
 
 	return button;
 }
 
-INode* ButtonReader::CreateNodeWithJson(INodeEditor& editor, const rapidjson::Value& nodeTree, const StringRef& className /*= StringRef::Empty*/)
+INode* ButtonReader::CreateNodeWithJson(INodeEditor& editor, const rapidjson::Value& nodeTree, const StringRef& className /*= StringRef::Empty*/, NodeCreateFlags flags /*= NodeCreateFlags::None*/)
 {
 	const rapidjson::Value& normalFileDataNode = nodeTree["NormalFileData"];
 	StringRef normalPath = StringRef(normalFileDataNode.GetString("Path", nullptr));
@@ -159,7 +164,11 @@ INode* ButtonReader::CreateNodeWithJson(INodeEditor& editor, const rapidjson::Va
 			auto nineHeight = nodeTree.Get("Scale9Height", 0);
 			padding = ThicknessF(originX,  size.Width -  nineWidth - originX, size.Height -  nineHeight - originY, originY);
 		}
-		button = NodeFactory::Instance().CreateTextureButton(normalPath, selectedPath, disabledPath, FileIdRef::Empty, isEnableNineGrid, size, padding);
+		auto textureButton = NodeFactory::Instance().CreateTextureButton(normalPath, selectedPath, disabledPath);
+		textureButton->SetSize(size);
+		textureButton->EnableNineGrid(isEnableNineGrid);
+		textureButton->SetTexturePadding(padding);
+		button = textureButton;
 		if (label)
 			button->AddChild(label);
 	}
@@ -183,7 +192,7 @@ INode* ButtonReader::CreateNodeWithJson(INodeEditor& editor, const rapidjson::Va
 	StringRef callbackType = nodeTree.GetString("CallBackType", nullptr);
 	SetButtonEvent(button, callbackType, callBackName);
 	
-	SetPropsWithJson(button, nodeTree);
+	SetPropsWithJson(button, nodeTree,flags);
 	return button;
 }
 
@@ -194,7 +203,6 @@ void ButtonReader::SetButtonEvent(IButton* button, StringRef callbackType, Strin
 		if (callbackType == "Touch")
 		{
 			//from touch began to end
-			//button->MutableInput().AddBehaviors(InputBehaviors::ScriptBinding);
 			button->MutableInput().Monitor(InputEventType::TouchBegan, callBackName);
 			button->MutableInput().Monitor(InputEventType::TouchMoved, callBackName);
 			button->MutableInput().Monitor(InputEventType::TouchEnded, callBackName);
@@ -203,7 +211,6 @@ void ButtonReader::SetButtonEvent(IButton* button, StringRef callbackType, Strin
 		}
 		else if (callbackType == "Click")
 		{
-			//button->MutableInput().AddBehaviors(InputBehaviors::ScriptBinding);
 			button->MutableInput().Monitor(InputEventType::Tap, callBackName);
 		}
 		else

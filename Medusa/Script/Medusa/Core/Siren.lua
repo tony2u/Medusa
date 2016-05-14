@@ -1,4 +1,4 @@
-module(...,package.seeall);
+local _M=module(...,package.seeall);
 require("SirenObject");
 
 function FindAssembly(name)
@@ -28,3 +28,5 @@ end
 function DeserializeTo(obj,type,data)
 	return ml.Siren.DeserializeTo(obj,type,data);
 end
+
+return _M;

@@ -44,7 +44,7 @@ FileInfo::FileInfo(StringRef filePath) :mFullPath(filePath)
 	}
 	else
 	{
-		mFileType = FileType::Unknown;
+		mFileType = FileType::None;
 		mDirectoryPath = mFullPath;
 
 		intp index2 = filePath.LastIndexOfAny(Path::DirectorySeparatorChars);
@@ -72,7 +72,7 @@ FileType FileInfo::CheckFileType(StringRef fileExt)
 
 	if (fileExt.IsEmpty())
 	{
-		return FileType::Unknown;
+		return FileType::None;
 	}
 
 	FileType* fileType = mFileExtDict.TryGet(fileExt);
@@ -90,7 +90,7 @@ FileType FileInfo::CheckFileType(StringRef fileExt)
 		return *fileType;
 	}
 
-	return FileType::Unknown;
+	return FileType::None;
 }
 
 
@@ -150,6 +150,10 @@ bool FileInfo::IsShaderFile()const
 }
 
 
+StringRef FileInfo::FileTypeToString(FileType fileType)
+{
+	return Extensions[(uint)fileType];
+}
 
 void FileInfo::OnInitFileExtDict()
 {

@@ -42,6 +42,12 @@ public:
 	{
 		return mJsonValue->Get(name.c_str(), defaultVal);
 	}
+
+	template<>
+	StringRef Optional(const StringRef& name, const StringRef& defaultVal)const
+	{
+		return mJsonValue->GetString(name.c_str(), defaultVal.c_str());
+	}
 public:
 	rapidjson::Value* JsonValue() const { return mJsonValue; }
 	void SetJsonValue(rapidjson::Value* val) { mJsonValue = val; }

@@ -316,6 +316,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Core\Lua\LuaClass.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Core\Lua\LuaCompat.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Core\Lua\LuaDefines.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Core\Lua\LuaEnum.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Core\Lua\LuaMachine.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Core\Lua\LuaFunctor.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Core\Lua\LuaModule.h" />

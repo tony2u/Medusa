@@ -54,7 +54,7 @@ public:
 	{
 	}
 
-	/*operator const T*()const
+	/*operator const T*()const	//should disable this to prevent 2 overloads have similar conversions
 	{
 	return mBuffer;
 	}*/

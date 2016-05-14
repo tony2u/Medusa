@@ -18,7 +18,7 @@ MEDUSA_BEGIN;
 TiledImage::TiledImage()
 	:mSize(Size2I::Zero),
 	mTransparentColor(Color4B::Black),
-	mEmbeddedFileType(FileType::Unknown)
+	mEmbeddedFileType(FileType::None)
 {
 }
 

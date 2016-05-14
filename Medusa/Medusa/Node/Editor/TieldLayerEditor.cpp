@@ -18,7 +18,7 @@ TieldLayerEditor::~TieldLayerEditor(void)
 
 }
 
-INode* TieldLayerEditor::Create(const StringRef& className, const FileIdRef& editorFile, const IEventArg& e/*=IEventArg::Empty*/)
+INode* TieldLayerEditor::Create(const StringRef& className, const FileIdRef& editorFile, const IEventArg& e/*=IEventArg::Empty*/, NodeCreateFlags flags /*= NodeCreateFlags::None*/)
 {
 	RETURN_NULL_IF_EMPTY(editorFile);
 	auto* map = TiledMapFactory::Instance().Create(editorFile);

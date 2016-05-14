@@ -56,9 +56,12 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Audio\IAudioSource.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Audio\StaticAudioSource.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Audio\StreamAudioSource.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Binding\Lua\EngineConstants_Binding.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Binding\Lua\Engine_Binding.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Binding\Lua\EventArg_Binding.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Binding\Lua\Geometry_Binding.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Binding\Lua\LayerFactory_Binding.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Binding\Lua\NodeDefines_Binding.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Binding\Lua\NodeFactory_Binding.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Binding\Lua\Node_Binding.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Binding\Lua\SceneFactory_Binding.h" />
@@ -718,9 +721,12 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Audio\IAudioSource.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Audio\StaticAudioSource.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Audio\StreamAudioSource.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Binding\Lua\EngineConstants_Binding.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Binding\Lua\Engine_Binding.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Binding\Lua\EventArg_Binding.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Binding\Lua\Geometry_Binding.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Binding\Lua\LayerFactory_Binding.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Binding\Lua\NodeDefines_Binding.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Binding\Lua\NodeFactory_Binding.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Binding\Lua\Node_Binding.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Binding\Lua\SceneFactory_Binding.cpp" />
@@ -935,6 +941,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Node\Layer\LayerFactory.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Node\Layer\NormalLayer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Node\Layout\ILayoutable.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Node\NodeDefines.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Node\NodeFactory.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Node\NodeSweeper.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Node\Panel\CanvasPanel.cpp" />

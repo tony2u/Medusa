@@ -6,12 +6,12 @@
 #ifdef MEDUSA_LUA
 #include "LuaCompat.h"
 #include "Core/String/StringRef.h"
-#include "LuaRef.h"
-#include "LuaArg.h"
-#include "LuaFunctor.h"
 #include "LuaDefines.h"
 #include "TLuaTable.h"
 #include "LuaClass.h"
+#include "LuaEnum.h"
+#include "LuaTable.h"
+
 
 MEDUSA_BEGIN;
 
@@ -31,6 +31,8 @@ public:
 	virtual ~LuaModule(void);
 public:
 	LuaModule BeginModule(StringRef name);
+	LuaTable BeginTable(StringRef name);
+
 
 	template<typename T>
 	LuaClass<T> BeginClass(StringRef name = StringRef::Empty)const
@@ -48,6 +50,28 @@ public:
 		else
 		{
 			LuaClass<T> cls(mState, name);
+			mRef.Rawset(name, cls.Ref());
+			return cls;
+		}
+
+	}
+
+	template<typename T>
+	LuaEnum<T> BeginEnum(StringRef name = StringRef::Empty)const
+	{
+		if (name.IsEmpty())
+		{
+			name = LuaEnum<T>::FixedClassName();
+		}
+
+		auto ref = mRef.Rawget(name);
+		if (ref != nullptr)
+		{
+			return LuaEnum<T>(mState, ref, name);
+		}
+		else
+		{
+			LuaEnum<T> cls(mState, name);
 			mRef.Rawset(name, cls.Ref());
 			return cls;
 		}

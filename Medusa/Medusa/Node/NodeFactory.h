@@ -10,6 +10,7 @@
 #include "Geometry/Rect2.h"
 #include "Resource/TextureAtlas/TextureAtlasDefines.h"
 #include "Geometry/GeometryDefines.h"
+#include "Geometry/Thickness.h"
 
 MEDUSA_BEGIN;
 
@@ -57,7 +58,7 @@ public:
 
 	IPanel* CreatePanel(PanelType panelType);
 
-	TextureButton* CreateTextureButton(const FileIdRef& normalTextureName, const FileIdRef& selectedTextureName = FileIdRef::Empty, const FileIdRef& disabledTextureName = FileIdRef::Empty, const FileIdRef& disabledSelectedTextureName = FileIdRef::Empty, bool isEnableNineGrid = false, const Size2F& targetSize = Size2F::Zero, const ThicknessF& padding = ThicknessF::Zero);
+	TextureButton* CreateTextureButton(const FileIdRef& normalTextureName, const FileIdRef& selectedTextureName = FileIdRef::Empty, const FileIdRef& disabledTextureName = FileIdRef::Empty, const FileIdRef& disabledSelectedTextureName = FileIdRef::Empty);
 	NodeButton* CreateNodeButton(const FileIdRef& normalTextureName, const FileIdRef& selectedTextureName = FileIdRef::Empty, const FileIdRef& disabledTextureName = FileIdRef::Empty, const FileIdRef& disabledSelectedTextureName = FileIdRef::Empty);
 
 	TextureProgressBar* CreateTextureProgressBar(ProgressType progressType, const FileIdRef& textureName, float percent = 1.f);

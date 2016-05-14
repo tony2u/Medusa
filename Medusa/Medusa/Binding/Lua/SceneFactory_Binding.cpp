@@ -18,7 +18,7 @@ bool Register_SceneFactory(IEventArg& e)
 
 	auto cls = module.BeginClass<SceneFactory>();
 
-	cls.AddFunction("Create", [](const StringRef& className, const FileIdRef& editorFile)->IScene* {return SceneFactory::Instance().Create(className, editorFile); });
+	cls.AddFunction("Create", [](const StringRef& className, const FileIdRef& editorFile,NodeCreateFlags flags)->IScene* {return SceneFactory::Instance().Create(className, editorFile,IEventArg::Empty, flags); });
 
 	//typedef  IScene* (SceneManager::*PushPtr)(const StringRef&, ScenePushFlags, const IEventArg&);
 	//reg.AddMemberFunction("Push", (PushPtr)(&SceneManager::Push));

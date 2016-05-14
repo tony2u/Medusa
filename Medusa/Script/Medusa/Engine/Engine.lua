@@ -1,7 +1,5 @@
 require("Medusa.Core.Core")
 
-require("EngineConstants")
-require("NodeConstants")
 require("INode")
 
 require("NodeFactory")

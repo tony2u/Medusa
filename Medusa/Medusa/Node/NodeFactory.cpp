@@ -331,9 +331,9 @@ ListBox* NodeFactory::CreateEmptyListBox()
 	return listBox;
 }
 
-TextureButton* Medusa::NodeFactory::CreateTextureButton(const FileIdRef& normalTextureName, const FileIdRef& selectedTextureName /*= FileIdRef::Empty*/, const FileIdRef& disabledTextureName /*= FileIdRef::Empty*/, const FileIdRef& disabledSelectedTextureName /*= FileIdRef::Empty*/, bool isEnableNineGrid /*= false*/, const Size2F& targetSize /*= Size2F::Zero*/, const ThicknessF& padding /*= ThicknessF::Zero*/)
+TextureButton* Medusa::NodeFactory::CreateTextureButton(const FileIdRef& normalTextureName, const FileIdRef& selectedTextureName /*= FileIdRef::Empty*/, const FileIdRef& disabledTextureName /*= FileIdRef::Empty*/, const FileIdRef& disabledSelectedTextureName /*= FileIdRef::Empty*/)
 {
-	TextureButton* button = new TextureButton(StringRef::Empty, normalTextureName, selectedTextureName, disabledTextureName, disabledSelectedTextureName,isEnableNineGrid,targetSize,padding);
+	TextureButton* button = new TextureButton(StringRef::Empty, normalTextureName, selectedTextureName, disabledTextureName, disabledSelectedTextureName);
 	button->Initialize();
 	return button;
 }

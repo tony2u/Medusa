@@ -206,6 +206,7 @@
 #include "Core/Lua/LuaClass.h"
 #include "Core/Lua/LuaCompat.h"
 #include "Core/Lua/LuaDefines.h"
+#include "Core/Lua/LuaEnum.h"
 #include "Core/Lua/LuaFunctor.h"
 #include "Core/Lua/LuaMachine.h"
 #include "Core/Lua/LuaModule.h"

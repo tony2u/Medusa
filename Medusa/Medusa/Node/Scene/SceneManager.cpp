@@ -51,7 +51,7 @@ bool SceneManager::Uninitialize()
 }
 
 
-void SceneManager::Push(IScene* scene, ScenePushFlags pushFlag /*= ScenePushFlags::None*/)
+void SceneManager::Push(IScene* scene, NodePushFlags pushFlag /*= NodePushFlags::None*/)
 {
 #ifdef MEDUSA_SAFE_CHECK
 	if (mScenes.Contains(scene))
@@ -64,7 +64,7 @@ void SceneManager::Push(IScene* scene, ScenePushFlags pushFlag /*= ScenePushFlag
 	IScene* originalScene = Current();
 	if (originalScene != nullptr)
 	{
-		if (MEDUSA_FLAG_HAS(pushFlag,ScenePushFlags::HideAllPrevScenes))
+		if (MEDUSA_FLAG_HAS(pushFlag,NodePushFlags::HideAllPrevs))
 		{
 			FOR_EACH_COLLECTION(i, mScenes)
 			{
@@ -78,34 +78,34 @@ void SceneManager::Push(IScene* scene, ScenePushFlags pushFlag /*= ScenePushFlag
 			}
 		}
 
-		if (!MEDUSA_FLAG_HAS(pushFlag,ScenePushFlags::ShowPrevScene))
+		if (!MEDUSA_FLAG_HAS(pushFlag,NodePushFlags::ShowPrev))
 		{
 			originalScene->SetVisible(false);
 			originalScene->ExitRecursively();
 		}
-		originalScene->EnableInput(MEDUSA_FLAG_HAS(pushFlag,ScenePushFlags::ShowPrevScene));
+		originalScene->EnableInput(MEDUSA_FLAG_HAS(pushFlag,NodePushFlags::ShowPrev));
 	}
 
 	mScenes.Push(scene);
 	scene->SetVisible(true);
 	scene->EnterRecursively();
 
-	if (!MEDUSA_FLAG_HAS(pushFlag,ScenePushFlags::SuppressUpdateLogic))
+	if (!MEDUSA_FLAG_HAS(pushFlag,NodePushFlags::SuppressUpdateLogic))
 	{
 		scene->UpdateLogicRecursively();
 	}
 
-	scene->EnableInput(!MEDUSA_FLAG_HAS(pushFlag,ScenePushFlags::DisableTouch));
+	scene->EnableInput(!MEDUSA_FLAG_HAS(pushFlag,NodePushFlags::DisableTouch));
 
 	mIsSceneChanged = true;
 }
 
-IScene* SceneManager::Pop(ScenePopFlags popFlag /*= ScenePopFlags::None*/)
+IScene* SceneManager::Pop(NodePopFlags popFlag /*= NodePopFlags::None*/)
 {
 	IScene* scene = Current();
 	Log::AssertNotNull(scene, "Scene stack should not be empty when pop.");
 
-	if (!MEDUSA_FLAG_HAS(popFlag,ScenePopFlags::ShowCurrentScene) || MEDUSA_FLAG_HAS(popFlag,ScenePopFlags::DeleteCurrentScene) || MEDUSA_FLAG_HAS(popFlag,ScenePopFlags::DeleteCurrentSceneAsync))
+	if (!MEDUSA_FLAG_HAS(popFlag,NodePopFlags::ShowCurrent) || MEDUSA_FLAG_HAS(popFlag,NodePopFlags::DeleteCurrent) || MEDUSA_FLAG_HAS(popFlag,NodePopFlags::DeleteCurrentAsync))
 	{
 		scene->SetVisible(false);
 		scene->ExitRecursively();
@@ -115,20 +115,20 @@ IScene* SceneManager::Pop(ScenePopFlags popFlag /*= ScenePopFlags::None*/)
 	mScenes.Pop();
 	mIsSceneChanged = true;
 
-	if (MEDUSA_FLAG_HAS(popFlag,ScenePopFlags::DeleteCurrentScene) || MEDUSA_FLAG_HAS(popFlag,ScenePopFlags::DeleteCurrentSceneAsync))
+	if (MEDUSA_FLAG_HAS(popFlag,NodePopFlags::DeleteCurrent) || MEDUSA_FLAG_HAS(popFlag,NodePopFlags::DeleteCurrentAsync))
 	{
-		DeleteScene(scene, MEDUSA_FLAG_HAS(popFlag,ScenePopFlags::DeleteCurrentSceneAsync));
+		DeleteScene(scene, MEDUSA_FLAG_HAS(popFlag,NodePopFlags::DeleteCurrentAsync));
 		scene = nullptr;
 	}
 
-	if (!MEDUSA_FLAG_HAS(popFlag,ScenePopFlags::IgnorePrevScene))
+	if (!MEDUSA_FLAG_HAS(popFlag,NodePopFlags::IgnorePrev))
 	{
 		IScene* prevScene = Current();
 		if (prevScene != nullptr)
 		{
 			prevScene->SetVisible(true);
-			prevScene->EnableInput(!MEDUSA_FLAG_HAS(popFlag,ScenePopFlags::DisableTouch));
-			if (!MEDUSA_FLAG_HAS(popFlag,ScenePopFlags::SuppressUpdateLogic))
+			prevScene->EnableInput(!MEDUSA_FLAG_HAS(popFlag,NodePopFlags::DisableTouch));
+			if (!MEDUSA_FLAG_HAS(popFlag,NodePopFlags::SuppressUpdateLogic))
 			{
 				prevScene->UpdateLogicRecursively();
 			}
@@ -138,7 +138,7 @@ IScene* SceneManager::Pop(ScenePopFlags popFlag /*= ScenePopFlags::None*/)
 	return scene;
 }
 
-IScene* SceneManager::ReplaceTo(IScene* scene, ScenePopFlags popFlag /*= ScenePopFlags::None*/, ScenePushFlags pushFlag /*= ScenePushFlags::None*/)
+IScene* SceneManager::ReplaceTo(IScene* scene, NodePopFlags popFlag /*= NodePopFlags::None*/, NodePushFlags pushFlag /*= NodePushFlags::None*/)
 {
 	IScene* prevScene = Pop(popFlag);
 	Push(scene, pushFlag);
@@ -161,7 +161,7 @@ bool SceneManager::DeleteScene(IScene* scene, bool isAsync /*= false*/)
 	}
 }
 
-IScene* SceneManager::Push(const StringRef& className, ScenePushFlags pushFlag /*= ScenePushFlags::None*/, const IEventArg& e /*= IEventArg::Empty*/)
+IScene* SceneManager::Push(const StringRef& className, NodePushFlags pushFlag /*= NodePushFlags::None*/, const IEventArg& e /*= IEventArg::Empty*/)
 {
 	if (Path::HasExtension(className))	//means a file
 	{
@@ -172,7 +172,7 @@ IScene* SceneManager::Push(const StringRef& className, ScenePushFlags pushFlag /
 		}
 		else
 		{
-			auto editor = NodeEditorFactory::Instance().FindEditor(fileType);
+			auto editor = NodeEditorFactory::Instance().Find(fileType);
 			if (editor != nullptr)
 			{
 				return PushEx(StringRef::Empty, className, StringRef::Empty, pushFlag, e);
@@ -189,9 +189,10 @@ IScene* SceneManager::Push(const StringRef& className, ScenePushFlags pushFlag /
 }
 
 
-IScene* SceneManager::PushEx(const StringRef& className, const FileIdRef& editorFile /*= FileIdRef::Empty*/, const FileIdRef& scriptFile /*= FileIdRef::Empty*/, ScenePushFlags pushFlag /*= ScenePushFlags::None*/, const IEventArg& e /*= IEventArg::Empty*/)
+IScene* SceneManager::PushEx(const StringRef& className, const FileIdRef& editorFile /*= FileIdRef::Empty*/, const FileIdRef& scriptFile /*= FileIdRef::Empty*/, NodePushFlags pushFlag /*= NodePushFlags::None*/, const IEventArg& e /*= IEventArg::Empty*/)
 {
-	IScene* scene = SceneFactory::Instance().Create(className, editorFile, e);
+	NodeCreateFlags createFlags = (NodeCreateFlags)((uint)pushFlag&(uint)NodeCreateFlags::All);
+	IScene* scene = SceneFactory::Instance().Create(className, editorFile, e,createFlags);
 	if (!scriptFile.IsEmpty())
 	{
 		scene->AddScriptFile(scriptFile);
@@ -201,13 +202,13 @@ IScene* SceneManager::PushEx(const StringRef& className, const FileIdRef& editor
 	return scene;
 }
 
-IScene* SceneManager::ReplaceTo(const StringRef& className, ScenePopFlags popFlag /*= ScenePopFlags::None*/, ScenePushFlags pushFlag /*= ScenePushFlags::None*/, const IEventArg& e /*= IEventArg::Empty*/)
+IScene* SceneManager::ReplaceTo(const StringRef& className, NodePopFlags popFlag /*= NodePopFlags::None*/, NodePushFlags pushFlag /*= NodePushFlags::None*/, const IEventArg& e /*= IEventArg::Empty*/)
 {
 	Pop(popFlag);
 	return Push(className, pushFlag, e);
 }
 
-IScene* SceneManager::ReplaceToEx(const StringRef& className, const FileIdRef& editorFile /*= FileIdRef::Empty*/, const FileIdRef& scriptFile /*= FileIdRef::Empty*/, ScenePopFlags popFlag /*= ScenePopFlags::None*/, ScenePushFlags pushFlag /*= ScenePushFlags::None*/, const IEventArg& e /*= IEventArg::Empty*/)
+IScene* SceneManager::ReplaceToEx(const StringRef& className, const FileIdRef& editorFile /*= FileIdRef::Empty*/, const FileIdRef& scriptFile /*= FileIdRef::Empty*/, NodePopFlags popFlag /*= NodePopFlags::None*/, NodePushFlags pushFlag /*= NodePushFlags::None*/, const IEventArg& e /*= IEventArg::Empty*/)
 {
 	Pop(popFlag);
 	return PushEx(className, editorFile, scriptFile, pushFlag, e);

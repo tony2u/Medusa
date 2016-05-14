@@ -6,12 +6,14 @@
 #ifdef MEDUSA_LUA
 
 MEDUSA_SCRIPT_BINDING_BEGIN;
-bool Register_INode(IEventArg& e);
-bool Register_ILayer(IEventArg& e);
-bool Register_IScene(IEventArg& e);
-bool Register_NormalLayer(IEventArg& e);
-bool Register_Sprite(IEventArg& e);
-bool Register_UIScene(IEventArg& e);
+
+bool Register_NodeCreateFlags(IEventArg& e);
+bool Register_NodePushFlags(IEventArg& e);
+bool Register_NodePopFlags(IEventArg& e);
+bool Register_NodeDeleteFlags(IEventArg& e);
+
+
+
 
 
 MEDUSA_SCRIPT_BINDING_END;

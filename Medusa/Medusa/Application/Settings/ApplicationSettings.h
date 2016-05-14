@@ -48,6 +48,10 @@ public:
 
 	bool HasScriptBinding() const;
 	void EnableScriptBinding(bool val) { mHasScriptBinding = val; }
+
+	const List<HeapString>& NodeEditors() const { return mNodeEditors; }
+
+	void Apply()const;
 protected:
 	virtual bool OnLoad(IEventArg& e = IEventArg::Empty)override;
 protected:
@@ -58,7 +62,7 @@ protected:
 	bool mIsDebug = false;
 	bool mHasScriptBinding=false;
 	
-
+	List<HeapString> mNodeEditors;	//find editors in order
 };
 
 

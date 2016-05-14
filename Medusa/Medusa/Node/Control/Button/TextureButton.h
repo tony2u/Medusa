@@ -10,7 +10,7 @@ class TextureButton :public IButton
 {
 	MEDUSA_DECLARE_RTTI;
 public:
-	TextureButton(StringRef name, const FileIdRef& normalTextureName, const FileIdRef& selectedTextureName = FileIdRef::Empty, const FileIdRef& disabledTextureName = FileIdRef::Empty, const FileIdRef& disabledSelectedTextureName = FileIdRef::Empty,bool isEnableNineGrid = false, const Size2F& targetSize = Size2F::Zero, const ThicknessF& padding = ThicknessF::Zero);
+	TextureButton(StringRef name, const FileIdRef& normalTextureName, const FileIdRef& selectedTextureName = FileIdRef::Empty, const FileIdRef& disabledTextureName = FileIdRef::Empty, const FileIdRef& disabledSelectedTextureName = FileIdRef::Empty);
 	virtual ~TextureButton(void);
 	virtual bool Initialize() override;
 
@@ -25,8 +25,15 @@ public:
 
 	FileIdRef DisabledSelectedTextureName() const { return mDisabledSelectedTextureName.ToRef(); }
 	void SetDisabledSelectedTextureName(const FileIdRef& val);
+
+	bool IsNineGridEnabled() const { return mIsNineGridEnabled; }
+	void EnableNineGrid(bool val);
+
+	const ThicknessF& TexturePadding() const { return mTexturePadding; }
+	void SetTexturePadding(const ThicknessF& val);
 protected:
-	void OnUpdateMesh();
+	virtual void OnMoveableDirty(MoveableChangedFlags changedFlags) override;
+	virtual void OnUpdateMesh();
 	void SetImage(const FileIdRef& image);
 	virtual void OnButtonStateChanged() override;
 protected:
@@ -35,9 +42,9 @@ protected:
 	FileId mDisabledTextureName;
 	FileId mDisabledSelectedTextureName;
 
-	bool mIsEnableNineGrid;
+	bool mIsNineGridEnabled=false;
 	Size2F mTargetSize;
-	ThicknessF mPadding;
+	ThicknessF mTexturePadding;
 };
 
 MEDUSA_END;
