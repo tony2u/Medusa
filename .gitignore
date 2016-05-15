@@ -139,7 +139,7 @@ _git
 #*.lib
 
 # Executables
-*.exe
+#*.exe
 *.out
 *.app
 *.tlog

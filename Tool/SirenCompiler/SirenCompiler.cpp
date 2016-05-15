@@ -57,7 +57,7 @@ SirenAssembly* OpenAssembly(const StringRef& assemblyName, size_t index = 0)
 {
 	SirenAssembly* assembly = new SirenAssembly();
 
-	if (FileSystem::Instance().ExistsFile(assemblyName))
+	if (FileSystem::Instance().Exists(assemblyName))
 	{
 		FileStream fs(assemblyName, FileOpenMode::ReadOnly, FileDataType::Text);
 		if (!assembly->LoadFromFileSystem(assemblyName))

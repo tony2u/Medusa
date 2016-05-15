@@ -180,11 +180,15 @@ bool ApplicationSettings::OnLoad(IEventArg& e /*= IEventArg::Empty*/)
 
 void ApplicationSettings::Apply() const
 {
-	NodeEditorFactory::Instance().EnableAll(false);
-	for (auto editor:mNodeEditors)
+	if (!mNodeEditors.IsEmpty())
 	{
-		NodeEditorFactory::Instance().Enable(editor, true);
+		NodeEditorFactory::Instance().EnableAll(false);
+		for (auto editor : mNodeEditors)
+		{
+			NodeEditorFactory::Instance().Enable(editor, true);
+		}
 	}
+
 }
 
 MEDUSA_END;

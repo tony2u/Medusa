@@ -121,9 +121,15 @@ INode* NodeEditorFactory::Create(const StringRef& className, const FileIdRef& ed
 	else
 	{
 		//no extension,use applicate node editors to find
+		const auto nodeEditors = ApplicationSettings::Instance().NodeEditors();
+		if (nodeEditors.IsEmpty())
+		{
+			Log::FormatError("Cannot have pure editor file name:{} without extension when editors not specified. Fixed:Set ApplicationSettings::Instance().NodeEditors().", editorFile.Name);
+			return nullptr;
+		}
+
 		FileId editorFileId;
 		editorFileId.Order = editorFile.Order;
-		const auto nodeEditors = ApplicationSettings::Instance().NodeEditors();
 		for (auto& editorExtension : nodeEditors)
 		{
 			type = FileInfo::CheckFileType(editorExtension);

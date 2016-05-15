@@ -63,7 +63,7 @@ INode* JsonEditor::NodeWithJsonRoot(const StringRef& className, const rapidjson:
 			auto child = NodeWithJson(subNodeTree,flags);
 			if (node->IsA<IScene>()&&child->IsA<ILayer>())
 			{
-				((IScene*)node)->PushLayer((ILayer*)child);
+				((IScene*)node)->PushLayer((ILayer*)child,NodePushFlags::ShowPrev);
 			}
 			else
 			{
