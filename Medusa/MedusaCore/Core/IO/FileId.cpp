@@ -26,6 +26,11 @@ bool FileId::operator<(const FileId& fileId) const
 
 FileId FileId::ParseFrom(const StringRef& name)
 {
+	if (name.IsEmpty())
+	{
+		return FileId::Empty;
+	}
+
 	FileId result(name);
 	intp dirIndex = result.Name.LastIndexOfAny(Path::DirectorySeparatorChars);
 	if (dirIndex > 0)

@@ -28,10 +28,10 @@ RenderStateMachine::RenderStateMachine()
 
 RenderStateMachine::~RenderStateMachine()
 {
-	FOR_EACH_COLLECTION(i,mRenderStates)
+	for(auto i:mRenderStates)
 	{
-		RenderStateStack* stack=i->Value;
-		SAFE_RELEASE_COLLECTION(*stack);
+		RenderStateStack* stack=i.Value;
+		stack->Clear();
 		SAFE_DELETE(stack);
 	}
 }
@@ -55,7 +55,7 @@ bool RenderStateMachine::Initialize()
 	/*FOR_EACH_COLLECTION(i,mRenderStates)
 	{
 		RenderStateStack* stack=i->Value;
-		IRenderState* state=stack->Top();
+		auto state=stack->Top();
 		state->Retain();
 	}*/
 	
@@ -63,7 +63,7 @@ bool RenderStateMachine::Initialize()
 
 }
 
-void RenderStateMachine::Push( IRenderState* state )
+void RenderStateMachine::Push(const Share<IRenderState>& state )
 {
 	RenderStateStack* stack = mRenderStates[(uint)state->Type()];
 
@@ -76,7 +76,7 @@ void RenderStateMachine::Push( IRenderState* state )
 #endif
 
 #ifdef MEDUSA_SAFE_CHECK
-	IRenderState* currentVal = stack->TopOr(nullptr);
+	auto currentVal = stack->TopOr(nullptr);
 	if (currentVal==nullptr||!state->Equals(*currentVal))
 	{
 		state->Apply();
@@ -93,11 +93,10 @@ void RenderStateMachine::Push( IRenderState* state )
 	
 
 	stack->Push(state);
-	state->Retain();
 }
 
 
-void RenderStateMachine::Pop( const IRenderState* state /*=nullptr*/)
+void RenderStateMachine::Pop( const Share<IRenderState>& state /*=nullptr*/)
 {
 	RenderStateStack* stack=mRenderStates[(uint)state->Type()];
 #ifdef MEDUSA_SAFE_CHECK
@@ -108,7 +107,7 @@ void RenderStateMachine::Pop( const IRenderState* state /*=nullptr*/)
 	}
 #endif
 
-	IRenderState* currentVal=stack->PopCopy();
+	Share<IRenderState> currentVal=stack->PopCopy();
 
 #ifdef MEDUSA_SAFE_CHECK
 	if (state!=nullptr&&currentVal!=state)
@@ -123,7 +122,7 @@ void RenderStateMachine::Pop( const IRenderState* state /*=nullptr*/)
 		return;
 	}*/
 #endif
-	IRenderState* prevVal = stack->TopOr(nullptr);
+	Share<IRenderState> prevVal = stack->TopOr(nullptr);
 
 #ifdef MEDUSA_SAFE_CHECK
 	if (prevVal!=nullptr&&!currentVal->Equals(*prevVal))
@@ -140,8 +139,6 @@ void RenderStateMachine::Pop( const IRenderState* state /*=nullptr*/)
 		prevVal->Apply();
 	}
 #endif
-
-	SAFE_RELEASE(currentVal);
 }
 
 

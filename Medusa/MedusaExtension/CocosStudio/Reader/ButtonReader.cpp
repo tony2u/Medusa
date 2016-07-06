@@ -14,6 +14,7 @@
 #include "CocosStudio/CSParseBinary_generated.h"
 #include "Core/IO/Path.h"
 #include "Node/Input/InputDispatcher.h"
+#include "Resource/Font/FontFactory.h"
 
 MEDUSA_COCOS_BEGIN;
 
@@ -26,7 +27,7 @@ INode* ButtonReader::CreateNodeWithFlatBuffers(INodeEditor& editor, const flatbu
 	{
 		int fontSize = options->fontSize();
 		FileIdRef fontName(options->fontName()->c_str());
-		fontName = FileSystem::Instance().ExistsOr(fontName, "arial.ttf");
+		fontName = FontFactory::Instance().ExistsOrDefault(fontName);
 		FontId fontId(fontName);
 		fontId.SetSize(fontSize);
 		label = NodeFactory::Instance().CreateSingleLineLabel(fontId, titleText, Alignment::MiddleCenter);
@@ -53,12 +54,13 @@ INode* ButtonReader::CreateNodeWithFlatBuffers(INodeEditor& editor, const flatbu
 		disabledImage = StringRef::Empty;
 	}
 
-	normalImage = Path::GetFileName(normalImage);
-	pressedImage = Path::GetFileName(pressedImage);
-	disabledImage = Path::GetFileName(disabledImage);
+	auto normalImageFileId = FileId::ParseFrom(normalImage);
+	auto pressedImageFileId = FileId::ParseFrom(pressedImage);
+	auto disabledImageFileId = FileId::ParseFrom(disabledImage);
+
 
 	IButton* button = nullptr;
-	if (!normalImage.IsEmpty() || !pressedImage.IsEmpty() || !disabledImage.IsEmpty())
+	if (!normalImageFileId.IsEmpty() || !pressedImageFileId.IsEmpty() || !disabledImageFileId.IsEmpty())
 	{
 		bool isEnableNineGrid = options->scale9Enabled() != 0;
 		Size2F size = Size2F::Zero;
@@ -70,7 +72,7 @@ INode* ButtonReader::CreateNodeWithFlatBuffers(INodeEditor& editor, const flatbu
 			auto capInset = options->capInsets();
 			padding = ThicknessF(capInset->x(), size.Width - capInset->width() - capInset->x(), size.Height - capInset->height() - capInset->y(), capInset->y());
 		}
-		auto* textureButton = NodeFactory::Instance().CreateTextureButton(normalImage, pressedImage, disabledImage);
+		auto* textureButton = NodeFactory::Instance().CreateTextureButton(normalImageFileId, pressedImageFileId, disabledImageFileId);
 		textureButton->SetSize(size);
 		textureButton->EnableNineGrid(isEnableNineGrid);
 		textureButton->SetTexturePadding(padding);
@@ -122,9 +124,10 @@ INode* ButtonReader::CreateNodeWithJson(INodeEditor& editor, const rapidjson::Va
 		disabledPath = StringRef::Empty;
 	}
 
-	normalPath = Path::GetFileName(normalPath);
-	selectedPath = Path::GetFileName(selectedPath);
-	disabledPath = Path::GetFileName(disabledPath);
+	auto normalPathFileId = FileId::ParseFrom(normalPath);
+	auto selectedPathFileId = FileId::ParseFrom(selectedPath);
+	auto disabledPathFileId = FileId::ParseFrom(disabledPath);
+
 
 	ILabel* label = nullptr;
 	StringRef buttonText = nodeTree.GetString("ButtonText", nullptr);
@@ -134,22 +137,21 @@ INode* ButtonReader::CreateNodeWithJson(INodeEditor& editor, const rapidjson::Va
 	
 		const rapidjson::Value* fontResourceNode = nodeTree.GetMember("FontResource");
 		StringRef fontName = fontResourceNode != nullptr ? fontResourceNode->GetString("Path", nullptr) : StringRef::Empty;
-		fontName = FileSystem::Instance().ExistsOr(fontName, "arial.ttf");
+		fontName = FontFactory::Instance().ExistsOrDefault(fontName);
 		FontId fontId(fontName);
 		fontId.SetSize(fontSize);
 
 		Color4F textColor = ToColor(nodeTree.GetMember("TextColor"));
 
-		label = NodeFactory::Instance().CreateSingleLineLabel(fontId, buttonText, Alignment::MiddleCenter);
+		label = NodeFactory::Instance().CreateSingleLineLabel(fontId, StringParser::ToW(buttonText), Alignment::MiddleCenter);
 		label->SetColor(textColor);
 		label->SetAnchorPoint(AnchorPoint::MiddleCenter);
-		label->DockToParent(DockPoint::MiddleCenter);
-
+		label->SetDock(DockPoint::MiddleCenter);
 		//outline color...
 	}
 
 	IButton* button = nullptr;
-	if (!normalPath.IsEmpty() || !selectedPath.IsEmpty() || !disabledPath.IsEmpty())
+	if (!normalPathFileId.IsEmpty() || !selectedPathFileId.IsEmpty() || !disabledPathFileId.IsEmpty())
 	{
 		bool isEnableNineGrid = nodeTree.Get("Scale9Enable", false);
 		Size2F size = Size2F::Zero;
@@ -157,14 +159,14 @@ INode* ButtonReader::CreateNodeWithJson(INodeEditor& editor, const rapidjson::Va
 		if (isEnableNineGrid)
 		{
 			const rapidjson::Value& jsonSize = nodeTree["Size"];
-			size = Size2F(jsonSize.Get("X",0), jsonSize.Get("Y", 0));
+			size = Size2F(jsonSize.Get("X",0.f), jsonSize.Get("Y", 0.f));
 			auto originX = nodeTree.Get("Scale9OriginX", 0);
 			auto originY = nodeTree.Get("Scale9OriginY", 0);
 			auto nineWidth = nodeTree.Get("Scale9Width", 0);
 			auto nineHeight = nodeTree.Get("Scale9Height", 0);
 			padding = ThicknessF(originX,  size.Width -  nineWidth - originX, size.Height -  nineHeight - originY, originY);
 		}
-		auto textureButton = NodeFactory::Instance().CreateTextureButton(normalPath, selectedPath, disabledPath);
+		auto textureButton = NodeFactory::Instance().CreateTextureButton(normalPathFileId, selectedPathFileId, disabledPathFileId);
 		textureButton->SetSize(size);
 		textureButton->EnableNineGrid(isEnableNineGrid);
 		textureButton->SetTexturePadding(padding);
@@ -222,6 +224,5 @@ void ButtonReader::SetButtonEvent(IButton* button, StringRef callbackType, Strin
 
 }
 
-MEDUSA_IMPLEMENT_COCOS_READER(ButtonReader);
 
 MEDUSA_COCOS_END;

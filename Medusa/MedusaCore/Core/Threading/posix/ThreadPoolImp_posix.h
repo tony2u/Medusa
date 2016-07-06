@@ -18,7 +18,7 @@ so it's ok to foreach threads to find a idle one
 */
 class ThreadPoolImp
 {
-	typedef SwapValue<Queue<ICommand*>> CommandQueue;
+	typedef SwapValue<Queue<ShareCommand>> CommandQueue;
 public:
 	ThreadPoolImp();
 	~ThreadPoolImp(void);
@@ -29,12 +29,12 @@ protected:
 	bool InitializeHelper(uint minCount = ThreadPoolImp::MinCount, uint maxCount = ThreadPoolImp::MaxCount, bool autoManaged = true);
 	void UninitialzieHelper();
 protected:
-	void Enqueue(ICommand* command);
-	void CancelPendingCommands(ICommand* command);
+	void Enqueue(const ShareCommand& command);
+	void CancelPendingCommands(const ShareCommand& command);
 
 private:
 	bool OnPooledThreadComplete(PooledThread& thread);
-	PooledThread* EnqueueWorkToIdleThread(ICommand* command);
+	PooledThread* EnqueueWorkToIdleThread(const ShareCommand& command);
 	PooledThread* CreateThread();
 
 protected:

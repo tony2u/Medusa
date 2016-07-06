@@ -4,10 +4,11 @@
 #pragma once
 
 #include "Core/Threading/Mutex.h"
+#include "Core/Pattern/INonCopyable.h"
 
 MEDUSA_BEGIN;
 
-class ScopedLock
+class ScopedLock:public INonCopyable
 {
 public:
 	typedef Mutex MutexType;
@@ -19,15 +20,12 @@ public:
 
 	ScopedLock(MutexType& mutex, long milliseconds) :mMutex(mutex)
 	{
-		mMutex.LockTimeout(milliseconds);
+		mMutex.TryLockFor(milliseconds);
 	}
 	~ScopedLock()
 	{
 		mMutex.Unlock();
 	}
-private:
-	ScopedLock(const ScopedLock &);
-	ScopedLock& operator=(const ScopedLock &);
 private:
 	MutexType& mMutex;
 };

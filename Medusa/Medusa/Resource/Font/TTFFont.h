@@ -2,10 +2,13 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 #pragma once
+#include "MedusaPreDeclares.h"
+#ifdef MEDUSA_FREETYPE
 #include "Resource/Font/IFont.h"
 #include "Core/Memory/MemoryData.h"
 #include "Graphics/GraphicsTypes.h"
 #include "Graphics/PixelType.h"
+#include "Core/Pattern/Share.h"
 
 #include "Lib/Common/freetype/ft2build.h"
 #include FT_FREETYPE_H
@@ -21,8 +24,8 @@ public:
 	static bool InitializeLibrary();
 	static bool UninitializeLibrary();
 
-	static TTFFont* CreateFromFile(const FontId& fontId);
-	static TTFFont* CreateFromData(const FontId& fontId,const MemoryData& data);
+	static Share<TTFFont> CreateFromFile(const FontId& fontId);
+	static Share<TTFFont> CreateFromData(const FontId& fontId,const MemoryData& data);
 
 public:
 	TTFFont(const FontId& fontId);
@@ -62,3 +65,4 @@ private:
 };
 
 MEDUSA_END;
+#endif

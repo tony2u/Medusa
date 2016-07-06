@@ -5,7 +5,7 @@
 #include "MedusaCorePreDeclares.h"
 #ifdef MEDUSA_POSIX_THREADING
 #include "Core/Threading/ThreadEvent.h"
-#include "Core/Profile/StopWatch.h"
+#include "Core/Chrono/StopWatch.h"
 
 MEDUSA_BEGIN;
 

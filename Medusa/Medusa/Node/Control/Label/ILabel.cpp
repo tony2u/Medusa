@@ -5,21 +5,26 @@
 #include "ILabel.h"
 #include "Resource/Font/IFont.h"
 #include "Resource/Font/FontFactory.h"
-
+#include "Node/NodeFactory.h"
 MEDUSA_BEGIN;
 
 
-ILabel::ILabel(StringRef name, IFont* font, Alignment alignment/*=Alignment::LeftBottom*/, Size2F restrictSize/*=Size2F::Zero*/, bool isMultipleLine/*=true*/, bool isStatic/*=false*/)
+ILabel::ILabel(StringRef name, const Share<IFont>& font, Alignment alignment/*=Alignment::LeftBottom*/, Size2F restrictSize/*=Size2F::Zero*/, bool isMultipleLine/*=true*/, bool isStatic/*=false*/)
 	:INode(name),mFont(font),mAlignment(alignment),mRestrictSize(restrictSize),mIsMultipleLine(isMultipleLine),mIsStatic(isStatic)
 {
-	SAFE_RETAIN(mFont);
-
+	
 }
 
 
+ILabel::ILabel(const StringRef& name /*= StringRef::Empty*/, const IEventArg& e /*= IEventArg::Empty*/)
+	:INode(name,e),mRestrictSize(Size2F::Zero)
+{
+
+}
+
 ILabel::~ILabel(void)
 {
-	SAFE_RELEASE(mFont);
+	
 
 }
 
@@ -45,10 +50,10 @@ void ILabel::EnableMultipleLine(bool val)
 	UpdateMesh();
 }
 
-void ILabel::SetFont(IFont* val)
+void ILabel::SetFont(const Share<IFont>& val)
 {
 	RETURN_IF_EQUAL(mFont,val);
-	SAFE_ASSIGN_REF(mFont,val);
+	mFont = val;
 	OnUpdateFont();
 	UpdateMesh();
 
@@ -78,10 +83,10 @@ bool ILabel::SetFontId(const FontId& val)
 	if (mFont != nullptr)
 	{
 		RETURN_FALSE_IF_EQUAL(mFont->GetFontId(), val);
-		SAFE_RELEASE(mFont);
 	}
 
 	mFont = FontFactory::Instance().Create(val);
+	
 	OnUpdateFont();
 	UpdateMesh();
 	return true;
@@ -91,6 +96,5 @@ void ILabel::CommitChanges()
 {
 	UpdateMesh();
 }
-MEDUSA_IMPLEMENT_RTTI(ILabel, INode);
 
 MEDUSA_END;

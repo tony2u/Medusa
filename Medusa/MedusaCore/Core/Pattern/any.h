@@ -34,31 +34,30 @@ public:
 class any final
 {
 public:
+	const static any Empty;
+public:
 	/// Constructs an object of type any with an empty state.
-	any() :
-		vtable(nullptr)
-	{
-	}
+	any() = default;
 
 	/// Constructs an object of type any with an equivalent state as other.
 	any(const any& rhs) :
-		vtable(rhs.vtable)
+		mVTable(rhs.mVTable)
 	{
 		if (!rhs.empty())
 		{
-			rhs.vtable->copy(rhs.storage, this->storage);
+			rhs.mVTable->copy(rhs.mStorage, this->mStorage);
 		}
 	}
 
 	/// Constructs an object of type any with a state equivalent to the original state of other.
 	/// rhs is left in a valid but otherwise unspecified state.
 	any(any&& rhs) noexcept :
-	vtable(rhs.vtable)
+	mVTable(rhs.mVTable)
 	{
 		if (!rhs.empty())
 		{
-			rhs.vtable->move(rhs.storage, this->storage);
-			rhs.vtable = nullptr;
+			rhs.mVTable->move(rhs.mStorage, this->mStorage);
+			rhs.mVTable = nullptr;
 		}
 	}
 
@@ -72,12 +71,11 @@ public:
 	///
 	/// T shall satisfy the CopyConstructible requirements, otherwise the program is ill-formed.
 	/// This is because an `any` may be copy constructed into another `any` at any time, so a copy should always be allowed.
-	template<typename ValueType, typename = typename std::enable_if<!std::is_same<typename std::decay<ValueType>::type, any>::value>::type>
-	any(ValueType&& value)
+	template<typename T, typename = typename std::enable_if<!std::is_same<typename std::decay<T>::type, any>::value>::type>
+	any(T&& value)
 	{
-		static_assert(std::is_copy_constructible<typename std::decay<ValueType>::type>::value,
-			"T shall satisfy the CopyConstructible requirements.");
-		this->construct(std::forward<ValueType>(value));
+		static_assert(std::is_copy_constructible<typename std::decay<T>::type>::value,"T shall satisfy the CopyConstructible requirements.");
+		this->construct(std::forward<T>(value));
 	}
 
 	/// Has the same effect as any(rhs).swap(*this). No effects if an exception is thrown.
@@ -115,50 +113,50 @@ public:
 	{
 		if (!empty())
 		{
-			this->vtable->destroy(storage);
-			this->vtable = nullptr;
+			this->mVTable->destroy(mStorage);
+			this->mVTable = nullptr;
 		}
 	}
 
 	/// Returns true if *this has no contained object, otherwise false.
 	bool empty() const noexcept
 	{
-		return this->vtable == nullptr;
+		return this->mVTable == nullptr;
 	}
 
 	/// If *this has a contained object of type T, typeid(T); otherwise typeid(void).
 	const std::type_info& type() const noexcept
 	{
-		return empty() ? typeid(void) : this->vtable->type();
+		return empty() ? typeid(void) : this->mVTable->type();
 	}
 
 	/// Exchange the states of *this and rhs.
 	void swap(any& rhs) noexcept
 	{
-		if (this->vtable != rhs.vtable)
+		if (this->mVTable != rhs.mVTable)
 		{
 			any tmp(std::move(rhs));
 
 			// move from *this to rhs.
-			rhs.vtable = this->vtable;
-			if (this->vtable != nullptr)
+			rhs.mVTable = this->mVTable;
+			if (this->mVTable != nullptr)
 			{
-				this->vtable->move(this->storage, rhs.storage);
+				this->mVTable->move(this->mStorage, rhs.mStorage);
 				//this->vtable = nullptr; -- uneeded, see below
 			}
 
 			// move from tmp (previously rhs) to *this.
-			this->vtable = tmp.vtable;
-			if (tmp.vtable != nullptr)
+			this->mVTable = tmp.mVTable;
+			if (tmp.mVTable != nullptr)
 			{
-				tmp.vtable->move(tmp.storage, this->storage);
-				tmp.vtable = nullptr;
+				tmp.mVTable->move(tmp.mStorage, this->mStorage);
+				tmp.mVTable = nullptr;
 			}
 		}
 		else // same types
 		{
-			if (this->vtable != nullptr)
-				this->vtable->swap(this->storage, rhs.storage);
+			if (this->mVTable != nullptr)
+				this->mVTable->swap(this->mStorage, rhs.mStorage);
 		}
 	}
 
@@ -317,8 +315,8 @@ protected:
 	const T* cast() const noexcept
 	{
 		return requires_allocation<T>::value ?
-			reinterpret_cast<const T*>(storage.dynamic) :
-			reinterpret_cast<const T*>(&storage.stack);
+			reinterpret_cast<const T*>(mStorage.dynamic) :
+			reinterpret_cast<const T*>(&mStorage.stack);
 	}
 
 	/// Casts (with no type_info checks) the storage pointer as T*.
@@ -326,27 +324,31 @@ protected:
 	T* cast() noexcept
 	{
 		return requires_allocation<T>::value ?
-			reinterpret_cast<T*>(storage.dynamic) :
-			reinterpret_cast<T*>(&storage.stack);
+			reinterpret_cast<T*>(mStorage.dynamic) :
+			reinterpret_cast<T*>(&mStorage.stack);
 	}
 
 private:
-	storage_union storage; // on offset(0) so no padding for align
-	vtable_type*  vtable;
+	storage_union mStorage; // on offset(0) so no padding for align
+	vtable_type*  mVTable=nullptr;
 
 	/// Chooses between stack and dynamic allocation for the type decay_t<ValueType>,
 	/// assigns the correct vtable, and constructs the object on our storage.
-	template<typename ValueType>
-	void construct(ValueType&& value)
+	template<typename T>
+	void construct(T&& value)
 	{
-		using T = typename std::decay<ValueType>::type;
+		using decayType = typename std::decay<T>::type;
 
-		this->vtable = vtable_for_type<T>();
+		this->mVTable = vtable_for_type<decayType>();
 
-		if (requires_allocation<T>::value)
-			storage.dynamic = new T(std::forward<ValueType>(value));
+		if (requires_allocation<decayType>::value)
+		{
+			mStorage.dynamic = new decayType(std::forward<T>(value));
+		}
 		else
-			new (&storage.stack) T(std::forward<ValueType>(value));
+		{
+			new (&mStorage.stack) decayType(std::forward<T>(value));
+		}
 	}
 };
 

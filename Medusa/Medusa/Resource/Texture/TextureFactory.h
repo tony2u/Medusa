@@ -22,11 +22,11 @@ public:
 	virtual bool Initialize();
 	virtual bool Uninitialize();
 public:
-	ImageTexture* CreateFromFile(const FileIdRef& fileId, StringRef samplerName = ShaderSamplerNames::Texture, GraphicsTextureUnits unit = GraphicsTextureUnits::Texture0, ResourceShareType shareType = ResourceShareType::Share);
-	ImageTexture* CreateFromOrderItem(const FileIdRef& fileId, const FileMapOrderItem& orderItem, StringRef samplerName = ShaderSamplerNames::Texture, GraphicsTextureUnits unit = GraphicsTextureUnits::Texture0, ResourceShareType shareType = ResourceShareType::Share);
+	Share<ImageTexture> CreateFromFile(const FileIdRef& fileId, StringRef samplerName = ShaderSamplerNames::Texture, GraphicsTextureUnits unit = GraphicsTextureUnits::Texture0, ResourceShareType shareType = ResourceShareType::Share);
+	Share<ImageTexture> CreateFromOrderItem(const FileIdRef& fileId, const FileMapOrderItem& orderItem, StringRef samplerName = ShaderSamplerNames::Texture, GraphicsTextureUnits unit = GraphicsTextureUnits::Texture0, ResourceShareType shareType = ResourceShareType::Share);
 
-	ImageTexture* CreateFromImage(const FileIdRef& fileId, IImage* image, StringRef samplerName = ShaderSamplerNames::Texture, GraphicsTextureUnits unit = GraphicsTextureUnits::Texture0, ResourceShareType shareType = ResourceShareType::Share);
-	GPUTexture* CreateGPUTexture(const FileIdRef& fileId,
+	Share<ImageTexture> CreateFromImage(const FileIdRef& fileId, const Share<IImage>& image, StringRef samplerName = ShaderSamplerNames::Texture, GraphicsTextureUnits unit = GraphicsTextureUnits::Texture0, ResourceShareType shareType = ResourceShareType::Share);
+	Share<GPUTexture> CreateGPUTexture(const FileIdRef& fileId,
 		const Size2U& size,
 		GraphicsTextureType textureType=GraphicsTextureType::Texture2D,
 		GraphicsTextureTarget textureTarget=GraphicsTextureTarget::Texture2D,

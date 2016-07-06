@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 #include "MedusaPreCompiled.h"
 #include "EngineConstants_Binding.h"
-#include "Core/Command/EventArg/UserDataEventArg.h"
+#include "Core/Event/EventArg/UserDataEventArg.h"
 
 #ifdef MEDUSA_LUA
 #include "Core/Lua/LuaState.h"
@@ -81,7 +81,7 @@ bool Register_NodeEditors(IEventArg& e)
 	{
 		auto* editor = kv.Value;
 		auto ext= editor->ExtensionString();
-		cls.AddConst(editor->Type(), ext);
+		cls.AddConst(editor->Name(), ext);
 	}
 
 	return true;

@@ -19,15 +19,15 @@ public:
 	virtual bool Initialize();
 	virtual bool Uninitialize();
 public:
-	Camera* CreateDefault(StringRef name,bool isOrtho = false,bool isResizeable=true, ResourceShareType shareType = ResourceShareType::Share);
+	Share<Camera> CreateDefault(StringRef name,bool isOrtho = false,bool isResizeable=true, ResourceShareType shareType = ResourceShareType::Share);
 
-	Camera* CreateDefault(StringRef name, const Size2F& winSize, bool isOrtho = false, bool isResizeable = true,ResourceShareType shareType = ResourceShareType::Share);
-	Camera* CreateFromModel(StringRef name, StringRef modelName, const Size2F& winSize, bool isResizeable = true,ResourceShareType shareType = ResourceShareType::Share);
+	Share<Camera> CreateDefault(StringRef name, const Size2F& winSize, bool isOrtho = false, bool isResizeable = true,ResourceShareType shareType = ResourceShareType::Share);
+	Share<Camera> CreateFromModel(StringRef name, StringRef modelName, const Size2F& winSize, bool isResizeable = true,ResourceShareType shareType = ResourceShareType::Share);
 
 	void Resize(const Size2F& newSize);
 
 protected:
-	List<Camera*> mResizeableCameras;
+	List<Share<Camera>> mResizeableCameras;
 };
 
 MEDUSA_END;

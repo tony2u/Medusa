@@ -2,6 +2,8 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 #include "MedusaPreCompiled.h"
+#ifdef MEDUSA_AL
+
 #include "IAudioDevice.h"
 #include "Core/Log/Log.h"
 
@@ -437,9 +439,9 @@ void IAudioDevice::PrintAll()
 	StringRef defaultCaptureDevice = GetDefaultCaptureDevice();
 
 	HeapString str("\nAllDevices:");
-	FOR_EACH_COLLECTION(i, allDevices)
+	for(auto i: allDevices)
 	{
-		str += *i;
+		str += i;
 		str += "\t";
 	}
 
@@ -448,9 +450,9 @@ void IAudioDevice::PrintAll()
 	str += defaultDevice;
 
 	str += "\nAllCaptureDevice:";
-	FOR_EACH_COLLECTION(i, allCaptureDevices)
+	for(auto i: allCaptureDevices)
 	{
-		str += *i;
+		str += i;
 		str += "\t";
 	}
 
@@ -470,3 +472,4 @@ void IAudioDevice::PrintAll()
 
 
 MEDUSA_END;
+#endif

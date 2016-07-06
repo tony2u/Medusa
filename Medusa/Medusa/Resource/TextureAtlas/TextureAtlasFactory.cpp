@@ -33,7 +33,7 @@ TextureAtlasFactory::TextureAtlasFactory()
 
 TextureAtlasFactory::~TextureAtlasFactory()
 {
-
+	Uninitialize();
 }
 
 bool TextureAtlasFactory::Initialize()
@@ -48,7 +48,6 @@ bool TextureAtlasFactory::Initialize()
 	{
 		auto atlas = CreateEmpty(nameItem->Name());
 		atlas->LoadFromNameItem(*nameItem);
-		Add(atlas);
 	}
 
 	return true;
@@ -60,16 +59,16 @@ bool TextureAtlasFactory::Uninitialize()
 	return true;
 }
 
-TextureAtlas* TextureAtlasFactory::CreateEmpty(const FileIdRef& fileId, ResourceShareType shareType /*= ResourceShareType::Share*/)
+Share<TextureAtlas> TextureAtlasFactory::CreateEmpty(const FileIdRef& fileId, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
 	if (shareType != ResourceShareType::None)
 	{
-		TextureAtlas* atlas = Find(fileId);
+		auto atlas = Find(fileId);
 		RETURN_SELF_IF_NOT_NULL(atlas);
 	}
 
 	auto fileFormat = TryGetAtlasType(fileId.Name);
-	auto* atlas = mObjectFactory.Create((size_t)fileFormat, fileId);
+	Share<TextureAtlas> atlas = mObjectFactory.Create((size_t)fileFormat, fileId);
 	if (atlas != nullptr)
 	{
 		Add(atlas, shareType);
@@ -80,22 +79,22 @@ TextureAtlas* TextureAtlasFactory::CreateEmpty(const FileIdRef& fileId, Resource
 
 TextureAtlasRegion* TextureAtlasFactory::CreateAtlasRegion(StringRef regionName, const FileIdRef& atlasFileId, TextureAtlasType fileFormat /*= TextureAtlasFileFormat::None*/)
 {
-	TextureAtlas* atlas = Create(atlasFileId, fileFormat);
+	auto atlas = Create(atlasFileId, fileFormat);
 	return atlas->FindRegion(regionName);
 }
 
 
 TextureAtlasRegion* TextureAtlasFactory::CreateAtlasRegion(int regionId, const FileIdRef& atlasFileId, TextureAtlasType fileFormat /*= TextureAtlasFileFormat::None*/)
 {
-	TextureAtlas* atlas = Create(atlasFileId, fileFormat);
+	auto atlas = Create(atlasFileId, fileFormat);
 	return atlas->FindRegion(regionId);
 }
 
-TextureAtlas* TextureAtlasFactory::Create(const FileIdRef& fileId, TextureAtlasType fileFormat /*= TextureAtlasFileFormat::None*/, ResourceShareType shareType /*= ResourceShareType::Share*/)
+Share<TextureAtlas> TextureAtlasFactory::Create(const FileIdRef& fileId, TextureAtlasType fileFormat /*= TextureAtlasFileFormat::None*/, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
 	if (shareType != ResourceShareType::None)
 	{
-		TextureAtlas* atlas = Find(fileId);
+		auto atlas = Find(fileId);
 		RETURN_SELF_IF_NOT_NULL(atlas);
 	}
 
@@ -110,10 +109,10 @@ TextureAtlas* TextureAtlasFactory::Create(const FileIdRef& fileId, TextureAtlasT
 		return nullptr;
 	}
 
-	auto* atlas = mObjectFactory.Create((size_t)fileFormat, fileId);
+	Share<TextureAtlas> atlas = mObjectFactory.Create((size_t)fileFormat, fileId);
 	if (!atlas->LoadFromFileSystem(fileId))
 	{
-		SAFE_DELETE(atlas);
+		atlas = nullptr;
 	}
 
 	if (atlas)
@@ -124,11 +123,11 @@ TextureAtlas* TextureAtlasFactory::Create(const FileIdRef& fileId, TextureAtlasT
 	return atlas;
 }
 
-TextureAtlas* TextureAtlasFactory::CreateTiledAtlas(const FileIdRef& textureFileId, const Size2U textureSize, const Size2U& tileSize, ResourceShareType shareType /*= ResourceShareType::Share*/)
+Share<TextureAtlas> TextureAtlasFactory::CreateTiledAtlas(const FileIdRef& textureFileId, const Size2U textureSize, const Size2U& tileSize, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
 	if (shareType != ResourceShareType::None)
 	{
-		TextureAtlas* atlas = Find(textureFileId);
+		auto atlas = Find(textureFileId);
 		RETURN_SELF_IF_NOT_NULL(atlas);
 	}
 
@@ -146,13 +145,13 @@ TextureAtlas* TextureAtlasFactory::CreateTiledAtlas(const FileIdRef& textureFile
 		FOR_EACH_SIZE(j, column)
 		{
 			TextureAtlasRegion* region = new TextureAtlasRegion();
-			region->SetId(i*row + j);
+			region->SetId((uint)(i*row + j));
 			region->SetTextureRect(Rect2U(mpp(j*tileSize.Width, i*tileSize.Height), tileSize));
 			page->AddRegion(region);
 		}
 	}
 
-	TextureAtlas* result = atlas.release();
+	Share<TextureAtlas> result = atlas.release();
 
 	Add(result, shareType);
 	return result;

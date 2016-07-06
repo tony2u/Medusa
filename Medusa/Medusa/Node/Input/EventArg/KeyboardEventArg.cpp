@@ -4,6 +4,5 @@
 #include "MedusaPreCompiled.h"
 #include "Node/Input/EventArg/KeyboardEventArg.h"
 MEDUSA_BEGIN;
-MEDUSA_IMPLEMENT_RTTI(KeyboardEventArg,IEventArg);
 
 MEDUSA_END;

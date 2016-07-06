@@ -25,7 +25,10 @@ void BaseSirenCustomType::SetParentType(BaseSirenCustomType* val)
 	{
 		mFullName = mParentType->FullName() + "." + mName;
 	}
-	mFullName = mName;
+	else
+	{
+		mFullName = mName;
+	}
 }
 
 

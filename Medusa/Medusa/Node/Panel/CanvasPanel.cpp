@@ -3,11 +3,8 @@
 // license that can be found in the LICENSE file.
 #include "MedusaPreCompiled.h"
 #include "CanvasPanel.h"
+#include "Node/NodeFactory.h"
 MEDUSA_BEGIN;
-
-CanvasPanel::CanvasPanel(StringRef name/*=StringRef::Empty*/):IPanel(name)
-{
-}
 
 CanvasPanel::~CanvasPanel(void)
 {
@@ -19,15 +16,14 @@ bool CanvasPanel::ArrangeChildren(const Rect2F& limitRect/*=Rect2F::Zero*/, Node
 {
 	RETURN_FALSE_IF(mIsCollapsed);
 
-	FOR_EACH_COLLECTION(i,mNodes)
+	for (auto child : mNodes)
 	{
-		INode* child=*i;
 		child->ArrangeRecursively(Rect2F::Zero);
 	}
 
 	return true;
 }
 
-MEDUSA_IMPLEMENT_RTTI(CanvasPanel, IPanel);
+MEDUSA_IMPLEMENT_NODE(CanvasPanel);
 
 MEDUSA_END;

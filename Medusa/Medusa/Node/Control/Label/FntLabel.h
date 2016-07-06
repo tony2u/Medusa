@@ -8,12 +8,13 @@ MEDUSA_BEGIN;
 
 class FntLabel :public ILabel
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_NODE(FntLabel,ILabel);
 public:
-	FntLabel(StringRef name, IFont* font, Alignment alignment = Alignment::LeftBottom, Size2F restrictSize = Size2F::Zero, bool isMultipleLine = true, bool isStatic = false);
+	FntLabel(const StringRef& name = StringRef::Empty, const IEventArg& e = IEventArg::Empty);
+	FntLabel(StringRef name, const Share<IFont>& font, Alignment alignment = Alignment::LeftBottom, Size2F restrictSize = Size2F::Zero, bool isMultipleLine = true, bool isStatic = false);
 	virtual ~FntLabel(void);
 
-	virtual BaseFontMesh* CreateFontMesh(TextureAtlasPage* page, bool isStatic = false)override;
+	virtual Share<BaseFontMesh> CreateFontMesh(TextureAtlasPage* page, bool isStatic = false)override;
 
 	virtual Point2F GetCharPosition(uint charIndex)const override;
 	virtual Point2F GetCursorPosition(uint charIndex)const override;
@@ -24,9 +25,9 @@ protected:
 	virtual void OnUpdateFont() override;
 
 	void CreateMesh();
-	IMaterial* CreateLabelMaterial(ITexture* texture);
+	Share<IMaterial> CreateLabelMaterial(const Share<ITexture>& texture);
 protected:
-	List<BaseFontMesh*> mInternalMeshes;
+	List<Share<BaseFontMesh>> mInternalMeshes;
 	List<TextureAtlasPage*> mInternalPages;
 
 };

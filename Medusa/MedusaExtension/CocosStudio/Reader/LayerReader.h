@@ -10,7 +10,7 @@ MEDUSA_COCOS_BEGIN;
 
 class LayerReader : public INodeReader
 {
-	MEDUSA_DECLARE_COCOS_READER;
+	MEDUSA_RTTI(LayerReader,INodeReader);
 public:
 	LayerReader() {};
 	virtual ~LayerReader() {};

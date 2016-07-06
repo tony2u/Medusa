@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 #pragma once
-#include "Core/Utility/Version.h"
+#include "Core/System/Version.h"
 
 namespace MedusaCoreVersion
 {

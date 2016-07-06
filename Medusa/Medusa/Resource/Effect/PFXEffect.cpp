@@ -17,7 +17,7 @@ PFXEffect::~PFXEffect()
 {
 }
 
-PFXEffect* PFXEffect::CreateFromFile( const FileIdRef& fileId )
+Share<PFXEffect> PFXEffect::CreateFromFile( const FileIdRef& fileId )
 {
 	/*List<HeapString> allLines;
 	if(FileSystem::Instance().ReadFileAllLinesTo(name,allLines))
@@ -28,7 +28,7 @@ PFXEffect* PFXEffect::CreateFromFile( const FileIdRef& fileId )
 	return nullptr;
 }
 
-PFXEffect* PFXEffect::CreateFromData( const FileIdRef& fileId,MemoryData data )
+Share<PFXEffect> PFXEffect::CreateFromData( const FileIdRef& fileId,MemoryData data )
 {
 	MemoryStream stream(data);
 	List<HeapString> allLines;
@@ -41,7 +41,7 @@ PFXEffect* PFXEffect::CreateFromData( const FileIdRef& fileId,MemoryData data )
 	return nullptr;
 }
 
-PFXEffect* PFXEffect::CreateFromLines( const FileIdRef& fileId,const List<HeapString>& lines )
+Share<PFXEffect> PFXEffect::CreateFromLines( const FileIdRef& fileId,const List<HeapString>& lines )
 {
 	return nullptr;
 }

@@ -15,11 +15,11 @@ MEDUSA_BEGIN;
 class BaseFontModel:public BaseMultipleModel<IMaterial>
 {
 public:
-	BaseFontModel(IFont* font,Alignment alignment=Alignment::LeftBottom,Size2U restrictSize=Size2U::Zero);
+	BaseFontModel(const Share<IFont>& font,Alignment alignment=Alignment::LeftBottom,Size2U restrictSize=Size2U::Zero);
 	virtual ~BaseFontModel(void);
 public:
 	virtual bool Initialize(ModelLoadingOptions loadingOptions=ModelLoadingOptions::None);
-	IFont* Font() const { return mFont; }
+	const Share<IFont>& Font() const { return mFont; }
 	Alignment GetAlignment() const { return mAlignment; }
 	const Color4F& Color() const { return mColor; }
 	const Size2U& RestrictSize() const { return mRestrictSize; }
@@ -31,13 +31,13 @@ public:
 protected:
 	void ResetCachedMeshes();
 protected:
-	IFont* mFont;
+	Share<IFont> mFont;
 	WHeapString mText;
 	Alignment mAlignment;
 	Color4F mColor;
 	Size2U mRestrictSize;
 	//cache font char mesh
-	Dictionary<IMaterial*,FntTextMesh*> mCachesMeshes;
+	Dictionary<Share<IMaterial>,Share<FntTextMesh>> mCachesMeshes;
 
 	//cache material
 };

@@ -8,16 +8,19 @@
 MEDUSA_BEGIN;
 
 template<bool TIsAtomic = true>
-class ISharable :public INonCopyable<ISharable<TIsAtomic>>
+class ISharable :public INonCopyable
 {
 	typedef typename std::conditional<TIsAtomic, std::atomic_int, int>::type ValueType;
 public:
-	ISharable() :mRefCount(1) {}
-	virtual ~ISharable() { mRefCount = 0; }
+	ISharable() :mRefCount(0) {}
+	virtual ~ISharable() { }
 	int RefCount()const { return mRefCount; }
 	bool IsShared()const { return mRefCount > 1; }
 
-	MEDUSA_VIRTUAL int Retain() const { return ++mRefCount; }
+	MEDUSA_VIRTUAL int Retain() const
+	{
+		return ++mRefCount; 
+	}
 	MEDUSA_VIRTUAL bool Release()const
 	{
 		if (--mRefCount <= 0)

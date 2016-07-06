@@ -2,13 +2,15 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 #include "MedusaPreCompiled.h"
+#if  defined(MEDUSA_OGG)&&defined(MEDUSA_AL)
+
 #include "OggAudio.h"
 #include "Core/IO/File.h"
 #include "Core/IO/FileSystem.h"
 
 #include "Lib/Common/ogg/ogg.h"
 #include "Lib/Common/vorbis/vorbisfile.h"
-#include "Core/Utility/Endian.h"
+#include "Core/System/BitConverter.h"
 
 MEDUSA_BEGIN;
 
@@ -67,7 +69,7 @@ OggAudio* OggAudio::CreateFromMemory(const FileIdRef& fileId, MemoryData data)
 	uintp sampleCount = (uintp)ov_pcm_total(&vf, -1);
 	bool seekable = ov_seekable(&vf)!=0;
 
-	uint bigEndian = !Endian::IsLittle();
+	uint bigEndian = !BitConverter::IsLittle();
 	int currentSection = 0;
 
 	uintp pcmSize = sampleCount*vi->channels*sizeof(short);
@@ -109,3 +111,4 @@ OggAudio* OggAudio::CreateFromMemory(const FileIdRef& fileId, MemoryData data)
 
 
 MEDUSA_END;
+#endif

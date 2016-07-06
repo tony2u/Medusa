@@ -4,158 +4,89 @@
 #include "MedusaCorePreCompiled.h"
 #include "ILogger.h"
 #include "Core/String/StdString.h"
-
+#include "Core/Threading/Thread.h"
+#include "Core/Threading/ScopedLock.h"
+#include "Core/Log/LogMessagePool.h"
 
 MEDUSA_BEGIN;
 
-ILogger::ILogger(StringRef name /*= StringRef::Empty*/,bool isLogHeader/*=true*/)
+ILogger::ILogger(StringRef name /*= StringRef::Empty*/)
 	:mName(name)
 {
-	mCurrentLevel = LogLevel::All;	//open all logs
-	mIsLogHeaderEnabled = isLogHeader;
-
-	mBufferA.ReserveSize(512);
-	mBufferW.ReserveSize(512);
-
+	mCurrentThread = Thread::CurrentId();
 }
 
 ILogger::~ILogger(void)
 {
 }
 
-//////////////////////////////////////////////////////////////////////////
 
-void ILogger::LogHeaderInBufferA(LogType logType/*=LogType::Info*/)
+void ILogger::Add(const Share<LogMessage>& message)
 {
-	time_t tNowTime;
-	time(&tNowTime);
 
-	tm localTime;
-#ifdef WIN32
-	localtime_s(&localTime, &tNowTime);
-#else
-	localtime_r(&tNowTime, &localTime);
-#endif
-	mBufferA.Format("{}-{}-{} {}:{}:{} => ", localTime.tm_year + 1900, localTime.tm_mon + 1, localTime.tm_mday, localTime.tm_hour, localTime.tm_min, localTime.tm_sec);
-
-	OutputLogString(mBufferA.Buffer(), logType);
-}
-
-
-
-void ILogger::Info(StringRef inString)
-{
-	RETURN_IF_FALSE(IsLogInfo());
-
-	if (mIsLogHeaderEnabled)
+	if (IsCurrentThread())
 	{
-		LogHeaderInBufferA();
+		Print(message);
 	}
-
-	OutputLogString(inString);
-	OutputLogString("\n");
-}
-
-
-void ILogger::Error(StringRef inString)
-{
-
-	RETURN_IF_FALSE(IsLogError());
-
-	if (mIsLogHeaderEnabled)
+	else
 	{
-		LogHeaderInBufferA(LogType::Error);
+		ScopedLock lock(mMutex);
+		mMessageList.MutableBack().Add(message);
 	}
-
-	OutputLogString("ERROR: ", LogType::Error);
-
-	OutputLogString(inString, LogType::Error);
-	OutputLogString("\n", LogType::Error);
 }
 
-
-void ILogger::Assert(bool condition, StringRef inString)
+void ILogger::Add(const Share<WLogMessage>& message)
 {
-	if (!condition)
+	if (IsCurrentThread())
 	{
-		Error(inString);
-		assert(false);
+		Print(message);
 	}
-
-}
-
-
-void ILogger::AssertFailed(StringRef inString)
-{
-	Error(inString);
-	assert(false);
-}
-
-//////////////////////////////////////////////////////////////////////////
-
-void ILogger::LogHeaderInBufferW(LogType logType/*=LogType::Info*/)
-{
-	time_t tNowTime;
-	time(&tNowTime);
-
-	tm localTime;
-#ifdef WIN32
-	localtime_s(&localTime, &tNowTime);
-#else
-	localtime_r(&tNowTime, &localTime);
-#endif
-
-	mBufferW.Format(L"{}-{}-{} {}:{}:{} => ",localTime.tm_year + 1900, localTime.tm_mon + 1, localTime.tm_mday, localTime.tm_hour, localTime.tm_min, localTime.tm_sec);
-
-	OutputLogString(mBufferW.Buffer(), logType);
-}
-
-
-
-void ILogger::Info(WStringRef inString)
-{
-	RETURN_IF_FALSE(IsLogInfo());
-
-	if (mIsLogHeaderEnabled)
+	else
 	{
-		LogHeaderInBufferW();
+		ScopedLock lock(mMutex);
+		mWMessageList.MutableBack().Add(message);
 	}
-
-	OutputLogString(inString);
-	OutputLogString(L"\n");
 }
 
-
-
-void ILogger::Error(WStringRef inString)
+void ILogger::Update(float dt /*= 0.f*/)
 {
-
-	RETURN_IF_FALSE(IsLogError());
-
-	if (mIsLogHeaderEnabled)
+	if (IsCurrentThread())
 	{
-		LogHeaderInBufferW(LogType::Error);
+		ScopedLock lock(mMutex);
+
+		{
+			mMessageList.Swap();
+			auto& messages = mMessageList.MutableFront();
+			if (!messages.IsEmpty())
+			{
+				for (const auto& item : messages)
+				{
+					Print(item);
+				}
+				messages.Clear();
+			}
+		}
+		
+		{
+			mMessageList.Swap();
+			auto& messages = mWMessageList.MutableFront();
+			if (!messages.IsEmpty())
+			{
+				for (const auto& item : messages)
+				{
+					Print(item);
+				}
+				messages.Clear();
+			}
+		}
 	}
-
-	OutputLogString(L"ERROR: ", LogType::Error);
-
-	OutputLogString(inString, LogType::Error);
-	OutputLogString(L"\n", LogType::Error);
 }
 
-void ILogger::Assert(bool condition, WStringRef inString)
+bool ILogger::IsCurrentThread() const
 {
-	if (!condition)
-	{
-		Error(inString);
-		assert(false);
-	}
-
+	return Thread::IsCurrent(mCurrentThread);
 }
 
-void ILogger::AssertFailed(WStringRef inString)
-{
-	Error(inString);
-	assert(false);
-}
+
+
 MEDUSA_END;

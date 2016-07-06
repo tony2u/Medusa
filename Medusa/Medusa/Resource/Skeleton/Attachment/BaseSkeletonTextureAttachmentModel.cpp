@@ -19,10 +19,7 @@ BaseSkeletonTextureAttachmentModel::BaseSkeletonTextureAttachmentModel(const Str
 	mSize(Size3F::Zero),
 	mColor(Color4F::White)
 {
-	if (mRegion != nullptr)
-	{
-		mRegion->Page()->Atlas()->Retain();
-	}
+	
 }
 
 

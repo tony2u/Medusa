@@ -51,9 +51,8 @@ public:
 		mRangeY.Reset();
 		if (mRangeEnabled)
 		{
-			FOR_EACH_COLLECTION(i, mVertices)
+			for (auto pos : mVertices)
 			{
-				const Point2<T>& pos = *i;
 				mRangeX.Expand(pos.X);
 				mRangeY.Expand(pos.Y);
 			}
@@ -107,7 +106,7 @@ public:
 			}
 		}
 
-		if (mPreCalculatedEnabled&&!mPreCalculatedConstants.IsEmpty() && !mPreCalculatedMultiples.IsEmpty())
+		if (mPreCalculatedEnabled && !mPreCalculatedConstants.IsEmpty() && !mPreCalculatedMultiples.IsEmpty())
 		{
 			return GeometryAlgorithm::IsInPolygonWithPreCalculate2((const float*)mVertices.Items(), (const float*)mPreCalculatedConstants.Items(), (const float*)mPreCalculatedMultiples.Items(), mVertices.Count(), pos.X, pos.Y);
 		}
@@ -145,16 +144,16 @@ public:
 
 	const Range<T>& RangeX() const { return mRangeX; }
 	const Range<T>& RangeY() const { return mRangeY; }
-	Rect2<T> BoundingBox()const { return Rect2<T>(mRangeX.Min,mRangeY.Min,mRangeX.Length(),mRangeY.Length()); }
+	Rect2<T> BoundingBox()const { return Rect2<T>(mRangeX.Min, mRangeY.Min, mRangeX.Length(), mRangeY.Length()); }
 protected:
 	List<Point2<T> > mVertices;
 	List<float> mPreCalculatedConstants;
 	List<float> mPreCalculatedMultiples;
-	bool mPreCalculatedEnabled;
+	bool mPreCalculatedEnabled = false;
 
 	Range<T> mRangeX;
 	Range<T> mRangeY;
-	bool mRangeEnabled;
+	bool mRangeEnabled = false;
 
 };
 

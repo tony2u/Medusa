@@ -4,10 +4,10 @@
 #include "MedusaCorePreCompiled.h"
 #ifdef MEDUSA_POSIX_THREADING
 #include "Core/Threading/ReadWriteLock.h"
-#include "Core/Profile/PerformanceCounter.h"
+#include "Core/Chrono/DateTime.h"
 
 #if defined(MEDUSA_ANDROID)||defined(MEDUSA_IOS)
-#include "Core/Profile/StopWatch.h"
+#include "Core/Chrono/StopWatch.h"
 #include "Core/Threading/Thread.h"
 #endif
 MEDUSA_BEGIN;
@@ -62,7 +62,7 @@ bool ReadWriteLock::BeginReadTimeout(long milliseconds)
 	return false;
 
 #else
-	struct timespec abstime = PerformanceCounter::ToAbsoluteTime(milliseconds);
+	struct timespec abstime = DateTime::ToAbsoluteTime(milliseconds);
 	int result = pthread_rwlock_timedrdlock(&mLock, &abstime);
 	return result == 0;
 #endif
@@ -98,7 +98,7 @@ bool ReadWriteLock::BeginWriteTimeout(long milliseconds)
 	return false;
 
 #else
-	struct timespec abstime = PerformanceCounter::ToAbsoluteTime(milliseconds);
+	struct timespec abstime = DateTime::ToAbsoluteTime(milliseconds);
 	int result = pthread_rwlock_timedwrlock(&mLock, &abstime);
 	return result == 0;
 #endif

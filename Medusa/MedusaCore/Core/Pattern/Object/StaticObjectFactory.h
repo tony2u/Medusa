@@ -12,7 +12,7 @@
 
 MEDUSA_BEGIN;
 
-template<typename TId, typename FuncSignature, typename THashCoder = DefaultHashCoder<TId>>
+template<typename TId, typename FuncSignature, typename THashCoder = DefaultHashCoder>
 class StaticObjectFactory;
 
 template<typename TId, typename TBase, typename... TArgs, typename THashCoder>

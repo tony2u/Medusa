@@ -1,0 +1,50 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25123.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MessageClient", "MessageClient.vcxproj", "{4DFE7AFC-4E53-4C71-B8C0-FCD8CB22F607}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MedusaCore.Win", "..\..\..\Medusa\MedusaCore\win\MedusaCore.Win.vcxproj", "{D3EEDD4F-019E-4A8A-9AAB-2B28E858AD04}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MedusaCore", "..\..\..\Medusa\MedusaCore\MedusaCore.vcxitems", "{45D41ACC-2C3C-43D2-BC10-02AA73FFC7C7}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Message", "..\..\Common\Message\Message.vcxitems", "{6369B11A-4C39-484B-834A-C97D342B949A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{10578CE2-0697-4BBD-8BC4-B3757FC2AF01}"
+EndProject
+Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		..\..\Common\Message\Message.vcxitems*{6369b11a-4c39-484b-834a-c97d342b949a}*SharedItemsImports = 9
+		..\..\..\Medusa\MedusaCore\MedusaCore.vcxitems*{d3eedd4f-019e-4a8a-9aab-2b28e858ad04}*SharedItemsImports = 4
+		..\..\Common\Message\Message.vcxitems*{4dfe7afc-4e53-4c71-b8c0-fcd8cb22f607}*SharedItemsImports = 4
+		..\..\..\Medusa\MedusaCore\MedusaCore.vcxitems*{45d41acc-2c3c-43d2-bc10-02aa73ffc7c7}*SharedItemsImports = 9
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4DFE7AFC-4E53-4C71-B8C0-FCD8CB22F607}.Debug|x64.ActiveCfg = Debug|x64
+		{4DFE7AFC-4E53-4C71-B8C0-FCD8CB22F607}.Debug|x64.Build.0 = Debug|x64
+		{4DFE7AFC-4E53-4C71-B8C0-FCD8CB22F607}.Debug|x86.ActiveCfg = Debug|Win32
+		{4DFE7AFC-4E53-4C71-B8C0-FCD8CB22F607}.Debug|x86.Build.0 = Debug|Win32
+		{4DFE7AFC-4E53-4C71-B8C0-FCD8CB22F607}.Release|x64.ActiveCfg = Release|x64
+		{4DFE7AFC-4E53-4C71-B8C0-FCD8CB22F607}.Release|x64.Build.0 = Release|x64
+		{4DFE7AFC-4E53-4C71-B8C0-FCD8CB22F607}.Release|x86.ActiveCfg = Release|Win32
+		{4DFE7AFC-4E53-4C71-B8C0-FCD8CB22F607}.Release|x86.Build.0 = Release|Win32
+		{D3EEDD4F-019E-4A8A-9AAB-2B28E858AD04}.Debug|x64.ActiveCfg = Debug|x64
+		{D3EEDD4F-019E-4A8A-9AAB-2B28E858AD04}.Debug|x64.Build.0 = Debug|x64
+		{D3EEDD4F-019E-4A8A-9AAB-2B28E858AD04}.Debug|x86.ActiveCfg = Debug|Win32
+		{D3EEDD4F-019E-4A8A-9AAB-2B28E858AD04}.Debug|x86.Build.0 = Debug|Win32
+		{D3EEDD4F-019E-4A8A-9AAB-2B28E858AD04}.Release|x64.ActiveCfg = Release|x64
+		{D3EEDD4F-019E-4A8A-9AAB-2B28E858AD04}.Release|x64.Build.0 = Release|x64
+		{D3EEDD4F-019E-4A8A-9AAB-2B28E858AD04}.Release|x86.ActiveCfg = Release|Win32
+		{D3EEDD4F-019E-4A8A-9AAB-2B28E858AD04}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

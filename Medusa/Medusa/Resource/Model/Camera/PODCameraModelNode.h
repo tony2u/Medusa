@@ -13,7 +13,7 @@ public:
 	PODCameraModelNode(StringRef name);
 	virtual ~PODCameraModelNode(void);
 	using BaseCameraModelNode::CreateCamera;
-	Camera* CreateCamera(const Size2F& winSize)const;
+	Share<Camera> CreateCamera(const Size2F& winSize)const;
 
 public:
 	int TargetObjectIndex;		//Index of the target object

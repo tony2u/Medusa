@@ -2,30 +2,22 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 #include "IOSConsoleLogger.h"
-
+#include "Core/Log/LogMessage.h"
+#include "Core/Pattern/SharePtr.h"
 #ifdef MEDUSA_IOS
 MEDUSA_BEGIN;
 
 
-IOSConsoleLogger::~IOSConsoleLogger(void)
+void IOSConsoleLogger::Print(const SharePtr<LogMessage>& message)
 {
+	printf(message->Content().c_str());
 }
 
-void IOSConsoleLogger::OutputLogString( StringRef inString ,LogType logType/*=LogType::Info*/ )
+void IOSConsoleLogger::Print(const SharePtr<WLogMessage>& message)
 {
-    printf(inString.c_str());
-   // NSString *pStr = [[NSString alloc] initWithCString:inString  encoding:NSASCIIStringEncoding];
-   
-   // NSLog(@"%@",pStr);
+	wprintf(message->Content().c_str());
 }
 
-void IOSConsoleLogger::OutputLogString( WStringRef inString ,LogType logType/*=LogType::Info*/ )
-{
-    wprintf(inString.c_str());
-   // NSString *pStr = [[NSString alloc] initWithCString:inString  encoding:NSASCIIStringEncoding];
-   
-   // NSLog(@"%@",pStr);
-}
 
 MEDUSA_END;
 #endif

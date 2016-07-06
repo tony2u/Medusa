@@ -9,8 +9,8 @@ MEDUSA_BEGIN;
 class MeshTimeline:public ITimeline
 {
 public:
-	MeshTimeline(MeshTimelineModel* model, intp repeatCount, float beforeDelay = 0.f, float repeatDuration = 0.f, float afterDelay = 0.f, const StringRef& name = StringRef::Empty);
-	MeshTimeline(MeshTimelineModel* model, bool isRepeatForever, float beforeDelay = 0.f, float repeatDuration = 0.f, float afterDelay = 0.f, const StringRef& name = StringRef::Empty);
+	MeshTimeline(const Share<MeshTimelineModel>& model, intp repeatCount, float beforeDelay = 0.f, float repeatDuration = 0.f, float afterDelay = 0.f, const StringRef& name = StringRef::Empty);
+	MeshTimeline(const Share<MeshTimelineModel>& model, bool isRepeatForever, float beforeDelay = 0.f, float repeatDuration = 0.f, float afterDelay = 0.f, const StringRef& name = StringRef::Empty);
 
 
 	virtual ~MeshTimeline();

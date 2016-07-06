@@ -236,7 +236,8 @@ std::unique_ptr<FileStream> File::OpenBinaryReader(StringRef filePath)
 	return fs;
 }
 
-bool File::WriteAllData( StringRef filePath, MemoryData data)
+
+bool File::WriteAllData(StringRef filePath, MemoryData data)
 {
 	FileStream stream;
 	if (stream.OpenNewWriteBinary(filePath))
@@ -246,6 +247,28 @@ bool File::WriteAllData( StringRef filePath, MemoryData data)
 
 	return false;
 }
+
+
+std::unique_ptr<FileStream> File::OpenTextWriter(StringRef filePath)
+{
+	std::unique_ptr<FileStream> fs(new FileStream());
+	if (!fs->OpenNewWriteText(filePath))
+	{
+		return nullptr;
+	}
+	return fs;
+}
+
+std::unique_ptr<FileStream> File::OpenBinaryWriter(StringRef filePath)
+{
+	std::unique_ptr<FileStream> fs(new FileStream());
+	if (!fs->OpenNewWriteBinary(filePath))
+	{
+		return nullptr;
+	}
+	return fs;
+}
+
 
 MEDUSA_END;
 

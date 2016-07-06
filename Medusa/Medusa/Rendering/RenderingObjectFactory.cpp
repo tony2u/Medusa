@@ -40,51 +40,71 @@ bool RenderingObjectFactory::Uninitialize()
 
 RenderingObject RenderingObjectFactory::CreateFromTexture(const FileIdRef& textureName, const Rect2F& textureRect /*= Rect2F::Zero*/, const Color4F& color /*= Color4F::White*/)
 {
-	auto* orderItem= FileSystem::Instance().FindOrderItem(textureName);
-	if (orderItem->Region()!=nullptr)
+	auto* orderItem = FileSystem::Instance().FindOrderItem(textureName);
+	if (orderItem->Region() != nullptr)
 	{
 		return CreateFromTextureAtlasRegion((TextureAtlasRegion*)orderItem->Region());
 	}
 
-	IMaterial* material = MaterialFactory::Instance().CreateSingleTexture(textureName);
+	if (!orderItem->RegionName().IsEmpty())
+	{
+		auto fileId = FileId::ParseFrom(orderItem->GetFileEntry()->Path());
+		return CreateFromTextureAtlasRegion(orderItem->RegionName(), fileId);
+	}
+
+	auto material = MaterialFactory::Instance().CreateSingleTexture(textureName);
 	RETURN_OBJECT_IF_NULL(material, RenderingObject::Empty);
-	auto* mesh= MeshFactory::Instance().CreateTextureQuadMesh(material->FirstTexture()->Size(), textureRect, color);
+	auto mesh = MeshFactory::Instance().CreateTextureQuadMesh(material->FirstTexture()->Size(), textureRect, color);
 	RETURN_OBJECT_IF_NULL(mesh, RenderingObject::Empty);
 
 	return RenderingObject(mesh, material);
 }
-RenderingObject RenderingObjectFactory::CreateFromTexture(ITexture* texture, const Rect2F& textureRect /*= Rect2F::Zero*/, const Color4F& color /*= Color4F::White*/)
+RenderingObject RenderingObjectFactory::CreateFromTexture(const Share<ITexture>& texture, const Rect2F& textureRect /*= Rect2F::Zero*/, const Color4F& color /*= Color4F::White*/)
 {
-	TextureQuadMesh* mesh = MeshFactory::Instance().CreateTextureQuadMesh(texture, textureRect,color);
+	auto mesh = MeshFactory::Instance().CreateTextureQuadMesh(texture, textureRect, color);
 	RETURN_NULL_IF_NULL(mesh);
-	IMaterial* material = MaterialFactory::Instance().CreateSingleTexture(texture);
+	auto material = MaterialFactory::Instance().CreateSingleTexture(texture);
 	return RenderingObject(mesh, material);
 }
 
 RenderingObject RenderingObjectFactory::CreateNineGridTexture(const Size2F& targetSize, const FileIdRef& textureName, const ThicknessF& padding, const Rect2F& textureRect /*= Rect2F::Zero*/)
 {
+	TextureAtlasRegion* region = nullptr;
 	auto* orderItem = FileSystem::Instance().FindOrderItem(textureName);
 	if (orderItem->Region() != nullptr)
 	{
-		TextureAtlasRegion* region = (TextureAtlasRegion*)orderItem->Region();
+		region = (TextureAtlasRegion*)orderItem->Region();
 		if (region->IsPolygon())
 		{
 			Log::AssertFailedFormat("Not support polygon region mode on {} when CreateNineGridTexture", textureName);
 			return nullptr;
 		}
+	}
+	else if (!orderItem->RegionName().IsEmpty())
+	{
+		auto fileId = FileId::ParseFrom(orderItem->GetFileEntry()->Path());
+		region = TextureAtlasFactory::Instance().CreateAtlasRegion(orderItem->RegionName(), fileId);
+		if (region==nullptr)
+		{
+			Log::AssertFailedFormat("Cannot find region:{} in {}", orderItem->RegionName(), fileId);
+			return nullptr;
+		}
+	}
 
-		IMaterial* material = region->CreateMaterial();
+	if (region!=nullptr)
+	{
+		auto material = region->CreateMaterial();
 		RETURN_NULL_IF_NULL(material);
-		TextureNineGridMesh* mesh = MeshFactory::Instance().CreateTextureNineGridMesh(targetSize, material->FirstTexture()->Size(), padding, region->ResultTextureRect(), region->GetRotateDirection());
+		auto mesh = MeshFactory::Instance().CreateTextureNineGridMesh(targetSize, material->FirstTexture()->Size(), padding, region->ResultTextureRect(), region->GetRotateDirection());
 		RETURN_NULL_IF_NULL(mesh);
 
 		return RenderingObject(mesh, material);
 	}
 
 
-	IMaterial* material = MaterialFactory::Instance().CreateSingleTexture(textureName);
+	auto material = MaterialFactory::Instance().CreateSingleTexture(textureName);
 	RETURN_NULL_IF_NULL(material);
-	TextureNineGridMesh* mesh = MeshFactory::Instance().CreateTextureNineGridMesh(targetSize, material->FirstTexture()->Size(), padding, textureRect);
+	auto mesh = MeshFactory::Instance().CreateTextureNineGridMesh(targetSize, material->FirstTexture()->Size(), padding, textureRect);
 	RETURN_NULL_IF_NULL(mesh);
 
 	return RenderingObject(mesh, material);
@@ -93,7 +113,7 @@ RenderingObject RenderingObjectFactory::CreateNineGridTexture(const Size2F& targ
 
 RenderingObject RenderingObjectFactory::CreateFromTextureAtlasRegion(TextureAtlasRegion* region, const Color4F& color /*= Color4F::White*/)
 {
-	auto* mesh = MeshFactory::Instance().CreateTextureAtlasRegionMesh(region);
+	auto mesh = MeshFactory::Instance().CreateTextureAtlasRegionMesh(region);
 	RETURN_NULL_IF_NULL(mesh);
 
 	return RenderingObject(mesh, region->CreateMaterial());
@@ -107,9 +127,9 @@ RenderingObject RenderingObjectFactory::CreateFromTextureAtlasRegion(StringRef r
 
 
 
-RenderingObject RenderingObjectFactory::CreateFromSingleTextureMaterial(IMaterial* material, const Rect2F& textureRect /*= Rect2F::Zero*/, const Color4F& color /*= Color4F::White*/)
+RenderingObject RenderingObjectFactory::CreateFromSingleTextureMaterial(const Share<IMaterial>& material, const Rect2F& textureRect /*= Rect2F::Zero*/, const Color4F& color /*= Color4F::White*/)
 {
-	auto* mesh = MeshFactory::Instance().CreateTextureQuadMesh(material->FirstTexture()->Size(), textureRect, color);
+	auto mesh = MeshFactory::Instance().CreateTextureQuadMesh(material->FirstTexture()->Size(), textureRect, color);
 	RETURN_OBJECT_IF_NULL(mesh, RenderingObject::Empty);
 
 	return RenderingObject(mesh, material);
@@ -117,7 +137,7 @@ RenderingObject RenderingObjectFactory::CreateFromSingleTextureMaterial(IMateria
 
 bool RenderingObjectFactory::CreateFromTextureAtlas(SortedDictionary<uint, RenderingObject>& outObjects, const StringRef& regionPattern, const FileIdRef& atlasFileId, TextureAtlasType fileFormat /*= TextureAtlasFileFormat::Spine*/, const Color4F& color /*= Color4F::White*/)
 {
-	TextureAtlas* atlas = TextureAtlasFactory::Instance().Create(atlasFileId, fileFormat);
+	auto atlas = TextureAtlasFactory::Instance().Create(atlasFileId, fileFormat);
 	if (atlas == nullptr)
 	{
 		Log::AssertFailedFormat("Cannot find texture atlas:{}", atlasFileId.Name.c_str());
@@ -127,19 +147,17 @@ bool RenderingObjectFactory::CreateFromTextureAtlas(SortedDictionary<uint, Rende
 	if (regionPattern.IsEmpty())
 	{
 		const List<TextureAtlasPage*>& pages = atlas->Pages();
-		FOR_EACH_COLLECTION(i, pages)
+		for (auto page : pages)
 		{
-			TextureAtlasPage* page = *i;
-			IMaterial* material = MaterialFactory::Instance().CreateSingleTexture(page->LoadTexture());
+			auto material = MaterialFactory::Instance().CreateSingleTexture(page->LoadTexture());
 			const List<TextureAtlasRegion*>& regions = page->Regions();
-			FOR_EACH_COLLECTION(j, regions)
+			for (auto region : regions)
 			{
-				TextureAtlasRegion* region = *j;
 				StringRef regionName = region->Name();
 				uint outOrder = 0;
 				StringParser::TryExtractUInt(regionName, outOrder);
-				auto* mesh=MeshFactory::Instance().CreateTextureAtlasRegionMesh(region,color);
-			
+				auto mesh = MeshFactory::Instance().CreateTextureAtlasRegionMesh(region, color);
+
 				outObjects.Add(outOrder, RenderingObject(mesh, material));
 			}
 		}
@@ -147,15 +165,13 @@ bool RenderingObjectFactory::CreateFromTextureAtlas(SortedDictionary<uint, Rende
 	else
 	{
 		const List<TextureAtlasPage*>& pages = atlas->Pages();
-		FOR_EACH_COLLECTION(i, pages)
+		for (auto page : pages)
 		{
-			TextureAtlasPage* page = *i;
-			IMaterial* material = MaterialFactory::Instance().CreateSingleTexture(page->LoadTexture());
+			auto material = MaterialFactory::Instance().CreateSingleTexture(page->LoadTexture());
 
 			const List<TextureAtlasRegion*>& regions = page->Regions();
-			FOR_EACH_COLLECTION(j, regions)
+			for (auto region : regions)
 			{
-				TextureAtlasRegion* region = *j;
 				StringRef regionName = region->Name();
 				if (regionName.BeginWith(regionPattern))
 				{
@@ -163,7 +179,7 @@ bool RenderingObjectFactory::CreateFromTextureAtlas(SortedDictionary<uint, Rende
 					regionName.ForceSetLength(regionName.Length() - regionPattern.Length());
 					uint outOrder = 0;
 					StringParser::TryExtractUInt(regionName, outOrder);
-					auto* mesh = MeshFactory::Instance().CreateTextureAtlasRegionMesh(region, color);
+					auto mesh = MeshFactory::Instance().CreateTextureAtlasRegionMesh(region, color);
 					outObjects.Add(outOrder, RenderingObject(mesh, material));
 
 				}
@@ -190,7 +206,7 @@ bool RenderingObjectFactory::CreateFromTextures(List<RenderingObject>& outObject
 
 	for (const FileMapOrderItem* orderItem : outOrderItems)
 	{
-		outObjects.NewAdd()=CreateFromTexture(FileIdRef(textureNamePattern, orderItem->Order()));
+		outObjects.NewAdd() = CreateFromTexture(FileIdRef(textureNamePattern, orderItem->Order()));
 	}
 	return !outObjects.IsEmpty();
 }

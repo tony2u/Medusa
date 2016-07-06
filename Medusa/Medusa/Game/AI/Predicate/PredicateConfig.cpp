@@ -24,9 +24,10 @@ bool PredicateConfig::LoadFromData(const FileIdRef& fileId, const MemoryData& da
 		return false;
 	}
 
-	FOR_EACH_COLLECTION_STL(i, doc.first_child().children())
+	
+
+	for(const auto& child: doc.first_child().children())
 	{
-		pugi::xml_node child = *i;
 		StringRef typeName = child.name();
 		uint id = child.attribute("Id").as_uint(0);
 		StringRef parameter = child.attribute("Parameter").value();
@@ -52,9 +53,8 @@ bool PredicateConfig::LoadFromData(const FileIdRef& fileId, const MemoryData& da
 
 void PredicateConfig::LoadPredicate(const pugi::xml_node& node, IPredicate* parent)
 {
-	FOR_EACH_COLLECTION_STL(i, node.children())
+	for (const auto& child : node.children())
 	{
-		pugi::xml_node child = *i;
 		StringRef typeName = child.name();
 		StringRef paramter = child.attribute("Paramter").value();
 		IPredicate* predicate = PredicateFactory::Instance().SmartCreate(typeName);

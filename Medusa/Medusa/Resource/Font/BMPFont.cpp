@@ -27,15 +27,15 @@ BMPFont::~BMPFont(void)
 {
 }
 
-BMPFont* BMPFont::CreateFromPVR(const FontId& fontId)
+Share<BMPFont> BMPFont::CreateFromPVR(const FontId& fontId)
 {
 	TextureAtlasPage* page = new TextureAtlasPage(fontId.ToRef());
-	ITexture* texture = page->LoadTexture();
+	auto texture = page->LoadTexture();
 
-	IImage* image = texture->Image();
+	auto image = texture->Image();
 	RETURN_NULL_IF_NULL(image);
 
-	PVRImage* pvrImage = (PVRImage*)image;
+	auto pvrImage = image.CastPtr<PVRImage>();
 	PVRImageMetaDataBlock* headerMetaBlock = pvrImage->GetMetaBlock((uint)PVRVersionIdentifier::PVR3, (uint)PVRFontMetaBlockKey::Header);
 
 	PVRFontHeader* fontHeader = (PVRFontHeader*)headerMetaBlock->Data;
@@ -44,7 +44,7 @@ BMPFont* BMPFont::CreateFromPVR(const FontId& fontId)
 		return nullptr;
 	}
 
-	BMPFont* resultFont = new BMPFont(fontId);
+	Share<BMPFont> resultFont = new BMPFont(fontId);
 
 	resultFont->SetAscender(fontHeader->Ascent);
 	resultFont->SetLineHeight(fontHeader->LineSpace);
@@ -111,7 +111,7 @@ BMPFont* BMPFont::CreateFromPVR(const FontId& fontId)
 	return resultFont;
 }
 
-BMPFont* BMPFont::CreateFromBMPBinary(const FontId& fontId, const IStream& stream)
+Share<BMPFont> BMPFont::CreateFromBMPBinary(const FontId& fontId, const IStream& stream)
 {
 	int version = stream.ReadChar();
 	if (version != 3)
@@ -182,13 +182,13 @@ BMPFont* BMPFont::CreateFromBMPBinary(const FontId& fontId, const IStream& strea
 	stream.ReadChar();
 	/*uint pageBlockSize=*/stream.Read<uint>();
 
-	FOR_EACH_SIZE(i, pageCount)
+	FOR_EACH_UINT32(i, pageCount)
 	{
 		HeapString pageFileName = stream.ReadString();
 		TextureAtlasPage* page = new TextureAtlasPage(pageFileName);
 		page->SetTexcoordUpSide(false);
 		page->SetId(i);
-		ITexture* texture = page->LoadTexture();
+		auto texture = page->LoadTexture();
 		
 		if (texture == nullptr)
 		{
@@ -280,11 +280,11 @@ BMPFont* BMPFont::CreateFromBMPBinary(const FontId& fontId, const IStream& strea
 		}
 	}
 
-	BMPFont* resultFont = bmpFont.release();
+	Share<BMPFont> resultFont = bmpFont.release();
 	return resultFont;
 }
 
-BMPFont* BMPFont::CreateFromBMPText(const FontId& fontId, const IStream& stream)
+Share<BMPFont> BMPFont::CreateFromBMPText(const FontId& fontId, const IStream& stream)
 {
 	List<HeapString> outLines;
 	stream.ReadAllLinesTo(outLines);
@@ -381,7 +381,7 @@ BMPFont* BMPFont::CreateFromBMPText(const FontId& fontId, const IStream& stream)
 		TextureAtlasPage* page = new TextureAtlasPage(pageFileName);
 		page->SetTexcoordUpSide(false);
 		page->SetId(pageId);
-		ITexture* texture = page->LoadTexture();
+		auto texture = page->LoadTexture();
 
 		if (texture == nullptr)
 		{
@@ -486,17 +486,17 @@ BMPFont* BMPFont::CreateFromBMPText(const FontId& fontId, const IStream& stream)
 		return nullptr;
 	}
 
-	BMPFont* resultFont = bmpFont.release();
+	Share<BMPFont> resultFont = bmpFont.release();
 	return resultFont;
 }
 
 
-BMPFont* BMPFont::CreateFromSingleTexture(const FontId& fontId, wchar_t firstChar /*= L'0'*/)
+Share<BMPFont> BMPFont::CreateFromSingleTexture(const FontId& fontId, wchar_t firstChar /*= L'0'*/)
 {
 	TextureAtlasPage* page = new TextureAtlasPage(fontId.Name);
 	page->SetTexcoordUpSide(false);
 
-	ITexture* texture = page->LoadTexture();
+	auto texture = page->LoadTexture();
 
 	if (page == nullptr)
 	{
@@ -562,7 +562,7 @@ BMPFont* BMPFont::CreateFromSingleTexture(const FontId& fontId, wchar_t firstCha
 
 	}
 
-	BMPFont* resultFont = bmpFont.release();
+	Share<BMPFont> resultFont = bmpFont.release();
 	return resultFont;
 
 }

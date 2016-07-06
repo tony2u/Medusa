@@ -17,7 +17,7 @@ bool SpriteLayer::Initialize()
 {
 	RETURN_FALSE_IF_FALSE(BaseCaseLayer::Initialize());
 
-	Sprite* sprite = NodeFactory::Instance().CreateSprite("test2.png");
+	Sprite* sprite = NodeFactory::Instance().CreateSprite("Hearts.png");
 	sprite->SetDock(DockPoint::MiddleCenter);
 	sprite->SetAnchor(0.5f, 0.5f);
 	AddChild(sprite);
@@ -29,5 +29,5 @@ bool SpriteLayer::Initialize()
 
 
 
-MEDUSA_IMPLEMENT_LAYER(SpriteLayer, BaseCaseLayer, StringRef::Empty, StringRef::Empty);
+MEDUSA_IMPLEMENT_NODE(SpriteLayer);
 

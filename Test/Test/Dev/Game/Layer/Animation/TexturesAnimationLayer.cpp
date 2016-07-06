@@ -35,5 +35,5 @@ bool TexturesAnimationLayer::Initialize()
 
 
 
-MEDUSA_IMPLEMENT_LAYER(TexturesAnimationLayer, BaseCaseLayer, StringRef::Empty, StringRef::Empty);
+MEDUSA_IMPLEMENT_NODE(TexturesAnimationLayer);
 

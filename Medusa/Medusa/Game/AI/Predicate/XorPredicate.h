@@ -9,7 +9,7 @@ MEDUSA_BEGIN;
 
 struct XorPredicate :public IPredicate
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_DECLARE_PREDICATE(XorPredicate,IPredicate);
 public:
 
 	XorPredicate(const IPredicate* left = nullptr, const IPredicate* right = nullptr);

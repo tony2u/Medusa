@@ -8,7 +8,7 @@
 
 class ParallaxScrollComponentLayer :public BaseCaseLayer
 {
-	MEDUSA_DECLARE_LAYER(ParallaxScrollComponentLayer);
+	MEDUSA_NODE(ParallaxScrollComponentLayer, BaseCaseLayer);
 public:
 	ParallaxScrollComponentLayer(StringRef name=StringRef::Empty,const IEventArg& e=IEventArg::Empty);
 	virtual ~ParallaxScrollComponentLayer(void);

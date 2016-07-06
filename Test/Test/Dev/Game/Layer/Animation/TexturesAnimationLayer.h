@@ -7,7 +7,7 @@
 
 class TexturesAnimationLayer :public BaseCaseLayer
 {
-	MEDUSA_DECLARE_LAYER(TexturesAnimationLayer);
+	MEDUSA_NODE(TexturesAnimationLayer,BaseCaseLayer);
 public:
 	TexturesAnimationLayer(StringRef name=StringRef::Empty,const IEventArg& e=IEventArg::Empty);
 	virtual ~TexturesAnimationLayer(void);

@@ -11,7 +11,7 @@
 
 MEDUSA_BEGIN;
 
-SingleLineFontModel::SingleLineFontModel( IFont* font,Alignment alignment/*=Alignment::LeftBottom*/,Size2U restrictSize/*=Size2U::Zero*/)
+SingleLineFontModel::SingleLineFontModel(const Share<IFont>& font,Alignment alignment/*=Alignment::LeftBottom*/,Size2U restrictSize/*=Size2U::Zero*/)
 	:BaseFontModel(font,alignment,restrictSize)
 {
 }
@@ -41,7 +41,7 @@ void SingleLineFontModel::SetText( WStringRef text )
 	RETURN_IF_EMPTY(mText);
 
 	Size2F outSize;
-	List<BaseFontMesh*> meshes;
+	List<Share<BaseFontMesh>> meshes;
 	List<TextureAtlasPage*> pages;
 
 	TextLayouter::LayoutSingleLineText(meshes, pages,outSize,*mFont,mText,mAlignment,mRestrictSize);

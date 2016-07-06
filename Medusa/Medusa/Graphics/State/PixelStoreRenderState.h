@@ -9,14 +9,14 @@ MEDUSA_BEGIN;
 
 class PixelStoreRenderState :public IRenderState
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_RTTI(PixelStoreRenderState,IRenderState);
 
 public:
 	PixelStoreRenderState();
 	virtual ~PixelStoreRenderState();
 	virtual void Apply()const override;
 
-	virtual PixelStoreRenderState* Clone()const override;
+	Share<PixelStoreRenderState> Clone()const;
 	virtual void CopyFrom(const IRenderState& other)override;
 
 	virtual bool Equals(const IRenderState& state)const override;
@@ -29,7 +29,7 @@ public:
 	int UnpackAlignment() const { return mUnpackAlignment; }
 	void SetUnpackAlignment(int val) { RETURN_IF_EQUAL(mUnpackAlignment, val); mUnpackAlignment = val; OnStateChanged(); }
 
-	static PixelStoreRenderState* Current();
+	static Share<PixelStoreRenderState> Current();
 protected:
 	int  mPackAlignment;
 	int  mUnpackAlignment;

@@ -30,9 +30,9 @@ void RasterizerRenderState::Apply()const
 	Render::Instance().SetColorMask(mColorMask);
 }
 
-RasterizerRenderState* RasterizerRenderState::Clone() const
+Share<RasterizerRenderState> RasterizerRenderState::Clone() const
 {
-	RasterizerRenderState* state = new RasterizerRenderState();
+	Share<RasterizerRenderState> state = new RasterizerRenderState();
 	state->CopyFrom(*this);
 	return state;
 }
@@ -57,10 +57,10 @@ bool RasterizerRenderState::Equals(const IRenderState& state) const
 		mColorMask==val.ColorMask();
 }
 
-RasterizerRenderState* RasterizerRenderState::Current()
+Share<RasterizerRenderState> RasterizerRenderState::Current()
 {
 	IRender& render=Render::Instance();
-	RasterizerRenderState* state=new RasterizerRenderState();
+	Share<RasterizerRenderState> state=new RasterizerRenderState();
 
 	state->Enable(render.GetBoolean(GraphicsBooleanName::CullFace));
 	state->SetCullMode(GraphicsFace(render.GetInteger(GraphicsIntegerName::CullFaceMode)));
@@ -81,5 +81,4 @@ RasterizerRenderState* RasterizerRenderState::Current()
 }
 
 
-MEDUSA_IMPLEMENT_RTTI(RasterizerRenderState,IRenderState);
 MEDUSA_END;

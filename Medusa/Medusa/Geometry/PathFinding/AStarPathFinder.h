@@ -54,7 +54,7 @@ public:
 		List<const TNode*> neighbors;
 		while (!mOpenList.IsEmpty())
 		{
-			AStarPathNode currentNode = mOpenList.Pop();
+			AStarPathNode& currentNode = mOpenList.Pop();
 
 			if (currentNode.Current == &goal)
 			{
@@ -110,7 +110,7 @@ public:
 	}
 
 protected:
-	PriorityQueue < AStarPathNode, EqualCompare<AStarPathNode>, CustomCompare<AStarPathNode> > mOpenList;
+	PriorityQueue < AStarPathNode, EqualCompare, CustomCompare > mOpenList;
 	HashSet<AStarPathNode> mCloseList;
 };
 

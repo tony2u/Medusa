@@ -15,5 +15,5 @@ FontFeatureLayer::~FontFeatureLayer(void)
 }
 
 
-MEDUSA_IMPLEMENT_LAYER(FontFeatureLayer, BaseFeatureLayer, StringRef::Empty, StringRef::Empty);
+MEDUSA_IMPLEMENT_NODE(FontFeatureLayer);
 

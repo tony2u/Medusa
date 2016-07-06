@@ -35,8 +35,20 @@ void System::UpdatePaths()
 }
 
 
+WHeapString System::DefaultFontName()
+{
+	return WHeapString::Empty;
+}
 
+MemoryData System::GetFontData(WStringRef fontName /*= WStringRef::Empty*/)
+{
+	return MemoryData::Empty;
+}
 
+bool System::ContainsFont(WStringRef fontName)
+{
+	return false;
+}
 
 MEDUSA_END;
 

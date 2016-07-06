@@ -20,19 +20,17 @@ namespace ThreadingPrivate
 	}
 }
 
-ThreadPoolTimer::ThreadPoolTimer(const StringRef& name, ICommand* command, uint delay /*= 0*/, uint repeatCount /*= 0*/, uint repeatInterval /*= 0*/, uint repeatIntervalRange/*=0*/)
-	:mName(name), mCommand(command), mDelay(delay), mRepeatCount(repeatCount), mRepeatInterval(repeatInterval), mRepeatIntervalRange(repeatIntervalRange)
+ThreadPoolTimer::ThreadPoolTimer(ThreadPool* pool, const StringRef& name, const ShareCommand& command, uint delay /*= 0*/, uint repeatCount /*= 0*/, uint repeatInterval /*= 0*/, uint repeatIntervalRange/*=0*/)
+	:mPool(pool),mName(name), mCommand(command), mDelay(delay), mRepeatCount(repeatCount), mRepeatInterval(repeatInterval), mRepeatIntervalRange(repeatIntervalRange)
 
 {
-	SAFE_RETAIN(command);
-	mTimer = CreateThreadpoolTimer(ThreadingPrivate::OnThreadpoolTimerCallback, this, &ThreadPool::Instance().mCallBackEnviron);
+	mTimer = CreateThreadpoolTimer(ThreadingPrivate::OnThreadpoolTimerCallback, this, &mPool->mCallBackEnviron);
 }
 
 
 ThreadPoolTimer::~ThreadPoolTimer(void)
 {
-	SAFE_RELEASE(mCommand);
-
+	
 	if (mTimer != nullptr)
 	{
 		CloseThreadpoolTimer(mTimer);

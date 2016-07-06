@@ -28,27 +28,24 @@ void TaskStage::Clear()
 
 void TaskStage::Start()
 {
-	FOR_EACH_COLLECTION(i, mTasks)
+	for (auto task : mTasks)
 	{
-		Task* task = *i;
 		task->Start();
 	}
 }
 
 void TaskStage::Wait()
 {
-	FOR_EACH_COLLECTION(i, mTasks)
+	for (auto task : mTasks)
 	{
-		Task* task = *i;
 		task->Wait();
 	}
 }
 
 void TaskStage::SetOption(ExecuteOption option)
 {
-	FOR_EACH_COLLECTION(i, mTasks)
+	for (auto task : mTasks)
 	{
-		Task* task = *i;
 		task->SetOption(option);
 	}
 }

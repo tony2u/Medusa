@@ -5,6 +5,7 @@
 #include "IModule.h"
 #include "DelegateModule.h"
 #include "Core/Log/Log.h"
+#include "Core/Pattern/Share.h"
 
 MEDUSA_BEGIN;
 
@@ -26,12 +27,12 @@ bool IModule::Load(IEventArg& e /*= IEventArg::Empty*/)
 
 	RETURN_FALSE_IF_FALSE(OnBeforeLoad(e));
 
-	for (auto* item : mPrevModules)
+	for (auto& item : mPrevModules)
 	{
 		RETURN_FALSE_IF_FALSE(OnChildLoad(*item, e));
 	}
 	RETURN_FALSE_IF_FALSE(OnLoad(e));
-	for (auto* item : mNextModules)
+	for (auto& item : mNextModules)
 	{
 		RETURN_FALSE_IF_FALSE(OnChildLoad(*item, e));
 	}
@@ -47,12 +48,12 @@ bool IModule::Reload(IEventArg& e/*= IEventArg::Empty*/)
 	RETURN_TRUE_IF_FALSE(IsEnabled());
 	RETURN_FALSE_IF_FALSE(OnBeforeReload(e));
 
-	for (auto* item : mPrevModules)
+	for (auto& item : mPrevModules)
 	{
 		RETURN_FALSE_IF_FALSE(OnChildReload(*item, e));
 	}
 	RETURN_FALSE_IF_FALSE(OnReload(e));
-	for (auto* item : mNextModules)
+	for (auto& item : mNextModules)
 	{
 		RETURN_FALSE_IF_FALSE(OnChildReload(*item, e));
 	}
@@ -92,7 +93,6 @@ void IModule::ClearModules()
 	{
 		auto child = *i;
 		child->ClearModules();
-		child->Release();
 	}
 	mNextModules.Clear();
 
@@ -100,14 +100,13 @@ void IModule::ClearModules()
 	{
 		auto child = *i;
 		child->ClearModules();
-		child->Release();
 	}
 	mPrevModules.Clear();
 
 	mModuleDict.Clear();
 }
 
-bool IModule::AddPrevModule(IModule* item)
+bool IModule::AddPrevModule(const ModuleType& item)
 {
 	if (!item->Initialize())
 	{
@@ -120,14 +119,13 @@ bool IModule::AddPrevModule(IModule* item)
 		return false;
 	}
 
-	SAFE_RETAIN(item);
 	auto node = mPrevModules.Add(item);
 	mModuleDict.Add(item->ModuleName(), node);
 	return true;
 
 }
 
-bool IModule::AddPrevModule(IModule* item, bool enabled)
+bool IModule::AddPrevModule(const ModuleType& item, bool enabled)
 {
 	if (AddPrevModule(item))
 	{
@@ -139,18 +137,17 @@ bool IModule::AddPrevModule(IModule* item, bool enabled)
 
 bool IModule::AddPrevLoadModule(const Delegate<bool(IEventArg& e)>& del, const StringRef& name)
 {
-	std::unique_ptr<DelegateModule> item(new DelegateModule(name));
+	Share<DelegateModule> item(new DelegateModule(name));
 	item->LoadHandler = del;
-	if (!AddPrevModule(item.get()))
+	if (!AddPrevModule(item))
 	{
 		return false;
 	}
 
-	item.release();
 	return true;
 }
 
-bool IModule::AddNextModule(IModule* item)
+bool IModule::AddNextModule(const ModuleType& item)
 {
 	if (!item->Initialize())
 	{
@@ -163,14 +160,13 @@ bool IModule::AddNextModule(IModule* item)
 		return false;
 	}
 
-	SAFE_RETAIN(item);
 	auto node=mNextModules.Add(item);
 	mModuleDict.Add(item->ModuleName(), node);
 	return true;
 
 }
 
-bool IModule::AddNextModule(IModule* item, bool enabled)
+bool IModule::AddNextModule(const ModuleType& item, bool enabled)
 {
 	if (AddNextModule(item))
 	{
@@ -182,18 +178,17 @@ bool IModule::AddNextModule(IModule* item, bool enabled)
 
 bool IModule::AddNextLoadModule(const Delegate<bool(IEventArg& e)>& del, const StringRef& name)
 {
-	std::unique_ptr<DelegateModule> item(new DelegateModule(name));
+	Share<DelegateModule> item(new DelegateModule(name));
 	item->LoadHandler = del;
-	if (!AddNextModule(item.get()))
+	if (!AddNextModule(item))
 	{
 		return false;
 	}
 
-	item.release();
 	return true;
 }
 
-bool IModule::AddModuleBefore(StringRef name, IModule* item)
+bool IModule::AddModuleBefore(StringRef name, const ModuleType& item)
 {
 	intp index = name.IndexOf('.');
 	if (index < 0)
@@ -214,7 +209,6 @@ bool IModule::AddModuleBefore(StringRef name, IModule* item)
 
 		if (mNextModules.ContainsNode(node))
 		{
-			SAFE_RETAIN(item);
 			mNextModules.AddBefore(node, item);
 			mModuleDict.Add(item->ModuleName(), node);
 			return true;
@@ -222,7 +216,6 @@ bool IModule::AddModuleBefore(StringRef name, IModule* item)
 
 		if (mPrevModules.ContainsNode(node))
 		{
-			SAFE_RETAIN(item);
 			mPrevModules.AddBefore(node, item);
 			mModuleDict.Add(item->ModuleName(), node);
 			return true;
@@ -238,7 +231,7 @@ bool IModule::AddModuleBefore(StringRef name, IModule* item)
 	
 }
 
-bool IModule::AddModuleAfter(StringRef name, IModule* item)
+bool IModule::AddModuleAfter(StringRef name, const ModuleType& item)
 {
 	intp index = name.IndexOf('.');
 	if (index < 0)
@@ -259,7 +252,6 @@ bool IModule::AddModuleAfter(StringRef name, IModule* item)
 
 		if (mNextModules.ContainsNode(node))
 		{
-			SAFE_RETAIN(item);
 			mNextModules.AddAfter(node, item);
 			mModuleDict.Add(item->ModuleName(), node);
 			return true;
@@ -267,7 +259,6 @@ bool IModule::AddModuleAfter(StringRef name, IModule* item)
 
 		if (mPrevModules.ContainsNode(node))
 		{
-			SAFE_RETAIN(item);
 			mPrevModules.AddAfter(node, item);
 			mModuleDict.Add(item->ModuleName(), node);
 			return true;
@@ -289,13 +280,11 @@ bool IModule::RemoveModule(StringRef name)
 	{
 		if (mNextModules.ContainsNode(node))
 		{
-			SAFE_RELEASE(node->Value);
 			mNextModules.Delete(node);
 		}
 
 		if (mPrevModules.ContainsNode(node))
 		{
-			SAFE_RELEASE(node->Value);
 			mPrevModules.Delete(node);
 		}
 		
@@ -305,7 +294,7 @@ bool IModule::RemoveModule(StringRef name)
 }
 
 
-IModule* IModule::FindModule(StringRef name) const
+IModule::ModuleType IModule::FindModule(StringRef name) const
 {
 	auto node = FindModuleHelperRecursively(name);
 	RETURN_NULL_IF_NULL(node);
@@ -334,7 +323,7 @@ IModule::ModuleList::NodePtr IModule::FindModuleHelperRecursively(StringRef name
 
 bool IModule::EnableModule(StringRef name, bool val)
 {
-	auto* module = FindModule(name);
+	auto module = FindModule(name);
 	RETURN_FALSE_IF_NULL(module);
 	module->Enable(val);
 	return true;

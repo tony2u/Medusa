@@ -31,5 +31,5 @@ bool AtlasSpriteLayer::Initialize()
 
 
 
-MEDUSA_IMPLEMENT_LAYER(AtlasSpriteLayer, BaseCaseLayer, StringRef::Empty, StringRef::Empty);
+MEDUSA_IMPLEMENT_NODE(AtlasSpriteLayer);
 

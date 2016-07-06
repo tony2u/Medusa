@@ -8,7 +8,7 @@
 
 class CocosHelloLayer :public BaseCaseLayer
 {
-	MEDUSA_DECLARE_LAYER(CocosHelloLayer);
+	MEDUSA_NODE_BIND(CocosHelloLayer,BaseCaseLayer, "MainLayer.csb", "");
 public:
 	CocosHelloLayer(StringRef name=StringRef::Empty,const IEventArg& e=IEventArg::Empty);
 	virtual ~CocosHelloLayer(void);

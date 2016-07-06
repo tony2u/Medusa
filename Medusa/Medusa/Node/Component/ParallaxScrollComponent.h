@@ -10,7 +10,7 @@ MEDUSA_BEGIN;
 
 class ParallaxScrollComponent :public ScrollComponent
 {
-	MEDUSA_DECLARE_COMPONENT;
+	MEDUSA_DECLARE_COMPONENT(ParallaxScrollComponent,ScrollComponent);
 public:
 	ParallaxScrollComponent(const StringRef& name = StringRef::Empty, int priority = 0, void* userData = nullptr);
 	virtual ~ParallaxScrollComponent(void);

@@ -9,7 +9,7 @@
 
 MEDUSA_BEGIN;
 
-TextureAtlasPage* SpineTextureAtlas::OnCreatePage(const FileIdRef& fileId, const IStream& stream)
+TextureAtlasPage* SpineTextureAtlas::OnCreatePage(FileEntry& fileEntry, const FileIdRef& fileId, const IStream& stream)
 {
 	HeapString outLine;
 	List<HeapString> outValues;
@@ -22,7 +22,7 @@ TextureAtlasPage* SpineTextureAtlas::OnCreatePage(const FileIdRef& fileId, const
 	} while (outLine.IsEmpty());
 
 
-	std::unique_ptr<TextureAtlasPage> page(new TextureAtlasPage(0));
+	std::unique_ptr<TextureAtlasPage> page(new TextureAtlasPage(0, &fileEntry));
 	FileId textureFileId = FileId::ParseFrom(outLine);
 	page->SetTextureFileId(textureFileId);
 

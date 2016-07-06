@@ -6,23 +6,17 @@
 #include "Core/Pattern/Object/MapObjectFactory.h"
 #include "Core/String/StringRef.h"
 #include "IPanel.h"
+#include "Core/Pattern/Singleton.h"
 
 MEDUSA_BEGIN;
 
-class PanelFactory :public MapObjectFactory<PanelType, IPanel*(), SafeEnumHashCoder<PanelType>>
+class PanelFactory :public MapObjectFactory<PanelType, IPanel*(), SafeEnumHashCoder>,public Singleton<PanelFactory>
 {
-public:
-	using MapObjectFactory<PanelType, IPanel*(), SafeEnumHashCoder<PanelType>>::Create;
-private:
 	PanelFactory();
-	~PanelFactory(){}
+	~PanelFactory() {}
+	friend class Singleton<PanelFactory>;
 public:
-	static PanelFactory& Instance()
-	{
-		static PanelFactory factory;
-		return factory;
-	}
-
+	using MapObjectFactory<PanelType, IPanel*(), SafeEnumHashCoder>::Create;
 };
 
 

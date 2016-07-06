@@ -8,7 +8,7 @@
 
 class MoveToActionLayer :public BaseActionLayer
 {
-	MEDUSA_DECLARE_LAYER(MoveToActionLayer);
+	MEDUSA_NODE(MoveToActionLayer,BaseActionLayer);
 public:
 	MoveToActionLayer(StringRef name=StringRef::Empty,const IEventArg& e=IEventArg::Empty);
 	virtual ~MoveToActionLayer(void);

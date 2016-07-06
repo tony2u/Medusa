@@ -53,11 +53,11 @@ bool SkeletonAnimation::Initialize(void* target)
 
 	//create time lines
 	ISkeleton* skeleton = (ISkeleton*)target;
-	const Dictionary<SkeletonSlotModel*, ColorTimelineModel*>& colorTimelineDict = mModel->ColorTimelineDict();
-	FOR_EACH_COLLECTION(i, colorTimelineDict)
+	const Dictionary<SkeletonSlotModel*, Share<ColorTimelineModel>>& colorTimelineDict = mModel->ColorTimelineDict();
+	for(auto i: colorTimelineDict)
 	{
-		SkeletonSlotModel* slotModel = i->Key;
-		ColorTimelineModel* timelineModel = i->Value;
+		SkeletonSlotModel* slotModel = i.Key;
+		auto& timelineModel = i.Value;
 
 		SkeletonSlot* slot = skeleton->FindSlot(slotModel->Name());
 		ColorTimeline* timeline = new ColorTimeline(timelineModel, true);
@@ -65,11 +65,11 @@ bool SkeletonAnimation::Initialize(void* target)
 		mTimelines.Add(timeline);
 	}
 
-	const Dictionary<SkeletonSlotModel*, StringTimelineModel*>& textureTimelineDict = mModel->TextureTimelineDict();
-	FOR_EACH_COLLECTION(i, textureTimelineDict)
+	const Dictionary<SkeletonSlotModel*, Share<StringTimelineModel>>& textureTimelineDict = mModel->TextureTimelineDict();
+	for (auto i : textureTimelineDict)
 	{
-		SkeletonSlotModel* slotModel = i->Key;
-		StringTimelineModel* timelineModel = i->Value;
+		SkeletonSlotModel* slotModel = i.Key;
+		auto timelineModel = i.Value;
 
 		SkeletonSlot* slot = skeleton->FindSlot(slotModel->Name());
 		SkeletonSlotAttachmentNameTimeline* timeline = new SkeletonSlotAttachmentNameTimeline(timelineModel, true);
@@ -78,66 +78,66 @@ bool SkeletonAnimation::Initialize(void* target)
 
 	}
 
-	const Dictionary<SkeletonBoneModel*, RotationTimelineModel*>& rotationTimelineDcit = mModel->RotationTimelineDcit();
-	FOR_EACH_COLLECTION(i, rotationTimelineDcit)
+	const Dictionary<SkeletonBoneModel*, Share<RotationTimelineModel>>& rotationTimelineDcit = mModel->RotationTimelineDcit();
+	for (auto i : rotationTimelineDcit)
 	{
-		SkeletonBoneModel* boneModel = i->Key;
-		RotationTimelineModel* timelineModel = i->Value;
+		SkeletonBoneModel* boneModel = i.Key;
+		auto& timelineModel = i.Value;
 		SkeletonBone* bone = skeleton->FindBone(boneModel->Name());
 
-		KeyValuePair<SkeletonBone*, RotationTimelineModel*>& timeline = mBoneRotaionTimelines.NewAdd();
+		auto& timeline = mBoneRotaionTimelines.NewAdd();
 		timeline.Key = bone;
 		timeline.Value = timelineModel;
 	}
 
-	const Dictionary<SkeletonBoneModel*, ScaleTimelineModel*>& scaleTimelineDcit = mModel->ScaleTimelineDcit();
-	FOR_EACH_COLLECTION(i, scaleTimelineDcit)
+	const Dictionary<SkeletonBoneModel*, Share<ScaleTimelineModel>>& scaleTimelineDcit = mModel->ScaleTimelineDcit();
+	for (auto i : scaleTimelineDcit)
 	{
-		SkeletonBoneModel* boneModel = i->Key;
-		ScaleTimelineModel* timelineModel = i->Value;
+		SkeletonBoneModel* boneModel = i.Key;
+		auto& timelineModel = i.Value;
 		SkeletonBone* bone = skeleton->FindBone(boneModel->Name());
 
-		KeyValuePair<SkeletonBone*, ScaleTimelineModel*>& timeline = mBoneScaleTimelines.NewAdd();
+		auto& timeline = mBoneScaleTimelines.NewAdd();
 		timeline.Key = bone;
 		timeline.Value = timelineModel;
 	}
 
 
-	const Dictionary<SkeletonBoneModel*, TranslateTimelineModel*>& translateTimelineDcit = mModel->TranslateTimelineDcit();
-	FOR_EACH_COLLECTION(i, translateTimelineDcit)
+	const Dictionary<SkeletonBoneModel*, Share<TranslateTimelineModel>>& translateTimelineDcit = mModel->TranslateTimelineDcit();
+	for (auto i : translateTimelineDcit)
 	{
-		SkeletonBoneModel* boneModel = i->Key;
-		TranslateTimelineModel* timelineModel = i->Value;
+		SkeletonBoneModel* boneModel = i.Key;
+		auto& timelineModel = i.Value;
 		SkeletonBone* bone = skeleton->FindBone(boneModel->Name());
 
-		KeyValuePair<SkeletonBone*, TranslateTimelineModel*>& timeline = mBoneTranslateTimelines.NewAdd();
+		auto& timeline = mBoneTranslateTimelines.NewAdd();
 		timeline.Key = bone;
 		timeline.Value = timelineModel;
 	}
 
-	const Dictionary<KeyValuePair<SkeletonSlotModel*, ISkeletonAttachmentModel*>, VertexTimelineModel*>& vertexTimelineDcit = mModel->VertexTimelineDcit();
-	FOR_EACH_COLLECTION(i, vertexTimelineDcit)
+	const Dictionary<KeyValuePair<SkeletonSlotModel*, ISkeletonAttachmentModel*>, Share<VertexTimelineModel>>& vertexTimelineDcit = mModel->VertexTimelineDcit();
+	for (auto i : vertexTimelineDcit)
 	{
-		const KeyValuePair<SkeletonSlotModel*, ISkeletonAttachmentModel*>& p = i->Key;
+		const KeyValuePair<SkeletonSlotModel*, ISkeletonAttachmentModel*>& p = i.Key;
 		SkeletonSlotModel* slotModel = p.Key;
 		ISkeletonAttachmentModel* attachmentModel = p.Value;
 
 		SkeletonSlot* slot = skeleton->FindSlot(slotModel->Name());
 
-		VertexTimelineModel* timelineModel = i->Value;
+		auto& timelineModel = i.Value;
 		SkeletonSlotVertexTimeline* timeline = new SkeletonSlotVertexTimeline(timelineModel, attachmentModel);
 		timeline->Initialize(slot);
 		mTimelines.Add(timeline);
 	}
 
-	const Dictionary<SkeletonIKModel*, IKTimelineModel*>& ikTimelineDcit = mModel->IKTimelineDcit();
-	FOR_EACH_COLLECTION(i, ikTimelineDcit)
+	const Dictionary<SkeletonIKModel*, Share<IKTimelineModel>>& ikTimelineDcit = mModel->IKTimelineDcit();
+	for (auto i : ikTimelineDcit)
 	{
-		SkeletonIKModel* ikModel = i->Key;
-		IKTimelineModel* timelineModel = i->Value;
+		SkeletonIKModel* ikModel = i.Key;
+		auto& timelineModel = i.Value;
 		SkeletonIK* ik = skeleton->FindIK(ikModel->Name());
 
-		KeyValuePair<SkeletonIK*, IKTimelineModel*>& timeline = mIKTimelines.NewAdd();
+		auto& timeline = mIKTimelines.NewAdd();
 		timeline.Key = ik;
 		timeline.Value = timelineModel;
 	}
@@ -149,9 +149,8 @@ bool SkeletonAnimation::Initialize(void* target)
 bool SkeletonAnimation::Start()
 {
 	RETURN_FALSE_IF_FALSE(IAnimation::Start());
-	FOR_EACH_COLLECTION(i, mTimelines)
+	for (auto timeline : mTimelines)
 	{
-		ITimeline* timeline = *i;
 		timeline->Start();
 	}
 
@@ -162,9 +161,8 @@ bool SkeletonAnimation::Start()
 bool SkeletonAnimation::Stop()
 {
 	RETURN_FALSE_IF_FALSE(IAnimation::Stop());
-	FOR_EACH_COLLECTION(i, mTimelines)
+	for (auto timeline : mTimelines)
 	{
-		ITimeline* timeline = *i;
 		timeline->Stop();
 	}
 
@@ -174,9 +172,8 @@ bool SkeletonAnimation::Stop()
 bool SkeletonAnimation::Reset()
 {
 	RETURN_FALSE_IF_FALSE(IAnimation::Reset());
-	FOR_EACH_COLLECTION(i, mTimelines)
+	for (auto timeline : mTimelines)
 	{
-		ITimeline* timeline = *i;
 		timeline->Reset();
 	}
 
@@ -190,9 +187,8 @@ bool SkeletonAnimation::OnUpdate(float prevElapsed, float dt, float blend /*= 1.
 	//return true;
 	ISkeleton* skeleton = (ISkeleton*)this->mTarget;
 
-	FOR_EACH_COLLECTION(i, mTimelines)
+	for (auto timeline : mTimelines)
 	{
-		ITimeline* timeline = *i;
 		timeline->Update(dt, blend);
 	}
 	//return true;
@@ -202,9 +198,8 @@ bool SkeletonAnimation::OnUpdate(float prevElapsed, float dt, float blend /*= 1.
 	*/
 
 	float time = Elapsed();
-	FOR_EACH_COLLECTION(i, mBoneScaleTimelines)
+	for(const auto& timeline: mBoneScaleTimelines)
 	{
-		const KeyValuePair<SkeletonBone*, ScaleTimelineModel*>& timeline = *i;
 		SkeletonBone* bone = timeline.Key;
 
 		Scale3F val = timeline.Value->GetScale(time);
@@ -216,9 +211,8 @@ bool SkeletonAnimation::OnUpdate(float prevElapsed, float dt, float blend /*= 1.
 		bone->SetScale(val);
 	}
 
-	FOR_EACH_COLLECTION(i, mBoneRotaionTimelines)
+	for (const auto& timeline : mBoneRotaionTimelines)
 	{
-		const KeyValuePair<SkeletonBone*, RotationTimelineModel*>& timeline = *i;
 		SkeletonBone* bone = timeline.Key;
 
 		Rotation3F val = timeline.Value->GetRotation(time);
@@ -228,9 +222,8 @@ bool SkeletonAnimation::OnUpdate(float prevElapsed, float dt, float blend /*= 1.
 		bone->SetRotation(val);
 	}
 
-	FOR_EACH_COLLECTION(i, mBoneTranslateTimelines)
+	for (const auto& timeline : mBoneTranslateTimelines)
 	{
-		const KeyValuePair<SkeletonBone*, TranslateTimelineModel*>& timeline = *i;
 		SkeletonBone* bone = timeline.Key;
 		Point3F val = timeline.Value->GetTranslate(time);
 		val -= bone->Position() - bone->Model()->Position();
@@ -243,14 +236,14 @@ bool SkeletonAnimation::OnUpdate(float prevElapsed, float dt, float blend /*= 1.
 	/*
 	FOR_EACH_COLLECTION(i, mIKTimelines)
 	{
-	const KeyValuePair<SkeletonIK*, IKTimelineModel*>& timeline = *i;
+	const KeyValuePair<SkeletonIK*, Share<IKTimelineModel>>& timeline = *i;
 	timeline.Key->SetMix(timeline.Value->GetMix(Elapsed())*blend);
 	timeline.Key->EnableBendPositive(timeline.Value->IsBlendPositive(Elapsed()));
 
 	}
 	*/
 
-	DrawOrderTimelineModel* drawOrderTimelineModel = mModel->DrawOrderTimeLine();
+	auto drawOrderTimelineModel = mModel->DrawOrderTimeLine();
 	if (drawOrderTimelineModel != nullptr)
 	{
 		bool isChanged = drawOrderTimelineModel->IsDrawOrderChanged(prevElapsed, time);
@@ -280,7 +273,7 @@ bool SkeletonAnimation::OnUpdate(float prevElapsed, float dt, float blend /*= 1.
 		}
 	}
 
-	TriggerTimelineModel* triggerTimelineModel = mModel->TriggerTimeline();
+	auto triggerTimelineModel = mModel->TriggerTimeline();
 	if (triggerTimelineModel != nullptr)
 	{
 		uintp outBeginIndex;

@@ -18,15 +18,15 @@ public:
 	virtual bool Initialize();
 	virtual bool Uninitialize();
 public:
-	IEffect* CreateEmpty(const FileIdRef& fileId, ResourceShareType shareType = ResourceShareType::Share);
-	IEffect* CreateFromFile(const FileIdRef& fileId, ResourceShareType shareType = ResourceShareType::Share);
+	Share<IEffect> CreateEmpty(const FileIdRef& fileId, ResourceShareType shareType = ResourceShareType::Share);
+	Share<IEffect> CreateFromFile(const FileIdRef& fileId, ResourceShareType shareType = ResourceShareType::Share);
 
-	IEffect* CreateSinglePassDefault(const FileIdRef& fileId, ResourceShareType shareType = ResourceShareType::Share);
-	IEffect* CreateSinglePass(const FileIdRef& fileId, const FileIdRef& passFileId, ResourceShareType shareType = ResourceShareType::Share);
-	IEffect* CreateSinglePass(const FileIdRef& fileId, IRenderPass* renderPass, ResourceShareType shareType = ResourceShareType::Share);
+	Share<IEffect> CreateSinglePassDefault(const FileIdRef& fileId, ResourceShareType shareType = ResourceShareType::Share);
+	Share<IEffect> CreateSinglePass(const FileIdRef& fileId, const FileIdRef& passFileId, ResourceShareType shareType = ResourceShareType::Share);
+	Share<IEffect> CreateSinglePass(const FileIdRef& fileId, const Share<IRenderPass>& renderPass, ResourceShareType shareType = ResourceShareType::Share);
 
-	IEffect* CreateMultiplePasses(const FileIdRef& fileId, const List<FileIdRef>& renderPasses, ResourceShareType shareType = ResourceShareType::Share);
-	IEffect* CreateMultiplePasses(const FileIdRef& fileId, List<IRenderPass*>& renderPasses, ResourceShareType shareType = ResourceShareType::Share);
+	Share<IEffect> CreateMultiplePasses(const FileIdRef& fileId, const List<FileIdRef>& renderPasses, ResourceShareType shareType = ResourceShareType::Share);
+	Share<IEffect> CreateMultiplePasses(const FileIdRef& fileId, List<Share<IRenderPass>>& renderPasses, ResourceShareType shareType = ResourceShareType::Share);
 
 };
 

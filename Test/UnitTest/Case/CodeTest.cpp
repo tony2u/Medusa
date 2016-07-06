@@ -17,12 +17,12 @@
 void CodeTest::TestLZMA()
 {
 	MemoryData testData = MemoryData::Alloc(1024 * 100);	//100K data
-	byte* buffer= testData.MutableData();
+	Medusa::byte* buffer= testData.MutableData();
 	FOR_EACH_SIZE(i, 100)
 	{
 		FOR_EACH_SIZE(j, 1024)
 		{
-			buffer[i * 1024 + j] = (byte)i;
+			buffer[i * 1024 + j] = (Medusa::byte)i;
 		}
 	}
 
@@ -51,12 +51,12 @@ void CodeTest::TestLZMA()
 void CodeTest::TestLZ4()
 {
 	MemoryData testData = MemoryData::Alloc(1024 * 100);	//100K data
-	byte* buffer = testData.MutableData();
+	Medusa::byte* buffer = testData.MutableData();
 	FOR_EACH_SIZE(i, 100)
 	{
 		FOR_EACH_SIZE(j, 1024)
 		{
-			buffer[i * 1024 + j] = (byte)i;
+			buffer[i * 1024 + j] = (Medusa::byte)i;
 		}
 	}
 
@@ -89,12 +89,12 @@ void CodeTest::TestAES256()
 
 
 	MemoryData testData = MemoryData::Alloc(1024 * 100);	//100K data
-	byte* buffer = testData.MutableData();
+	Medusa::byte* buffer = testData.MutableData();
 	FOR_EACH_SIZE(i, 100)
 	{
 		FOR_EACH_SIZE(j, 1024)
 		{
-			buffer[i * 1024 + j] = (byte)i;
+			buffer[i * 1024 + j] = (Medusa::byte)i;
 		}
 	}
 

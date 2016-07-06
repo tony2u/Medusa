@@ -7,7 +7,7 @@
 
 class ShaderFeatureLayer :public BaseFeatureLayer
 {
-	MEDUSA_DECLARE_LAYER(ShaderFeatureLayer);
+	MEDUSA_NODE(ShaderFeatureLayer,BaseFeatureLayer);
 public:
 	ShaderFeatureLayer(StringRef name=StringRef::Empty,const IEventArg& e=IEventArg::Empty);
 	virtual ~ShaderFeatureLayer(void);

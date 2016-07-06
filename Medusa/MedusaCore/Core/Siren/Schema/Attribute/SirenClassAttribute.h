@@ -18,23 +18,30 @@ enum class SirenClassGenerateMode
 	SuppressCopy = 16,
 
 	SirenConfig = 32 | SuppressCompare | SuppressCopy,
-
+	Struct = 64,
 };
 
 class SirenClassAttribute :public ISirenAttribute
 {
 public:
-	using ISirenAttribute::ISirenAttribute;
+	SirenClassAttribute() {}
+	SirenClassAttribute(const StringPropertySet& val) :ISirenAttribute(val) {}
+	SirenClassAttribute(SirenClassGenerateMode mode, const StringRef& dir);
+
 	virtual ~SirenClassAttribute(void);
 
-	virtual SirenClassAttribute* Clone() const override { return new SirenClassAttribute(mKeyValues); }
+	virtual SirenClassAttribute* Clone() const override { return new SirenClassAttribute(mMode, mDir); }
 
 	SirenClassGenerateMode Mode() const { return mMode; }
 	void SetMode(SirenClassGenerateMode val) { mMode = val; }
+	void AddMode(SirenClassGenerateMode val) { MEDUSA_FLAG_ADD(mMode,val); }
+	void RemoveMode(SirenClassGenerateMode val) { MEDUSA_FLAG_REMOVE(mMode, val); }
 
 	bool Has(SirenClassGenerateMode val)const { return MEDUSA_FLAG_HAS(mMode, val); }
 	bool IsGenerate()const { return Has(SirenClassGenerateMode::Generate); }
 	bool IsEmbeded()const { return Has(SirenClassGenerateMode::Embeded); }
+	bool IsStruct()const { return Has(SirenClassGenerateMode::Struct); }
+
 	StringRef Directory()const { return mDir; }
 
 public:

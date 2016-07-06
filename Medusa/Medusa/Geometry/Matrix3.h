@@ -7,6 +7,7 @@
 #include "Core/Pattern/LazyValue.h"
 #include "Geometry/GeometryDefines.h"
 #include "Geometry/Point3.h"
+#include "Core/String/HeapString.h"
 
 MEDUSA_BEGIN;
 

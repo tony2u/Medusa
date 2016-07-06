@@ -9,12 +9,12 @@
 #include "Node/Input/Gesture/SwipeGestureRecognizer.h"
 #include "Node/Input/Gesture/EventArg/SwipeBeginGestureEventArg.h"
 #include "Node/Input/Gesture/EventArg/SwipeFailedGestureEventArg.h"
-
+#include "Node/NodeFactory.h"
 
 MEDUSA_BEGIN;
 
 
-ListBox::ListBox(StringRef name/*=StringRef::Empty*/, ScrollDirection direction /*= ScrollDirection::VerticalFromTop*/)
+ListBox::ListBox(StringRef name, ScrollDirection direction)
 	:ScrollPanel(name,direction),mSelectedItem(nullptr),
 	mCacheEnabed(false)
 {
@@ -22,7 +22,13 @@ ListBox::ListBox(StringRef name/*=StringRef::Empty*/, ScrollDirection direction 
 	Log::AssertFormat(!direction.IsFreeOrNone(),"ListBox only support one-way scroll");
 }
 
-ListBox::~ListBox( void )
+ListBox::ListBox(StringRef name /*= StringRef::Empty*/, const IEventArg& e /*= IEventArg::Empty*/)
+	:ScrollPanel(name, e)
+{
+	SetSizeToContent(SizeToContent::WidthAndHeight);
+}
+
+ListBox::~ListBox(void)
 {
 	ClearCache();
 }
@@ -35,9 +41,9 @@ bool ListBox::Initialize()
 void ListBox::ClearCache()
 {
 	SAFE_DELETE_COLLECTION(mSingleTypeItemCache);
-	FOR_EACH_COLLECTION(i,mMultipleTypeItemCache)
+	for (auto i : mMultipleTypeItemCache)
 	{
-		Queue<INode*>* nodes=i->Value;
+		Queue<INode*>* nodes=i.Value;
 		SAFE_DELETE_COLLECTION(*nodes);
 		SAFE_DELETE(nodes);
 	}
@@ -52,7 +58,7 @@ void ListBox::SetScrollDirection(ScrollDirection direction)
 }
 
 
-void ListBox::SetDataSource(IDataSource* dataSource)
+void ListBox::SetDataSource(const Share<IDataSource>& dataSource)
 {
 	Log::AssertFormat(dataSource->IsA<IListDataSource>(),"ListBox only support DataSource inherit from IListDataSource.");
 
@@ -62,9 +68,9 @@ void ListBox::SetDataSource(IDataSource* dataSource)
 	Clear();
 	mItems.Clear();
 
-	SAFE_ASSIGN_REF(mDataSource,dataSource);
+	mDataSource = dataSource;
 
-	IListDataSource* listDataSource=(IListDataSource*)dataSource;
+	auto listDataSource=dataSource.CastPtr<IListDataSource>();
 	listDataSource->OnItemAdded+=Bind(&ListBox::OnItemAdded,this);
 	listDataSource->OnItemRemoved+=Bind(&ListBox::OnItemRemoved, this);
 	listDataSource->OnItemUpdated+=Bind(&ListBox::OnItemUpdated, this);
@@ -89,7 +95,7 @@ bool ListBox::ArrangeChildren(const Rect2F& limitRect/*=Rect2F::Zero*/,NodeLayou
 		return true;
 	}
 	RETURN_TRUE_IF_NULL(mDataSource);
-	IListDataSource* listDataSource=(IListDataSource*)mDataSource;
+	auto listDataSource = mDataSource.CastPtr<IListDataSource>();
 	size_t itemCount=listDataSource->Count();
 
 	if (mItems.IsEmpty()&&itemCount!=0)
@@ -188,7 +194,7 @@ void ListBox::OnItemAdded(size_t index)
 {
 	mScrollModel->ApplyMovement();
 
-	IListDataSource* listDataSource=(IListDataSource*)mDataSource;
+	auto listDataSource = mDataSource.CastPtr<IListDataSource>();
 
 	size_t itemCount=mItems.Count();
 	if(index<itemCount)
@@ -385,7 +391,7 @@ void ListBox::OnItemRemoved(size_t index)
 void ListBox::OnItemUpdated(size_t index, size_t length)
 {
 	mScrollModel->ApplyMovement();
-	IListDataSource* listDataSource=(IListDataSource*)mDataSource;
+	auto listDataSource = mDataSource.CastPtr<IListDataSource>();
 
 	size_t newCount=listDataSource->Count();
 	size_t itemCount=mItems.Count();
@@ -593,9 +599,8 @@ void ListBox::OnDataChanged(const IDataSource& dataSource)
 	mScrollModel->ApplyMovement();
 
 	//clear current items
-	FOR_EACH_COLLECTION(i,mItems)
+	for (auto& item : mItems)
 	{
-		ListBoxItem& item=*i;
 		if (item.Node!=nullptr)
 		{
 			RecycleItemNode(item);
@@ -604,7 +609,7 @@ void ListBox::OnDataChanged(const IDataSource& dataSource)
 	mItems.Clear();
 
 	//create new items
-	IListDataSource* listDataSource=(IListDataSource*)mDataSource;
+	auto listDataSource = mDataSource.CastPtr<IListDataSource>();
 	size_t count=listDataSource->Count();
 	Rect2F targetBoundingBox=Rect2F::Zero;
 	Size2F limitSize=mSize.To2D();
@@ -657,9 +662,8 @@ void ListBox::OnDataChanged(const IDataSource& dataSource)
 	mScrollModel->Initialize(mSize.To2D(),targetBoundingBox);
 
 	//load nodes for items
-	FOR_EACH_COLLECTION(i,mItems)
+	for(auto& item:mItems)
 	{
-		ListBoxItem& item=*i;
 		if (mScrollModel->IsRectVisible(item.BoundingBox))
 		{
 			if (item.Node==nullptr)
@@ -683,7 +687,7 @@ void ListBox::RecycleItemNode(ListBoxItem& item)
 	{
 		RemoveChild(item.Node);
 
-		IListDataSource* listDataSource=(IListDataSource*)mDataSource;
+		auto listDataSource = mDataSource.CastPtr<IListDataSource>();
 		Queue<INode*>* nodeQueue=nullptr;
 		if (listDataSource->IsFixedType())
 		{
@@ -712,7 +716,7 @@ void ListBox::RecycleItemNode(ListBoxItem& item)
 
 void ListBox::CreateItemNode(ListBoxItem& item)
 {
-	IListDataSource* listDataSource=(IListDataSource*)mDataSource;
+	auto listDataSource = mDataSource.CastPtr<IListDataSource>();
 
 	if (mCacheEnabed)
 	{
@@ -752,7 +756,7 @@ void ListBox::CreateItemNode(ListBoxItem& item)
 
 void ListBox::ReloadItemNode(ListBoxItem& item)
 {
-	IListDataSource* listDataSource=(IListDataSource*)mDataSource;
+	auto listDataSource = mDataSource.CastPtr<IListDataSource>();
 	int newType=listDataSource->GetItemType(item.Index);
 	if (item.Type==newType)
 	{
@@ -786,10 +790,8 @@ void ListBox::OnMoveChildren()
 	mScrollModel->ApplyMovement();
 	Point2F totalMovement=mScrollModel->Offset();
 
-	FOR_EACH_COLLECTION(i,mItems)
+	for (auto& item : mItems)
 	{
-		ListBoxItem& item=*i;
-
 		if (mScrollModel->IsRectVisible(item.BoundingBox))
 		{
 			if (item.Node==nullptr)
@@ -921,14 +923,14 @@ Size2F ListBox::CalculateBoundingBoxSize(size_t index) const
 {
 	if (IsVertical())
 	{
-		IListDataSource* listDataSource=(IListDataSource*)mDataSource;
+		auto listDataSource = mDataSource.CastPtr<IListDataSource>();
 		Size2F size=listDataSource->CalculateItemSize(index,msize(mSize.Width,0.f));
 		size.Width=mSize.Width;
 		return size;
 	}
 	else
 	{
-		IListDataSource* listDataSource=(IListDataSource*)mDataSource;
+		auto listDataSource = mDataSource.CastPtr<IListDataSource>();
 		Size2F size=listDataSource->CalculateItemSize(index,msize(0.f,mSize.Height));
 		size.Height=mSize.Height;
 		return size;
@@ -1007,6 +1009,6 @@ const ListBoxItem* ListBox::GetSelectedItem(Point2F pos) const
 
 	return nullptr;
 }
-MEDUSA_IMPLEMENT_RTTI(ListBox, ScrollPanel);
+MEDUSA_IMPLEMENT_NODE(ListBox);
 
 MEDUSA_END;

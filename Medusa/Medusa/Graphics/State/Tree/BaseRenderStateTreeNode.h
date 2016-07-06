@@ -6,20 +6,19 @@
 #include "Core/Collection/Dictionary.h"
 #include "Graphics/State/RenderStateType.h"
 #include "Graphics/State/IRenderState.h"
+#include "Core/Pattern/Share.h"
 
 MEDUSA_BEGIN;
 
 
-class BaseRenderStateTreeNode 
+class BaseRenderStateTreeNode:public ISharableSingleThread
 {
 public:
-	//typedef Dictionary<IRenderState*, RenderStateTreeNode*, DefaultPointerHashCoder<IRenderState*>, NoHashCoder<RenderStateTreeNode*>, PointerEqualCompare<IRenderState*>, NoCompare<RenderStateTreeNode*>> RenderStateTreeNodeDict;
-	BaseRenderStateTreeNode(IRenderState* state = nullptr, RenderStateTreeCompositeNode* parent = nullptr);
+	BaseRenderStateTreeNode(const Share<IRenderState>& state = nullptr, RenderStateTreeCompositeNode* parent = nullptr);
 	virtual ~BaseRenderStateTreeNode(void);
 
-	virtual RenderStateTreeLeafNode* FindUniqueNode(const RenderStateSet& stateSet, RenderStateType type) { return nullptr; }
 	uint Id() const { return mId; }
-	IRenderState* State() const { return mState; }
+	const Share<IRenderState>& State() const { return mState; }
 	RenderStateTreeCompositeNode* Parent() const { return mParent; }
 
 	void Apply();
@@ -28,7 +27,7 @@ public:
 protected:
 	RenderStateTreeCompositeNode* mParent;
 	uint mId;
-	IRenderState* mState;	//null able
+	Share<IRenderState> mState;	//null able
 	
 };
 

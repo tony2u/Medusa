@@ -11,7 +11,7 @@
 
 MEDUSA_BEGIN;
 
-class IStream:public ISharableThreadSafe
+class IStream :public ISharableThreadSafe
 {
 protected:
 	IStream(void) {}
@@ -65,24 +65,24 @@ public:
 	template<class T>
 	size_t Write(const T* begin, const T* end)
 	{
-		size_t size = (end - begin)*sizeof(T);
+		size_t size = (end - begin) * sizeof(T);
 		return WriteData(MemoryData::FromStatic((byte*)begin, size));
 	}
 
 public:
-	void SetPosition(uintp val) const { Seek((intp)val, SeekOrigin::Head); }
+	void SetPosition(uintp val) const { Seek((intp)val, SeekOrigin::Begin); }
 	uintp LeftLength()const { return Length() - Position(); }
 	bool Skip(size_t size) { return Seek((intp)size, SeekOrigin::Current); }
 	template<typename T> IStream& operator<<(T val) { Write(val); return *this; }
-	template<typename T> const IStream& operator>>(T val)const { ReadTo(val); return *this; }
+	template<typename T> const IStream& operator >> (T val)const { ReadTo(val); return *this; }
 	size_t CopyTo(IStream& dest, size_t bufferSize = 1024)const;
-	size_t ReadToStream(size_t size,IStream& dest, size_t bufferSize=1024)const;
+	size_t ReadToStream(size_t size, IStream& dest, size_t bufferSize = 1024)const;
 
 
 	size_t ReadAllLinesTo(List<HeapString>& outLines, size_t maxCount = 1024, bool isTrim = true, bool ignoreEmptyLine = true)const;
 	size_t ReadAllLinesTo(List<WHeapString>& outLines, size_t maxCount = 1024, bool isTrim = true, bool ignoreEmptyLine = true)const;
-	size_t ReadDataToString(HeapString& outString, int readCount=0)const;
-	size_t ReadDataToString(WHeapString& outString, int readCount = 0)const;
+	size_t ReadDataToString(HeapString& outString, int readCount = 0, bool withNullTermitated = false)const;
+	size_t ReadDataToString(WHeapString& outString, int readCount = 0, bool withNullTermitated = false)const;
 
 	HeapString ReadString(size_t maxCount = 1024)const;
 	WHeapString ReadStringW(size_t maxCount = 1024)const;
@@ -100,7 +100,7 @@ public:
 	virtual const byte* Ptr()const { return nullptr; }
 	virtual byte* MutablePtr() { return nullptr; }
 
-	virtual void Rewind()const { Seek(0, SeekOrigin::Head); }
+	virtual void Rewind()const { Seek(0, SeekOrigin::Begin); }
 
 	virtual bool Flush() = 0;
 	virtual bool Close() = 0;
@@ -120,7 +120,7 @@ public:
 	virtual int ReadWChar() const = 0;
 
 
-	
+
 	virtual size_t ReadStringTo(HeapString& outString) const = 0;
 	virtual size_t ReadStringTo(WHeapString& outString) const = 0;
 

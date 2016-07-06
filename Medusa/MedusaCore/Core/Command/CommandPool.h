@@ -10,18 +10,16 @@
 MEDUSA_BEGIN;
 
 
-class CommandPool :public MapObjectFactory<const RTTIClass*, ICommand*(), DefaultHashCoder<const RTTIClass*>, true>, public Singleton<CommandPool>
+class CommandPool :public MapObjectFactory<const RTTIClass*, ICommand*(), DefaultHashCoder, true>, public Singleton<CommandPool>
 {
-	friend class Singleton < CommandPool > ;
-private:
 	CommandPool();
 	~CommandPool(void);
+	friend class Singleton < CommandPool > ;
 public:
-	using MapObjectFactory<const RTTIClass*, ICommand*(), DefaultHashCoder<const RTTIClass*>, true>::Register;
-	using MapObjectFactory<const RTTIClass*, ICommand*(), DefaultHashCoder<const RTTIClass*>, true>::Create;
-	using MapObjectFactory<const RTTIClass*, ICommand*(), DefaultHashCoder<const RTTIClass*>, true>::Recycle;
-
-
+	using BaseType = MapObjectFactory<const RTTIClass*, ICommand*(), DefaultHashCoder, true>;
+	using BaseType::Register;
+	using BaseType::Create;
+	using BaseType::Recycle;
 
 	template<typename TDerived>
 	void Register()

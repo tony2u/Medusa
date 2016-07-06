@@ -8,7 +8,7 @@ USING_MEDUSA;
 
 class HelloWorldLayer:public ILayer
 {
-	MEDUSA_DECLARE_LAYER(HelloWorldLayer);
+	MEDUSA_NODE(HelloWorldLayer,ILayer);
 public:
 	HelloWorldLayer(StringRef name=StringRef::Empty,const IEventArg& e=IEventArg::Empty);
 	virtual ~HelloWorldLayer(void);

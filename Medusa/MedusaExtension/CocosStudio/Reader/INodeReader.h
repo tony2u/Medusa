@@ -14,8 +14,9 @@
 
 MEDUSA_COCOS_BEGIN;
 
-class INodeReader
+class INodeReader:public RTTIObject
 {
+	MEDUSA_RTTI_ROOT(INodeReader);
 public:
 	INodeReader() {};
 	virtual ~INodeReader() {};
@@ -34,7 +35,6 @@ public:
 	static Color4F ToColor( const rapidjson::Value* jsonNode);
 
 	static void TryBindScript(INode* node, NodeCreateFlags flags = NodeCreateFlags::None);
-
 };
 
 MEDUSA_COCOS_END;

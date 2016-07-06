@@ -6,10 +6,11 @@
 #include "Core/Threading/ThreadingDefines.h"
 #include "Core/Threading/IWaitable.h"
 #include "Core/Math/Math.h"
+#include "Core/Pattern/INonCopyable.h"
 
 MEDUSA_BEGIN;
 
-class Semaphore :public SemaphoreImp, public IWaitable
+class Semaphore :public SemaphoreImp, public IWaitable,public INonCopyable
 {
 public:
 	Semaphore(uint initialValue = 0, uint maxLimit = Math::UIntMaxValue, bool isInitializeNow = true);
@@ -22,13 +23,10 @@ public:
 
 	virtual bool Wait()override;
 	virtual bool TryWait()override;
-	virtual bool WaitTimeout(long milliseconds)override;
+	virtual bool WaitFor(long milliseconds)override;
 #ifndef MEDUSA_POSIX_THREADING
 	virtual ThreadNativeHandle NativeHandle()const override { return mSem; }
 #endif
-private:
-	Semaphore(const Semaphore &);
-	Semaphore& operator=(const Semaphore &);
 
 };
 

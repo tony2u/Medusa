@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 #include "MedusaPreCompiled.h"
 #include "SceneManager_Binding.h"
-#include "Core/Command/EventArg/UserDataEventArg.h"
+#include "Core/Event/EventArg/UserDataEventArg.h"
 #ifdef MEDUSA_LUA
 #include "Core/Lua/LuaState.h"
 #include "Node/Scene/SceneManager.h"
@@ -21,6 +21,10 @@ bool Register_SceneManager(IEventArg& e)
 	cls.AddFunction("Push", [](const StringRef& className, NodePushFlags pushFlag)->IScene* {return SceneManager::Instance().Push(className, pushFlag); });
 	cls.AddFunction("PushObject", [](IScene* scene, NodePushFlags pushFlag) {SceneManager::Instance().Push(scene, pushFlag); });
 
+	cls.AddFunction("ReplaceTo", [](const StringRef& className, NodePopFlags popFlags, NodePushFlags pushFlag)->IScene* {return SceneManager::Instance().ReplaceTo(className, popFlags, pushFlag); });
+	cls.AddFunction("ReplaceToObject", [](IScene* scene, NodePopFlags popFlags, NodePushFlags pushFlag) {SceneManager::Instance().ReplaceTo(scene, popFlags, pushFlag); });
+
+	cls.AddFunction("Pop", [](NodePopFlags popFlags) {return SceneManager::Instance().Pop( popFlags); });
 
 	//typedef  IScene* (SceneManager::*PushPtr)(const StringRef&, NodePushFlags, const IEventArg&);
 	//reg.AddMemberFunction("Push", (PushPtr)(&SceneManager::Push));

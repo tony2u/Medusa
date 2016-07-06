@@ -18,15 +18,13 @@
 
 MEDUSA_BEGIN;
 
-BaseProgramRenderPass::BaseProgramRenderPass( const FileIdRef& fileId,IShader* vertexShader,IShader* pixelShader ,int index/*=0*/)
+BaseProgramRenderPass::BaseProgramRenderPass( const FileIdRef& fileId, const Share<IShader>& vertexShader, const Share<IShader>& pixelShader ,int index/*=0*/)
 	:IRenderPass(fileId,index),mVertexShader(vertexShader),mPixelShader(pixelShader)
 {
 	mManagedAttributes.SetAll(nullptr);
 
 	mProgramState=new ProgramRenderState(0);
 
-	SAFE_RETAIN(mVertexShader);
-	SAFE_RETAIN(mPixelShader);
 }
 
 BaseProgramRenderPass::~BaseProgramRenderPass()
@@ -40,11 +38,6 @@ BaseProgramRenderPass::~BaseProgramRenderPass()
 
 	SAFE_DELETE_DICTIONARY_VALUE(mUniforms);
 	SAFE_DELETE_DICTIONARY_VALUE(mAttributes);
-
-	SAFE_RELEASE(mProgramState);
-
-	SAFE_RELEASE(mVertexShader);
-	SAFE_RELEASE(mPixelShader);
 }
 
 void BaseProgramRenderPass::Apply()
@@ -128,9 +121,9 @@ bool BaseProgramRenderPass::Uninitialize()
 
 void BaseProgramRenderPass::UpdateShaderUniforms( RenderingStep step )
 {
-	FOR_EACH_COLLECTION(i,mUniforms)
+	for(auto& i:mUniforms)
 	{
-		ShaderUniform* uniform=i->Value;
+		ShaderUniform* uniform=i.Value;
 		ShaderUniformInitializer::Instance().Update(step,*uniform);
 	}
 }
@@ -216,12 +209,12 @@ void BaseProgramRenderPass::Link()
 
 ShaderUniform* BaseProgramRenderPass::FindUniform(const StringRef& name)const
 {
-	return mUniforms.GetOptional(name,nullptr);
+	return mUniforms.GetOptionalByOtherKey(name,name.HashCode(),nullptr);
 }
 
 ShaderAttribute* BaseProgramRenderPass::FindAttribute(const StringRef& name)const
 {
-	return mAttributes.GetOptional(name,nullptr);
+	return mAttributes.GetOptionalByOtherKey(name, name.HashCode(),nullptr);
 }
 
 
@@ -232,30 +225,30 @@ ShaderAttribute* BaseProgramRenderPass::FindAttributeByIndex(ShaderAttributeInde
 
 void BaseProgramRenderPass::Validate()
 {
-	FOR_EACH_COLLECTION(i,mUniforms)
+	for (auto& i : mUniforms)
 	{
-		const ShaderUniform* uniform=i->Value;
+		const ShaderUniform* uniform=i.Value;
 		uniform->Validate();
 	}
 
-	FOR_EACH_COLLECTION(i,mAttributes)
+	for (auto& i : mAttributes)
 	{
-		const ShaderAttribute* attribute=i->Value;
+		const ShaderAttribute* attribute=i.Value;
 		attribute->Validate();
 	}
 }
 
 void BaseProgramRenderPass::Invalidate()
 {
-	FOR_EACH_COLLECTION(i,mUniforms)
+	for (auto& i : mUniforms)
 	{
-		ShaderUniform* uniform=i->Value;
+		ShaderUniform* uniform=i.Value;
 		uniform->Invalidate();
 	}
 
-	FOR_EACH_COLLECTION(i,mAttributes)
+	for (auto& i : mAttributes)
 	{
-		ShaderAttribute* attribute=i->Value;
+		ShaderAttribute* attribute=i.Value;
 		attribute->Invalidate();
 	}
 }

@@ -14,7 +14,7 @@ public:
 	using TextureAtlas::TextureAtlas;
 	virtual TextureAtlasType AtlasType()const { return TextureAtlasType::Cocos; }
 protected:
-	virtual TextureAtlasPage* OnCreatePage(const FileIdRef& fileId, const IStream& stream) override;
+	virtual TextureAtlasPage* OnCreatePage(FileEntry& fileEntry, const FileIdRef& fileId, const IStream& stream) override;
 private:
 	static Point2U ToPoint(const StringRef& str);
 	static Size2U ToSize(const StringRef& str);

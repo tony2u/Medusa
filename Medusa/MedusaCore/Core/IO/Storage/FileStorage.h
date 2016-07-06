@@ -15,6 +15,7 @@
 #include "Core/Siren/Code/SirenCoderType.h"
 #include "Core/Coder/CoderChain.h"
 #include "Core/IO/Storage/FileAttribute.h"
+#include "Core/IO/Stream/IStream.h"
 
 MEDUSA_BEGIN;
 
@@ -25,7 +26,7 @@ class FileStorage
 public:
 	struct Schema;
 	FileStorage();
-	~FileStorage();
+	virtual ~FileStorage();
 	const static uint32 DefaultBlockSize = 1024;	//1K
 
 	//SIREN_HEADER_COPY_BEGIN
@@ -117,8 +118,8 @@ public:
 	FileEntry* CreateFileEntry(const StringRef& path, DirectoryEntry* parent = nullptr);
 	FileEntry* FindOrCreateFileEntry(const StringRef& path, DirectoryEntry* parent = nullptr);
 
-	const IStream* ReadFile(const StringRef& path, DirectoryEntry* parent = nullptr, FileDataType dataType = FileDataType::Binary)const;
-	IStream* WriteFile(const StringRef& path, DirectoryEntry* parent = nullptr, FileOpenMode openMode = FileOpenMode::DestoryWriteOrCreate, FileDataType dataType = FileDataType::Binary);
+	Share<const IStream> ReadFile(const StringRef& path, DirectoryEntry* parent = nullptr, FileDataType dataType = FileDataType::Binary)const;
+	Share<IStream> WriteFile(const StringRef& path, DirectoryEntry* parent = nullptr, FileOpenMode openMode = FileOpenMode::DestoryWriteOrCreate, FileDataType dataType = FileDataType::Binary);
 
 	MemoryData ReadAllData(const StringRef& path, DirectoryEntry* parent = nullptr, DataReadingMode mode = DataReadingMode::AlwaysCopy)const;
 	MemoryData ReadAllData(const FileEntry& fileEntry, DataReadingMode mode = DataReadingMode::AlwaysCopy)const;
@@ -138,13 +139,13 @@ public:
 	bool ExtractDirectory(const StringRef& path, DirectoryEntry* parent = nullptr, bool isRecursively = true, const StringRef& outDir = StringRef::Empty)const;
 	bool ExtractAll(const StringRef& outDir = StringRef::Empty)const;
 protected:
-	const IStream* ReadFileHelper(const FileEntry& file, FileDataType dataType = FileDataType::Binary)const;
-	IStream* WriteFileHelper(FileEntry& file, FileOpenMode openMode = FileOpenMode::ReadOnly, FileDataType dataType = FileDataType::Binary);
+	Share<const IStream> ReadFileHelper(const FileEntry& file, FileDataType dataType = FileDataType::Binary)const;
+	Share<IStream> WriteFileHelper(FileEntry& file, FileOpenMode openMode = FileOpenMode::ReadOnly, FileDataType dataType = FileDataType::Binary);
 
 	virtual bool OnCreateDirectory(const StringRef& dir) { return true; }
 	virtual bool OnRemoveDirectory(DirectoryEntry& dir) { return true; }
-	virtual const IStream* OnReadFile(const FileEntry& file, FileDataType dataType = FileDataType::Binary)const { return nullptr; }
-	virtual IStream* OnWriteFile(FileEntry& file, FileOpenMode openMode = FileOpenMode::ReadOnly, FileDataType dataType = FileDataType::Binary) { return nullptr; }
+	virtual Share<const IStream> OnReadFile(const FileEntry& file, FileDataType dataType = FileDataType::Binary)const { return nullptr; }
+	virtual Share<IStream> OnWriteFile(FileEntry& file, FileOpenMode openMode = FileOpenMode::ReadOnly, FileDataType dataType = FileDataType::Binary) { return nullptr; }
 	virtual bool OnRemoveFile(FileEntry& file) { return true; }
 
 	virtual void OnFileAdded(FileEntry& file) {}

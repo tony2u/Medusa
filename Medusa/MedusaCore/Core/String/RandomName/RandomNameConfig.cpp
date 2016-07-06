@@ -39,9 +39,8 @@ bool RandomNameConfig::LoadFromData(const FileIdRef& fileId, const MemoryData& d
 	Unload();
 	RETURN_FALSE_IF_FALSE(Siren::DeserializeBinaryTo(data, *this));
 
-	FOR_EACH_COLLECTION(i, mItems)
+	for(const auto& item: mItems)
 	{
-		const RandomNameConfigItem& item = *i;
 		List<const RandomNameConfigItem*>* itemList = mItemDict.GetOptional(item.Position(), nullptr);
 		if (itemList == nullptr)
 		{

@@ -10,18 +10,19 @@
 MEDUSA_BEGIN;
 
 //[PRE_DECLARE_BEGIN]
-typedef Delegate<void (IProgressBar* sender, float percent)> ProgressChangedDelegate;
-typedef Event<void (IProgressBar* sender,float percent)> ProgressChangedEvent;
-typedef Delegate<void (void* sender)> ProgressCompletedDelegate;
+typedef Delegate<void(IProgressBar* sender, float percent)> ProgressChangedDelegate;
+typedef Event<void(IProgressBar* sender, float percent)> ProgressChangedEvent;
+typedef Delegate<void(void* sender)> ProgressCompletedDelegate;
 
 //[PRE_DECLARE_END]
 
 
 class IProgressBar :public INode
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_RTTI(IProgressBar, INode);
 public:
-	IProgressBar(StringRef name=StringRef::Empty,ProgressType progressType=ProgressType::HorizontalLeftToRight,float percent=1.f);
+	IProgressBar(const StringRef& name = StringRef::Empty, const IEventArg& e = IEventArg::Empty);
+	IProgressBar(StringRef name = StringRef::Empty, ProgressType progressType = ProgressType::HorizontalLeftToRight, float percent = 1.f);
 	virtual ~IProgressBar(void);
 	virtual bool Initialize() override;
 
@@ -36,18 +37,18 @@ public:
 	ProgressType GetProgressType() const { return mProgressType; }
 	void SetProgressType(ProgressType val);
 
-	void MoveTo(float val, float duration =0.f,ProgressCompletedDelegate handler=nullptr);
-	void MoveBy(float val, float duration = 0.f,ProgressCompletedDelegate handler= nullptr);
+	void MoveTo(float val, float duration = 0.f, ProgressCompletedDelegate handler = nullptr);
+	void MoveBy(float val, float duration = 0.f, ProgressCompletedDelegate handler = nullptr);
 protected:
-	virtual void OnUpdateMesh(bool isProgressTypeChanged=false)=0;
-	
+	virtual void OnUpdateMesh(bool isProgressTypeChanged = false) = 0;
+
 public:
-	static void BlendVertex(const Array<Point3F,4>& initialData,Array<Point3F,4>& outData,ProgressType progressType,float percent,bool isFlipX);
+	static void BlendVertex(const Array<Point3F, 4>& initialData, Array<Point3F, 4>& outData, ProgressType progressType, float percent, bool isFlipX);
 	static void BlendTexcoord(const Array<Point2F, 4>& initialData, Array<Point2F, 4>& outData, ProgressType progressType, float percent, bool isFlipX);
 protected:
-	ProgressType mProgressType;
-	float mPercent;	//0.f~1.f
-	
+	ProgressType mProgressType=ProgressType::HorizontalLeftToRight;
+	float mPercent=1.f;	//0.f~1.f
+
 };
 
 MEDUSA_END;

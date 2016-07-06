@@ -11,13 +11,13 @@
 MEDUSA_BEGIN;
 
 
-TextureFileIdTimeline::TextureFileIdTimeline(TextureFileIdTimelineModel* model, bool isRepeatForever, float beforeDelay /*= 0.f*/, float repeatDuration /*= 0.f*/, float afterDelay /*= 0.f*/, const StringRef& name /*= StringRef::Empty*/)
+TextureFileIdTimeline::TextureFileIdTimeline(const Share<TextureFileIdTimelineModel>& model, bool isRepeatForever, float beforeDelay /*= 0.f*/, float repeatDuration /*= 0.f*/, float afterDelay /*= 0.f*/, const StringRef& name /*= StringRef::Empty*/)
 	: ITimeline(model, isRepeatForever, beforeDelay, repeatDuration, afterDelay, name)
 {
 
 }
 
-TextureFileIdTimeline::TextureFileIdTimeline(TextureFileIdTimelineModel* model, intp repeatCount, float beforeDelay /*= 0.f*/, float repeatDuration /*= 0.f*/, float afterDelay /*= 0.f*/, const StringRef& name /*= StringRef::Empty*/)
+TextureFileIdTimeline::TextureFileIdTimeline(const Share<TextureFileIdTimelineModel>& model, intp repeatCount, float beforeDelay /*= 0.f*/, float repeatDuration /*= 0.f*/, float afterDelay /*= 0.f*/, const StringRef& name /*= StringRef::Empty*/)
 	: ITimeline(model, repeatCount, beforeDelay, repeatDuration, afterDelay, name)
 {
 
@@ -30,7 +30,8 @@ TextureFileIdTimeline::~TextureFileIdTimeline()
 
 bool TextureFileIdTimeline::OnUpdate(float prevElapsed,float dt, float blend /*= 1.f*/)
 {
-	TextureFileIdTimelineModel* model = (TextureFileIdTimelineModel*)mModel;
+	auto model = mModel.CastPtr<TextureFileIdTimelineModel>();
+
 	FileIdRef fileId = model->GetFileId(Elapsed());
 
 	auto renderingObject = RenderingObjectFactory::Instance().CreateFromTexture(fileId);

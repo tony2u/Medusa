@@ -6,14 +6,13 @@
 #include "Application/Window/IWindow.h"
 #include "Application/View/win/WinGLView.h"
 #include "Node/Input/Touch.h"
-#include "Core/Profile/PerformanceCounter.h"
-
+#include "Core/Chrono/StopWatch.h"
 
 MEDUSA_BEGIN;
 
 class WinWindow:public IWindow
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_RTTI(WinWindow,IWindow);
 
 public:
 	WinWindow(MedusaWindowHandle parentWindow,StringRef name=StringRef::Empty);
@@ -35,11 +34,9 @@ public:
 
 	LRESULT WndProc(UINT message, WPARAM wParam, LPARAM lParam);
 protected:
-	virtual void OnResize(const Size2F& newSize)override;
+	virtual void OnResize(const Size2F& newSize);
 	Touch mPrevMouseTouch;
-	ProfileTimeType mPrev;
-	ProfileTimeType mNow;
-
+	StopWatch mWatch;
 };
 
 MEDUSA_END;

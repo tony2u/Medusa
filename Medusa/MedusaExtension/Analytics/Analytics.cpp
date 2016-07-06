@@ -16,9 +16,8 @@ MEDUSA_BEGIN;
 
 bool Analytics::Initialize()
 {
-	FOR_EACH_COLLECTION(i,mAnalyzers)
+	for(auto analyzer:mAnalyzers)
 	{
-		IAnalyzer* analyzer=*i;
 		RETURN_FALSE_IF_FALSE(analyzer->Initialize());
 	}
 
@@ -55,9 +54,8 @@ void Analytics::AddUmengAnalyzer(const StringRef& appKey,const StringRef& channe
 
 void Analytics::EnableLog(bool val)
 {
-	FOR_EACH_COLLECTION(i,mAnalyzers)
+	for (auto analyzer : mAnalyzers)
 	{
-		IAnalyzer* analyzer=*i;
 		analyzer->EnableLog(val);
 	}
 }
@@ -65,9 +63,8 @@ void Analytics::EnableLog(bool val)
 
 void Analytics::EnableCrashReport(bool val)
 {
-	FOR_EACH_COLLECTION(i,mAnalyzers)
+	for (auto analyzer : mAnalyzers)
 	{
-		IAnalyzer* analyzer=*i;
 		analyzer->EnableCrashReport(val);
 	}
 }
@@ -76,18 +73,16 @@ void Analytics::EnableCrashReport(bool val)
 
 void Analytics::InitAccount(const StringRef& gameServerName,const StringRef& accountId,const StringRef& accountName,int level/*=1*/,int age/*=18*/,AnalyticsAccountType accountType/*=AnalyticsAccountType::Registered*/,AnalyticsAccountGender gender/*=AnalyticsAccountGender::Unknown*/)
 {
-	FOR_EACH_COLLECTION(i,mAnalyzers)
+	for (auto analyzer : mAnalyzers)
 	{
-		IAnalyzer* analyzer=*i;
 		analyzer->InitAccount(gameServerName,accountId,accountName,level,age,accountType,gender);
 	}
 }
 
 void Analytics::UpdateAccountLevel(int level)
 {
-	FOR_EACH_COLLECTION(i,mAnalyzers)
+	for (auto analyzer : mAnalyzers)
 	{
-		IAnalyzer* analyzer=*i;
 		analyzer->UpdateAccountLevel(level);
 	}
 }
@@ -98,27 +93,24 @@ void Analytics::UpdateAccountLevel(int level)
 
 void Analytics::RequestPay(const StringRef& itemId,double currencyAmount,AnalyticsCurrencyType currencyType,double virtualCurrencyAmount,AnalyticsPaymentType paymentType,const StringRef& orderId/*=StringRef::Empty*/)
 {
-	FOR_EACH_COLLECTION(i,mAnalyzers)
+	for (auto analyzer : mAnalyzers)
 	{
-		IAnalyzer* analyzer=*i;
 		analyzer->RequestPay(itemId,currencyAmount,currencyType,virtualCurrencyAmount,paymentType,orderId);
 	}
 }
 
 void Analytics::SucceedPay(const StringRef& orderId)
 {
-	FOR_EACH_COLLECTION(i,mAnalyzers)
+	for (auto analyzer : mAnalyzers)
 	{
-		IAnalyzer* analyzer=*i;
 		analyzer->SucceedPay(orderId);
 	}
 }
 
 void Analytics::RequestAndSucceedPay(const StringRef& itemId,int itemCount,double currencyAmount,AnalyticsCurrencyType currencyType,double virtualCurrencyAmount,AnalyticsPaymentType paymentType,const StringRef& orderId/*=StringRef::Empty*/)
 {
-	FOR_EACH_COLLECTION(i,mAnalyzers)
+	for (auto analyzer : mAnalyzers)
 	{
-		IAnalyzer* analyzer=*i;
 		analyzer->RequestAndSucceedPay(itemId,itemCount,currencyAmount,currencyType,virtualCurrencyAmount,paymentType,orderId);
 	}
 }
@@ -130,18 +122,16 @@ void Analytics::RequestAndSucceedPay(const StringRef& itemId,int itemCount,doubl
 #pragma region Reward
 void Analytics::RewardCurrency(double virtualCurrencyAmount,const StringRef& reason)
 {
-	FOR_EACH_COLLECTION(i,mAnalyzers)
+	for (auto analyzer : mAnalyzers)
 	{
-		IAnalyzer* analyzer=*i;
 		analyzer->RewardCurrency(virtualCurrencyAmount,reason);
 	}
 }
 
 void Analytics::RewardItem(const StringRef& itemName,int itemCount,double currencyAmount,AnalyticsCurrencyType currencyType,double price,const StringRef& reason)
 {
-	FOR_EACH_COLLECTION(i,mAnalyzers)
+	for (auto analyzer : mAnalyzers)
 	{
-		IAnalyzer* analyzer=*i;
 		analyzer->RewardItem(itemName,itemCount,currencyAmount,currencyType,price,reason);
 	}
 }
@@ -151,18 +141,16 @@ void Analytics::RewardItem(const StringRef& itemName,int itemCount,double curren
 #pragma region Purchase
 void Analytics::Purchase(const StringRef& itemName,int count,double virtualCurrencyAmount)
 {
-	FOR_EACH_COLLECTION(i,mAnalyzers)
+	for (auto analyzer : mAnalyzers)
 	{
-		IAnalyzer* analyzer=*i;
 		analyzer->Purchase(itemName,count,virtualCurrencyAmount);
 	}
 }
 
 void Analytics::Use(const StringRef& itemName,int count/*=1*/,double price/*=0*/)
 {
-	FOR_EACH_COLLECTION(i,mAnalyzers)
+	for (auto analyzer : mAnalyzers)
 	{
-		IAnalyzer* analyzer=*i;
 		analyzer->Use(itemName,count,price);
 	}
 }
@@ -175,27 +163,24 @@ void Analytics::Use(const StringRef& itemName,int count/*=1*/,double price/*=0*/
 
 void Analytics::BeginMission(const StringRef& missionId)
 {
-	FOR_EACH_COLLECTION(i,mAnalyzers)
+	for (auto analyzer : mAnalyzers)
 	{
-		IAnalyzer* analyzer=*i;
 		analyzer->BeginMission(missionId);
 	}
 }
 
 void Analytics::CompeleteMission(const StringRef& missionId)
 {
-	FOR_EACH_COLLECTION(i,mAnalyzers)
+	for (auto analyzer : mAnalyzers)
 	{
-		IAnalyzer* analyzer=*i;
 		analyzer->CompeleteMission(missionId);
 	}
 }
 
 void Analytics::FailedMission(const StringRef& missionId,const StringRef& reason/*=StringRef::Empty*/)
 {
-	FOR_EACH_COLLECTION(i,mAnalyzers)
+	for (auto analyzer : mAnalyzers)
 	{
-		IAnalyzer* analyzer=*i;
 		analyzer->FailedMission(missionId,reason);
 	}
 }
@@ -206,162 +191,144 @@ void Analytics::FailedMission(const StringRef& missionId,const StringRef& reason
 
 void Analytics::LogEvent(const StringRef& eventId,const Dictionary<HeapString,HeapString>& attributes)
 {
-	FOR_EACH_COLLECTION(i,mAnalyzers)
+	for (auto analyzer : mAnalyzers)
 	{
-		IAnalyzer* analyzer=*i;
 		analyzer->LogEvent(eventId,attributes);
 	}
 }
 
 void Analytics::LogEvent(const StringRef& eventId,const Dictionary<HeapString,int>& attributes)
 {
-	FOR_EACH_COLLECTION(i,mAnalyzers)
+	for (auto analyzer : mAnalyzers)
 	{
-		IAnalyzer* analyzer=*i;
 		analyzer->LogEvent(eventId,attributes);
 	}
 }
 
 void Analytics::LogEvent(const StringRef& eventId)
 {
-	FOR_EACH_COLLECTION(i,mAnalyzers)
+	for (auto analyzer : mAnalyzers)
 	{
-		IAnalyzer* analyzer=*i;
 		analyzer->LogEvent(eventId);
 	}
 }
 
 void Analytics::LogEvent(const StringRef& eventId,const StringRef& label)
 {
-	FOR_EACH_COLLECTION(i,mAnalyzers)
+	for (auto analyzer : mAnalyzers)
 	{
-		IAnalyzer* analyzer=*i;
 		analyzer->LogEvent(eventId,label);
 	}
 }
 
 void Analytics::LogEvent(const StringRef& eventId,int count)
 {
-	FOR_EACH_COLLECTION(i,mAnalyzers)
+	for (auto analyzer : mAnalyzers)
 	{
-		IAnalyzer* analyzer=*i;
 		analyzer->LogEvent(eventId,count);
 	}
 }
 
 void Analytics::LogEvent(const StringRef& eventId,const StringRef& label,int count)
 {
-	FOR_EACH_COLLECTION(i,mAnalyzers)
+	for (auto analyzer : mAnalyzers)
 	{
-		IAnalyzer* analyzer=*i;
 		analyzer->LogEvent(eventId,label,count);
 	}
 }
 
 void Analytics::BeginEvent(const StringRef& eventId)
 {
-	FOR_EACH_COLLECTION(i,mAnalyzers)
+	for (auto analyzer : mAnalyzers)
 	{
-		IAnalyzer* analyzer=*i;
 		analyzer->BeginEvent(eventId);
 	}
 }
 
 void Analytics::BeginEvent(const StringRef& eventId,const StringRef& label)
 {
-	FOR_EACH_COLLECTION(i,mAnalyzers)
+	for (auto analyzer : mAnalyzers)
 	{
-		IAnalyzer* analyzer=*i;
 		analyzer->BeginEvent(eventId,label);
 	}
 }
 
 void Analytics::EndEvent(const StringRef& eventId)
 {
-	FOR_EACH_COLLECTION(i,mAnalyzers)
+	for (auto analyzer : mAnalyzers)
 	{
-		IAnalyzer* analyzer=*i;
 		analyzer->EndEvent(eventId);
 	}
 }
 
 void Analytics::EndEvent(const StringRef& eventId,const StringRef& label)
 {
-	FOR_EACH_COLLECTION(i,mAnalyzers)
+	for (auto analyzer : mAnalyzers)
 	{
-		IAnalyzer* analyzer=*i;
 		analyzer->EndEvent(eventId,label);
 	}
 }
 
 void Analytics::BeginEventWithName(const StringRef& eventId,const StringRef& primaryKey,const Dictionary<HeapString,HeapString>& attributes)
 {
-	FOR_EACH_COLLECTION(i,mAnalyzers)
+	for (auto analyzer : mAnalyzers)
 	{
-		IAnalyzer* analyzer=*i;
 		analyzer->BeginEventWithName(eventId,primaryKey,attributes);
 	}
 }
 
 void Analytics::EndEventWithName(const StringRef& eventId,const StringRef& primaryKey)
 {
-	FOR_EACH_COLLECTION(i,mAnalyzers)
+	for (auto analyzer : mAnalyzers)
 	{
-		IAnalyzer* analyzer=*i;
 		analyzer->EndEventWithName(eventId,primaryKey);
 	}
 }
 
 void Analytics::LogEventTime(const StringRef& eventId,int microseconds)
 {
-	FOR_EACH_COLLECTION(i,mAnalyzers)
+	for (auto analyzer : mAnalyzers)
 	{
-		IAnalyzer* analyzer=*i;
 		analyzer->LogEventTime(eventId,microseconds);
 	}
 }
 
 void Analytics::LogEventTime(const StringRef& eventId,const StringRef& label,int microseconds)
 {
-	FOR_EACH_COLLECTION(i,mAnalyzers)
+	for (auto analyzer : mAnalyzers)
 	{
-		IAnalyzer* analyzer=*i;
 		analyzer->LogEventTime(eventId,label,microseconds);
 	}
 }
 
 void Analytics::LogEventTime(const StringRef& eventId,const Dictionary<HeapString,HeapString>& attributes,int microseconds)
 {
-	FOR_EACH_COLLECTION(i,mAnalyzers)
+	for (auto analyzer : mAnalyzers)
 	{
-		IAnalyzer* analyzer=*i;
 		analyzer->LogEventTime(eventId,attributes,microseconds);
 	}
 }
 
 void Analytics::LogPageStay(const StringRef& pageName,int seconds)
 {
-	FOR_EACH_COLLECTION(i,mAnalyzers)
+	for (auto analyzer : mAnalyzers)
 	{
-		IAnalyzer* analyzer=*i;
 		analyzer->LogPageStay(pageName,seconds);
 	}
 }
 
 void Analytics::BeginPageStay(const StringRef& pageName)
 {
-	FOR_EACH_COLLECTION(i,mAnalyzers)
+	for (auto analyzer : mAnalyzers)
 	{
-		IAnalyzer* analyzer=*i;
 		analyzer->BeginPageStay(pageName);
 	}
 }
 
 void Analytics::EndPageStay(const StringRef& pageName)
 {
-	FOR_EACH_COLLECTION(i,mAnalyzers)
+	for (auto analyzer : mAnalyzers)
 	{
-		IAnalyzer* analyzer=*i;
 		analyzer->EndPageStay(pageName);
 	}
 }
@@ -373,9 +340,8 @@ void Analytics::EndPageStay(const StringRef& pageName)
 
 void Analytics::SetLocation(double latitude,double longitude)
 {
-	FOR_EACH_COLLECTION(i,mAnalyzers)
+	for (auto analyzer : mAnalyzers)
 	{
-		IAnalyzer* analyzer=*i;
 		analyzer->SetLocation(latitude,longitude);
 	}
 }
@@ -386,18 +352,16 @@ void Analytics::SetLocation(double latitude,double longitude)
 
 void Analytics::SetOnlineConfigDelegate(AnalyticsOnlineConfigDelegate handler)
 {
-	FOR_EACH_COLLECTION(i,mAnalyzers)
+	for (auto analyzer : mAnalyzers)
 	{
-		IAnalyzer* analyzer=*i;
 		analyzer->SetOnlineConfigDelegate(handler);
 	}
 }
 
 void Analytics::UpdateConfig()
 {
-	FOR_EACH_COLLECTION(i,mAnalyzers)
+	for (auto analyzer : mAnalyzers)
 	{
-		IAnalyzer* analyzer=*i;
 		analyzer->UpdateConfig();
 	}
 }

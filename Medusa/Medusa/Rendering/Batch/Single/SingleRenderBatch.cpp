@@ -29,7 +29,7 @@ bool SingleRenderBatch::Update()
 	bool isChangd = false;
 
 	IRenderable* node = mNodes.First();
-	IMesh* mesh = node->Mesh();
+	auto mesh = node->Mesh();
 
 	IRenderBatch* originalBatch = node->Batch();
 	if (originalBatch == this)

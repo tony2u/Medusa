@@ -12,7 +12,7 @@ MEDUSA_BEGIN;
 class BlockCodeReadStream :public BlockReadStream
 {
 public:
-	BlockCodeReadStream(const IStream& stream, uint32 blockSize, const CoderChain& coderChain,const FileEntry& fileEntry);
+	BlockCodeReadStream(const Share<const IStream>& stream, uint32 blockSize, const CoderChain& coderChain,const FileEntry& fileEntry);
 	virtual ~BlockCodeReadStream(void);
 	virtual StreamType Type()const { return StreamType::CodeRead; }
 	BlockCodeReadStream(const BlockCodeReadStream&) = delete;

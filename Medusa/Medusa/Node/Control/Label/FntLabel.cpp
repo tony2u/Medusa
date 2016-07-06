@@ -19,19 +19,25 @@
 #include "Resource/Image/IImage.h"
 #include "Resource/Font/IFont.h"
 #include "Graphics/State/ShaderUniformRenderState.h"
-
+#include "Node/NodeFactory.h"
 MEDUSA_BEGIN;
 
 
-FntLabel::FntLabel(StringRef name, IFont* font, Alignment alignment/*=Alignment::LeftBottom*/, Size2F restrictSize/*=Size2F::Zero*/, bool isMultipleLine/*=true*/, bool isStatic/*=false*/)
+FntLabel::FntLabel(StringRef name, const Share<IFont>& font, Alignment alignment/*=Alignment::LeftBottom*/, Size2F restrictSize/*=Size2F::Zero*/, bool isMultipleLine/*=true*/, bool isStatic/*=false*/)
 	:ILabel(name, font, alignment, restrictSize, isMultipleLine, isStatic)
 {
 	
 }
 
-FntLabel::~FntLabel(void)
+FntLabel::FntLabel(const StringRef& name /*= StringRef::Empty*/, const IEventArg& e /*= IEventArg::Empty*/)
+	: ILabel(name, e)
 {
 
+}
+
+FntLabel::~FntLabel(void)
+{
+	mInternalMeshes.Clear();
 }
 
 void FntLabel::UpdateMesh()
@@ -79,7 +85,7 @@ void FntLabel::UpdateMesh()
 		List<INode*> unusedSprites;
 		FOR_EACH_SIZE(i, meshCount)
 		{
-			BaseFontMesh* mesh = mInternalMeshes[i];
+			auto mesh = mInternalMeshes[i];
 			if (!mesh->HasChars())
 			{
 				unusedIndices.Add(i);
@@ -92,11 +98,7 @@ void FntLabel::UpdateMesh()
 			mInternalMeshes.RemoveIndexes(unusedIndices);
 			mInternalPages.RemoveIndexes(unusedIndices);
 
-
-			FOR_EACH_COLLECTION(i, unusedSprites)
-			{
-				DeleteChild(*i);
-			}
+			FOR_EACH_APPLY(unusedSprites, DeleteChild);
 		}
 
 	}
@@ -124,13 +126,13 @@ void FntLabel::OnUpdateFont()
 
 }
 
-BaseFontMesh* FntLabel::CreateFontMesh(TextureAtlasPage* page, bool isStatic /*= false*/)
+Share<BaseFontMesh> FntLabel::CreateFontMesh(TextureAtlasPage* page, bool isStatic /*= false*/)
 {
-	FntTextMesh* mesh = new FntTextMesh(isStatic);
+	Share<FntTextMesh> mesh = new FntTextMesh(isStatic);
 	Sprite* sprite = new Sprite();
 	sprite->SetMesh(mesh);
 
-	IMaterial* material = CreateLabelMaterial(page->LoadTexture());
+	auto material = CreateLabelMaterial(page->LoadTexture());
 	sprite->SetMaterial(material);
 	sprite->EnableManaged();
 	AddChild(sprite);
@@ -140,15 +142,15 @@ BaseFontMesh* FntLabel::CreateFontMesh(TextureAtlasPage* page, bool isStatic /*=
 
 Point2F FntLabel::GetCharPosition(uint charIndex) const
 {
-	BaseFontMesh* mesh = nullptr;
+	Share<BaseFontMesh> mesh;
 	if (mFont->HasSinglePage() && mFont->IsFixed())
 	{
-		mesh = (BaseFontMesh*)mRenderingObject.Mesh();
+		mesh = mRenderingObject.Mesh().CastPtr<BaseFontMesh>();
 	}
 
 	if (mManagedNodes.Count()==1)
 	{
-		mesh = (BaseFontMesh*)mManagedNodes[0]->Mesh();
+		mesh = mManagedNodes[0]->Mesh().CastPtr<BaseFontMesh>();
 	}
 
 	if (mesh!=nullptr)
@@ -162,15 +164,15 @@ Point2F FntLabel::GetCharPosition(uint charIndex) const
 
 Point2F FntLabel::GetCursorPosition(uint charIndex) const
 {
-	BaseFontMesh* mesh = nullptr;
+	Share<BaseFontMesh> mesh = nullptr;
 	if (mFont->HasSinglePage() && mFont->IsFixed())
 	{
-		mesh = (BaseFontMesh*)mRenderingObject.Mesh();
+		mesh = mRenderingObject.Mesh().CastPtr<BaseFontMesh>();
 	}
 
 	if (mManagedNodes.Count() == 1)
 	{
-		mesh = (BaseFontMesh*)mManagedNodes[0]->Mesh();
+		mesh = mManagedNodes[0]->Mesh().CastPtr<BaseFontMesh>();
 	}
 
 	if (mesh != nullptr)
@@ -184,15 +186,15 @@ Point2F FntLabel::GetCursorPosition(uint charIndex) const
 
 uint FntLabel::FindCharIndex(const Point2F& touchPosition, Point2F& outCharPosition) const
 {
-	BaseFontMesh* mesh = nullptr;
+	Share<BaseFontMesh> mesh = nullptr;
 	if (mFont->HasSinglePage() && mFont->IsFixed())
 	{
-		mesh = (BaseFontMesh*)mRenderingObject.Mesh();
+		mesh = mRenderingObject.Mesh().CastPtr<BaseFontMesh>();
 	}
 
 	if (mManagedNodes.Count() == 1)
 	{
-		mesh = (BaseFontMesh*)mManagedNodes[0]->Mesh();
+		mesh = mManagedNodes[0]->Mesh().CastPtr<BaseFontMesh>();
 	}
 
 	if (mesh != nullptr)
@@ -206,14 +208,14 @@ uint FntLabel::FindCharIndex(const Point2F& touchPosition, Point2F& outCharPosit
 
 void FntLabel::CreateMesh()
 {
-	auto* atlas = mFont->Atlas();
+	auto atlas = mFont->Atlas();
 
 	if (mFont->HasSinglePage() && mFont->IsFixed())
 	{
 		auto* page = atlas->GetPage(0);
-		FntTextMesh* mesh = new FntTextMesh(mIsStatic);
+		Share<FntTextMesh> mesh = new FntTextMesh(mIsStatic);
 		SetMesh(mesh);
-		IMaterial* material = CreateLabelMaterial(page->LoadTexture());
+		auto material = CreateLabelMaterial(page->LoadTexture());
 		
 
 		SetMaterial(material);
@@ -226,12 +228,12 @@ void FntLabel::CreateMesh()
 		FOR_EACH_SIZE(i, count)
 		{
 			auto* page = atlas->GetPage(i);
-			IMaterial* material = CreateLabelMaterial(page->LoadTexture());
+			auto material = CreateLabelMaterial(page->LoadTexture());
 
 			Sprite* sprite = new Sprite();
 			sprite->SetMesh(new FntTextMesh(mIsStatic));
 			sprite->SetMaterial(material);
-			mInternalMeshes.Add((BaseFontMesh*)sprite->Mesh());
+			mInternalMeshes.Add(sprite->Mesh().CastPtr<BaseFontMesh>());
 			sprite->EnableManaged();
 			mInternalPages.Add(page);
 
@@ -241,7 +243,7 @@ void FntLabel::CreateMesh()
 
 }
 
-IMaterial* FntLabel::CreateLabelMaterial(ITexture* texture)
+Share<IMaterial> FntLabel::CreateLabelMaterial(const Share<ITexture>& texture)
 {
 	//TODO:
 	if (mFont->IsBitmap())
@@ -250,7 +252,7 @@ IMaterial* FntLabel::CreateLabelMaterial(ITexture* texture)
 	}
 
 	//ttf font
-	IEffect* effect = nullptr;
+	Share<IEffect> effect = nullptr;
 	if (texture->Image()->GetPixelType() == PixelType::A8)
 	{
 		effect = EffectFactory::Instance().CreateSinglePassDefault(RenderPassNames::Label_TTF_Text);
@@ -282,8 +284,7 @@ IMaterial* FntLabel::CreateLabelMaterial(ITexture* texture)
 
 }
 
-MEDUSA_IMPLEMENT_RTTI(FntLabel, ILabel);
-
+MEDUSA_IMPLEMENT_NODE(FntLabel);
 
 
 MEDUSA_END;

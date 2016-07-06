@@ -50,9 +50,8 @@ void IState::Exit(void* sender)
 
 StateAutoConnector* IState::Update(void* sender, float dt)
 {
-	FOR_EACH_COLLECTION(i, mBeforeConnectors)
+	for (auto connector : mBeforeConnectors)
 	{
-		StateAutoConnector* connector = *i;
 		if (connector->Evaluate(sender))
 		{
 			return connector;
@@ -61,9 +60,8 @@ StateAutoConnector* IState::Update(void* sender, float dt)
 
 	RETURN_NULL_IF_TRUE(OnUpdate(sender, dt));
 
-	FOR_EACH_COLLECTION(i, mAfterConnectors)
+	for (auto connector : mAfterConnectors)
 	{
-		StateAutoConnector* connector = *i;
 		if (connector->Evaluate(sender))
 		{
 			return connector;
@@ -77,9 +75,8 @@ StateAutoConnector* IState::Update(void* sender, float dt)
 StateEventConnector* IState::ReceiveEvent(void* sender, IEventArg& e)
 {
 	OnBeforeEvent(sender, e);
-	FOR_EACH_COLLECTION(i, mEventConnectors)
+	for (auto connector : mEventConnectors)
 	{
-		StateEventConnector* connector = *i;
 		if (connector->IsFit(e) && connector->Evaluate(sender))
 		{
 			return connector;
@@ -90,5 +87,4 @@ StateEventConnector* IState::ReceiveEvent(void* sender, IEventArg& e)
 	return nullptr;
 }
 
-MEDUSA_IMPLEMENT_RTTI_ROOT(IState);
 MEDUSA_END;

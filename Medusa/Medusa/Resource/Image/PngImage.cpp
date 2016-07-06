@@ -2,6 +2,7 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 #include "MedusaPreCompiled.h"
+#ifdef MEDUSA_PNG
 #include "PngImage.h"
 #include "Core/IO/File.h"
 #include "Core/IO/FileSystem.h"
@@ -73,7 +74,7 @@ PngImage::~PngImage(void)
 {
 }
 
-PngImage* PngImage::CreateFromFile( const FileIdRef& fileId )
+Share<PngImage> PngImage::CreateFromFile( const FileIdRef& fileId )
 {
 	const auto* fileEntry = FileSystem::Instance().Find(fileId);
 	RETURN_NULL_IF_NULL(fileEntry);
@@ -85,7 +86,7 @@ PngImage* PngImage::CreateFromFile( const FileIdRef& fileId )
 	return CreateFromMemory(fileId, *fileEntry,data);
 }
 
-PngImage* PngImage::CreateFromMemory(const FileIdRef& fileId,const FileEntry& fileEntry, MemoryData data )
+Share<PngImage> PngImage::CreateFromMemory(const FileIdRef& fileId,const FileEntry& fileEntry, MemoryData data )
 {
 	MEDUSA_ASSERT(data.Size()>8,"");
 
@@ -191,7 +192,7 @@ PngImage* PngImage::CreateFromMemory(const FileIdRef& fileId,const FileEntry& fi
 		break;
 	}
 
-	PngImage* result=new PngImage(fileId,Size2U(width,height), pixelType,false);
+	Share<PngImage> result=new PngImage(fileId,Size2U(width,height), pixelType,false);
 	MEDUSA_ASSERT_NOT_NULL(result,"");
 	byte* imageData=result->MutableData().MutableData();
 	png_bytepp rowPointers=new png_bytep[height];
@@ -296,3 +297,4 @@ bool PngImage::SaveToFile(StringRef filePath ) const
 #endif
 
 MEDUSA_END;
+#endif

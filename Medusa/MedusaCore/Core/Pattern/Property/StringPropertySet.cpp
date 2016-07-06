@@ -48,4 +48,34 @@ bool StringPropertySet::Parse(const StringRef& str)
 	return true;
 }
 
+
+bool StringPropertySet::GetList(const StringRef& key, List<HeapString>& outItems) const
+{
+	StringRef val = Get(key);
+	RETURN_FALSE_IF_EMPTY(val);
+	//use ; for spliter
+	return StringParser::Split(val, ";", outItems);
+}
+
+StringRef StringPropertySet::GetDeclareType(const StringRef& val)
+{
+	size_t count = val.Length();
+	FOR_EACH_SIZE(i, count)
+	{
+		char c = val[i];
+		if (StdString::IsAlpha(c))
+		{
+			//string
+			return "char*";
+		}
+
+		if (c=='.')
+		{
+			return "float";
+		}
+	}
+
+	return "int";
+}
+
 MEDUSA_END;

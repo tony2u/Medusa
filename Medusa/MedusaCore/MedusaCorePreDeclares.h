@@ -149,6 +149,20 @@ struct InnerTypes;
 
 class SirenLuaExtension;
 
+class AutoStopWatch;
+
+class DateTime;
+
+class ProfileManager;
+
+class ProfileNode;
+
+class ProfileSample;
+
+class StopWatch;
+
+class TimeSpan;
+
 class CoderChain;
 
 class CoderFactory;
@@ -230,64 +244,44 @@ class Linq;
 template<typename TKey,typename TValue,typename TSorter >
 class SortedDictionary;
 
-template<typename T>
 struct STLMapLessPtr;
 
-template<typename T>
 struct STLMapLessPtrForPointer;
 
-template<typename T>
 struct DefaultCompare;
 
-template<typename T>
 struct CustomCompare;
 
-template<typename T>
 struct DefaultCompareForPointer;
 
-template<typename T>
 struct CustomCompareForPointer;
 
-template<typename T>
 struct InverseCompare;
 
-template<typename T>
 struct InverseCustomCompare;
 
-template<typename T>
 struct NoCompare;
 
-template<typename T>
 struct EqualCompare;
 
-template<typename T>
 struct ObjectEqualCompare;
 
-template<typename T>
 struct PointerEqualCompare;
 
-template<typename T>
 struct DefaultHashCoder;
 
-template<typename T>
 struct SafeEnumHashCoder;
 
-template<typename T>
 struct NoHashCoder;
 
-template<typename T>
 struct DefaultPointerHashCoder;
 
-template<typename T>
 struct DefaultDeleter;
 
-template<typename T>
 struct DefaultPointerDeleter;
 
-template<typename T>
 struct DefaultPointerReleaser;
 
-template<typename T>
 struct NoDeleter;
 
 template<typename TObject>
@@ -306,28 +300,21 @@ class IWaitableCommand;
 
 class SleepCommand;
 
-class IEventArg;
+class AsyncCommandExecutor;
 
-class TriggerEventArg;
+class SyncCommandExecutor;
 
-template<typename T>
-class UserDataEventArg;
+template<typename TCommand>
+class TAsyncCommandExecutor;
 
-class BaseFrameCommandProcessor;
+template<typename TCommand>
+class TFrameCommandExecutor;
 
-template<typename TLock>
-class BaseMainCommandProcessor;
+template<typename TCommand, typename TLock>
+class TQueueCommandExecutor;
 
-class BaseThreadCommandProcessor;
-
-class MainCommandProcessor;
-
-template<typename TLock>
-class QueueCommandProcessor;
-
-class SimpleMainCommandProcessor;
-
-class ThreadCommandProcessor;
+template<typename TCommand,typename TLock>
+class TSyncCommandExecutor;
 
 class ITrigger;
 
@@ -336,6 +323,69 @@ class ZipReader;
 struct ZipFileInfo;
 
 class ConfigManager;
+
+class ISqlStatement;
+
+class SqlClient;
+
+class SqlConectionInfo;
+
+class SqlConnection;
+
+class SqlException;
+
+class SqlPreparedStatement;
+
+class SqlTextStatement;
+
+class SqlAsyncCommandExecutor;
+
+class SqlCommand;
+
+class SqlPrepareCommand;
+
+template <typename... TArgs>
+class SqlPreparedExecuteCommand;
+
+template <typename TTuple, typename... TArgs>
+class SqlPreparedQueryCommand;
+
+template <typename TTuple>
+class SqlPreparedQueryCommand<TTuple>;
+
+class SqlTextExecuteCommand;
+
+template<typename... TOutputArgs>
+class SqlTextQueryCommand;
+
+class EventBus;
+
+class IEventChannel;
+
+class IEventArg;
+
+class TriggerEventArg;
+
+template<typename T>
+class UserDataEventArg;
+
+class EventLoop;
+
+class EventLoopThread;
+
+class EventLoopThreadPool;
+
+class IPoller;
+
+class PollerFactory;
+
+class SelectPoller;
+
+class IService;
+
+class IThreadService;
+
+class ServiceFactory;
 
 class CRC32C;
 
@@ -359,7 +409,7 @@ class FileInfo;
 
 class FileSystem;
 
-class IFileLoadable;
+class IFileLoadSavable;
 
 class MemoryFileAutoRegister;
 
@@ -433,11 +483,20 @@ class StringStream;
 
 class CallbackLogger;
 
+class DailyFileLogger;
+
 class FileLogger;
 
 class ILogger;
 
-class Log;
+template<typename T>
+class TLogMessage;
+
+template<typename T>
+struct LogMessageAutoRecycle;
+
+template<typename T>
+class TLogMessagePool;
 
 class AndroidTraceLogger;
 
@@ -504,9 +563,14 @@ class ByteBuffer;
 template<typename T>
 class TMemoryData;
 
+class NetworkBuffer;
+
 struct DelegateModule;
 
 class IModule;
+
+template<typename T>
+struct SingletonModule;
 
 class GlobalDownloadingProgressEventArg;
 
@@ -520,45 +584,60 @@ class IHTTPDownloader;
 
 class SingleDownloadingProgressEventArg;
 
-template<typename TRequest,typename TResponse>
-class BaseMessage;
-
-template<typename TRequest,typename TResponse>
+template<typename TRequest>
 class BaseRequestMessage;
+
+template<typename TRequest, typename TResponse>
+class BaseRequestResponseMessage;
+
+class HeartbeatMessage;
 
 class IMessage;
 
-class MessageDispatcher;
-
-class MessageEventArg;
-
 class MessageFactory;
 
-class BaseSocketService;
+class MessageSocketConnection;
 
-class BaseThreadService;
+class MessageStatics;
 
-class IService;
+template<typename TRequest>
+class SirenRequestMessage;
 
-class MockService;
+template<typename TRequest, typename TResponse>
+class SirenRequestResponseMessage;
 
-class ServerConfig;
+class MockMessageService;
 
-class ServerConfigItem;
+template<typename TConnection>
+class TTcpClientMessageService;
 
-class ServiceFactory;
+template<typename TConnection>
+class TTcpServerMessageService;
 
-class ServiceInfo;
+class UIMessageService;
 
-class TcpClientService;
+class IPAddress;
 
-class AddressInfo;
-
-class HostInfo;
-
-class ProtocolInfo;
+class IPProtocol;
 
 class Socket;
+
+class SocketPeer;
+
+template<typename T>
+class TSocketConnection;
+
+template<typename TConnection>
+class TTcpClient;
+
+template<typename TConnection>
+class TTcpServer;
+
+class AcceptSocketChannel;
+
+class ConnectSocketChannel;
+
+class SocketChannel;
 
 template<typename T, bool TIsAtomic >
 struct AutoIncreaseId;
@@ -580,7 +659,6 @@ struct ICopyFrom;
 
 class IInitializable;
 
-template<typename T>
 struct INonCopyable;
 
 class ISerializable;
@@ -598,14 +676,26 @@ struct IUpdatable;
 template<typename T>
 class IVisitor;
 
+template<typename T, typename TDeleter >
+class LazyStrongPtr;
+
 template<typename T>
 class LazyValue;
+
+template<typename T>
+class NotNullPtr;
 
 template<typename T>
 class Nullable;
 
 template<typename T, uint TIndex>
 class OverrideValue;
+
+template<typename TFunc>
+class ScopeGuard;
+
+template<typename T>
+class Share;
 
 template<typename T>
 class Singleton;
@@ -617,6 +707,9 @@ class SwapValue;
 
 template<typename T>
 class Sweeper;
+
+template<typename T>
+class UniqueSweeper;
 
 template<typename T>
 class VaryValue;
@@ -686,31 +779,19 @@ class PropertyUnit;
 
 class StringPropertySet;
 
-template<typename T, typename TDeleter >
-class LazyStrongPtr;
-
-template<typename T>
-class NotNullPtr;
-
 class RTTIClass;
 
 class RTTIObject;
 
+template<typename T,typename TBase>
+class TRTTIClass;
+
+template<typename T>
+class TRTTIClassRoot;
+
 class DefaultRunnable;
 
 struct IRunnable;
-
-class AutoStopWatch;
-
-class PerformanceCounter;
-
-class ProfileManager;
-
-class ProfileNode;
-
-class ProfileSample;
-
-class StopWatch;
 
 class ScriptEngine;
 
@@ -755,6 +836,16 @@ class SirenLuaReader;
 
 class SirenLuaWriter;
 
+class SirenSqlFieldChecker;
+
+class SirenSqlPreparedReader;
+
+class SirenSqlPreparedWriter;
+
+class SirenSqlTextReader;
+
+class SirenSqlTextWriter;
+
 class SirenAssembly;
 
 template<typename TField>
@@ -785,10 +876,6 @@ class BaseSirenCustomType;
 
 class ISirenType;
 
-class SirenBuildinDictionary;
-
-class SirenBuildinList;
-
 class SirenBuildinType;
 
 class SirenBuildinBool;
@@ -816,6 +903,10 @@ class SirenBuildinDouble;
 class SirenBuildinString;
 
 class SirenBuildinBlob;
+
+class SirenBuildinList;
+
+class SirenBuildinDictionary;
 
 class SirenCustomClass;
 
@@ -874,11 +965,19 @@ class StringNameItem;
 
 class StringTable;
 
+class BitConverter;
+
+class Console;
+
 class Environment;
+
+class Guid;
 
 class PublishTarget;
 
 class System;
+
+class Version;
 
 struct MyStreamInfoStruct;
 
@@ -893,6 +992,8 @@ class TaskStage;
 class FramePulseThread;
 
 class IWaitable;
+
+class MainThreadPool;
 
 class Mutex;
 
@@ -919,6 +1020,8 @@ class ScopedUnlockThenLock;
 class Semaphore;
 
 class Thread;
+
+class ThreadExiter;
 
 class ThreadEvent;
 
@@ -963,17 +1066,14 @@ class ThreadPoolWaitImp;
 
 class ThreadPoolWorkImp;
 
-class DateTime;
-
-class Guid;
-
-class TimeSpan;
-
-class Version;
-
 #pragma region typedef
 typedef Delegate<void(void* sender, IEventArg&)> EventHandler;
 typedef Delegate<void(void*, IEventArg)> DummyEventHandler;
+typedef Share<ICommand> ShareCommand;
+typedef TLogMessage<char> LogMessage;
+typedef TLogMessage<wchar_t> WLogMessage;
+typedef TLogMessagePool<char> LogMessagePool;
+typedef TLogMessagePool<wchar_t> WLogMessagePool;
 typedef TMemoryData<short> MemoryShortData;
 typedef TMemoryData<byte> MemoryData;
 typedef TMemoryData<char> MemoryCharData;
@@ -982,9 +1082,13 @@ typedef TMemoryData<int> MemoryIntData;
 typedef TMemoryData<uint> MemoryUIntData;
 typedef TMemoryData<float> MemoryFloatData;
 typedef TMemoryData<byte> Blob;
-typedef Delegate<void()> Action0;
-typedef Delegate<void(void*)> Action1;
+typedef Share<IModule> ShareModule;
+typedef Share<IMessage> ShareMessage;
+typedef Delegate<void()> Action;
+typedef Delegate<void(void*)> ActionWithUserData;
 typedef Delegate<bool()> PredicateFunc;
+typedef Event<void()> ActionEvent;
+typedef Event<void(void*)> ActionEventWithUserData;
 typedef SecurityValue<int,false> SecurityInt;
 typedef SecurityValue<int,true> StrongSecurityInt;
 typedef THeapString<char> HeapString;

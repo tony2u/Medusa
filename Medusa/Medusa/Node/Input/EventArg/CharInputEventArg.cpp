@@ -24,7 +24,6 @@ CharInputEventArg::CharInputEventArg(uint keyData, uint status) : BaseKeyEventAr
 
 }
 
-MEDUSA_IMPLEMENT_RTTI(CharInputEventArg, BaseKeyEventArg);
 
 
 MEDUSA_END;

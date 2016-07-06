@@ -9,10 +9,10 @@ MEDUSA_BEGIN;
 
 class CanvasPanel :public IPanel
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_NODE(CanvasPanel,IPanel);
 
 public:
-	CanvasPanel(StringRef name=StringRef::Empty);
+	using IPanel::IPanel;
 	virtual ~CanvasPanel(void);
 	virtual PanelType GetPanelType()const override{return PanelType::Canvas;}
 protected:

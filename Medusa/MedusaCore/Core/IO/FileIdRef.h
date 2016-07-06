@@ -24,7 +24,15 @@ public:
 	FileIdRef(const char* name, uint order = 0) :Name(name), Order(order) {}
 	FileIdRef(const std::basic_string<char, std::char_traits<char>, std::allocator<char> >& str, uint order = 0) :Name(str), Order(order) {}
 
-	~FileIdRef() {}
+	constexpr FileIdRef(const char* name,uint length, uint order) :Name(name, length), Order(order) {}
+	template<size_t size>
+	constexpr FileIdRef(const char(&str)[size], uint order = 0)
+		: Name(str), Order(order)
+	{
+
+	}
+
+	~FileIdRef() = default;
 	bool operator<(const FileIdRef& fileId)const;
 	void operator=(const FileIdRef& fileId) { Name = fileId.Name; Order = fileId.Order; }
 	bool operator==(const FileIdRef& fileId)const { return Name == fileId.Name && Order == fileId.Order; }
@@ -35,7 +43,7 @@ public:
 
 
 	template<typename TChar>
-	THeapString<TChar> ToString(const TChar* formatBegin=nullptr, const TChar* formatEnd=nullptr)const
+	THeapString<TChar> ToString(const TStringRef<TChar>& format = TStringRef<TChar>::Empty)const
 	{
 		HeapString str = ToString(PublishTarget::MatchAll);
 		return StringParser::ToStringT<TChar>(str);
@@ -48,6 +56,7 @@ public:
 	{
 		return Name.HashCode() ^ Order;
 	}
+
 public:
 	StringRef Name;	//performance hit
 	uint Order;

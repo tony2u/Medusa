@@ -31,7 +31,7 @@ IRenderQueue::~IRenderQueue(void)
 
 void IRenderQueue::Clear()
 {
-	SAFE_RELEASE_COLLECTION(mCommands);
+	mCommands.Clear();
 	mIsNeedToSort = false;
 	mNodes.Clear();
 }
@@ -61,7 +61,7 @@ void IRenderQueue::RemoveNode(IRenderable* node)
 	}
 }
 
-void IRenderQueue::AddCommand(IRenderingCommand* command)
+void IRenderQueue::AddCommand(const Share<IRenderingCommand>& command)
 {
 	mCommands.Add(command);
 }
@@ -98,7 +98,7 @@ void IRenderQueue::Draw(RenderingFlags renderingFlags /*= RenderingFlags::None*/
 
 	if (!mCommands.IsEmpty())
 	{
-		RenderDevice::Instance().ReceiveFrame(mCommands);
+		RenderDevice::Instance().ExecuteFrame(mCommands);
 		RenderEngine::Instance().SetFrameDirty();
 	}
 }

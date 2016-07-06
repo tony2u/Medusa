@@ -34,16 +34,16 @@ bool LightFactory::Uninitialize()
 
 
 
-ILight* LightFactory::CreateLightFromModel( const FileIdRef& fileId,const FileIdRef& modelFileId,bool setDefault/*=true*/,bool enabled/*=true*/ ,ResourceShareType shareType /*= ResourceShareType::Share*/)
+Share<ILight> LightFactory::CreateLightFromModel( const FileIdRef& fileId,const FileIdRef& modelFileId,bool setDefault/*=true*/,bool enabled/*=true*/ ,ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
-	ILight* light = nullptr;
+	Share<ILight> light = nullptr;
 	if (shareType != ResourceShareType::None)
 	{
 		light = Find(fileId);
 		RETURN_SELF_IF_NOT_NULL(light);
 	}
 	
-	BaseSceneModel* model=(BaseSceneModel*)ModelFactory::Instance().Create(modelFileId);
+	auto model=ModelFactory::Instance().Create(modelFileId).CastPtr<BaseSceneModel>();
 	if (model!=nullptr)
 	{
 		light=model->CreateLight(fileId);
@@ -64,12 +64,12 @@ ILight* LightFactory::CreateLightFromModel( const FileIdRef& fileId,const FileId
 }
 
 
-DirectionalLight* LightFactory::CreateDirectionalLight( const FileIdRef& fileId,bool setDefault/*=true*/,bool enabled/*=true*/ ,ResourceShareType shareType /*= ResourceShareType::Share*/)
+Share<DirectionalLight> LightFactory::CreateDirectionalLight( const FileIdRef& fileId,bool setDefault/*=true*/,bool enabled/*=true*/ ,ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
-	DirectionalLight* light = nullptr;
+	Share<DirectionalLight> light = nullptr;
 	if (shareType != ResourceShareType::None)
 	{
-		light = (DirectionalLight*)Find(fileId);
+		light =Find(fileId).CastPtr<DirectionalLight>();
 		RETURN_SELF_IF_NOT_NULL(light);
 	}
 
@@ -95,15 +95,15 @@ DirectionalLight* LightFactory::CreateDirectionalLight( const FileIdRef& fileId,
 	{
 		mCurrentLight=light;
 	}
-	return (DirectionalLight*)light;
+	return light;
 }
 
-SpotLight* LightFactory::CreateSpotLight( const FileIdRef& fileId,bool setDefault/*=true*/,bool enabled/*=true*/ ,ResourceShareType shareType /*= ResourceShareType::Share*/)
+Share<SpotLight> LightFactory::CreateSpotLight( const FileIdRef& fileId,bool setDefault/*=true*/,bool enabled/*=true*/ ,ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
-	SpotLight* light = nullptr;
+	Share<SpotLight> light = nullptr;
 	if (shareType != ResourceShareType::None)
 	{
-		light = (SpotLight*)Find(fileId);
+		light = Find(fileId).CastPtr<SpotLight>();
 		RETURN_SELF_IF_NOT_NULL(light);
 	}
 
@@ -130,13 +130,13 @@ SpotLight* LightFactory::CreateSpotLight( const FileIdRef& fileId,bool setDefaul
 	{
 		mCurrentLight=light;
 	}
-	return (SpotLight*)light;
+	return light;
 }
 
 
-ILight* LightFactory::SetCurrentLight( const FileIdRef& fileId )
+Share<ILight> LightFactory::SetCurrentLight( const FileIdRef& fileId )
 {
-	ILight* light= Find(fileId);
+	auto light= Find(fileId);
 	if (light!=nullptr)
 	{
 		mCurrentLight=light;

@@ -25,10 +25,8 @@ bool BehaviorConfig::LoadFromData(const FileIdRef& fileId, const MemoryData& dat
 		Log::AssertFailedFormat("Cannot parse xml:{} because {}", fileId, result.description());
 		return false;
 	}
-
-	FOR_EACH_COLLECTION_STL(i, doc.first_child().children())
+	for (const auto& child : doc.first_child().children())
 	{
-		pugi::xml_node child = *i;
 		StringRef typeName = child.name();
 		StringRef id = child.attribute("Id").value();
 		if (id.IsEmpty())

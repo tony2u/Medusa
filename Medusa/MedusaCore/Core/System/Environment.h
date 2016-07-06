@@ -8,38 +8,30 @@
 #include "Core/String/StackString.h"
 #include "Core/Pattern/Singleton.h"
 #include "Core/System/PublishTarget.h"
+#include "SystemDefines.h"
+#include "Core/Collection/Array.h"
+#include "Core/Pattern/Event.h"
 
 MEDUSA_BEGIN;
-
-enum class CPUArchitectures
-{
-	Unknow,
-	X86,
-	X64,
-	ArmV6,
-	ArmV7,
-	ArmV7S,
-	Arm64
-};
 
 class Environment :public Singleton < Environment >
 {
 	friend class Singleton < Environment >;
-private:
-	Environment() = default;
+	Environment()
+	{
+		mSupportUIOrientations.SetAll(true);
+	}
 	~Environment() = default;
 public:
 	HeapString GetMacAddress();
 	bool IsNetworkAvailable();
 
-	uint GetCPUCount()const;
+	uint CPUCount()const;
 	bool RequireFullScreen()const;
-	bool GetScreenSize(uint& outWidth,uint& outHeight)const;
+	bool GetScreenSize(uint& outWidth, uint& outHeight)const;
 	CPUArchitectures Architecture()const;
-
 	PublishDevices Device()const;
 	PublishLanguages Language()const;
-
 	PublishTarget Target()const { return PublishTarget(PublishVersions::main, Device(), Language()); }
 
 	bool SupportNeon()const
@@ -51,11 +43,7 @@ public:
 #endif
 	}
 
-	bool SupportVFP()const
-	{
-		return IsArm();
-	}
-
+	bool SupportVFP()const { return IsArm(); }
 	bool IsArm()const
 	{
 		switch (Architecture())
@@ -69,6 +57,41 @@ public:
 			return false;
 		}
 	}
+public:
+	Event<void(UIOrientation)> OnUIOrientationChanged;
+
+	DeviceOrientation GetDeviceOrientation() const { return mDeviceOrientation; }
+	void SetDeviceOrientation(DeviceOrientation val) { mDeviceOrientation = val; }
+
+	UIOrientation GetUIOrientation() const { return mUIOrientation; }
+	void SetUIOrientation(UIOrientation val) { mUIOrientation = val; OnUIOrientationChanged(val); }
+
+	bool IsSupport(UIOrientation val)const
+	{
+		return mSupportUIOrientations[(size_t)val];
+	}
+
+	void EnableUIOrientation(UIOrientation orientation, bool val)
+	{
+		mSupportUIOrientations[(size_t)orientation] = val;
+	}
+
+	void EnableUIOrientationLandscape()
+	{
+		mSupportUIOrientations.SetAll(false);
+		EnableUIOrientation(UIOrientation::LandscapeLeft, true);
+		EnableUIOrientation(UIOrientation::LandscapeRight, true);
+	}
+	void EnableUIOrientationPortrait()
+	{
+		mSupportUIOrientations.SetAll(false);
+		EnableUIOrientation(UIOrientation::Portrait, true);
+		EnableUIOrientation(UIOrientation::PortraitUpsideDown, true);
+	}
+protected:
+	DeviceOrientation mDeviceOrientation = DeviceOrientation::None;
+	UIOrientation mUIOrientation = UIOrientation::None;
+	Array<bool, (size_t)UIOrientation::Count> mSupportUIOrientations;
 };
 
 

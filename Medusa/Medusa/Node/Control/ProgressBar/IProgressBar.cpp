@@ -7,7 +7,7 @@
 #include "Node/Action/Basic/ProgressByAction.h"
 #include "Core/Action/DelegateAction.h"
 #include "Core/Action/Composite/SequenceAction.h"
-
+#include "Node/NodeFactory.h"
 MEDUSA_BEGIN;
 
 IProgressBar::IProgressBar(StringRef name/*=StringRef::Empty*/,ProgressType progressType/*=ProgressType::HorizontalLeftToRight*/,float percent/*=1.f*/)
@@ -16,7 +16,13 @@ IProgressBar::IProgressBar(StringRef name/*=StringRef::Empty*/,ProgressType prog
 
 }
 
-IProgressBar::~IProgressBar( void )
+IProgressBar::IProgressBar(const StringRef& name /*= StringRef::Empty*/, const IEventArg& e /*= IEventArg::Empty*/)
+	:INode(name,e)
+{
+
+}
+
+IProgressBar::~IProgressBar(void)
 {
 
 }
@@ -180,6 +186,6 @@ void IProgressBar::BlendTexcoord(const Array<Point2F, 4>& initialData, Array<Poi
 	}
 }
 
-MEDUSA_IMPLEMENT_RTTI(IProgressBar, INode);
+
 
 MEDUSA_END;

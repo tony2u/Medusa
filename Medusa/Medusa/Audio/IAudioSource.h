@@ -3,9 +3,11 @@
 // license that can be found in the LICENSE file.
 #pragma once
 #include "MedusaPreDeclares.h"
+#ifdef MEDUSA_AL
 #include "Audio/AudioTypes.h"
 #include "Core/Pattern/ISharableWithName.h"
 #include "Core/Pattern/Event.h"
+#include "Core/Pattern/INonCopyable.h"
 MEDUSA_BEGIN;
 
 /************************************************************************/
@@ -29,8 +31,6 @@ public:
 	IAudioSource(const StringRef& name=StringRef::Empty);
 	virtual ~IAudioSource();
 
-    IAudioSource(const IAudioSource& val);
-	IAudioSource& operator=(const IAudioSource& val);
 public:
 	bool IsLooping() const { return mIsLooping; }
 	void SetIsLooping(bool val){mIsLooping=val;}
@@ -130,3 +130,4 @@ protected:
 
 
 MEDUSA_END;
+#endif

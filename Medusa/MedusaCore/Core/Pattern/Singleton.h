@@ -10,8 +10,8 @@ template<typename T>
 class Singleton
 {
 private:
-	Singleton(const Singleton&);
-	Singleton & operator=(const Singleton&);
+	Singleton(const Singleton&) = delete;
+	Singleton & operator=(const Singleton&) = delete;
 public:
 	MEDUSA_FORCE_INLINE static T& Instance()
 	{
@@ -24,7 +24,7 @@ public:
 		return &Instance();
 	}
 protected:
-	Singleton() {}
-	virtual ~Singleton() {}
+	Singleton() = default;
+	virtual ~Singleton() = default;
 };
 MEDUSA_END;

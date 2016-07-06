@@ -9,8 +9,8 @@ MEDUSA_BEGIN;
 class PODLighTimeline:public ITimeline
 {
 public:
-	PODLighTimeline(PODLightTimelineModel* model, intp repeatCount, float beforeDelay = 0.f, float repeatDuration = 0.f, float afterDelay = 0.f, const StringRef& name = StringRef::Empty);
-	PODLighTimeline(PODLightTimelineModel* model, bool isRepeatForever, float beforeDelay = 0.f, float repeatDuration = 0.f, float afterDelay = 0.f, const StringRef& name = StringRef::Empty);
+	PODLighTimeline(const Share<PODLightTimelineModel>& model, intp repeatCount, float beforeDelay = 0.f, float repeatDuration = 0.f, float afterDelay = 0.f, const StringRef& name = StringRef::Empty);
+	PODLighTimeline(const Share<PODLightTimelineModel>& model, bool isRepeatForever, float beforeDelay = 0.f, float repeatDuration = 0.f, float afterDelay = 0.f, const StringRef& name = StringRef::Empty);
 
 	virtual ~PODLighTimeline();
 	virtual bool Start() override;
@@ -18,7 +18,7 @@ public:
 protected:
 	virtual bool OnUpdate(float prevElapsed,float dt, float blend = 1.f)override;
 protected:
-	ILight* mLight;
+	Share<ILight> mLight;
 };
 
 MEDUSA_END;

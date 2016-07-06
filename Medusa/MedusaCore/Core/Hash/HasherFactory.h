@@ -6,22 +6,17 @@
 #include "Core/Pattern/Object/MapObjectFactory.h"
 #include "Core/Hash/IHasher.h"
 #include "Core/Hash/HasherType.h"
+#include "Core/Pattern/Singleton.h"
 
 MEDUSA_BEGIN;
 
-class HasherFactory :public MapObjectFactory<HasherType, IHasher*(), DefaultHashCoder<HasherType>>
+class HasherFactory :public MapObjectFactory<HasherType, IHasher*(), DefaultHashCoder>,public Singleton<HasherFactory>
 {
-public:
-	using MapObjectFactory<HasherType, IHasher*(), DefaultHashCoder<HasherType>>::Create;
-private:
 	HasherFactory();
-	~HasherFactory(){}
+	~HasherFactory() {}
+	friend class Singleton<HasherFactory>;
 public:
-	static HasherFactory& Instance()
-	{
-		static HasherFactory factory;
-		return factory;
-	}
+	using MapObjectFactory<HasherType, IHasher*(), DefaultHashCoder>::Create;
 };
 
 MEDUSA_END;

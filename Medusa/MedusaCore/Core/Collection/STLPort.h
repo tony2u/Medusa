@@ -10,31 +10,30 @@
 MEDUSA_BEGIN;
 
 #pragma region Compare
-template<typename T>
+
 struct STLMapLessPtr
 {
-	inline bool operator()(const T& str1, const T& str2)const
+	template<typename T1, typename T2>
+	inline bool operator()(const T1& str1, const T2& str2)const
 	{
 		return str1<str2;
 	}
 };
 
-template<typename T>
 struct STLMapLessPtrForPointer
 {
-	inline bool operator()(const T* t1, const T* t2)const
+	template<typename T1, typename T2>
+	inline bool operator()(const T1* t1, const T2* t2)const
 	{
 		return t1->Compare(*t2)<0;
 	}
 };
 
 
-template<typename T>
 struct DefaultCompare
 {
-	typedef typename Compile::TypeTraits<T>::ParameterType TParameterType;
-
-	static int Compare(TParameterType t1, TParameterType t2)
+	template<typename T1, typename T2>
+	static int Compare(const T1& t1, const T2& t2)
 	{
 		if (t1<t2)
 		{
@@ -47,33 +46,34 @@ struct DefaultCompare
 		return 0;
 	}
 
-	inline bool operator()(const T& t1, const T& t2)const
+	template<typename T1, typename T2>
+	inline bool operator()(const T1& t1, const T2& t2)const
 	{
 		return t1<t2;
 	}
 };
 
-template<typename T>
+
 struct CustomCompare
 {
-	typedef typename Compile::TypeTraits<T>::ParameterType TParameterType;
-
-	static int Compare(TParameterType t1, TParameterType t2)
+	template<typename T1, typename T2>
+	static int Compare(const T1& t1, const T2& t2)
 	{
 		return t1.Compare(t2);
 	}
 
-	inline bool operator()(const T& t1, const T& t2)const
+	template<typename T1, typename T2>
+	inline bool operator()(const T1& t1, const T1& t2)const
 	{
 		return t1<t2;
 	}
 };
 
 
-template<typename T>
 struct DefaultCompareForPointer
 {
-	static int Compare(const T* t1, const T* t2)
+	template<typename T1, typename T2>
+	static int Compare(const T1& t1, const T2& t2)
 	{
 		if (*t1<*t2)
 		{
@@ -86,32 +86,70 @@ struct DefaultCompareForPointer
 		return 0;
 	}
 
-	inline bool operator()(const T* t1, const T* t2)const
+	template<typename T1, typename T2>
+	inline bool operator()(const T1& t1, const T2& t2)const
 	{
 		return *t1<*t2;
 	}
 };
 
-template<typename T>
 struct CustomCompareForPointer
 {
-	static int Compare(T t1, T t2)
+	template<typename T1, typename T2>
+	static int Compare(const T1& t1, const T2& t2)
 	{
 		return t1->Compare(*t2);
 	}
 
-	inline bool operator()(T t1, T t2)const
+	template<typename T1, typename T2>
+	inline bool operator()(const T1& t1, const T2& t2)const
 	{
 		return *t1<*t2;
 	}
 };
 
-template<typename T>
+struct DefaultCompareForShare
+{
+	template<typename T1, typename T2>
+	static int Compare(const Share<T1>& t1, const Share<T2>& t2)
+	{
+		if (*t1 < *t2)
+		{
+			return -1;
+		}
+		else if (*t2 < *t1)
+		{
+			return 1;
+		}
+		return 0;
+	}
+
+	template<typename T1, typename T2>
+	inline bool operator()(const Share<T1>& t1, const Share<T2>& t2)const
+	{
+		return *t1 < *t2;
+	}
+};
+
+struct CustomCompareForShare
+{
+	template<typename T1, typename T2>
+	static int Compare(const Share<T1>& t1, const Share<T2>& t2)
+	{
+		return t1->Compare(*t2);
+	}
+
+	template<typename T1, typename T2>
+	inline bool operator()(const Share<T1>& t1, const Share<T2>& t2)const
+	{
+		return *t1 < *t2;
+	}
+};
+
 struct InverseCompare
 {
-	typedef typename Compile::TypeTraits<T>::ParameterType TParameterType;
-
-	static int Compare(TParameterType t1, TParameterType t2)
+	template<typename T1, typename T2>
+	static int Compare(const T1& t1, const T2& t2)
 	{
 		if (t1<t2)
 		{
@@ -124,65 +162,61 @@ struct InverseCompare
 		return 0;
 	}
 
-	inline bool operator()(const T& t1, const T& t2)const
+	template<typename T1, typename T2>
+	inline bool operator()(const T1& t1, const T2& t2)const
 	{
 		return t1>t2;
 	}
 };
 
-template<typename T>
 struct InverseCustomCompare
 {
-	typedef typename Compile::TypeTraits<T>::ParameterType TParameterType;
-
-	static int Compare(TParameterType t1, TParameterType t2)
+	template<typename T1, typename T2>
+	static int Compare(const T1& t1, const T2& t2)
 	{
 		return t1.Compare(t2);
 	}
 
-	inline bool operator()(const T& t1, const T& t2)const
+	template<typename T1, typename T2>
+	inline bool operator()(const T1& t1, const T2& t2)const
 	{
 		return t1>t2;
 	}
 };
 
-template<typename T>
 struct NoCompare
 {
-	typedef typename Compile::TypeTraits<T>::ParameterType TParameterType;
-
-	static int Compare(TParameterType t1, TParameterType t2)
+	template<typename T1, typename T2>
+	static int Compare(const T1& t1, const T2& t2)
 	{
 		return 0;
 	}
 };
 
-template<typename T>
 struct EqualCompare
 {
-	typedef typename Compile::TypeTraits<T>::ParameterType TParameterType;
-
-	static int Compare(TParameterType t1, TParameterType t2)
+	template<typename T1,typename T2>
+	static int Compare(const T1& t1, const T2& t2)
 	{
-		if (t1==t2)
+		if (t1 == t2)
 		{
 			return 0;
 		}
 		return -1;
 	}
-
-	inline bool operator()(const T& t1, const T& t2)const
+	
+	template<typename T1, typename T2>
+	inline bool operator()(const T1& t1, const T2& t2)const
 	{
-		return t1==t2;
+		return t1 == t2;
 	}
+
 };
 
-template<typename T>
 struct ObjectEqualCompare
 {
-	typedef typename Compile::TypeTraits<T>::ParameterType TParameterType;
-
-	static int Compare(TParameterType t1, TParameterType t2)
+	template<typename T1, typename T2>
+	static int Compare(const T1& t1, const T2& t2)
 	{
 		if (t1.Equals(t2))
 		{
@@ -191,18 +225,17 @@ struct ObjectEqualCompare
 		return -1;
 	}
 
-	inline bool operator()(const T& t1, const T& t2)const
+	template<typename T1, typename T2>
+	inline bool operator()(const T1& t1, const T2& t2)const
 	{
 		return t1.Equals(t2);
 	}
 };
 
-template<typename T>
 struct PointerEqualCompare
 {
-	typedef typename Compile::TypeTraits<T>::ParameterType TParameterType;
-
-	static int Compare(TParameterType t1, TParameterType t2)
+	template<typename T1, typename T2>
+	static int Compare(const T1& t1, const T2& t2)
 	{
 		if (t1->Equals(*t2))
 		{
@@ -211,7 +244,8 @@ struct PointerEqualCompare
 		return -1;
 	}
 
-	inline bool operator()(const T& t1, const T& t2)const
+	template<typename T1, typename T2>
+	inline bool operator()(const T1& t1, const T2& t2)const
 	{
 		return t1->Equals(*t2);
 	}
@@ -220,53 +254,50 @@ struct PointerEqualCompare
 #pragma endregion Compare
 
 #pragma region Hash
-template<typename T>
+
 struct DefaultHashCoder
 {
-	typedef typename Compile::TypeTraits<T>::ParameterType TParameterType;
-
-	static intp HashCode(TParameterType key)
+	template<typename T>
+	static intp HashCode(const T& key)
 	{
 		return GetHashCodeHelper(key, std::integral_constant<bool,Compile::TypeTraits<T>::IsArithmetic || Compile::TypeTraits<T>::IsPointer || Compile::TypeTraits<T>::IsEnum>());
 	}
-
-	
-//
 private:
-	static intp GetHashCodeHelper(TParameterType key, std::false_type isStdArith)
+	template<typename T>
+	static intp GetHashCodeHelper(const T& key, std::false_type isStdArith)
 	{
 		return key.HashCode();
 	}
-
-	static intp GetHashCodeHelper(TParameterType key, std::true_type isStdArith)
+	template<typename T>
+	static intp GetHashCodeHelper(const T& key, std::true_type isStdArith)
 	{
 		return (intp)key;
 	}
 
 };
 
-template<typename T>
 struct SafeEnumHashCoder
 {
+	template<typename T>
 	static intp HashCode(T key)
 	{
 		return (intp)key;
 	}
 };
 
-template<typename T>
 struct NoHashCoder
 {
-	static intp HashCode(T key)
+	template<typename T>
+	static intp HashCode(const T& key)
 	{
 		return 0;
 	}
 };
 
-template<typename T>
 struct DefaultPointerHashCoder
 {
-	static intp HashCode(T key)
+	template<typename T>
+	static intp HashCode(const T& key)
 	{
 		return key->HashCode();
 	}
@@ -276,24 +307,21 @@ struct DefaultPointerHashCoder
 #pragma endregion Hash
 
 #pragma region New Delete
-template<typename T>
+
 struct DefaultDeleter
 {
-	typedef typename Compile::TypeTraits<T>::ParameterType TParameterType;
-
-	static void Delete(TParameterType p)
+	template<typename T>
+	static void Delete(const T& p)
 	{
 		Memory::Delete(p);
 	}
 };
 
 
-template<typename T>
 struct DefaultPointerDeleter
 {
-	typedef typename Compile::TypeTraits<T*>::ParameterType TParameterType;
-
-	static void Delete(TParameterType p)
+	template<typename T>
+	static void Delete(const T& p)
 	{
 		if (p!=nullptr)
 		{
@@ -302,12 +330,10 @@ struct DefaultPointerDeleter
 	}
 };
 
-template<typename T>
 struct DefaultPointerReleaser
 {
-	typedef typename Compile::TypeTraits<T*>::ParameterType TParameterType;
-
-	static void Delete(TParameterType p)
+	template<typename T>
+	static void Delete(const T& p)
 	{
 		if (p != nullptr)
 		{
@@ -317,12 +343,10 @@ struct DefaultPointerReleaser
 };
 
 
-template<typename T>
 struct NoDeleter
 {
-	typedef typename Compile::TypeTraits<T>::ParameterType TParameterType;
-
-	static void Delete(TParameterType p)
+	template<typename T>
+	static void Delete(const T& p)
 	{
 	}
 };

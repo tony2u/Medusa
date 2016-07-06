@@ -17,13 +17,13 @@ Used to apply and restore state
 class RenderStateMachine:public Singleton<RenderStateMachine>,public IInitializable
 {
 	friend class Singleton<RenderStateMachine>;
-	typedef Stack<IRenderState*> RenderStateStack;
+	typedef Stack<Share<IRenderState>> RenderStateStack;
 private:
 	RenderStateMachine();
 	~RenderStateMachine();
 public:
-	void Push(IRenderState* state);
-	void Pop(const IRenderState* state=nullptr);
+	void Push(const Share<IRenderState>& state);
+	void Pop(const Share<IRenderState>& state=nullptr);
 
 public:
 	virtual bool Initialize();

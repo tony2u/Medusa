@@ -3,12 +3,9 @@
 // license that can be found in the LICENSE file.
 #include "MedusaPreCompiled.h"
 #include "UniformGridPanel.h"
-
+#include "Node/NodeFactory.h"
 MEDUSA_BEGIN;
 
-UniformGridPanel::UniformGridPanel(StringRef name/*=StringRef::Empty*/):IPanel(name)
-{
-}
 
 UniformGridPanel::~UniformGridPanel(void)
 {
@@ -20,6 +17,6 @@ bool UniformGridPanel::ArrangeChildren(const Rect2F& limitRect/*=Rect2F::Zero*/,
 	return true;
 }
 
-MEDUSA_IMPLEMENT_RTTI(UniformGridPanel, IPanel);
+MEDUSA_IMPLEMENT_NODE(UniformGridPanel);
 
 MEDUSA_END;

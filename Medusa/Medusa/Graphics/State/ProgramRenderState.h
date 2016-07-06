@@ -10,13 +10,13 @@ MEDUSA_BEGIN;
 
 class ProgramRenderState:public IRenderState
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_RTTI(ProgramRenderState,IRenderState);
 public:
 	ProgramRenderState(uint program=0);
 	virtual ~ProgramRenderState();
 	virtual void Apply()const override;
 
-	virtual ProgramRenderState* Clone()const override;
+	Share<ProgramRenderState> Clone()const;
 	virtual void CopyFrom(const IRenderState& other)override;
 
 	virtual bool Equals(const IRenderState& state)const override;
@@ -26,7 +26,7 @@ public:
 	uint Program() const { return mProgram; }
 	void SetProgram(uint val) {RETURN_IF_EQUAL(mProgram, val); mProgram = val; OnStateChanged();}
 
-	static ProgramRenderState* Current();
+	static Share<ProgramRenderState> Current();
 protected:
 	uint mProgram;
 };

@@ -50,14 +50,14 @@ public:
 	virtual bool Initialize();
 	virtual bool Uninitialize();
 public:
-	DirectionalLight* CreateDirectionalLight(const FileIdRef& fileId,bool setDefault=true,bool enabled=true,ResourceShareType shareType = ResourceShareType::Share);
-	SpotLight* CreateSpotLight(const FileIdRef& fileId,bool setDefault=true,bool enabled=true,ResourceShareType shareType = ResourceShareType::Share);
-	ILight* CreateLightFromModel(const FileIdRef& fileId,const FileIdRef& modelFileId,bool setDefault=true,bool enabled=true,ResourceShareType shareType = ResourceShareType::Share);
+	Share<DirectionalLight> CreateDirectionalLight(const FileIdRef& fileId,bool setDefault=true,bool enabled=true,ResourceShareType shareType = ResourceShareType::Share);
+	Share<SpotLight> CreateSpotLight(const FileIdRef& fileId,bool setDefault=true,bool enabled=true,ResourceShareType shareType = ResourceShareType::Share);
+	Share<ILight> CreateLightFromModel(const FileIdRef& fileId,const FileIdRef& modelFileId,bool setDefault=true,bool enabled=true,ResourceShareType shareType = ResourceShareType::Share);
 
-	ILight* GetCurrentLight()const{return mCurrentLight;}
-	ILight* SetCurrentLight(const FileIdRef& fileId);
+	Share<ILight> GetCurrentLight()const{return mCurrentLight;}
+	Share<ILight> SetCurrentLight(const FileIdRef& fileId);
 private:
-	ILight* mCurrentLight;
+	Share<ILight> mCurrentLight;
 
 };
 

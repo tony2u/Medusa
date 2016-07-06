@@ -23,9 +23,9 @@ void ProgramRenderState::Apply()const
 	Render::Instance().UseProgram(mProgram);
 }
 
-ProgramRenderState* ProgramRenderState::Clone() const
+Share<ProgramRenderState> ProgramRenderState::Clone() const
 {
-	ProgramRenderState* state=new ProgramRenderState();
+	Share<ProgramRenderState> state=new ProgramRenderState();
 	state->SetProgram(mProgram);
 	return state;
 }
@@ -45,7 +45,7 @@ bool ProgramRenderState::Equals(const IRenderState& state) const
 	return mProgram==val.Program();
 }
 
-ProgramRenderState* ProgramRenderState::Current()
+Share<ProgramRenderState> ProgramRenderState::Current()
 {
 	IRender& render=Render::Instance();
 	return new ProgramRenderState(render.GetInteger(GraphicsIntegerName::CurrentProgram));
@@ -53,6 +53,5 @@ ProgramRenderState* ProgramRenderState::Current()
 
 
 
-MEDUSA_IMPLEMENT_RTTI(ProgramRenderState,IRenderState);
 
 MEDUSA_END;

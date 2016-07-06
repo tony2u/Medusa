@@ -35,9 +35,9 @@ bool ImageFactory::Uninitialize()
 }
 
 
-IImage* ImageFactory::CreateFromFile(const FileIdRef& fileId, ResourceShareType shareType /*= ResourceShareType::Share*/)
+Share<IImage> ImageFactory::CreateFromFile(const FileIdRef& fileId, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
-	IImage* image = nullptr;
+	Share<IImage> image;
 	if (shareType != ResourceShareType::None)
 	{
 		image = Find(fileId);
@@ -47,12 +47,17 @@ IImage* ImageFactory::CreateFromFile(const FileIdRef& fileId, ResourceShareType 
 
 	switch (FileInfo::ExtractType(fileId.Name))
 	{
+#ifdef MEDUSA_JPEG
 	case FileType::jpeg:
 		image = JpegImage::CreateFromFile(fileId);
 		break;
+#endif
+#ifdef MEDUSA_PNG
 	case FileType::png:
 		image = PngImage::CreateFromFile(fileId);
 		break;
+#endif
+
 	case FileType::gif:
 		break;
 	case FileType::pvr:
@@ -69,9 +74,9 @@ IImage* ImageFactory::CreateFromFile(const FileIdRef& fileId, ResourceShareType 
 	return image;
 }
 
-IImage* ImageFactory::CreateFromOrderItem(const FileIdRef& fileId, const FileMapOrderItem& orderItem, ResourceShareType shareType /*= ResourceShareType::Share*/)
+Share<IImage> ImageFactory::CreateFromOrderItem(const FileIdRef& fileId, const FileMapOrderItem& orderItem, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
-	IImage* image = nullptr;
+	Share<IImage> image;
 	if (shareType != ResourceShareType::None)
 	{
 		image = Find(fileId);
@@ -88,19 +93,23 @@ IImage* ImageFactory::CreateFromOrderItem(const FileIdRef& fileId, const FileMap
 
 }
 
-IImage* ImageFactory::CreateFromMemory(const FileIdRef& fileId, const FileEntry& fileEntry, MemoryData data, ResourceShareType shareType /*= ResourceShareType::Share*/)
+Share<IImage> ImageFactory::CreateFromMemory(const FileIdRef& fileId, const FileEntry& fileEntry, MemoryData data, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
 	RETURN_NULL_IF_EMPTY(data);
-	IImage* image = nullptr;
+	Share<IImage> image;
 
 	switch (FileInfo::ExtractType(fileEntry.Name()))
 	{
+#ifdef MEDUSA_JPEG
 	case FileType::jpeg:
 		image = JpegImage::CreateFromMemory(fileId, fileEntry, data);
 		break;
+#endif
+#ifdef MEDUSA_PNG
 	case FileType::png:
 		image = PngImage::CreateFromMemory(fileId, fileEntry, data);
 		break;
+#endif
 	case FileType::gif:
 		return nullptr;
 	case FileType::pvr:
@@ -126,8 +135,8 @@ void ImageFactory::CopyImage(MemoryData& destData, PixelType destFormat, const S
 
 	byte* dest = destData.MutableData();
 	const byte* src = imageData.Data();
-	uint destDepth = destFormat.BytesPerComponent();
-	uint srcDepth = srcFormat.BytesPerComponent();
+	uint destDepth = (uint)destFormat.BytesPerComponent();
+	uint srcDepth = (uint)srcFormat.BytesPerComponent();
 
 	uint rowCount = destDepth*rect.Size.Width;
 	if (stride == 0)

@@ -8,7 +8,7 @@
 
 class BaseActionLayer :public BaseCaseLayer
 {
-	MEDUSA_DECLARE_LAYER(BaseActionLayer);
+	MEDUSA_NODE(BaseActionLayer, BaseCaseLayer);
 public:
 	BaseActionLayer(StringRef name = StringRef::Empty, const IEventArg& e = IEventArg::Empty);
 	virtual ~BaseActionLayer(void);

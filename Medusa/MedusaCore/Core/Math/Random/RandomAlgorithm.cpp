@@ -18,9 +18,9 @@ bool RandomAlgorithm::SelectIndex(uintp& outResult, Random& random, const List<u
 
 	if (maxProb == 0)
 	{
-		FOR_EACH_COLLECTION(i, probs)
+		for(auto i: probs)
 		{
-			maxProb += *i;
+			maxProb += i;
 		}
 	}
 
@@ -45,9 +45,9 @@ bool RandomAlgorithm::SelectIndices(List<uintp>& outResults, uintp resultCount, 
 	RETURN_FALSE_IF_EMPTY(probs);
 	if (maxProb == 0)
 	{
-		FOR_EACH_COLLECTION(i, probs)
+		for (auto i : probs)
 		{
-			maxProb += *i;
+			maxProb += i;
 		}
 	}
 	uintp count = probs.Count();
@@ -92,7 +92,7 @@ bool RandomAlgorithm::SelectIndices(List<uintp>& outResults, uintp resultCount, 
 					if (resultProb < prob)
 					{
 						outResults.Add(j);
-						cloneProbs.RemoveAtUnordered(j);
+						cloneProbs.RemoveAtSwap(j);
 						--count;
 						//update max prob
 						maxProb -= prob;

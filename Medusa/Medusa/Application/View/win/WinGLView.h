@@ -9,7 +9,7 @@ MEDUSA_BEGIN;
 
 class WinGLView :public BaseRenderView
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_RTTI(WinEGLView,BaseRenderView);
 
 public:
 	WinGLView(StringRef name=StringRef::Empty);

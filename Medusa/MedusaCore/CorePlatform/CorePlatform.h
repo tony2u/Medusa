@@ -8,80 +8,9 @@
 #include "CorePlatform/CommonMarcos.h"
 #include "CorePlatform/MacroUtility.h"
 
-#if __cplusplus <= 199711L
-#ifndef override
-#define override
-#endif
-#endif
 
 
-#ifdef _MSC_VER
-
-#else
-
-#endif
-
-
-
-#ifdef MEDUSA_WINDOWS
-typedef __int8  int8;
-typedef __int16 int16;
-typedef __int32 int32;
-typedef __int64 int64;
-
-
-
-typedef unsigned __int8  uint8;
-typedef unsigned __int16 uint16;
-typedef unsigned __int32 uint32;
-typedef unsigned __int64 uint64;
-
-typedef unsigned short		ushort;
-typedef unsigned long		ulong;
-typedef unsigned int		uint;
-typedef wchar_t wchar;
-typedef unsigned char byte;
-
-typedef HWND MedusaWindowHandle;
-typedef intptr_t intptr;
-typedef uintptr_t uintptr;
-
-#ifdef MEDUSA_X64
-typedef int64 intp;
-#else
-typedef int32 intp;
-#endif
-
-typedef size_t uintp;
-
-
-#ifndef strtoll
-#define strtoll  _strtoi64
-#endif // !strtoll
-
-
-#ifndef strtoull
-#define strtoull  _strtoui64
-#endif // !strtoull
-
-#define MEDUSA_TRACEA(s) OutputDebugStringA(s)
-#define MEDUSA_TRACEW(s) OutputDebugStringW(s)
-#define MEDUSA_TRACE(s) MEDUSA_TRACEA(s)
-
-#endif
-
-
-#if defined (MEDUSA_IOS) || defined( MEDUSA_ANDROID )|| defined( MEDUSA_LINUX)
-typedef unsigned short		ushort;
-typedef unsigned long		ulong;
-typedef unsigned int		uint;
-
-//typedef unsigned int		size_t;
-typedef unsigned char byte;
-typedef wchar_t wchar;
-
-typedef intptr_t intptr;
-typedef uintptr_t uintptr;
+MEDUSA_BEGIN;
 
 typedef int8_t  int8;
 typedef int16_t int16;
@@ -92,7 +21,16 @@ typedef uint8_t  uint8;
 typedef uint16_t uint16;
 typedef uint32_t uint32;
 typedef uint64_t uint64;
-typedef int errno_t;
+
+
+typedef unsigned char byte;
+typedef unsigned short ushort;
+typedef unsigned long ulong;
+typedef unsigned int uint;
+typedef wchar_t wchar;
+
+typedef intptr_t intptr;
+typedef uintptr_t uintptr;
 
 #ifdef MEDUSA_X64
 typedef int64 intp;
@@ -102,15 +40,20 @@ typedef int32 intp;
 
 typedef size_t uintp;
 
-typedef intp MedusaWindowHandle;
 
+#ifdef MEDUSA_WINDOWS
+typedef HWND MedusaWindowHandle;
+typedef UINT_PTR MedusaFileDescriptor;
+
+#elif defined (MEDUSA_IOS) || defined( MEDUSA_ANDROID )|| defined( MEDUSA_LINUX)
 typedef int SOCKET;
-
-#define MEDUSA_TRACE(s) 
-#define MEDUSA_TRACEA(s) 
-#define MEDUSA_TRACEW(s) 
+typedef int errno_t;
+typedef intp MedusaWindowHandle;
+typedef SOCKET MedusaFileDescriptor;
 #endif
 
+#define MedusaInvalidFileDescriptor  ((MedusaFileDescriptor)(~0))
+#define MedusaInvalidSocket ((SOCKET)(~0))
 
 union int128
 {
@@ -131,3 +74,5 @@ union uint128
 		uint64 High;
 	};
 };
+
+MEDUSA_END;

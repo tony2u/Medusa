@@ -27,9 +27,8 @@ bool StateMachineModelConfig::LoadFromData(const FileIdRef& fileId, const Memory
 	}
 
 	List<IState*> states;
-	FOR_EACH_COLLECTION_STL(i, doc.first_child().children())
+	for(const auto& child:doc.first_child().children())
 	{
-		pugi::xml_node child = *i;
 		StringRef typeName = child.name();
 		StringRef defaultStateStr = child.attribute("Default").value();
 
@@ -40,9 +39,8 @@ bool StateMachineModelConfig::LoadFromData(const FileIdRef& fileId, const Memory
 		//load states
 		uint maxIndex = 0;
 		states.Clear();
-		FOR_EACH_COLLECTION_STL(j, child.children())
+		for (const auto& stateChild : child.children())
 		{
-			pugi::xml_node stateChild = *j;
 			StringRef stateTypeName = stateChild.name();
 			IState* state = StateFactory::Instance().SmartCreate(stateTypeName);
 			states.Add(state);
@@ -50,9 +48,8 @@ bool StateMachineModelConfig::LoadFromData(const FileIdRef& fileId, const Memory
 		}
 
 		model->Initialize(maxIndex + 1);
-		FOR_EACH_COLLECTION(j, states)
+		for (auto state : states)
 		{
-			IState* state = *j;
 			model->Register(state);
 		}
 
@@ -67,15 +64,13 @@ bool StateMachineModelConfig::LoadFromData(const FileIdRef& fileId, const Memory
 
 		//load connectors
 		uint index = 0;
-		FOR_EACH_COLLECTION_STL(j, child.children())
+		for (const auto& stateChild : child.children())
 		{
-			pugi::xml_node stateChild = *j;
 			IState* state = states[index++];
 
 			//load connector
-			FOR_EACH_COLLECTION_STL(k, stateChild.children())
+			for (const auto& connectorChild : stateChild.children())
 			{
-				pugi::xml_node connectorChild = *k;
 				StringRef connectorTypeName = connectorChild.name();
 				IStateConnector* connector = nullptr;
 				if (connectorTypeName == "Before")

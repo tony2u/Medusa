@@ -6,7 +6,30 @@
 
 
 //Features
+#ifndef MEDUSA_DISABLE_AL
 #define MEDUSA_AL
+#endif
+
+#ifndef MEDUSA_DISABLE_FREETYPE
+#define MEDUSA_FREETYPE
+#endif
+
+#ifndef MEDUSA_DISABLE_JPEG
+#define MEDUSA_JPEG
+#endif
+
+#ifndef MEDUSA_DISABLE_PNG
+#define MEDUSA_PNG
+#endif
+
+#ifndef MEDUSA_DISABLE_OGG
+#define MEDUSA_OGG
+#endif
+
+
+#ifndef MEDUSA_DISABLE_GL
+#define MEDUSA_GL
+#endif
 
 
 #define MEDUSA_RENDER_ASSERT_ENABLED

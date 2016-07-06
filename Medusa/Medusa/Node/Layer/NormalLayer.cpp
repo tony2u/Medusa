@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 #include "MedusaPreCompiled.h"
 #include "NormalLayer.h"
-#include "LayerFactory.h"
+#include "Node/NodeFactory.h"
 
 MEDUSA_BEGIN;
 
@@ -20,6 +20,6 @@ NormalLayer::~NormalLayer(void)
 
 
 
-MEDUSA_IMPLEMENT_LAYER(NormalLayer, ILayer, StringRef::Empty, StringRef::Empty);
+MEDUSA_IMPLEMENT_NODE(NormalLayer);
 
 MEDUSA_END;

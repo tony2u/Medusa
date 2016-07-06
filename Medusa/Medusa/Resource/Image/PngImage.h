@@ -2,7 +2,8 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 #pragma once
-
+#include "MedusaPreDeclares.h"
+#ifdef MEDUSA_PNG
 #include "Graphics/Render/Render.h"
 #include "Resource/Image/RGBAImage.h"
 #include "PngImageColorType.h"
@@ -18,10 +19,11 @@ public:
 public:
 	virtual ImageFileType ImageType()const{return ImageFileType::png;}
 
-	static PngImage* CreateFromFile(const FileIdRef& fileId);
-	static PngImage* CreateFromMemory(const FileIdRef& fileId,const FileEntry& fileEntry,MemoryData data);
+	static Share<PngImage> CreateFromFile(const FileIdRef& fileId);
+	static Share<PngImage> CreateFromMemory(const FileIdRef& fileId, const FileEntry& fileEntry, MemoryData data);
 	bool SaveToFile(StringRef filePath)const;
 
 };
 
 MEDUSA_END;
+#endif

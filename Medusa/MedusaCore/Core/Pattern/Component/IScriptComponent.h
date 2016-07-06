@@ -12,7 +12,7 @@ MEDUSA_BEGIN;
 
 class IScriptComponent :public IComponent
 {
-	MEDUSA_DECLARE_COMPONENT;
+	MEDUSA_DECLARE_COMPONENT(IScriptComponent,IComponent);
 public:
 	IScriptComponent(const StringRef& name = StringRef::Empty, int priority = 0, void* userData = nullptr);
 	virtual ~IScriptComponent(void);

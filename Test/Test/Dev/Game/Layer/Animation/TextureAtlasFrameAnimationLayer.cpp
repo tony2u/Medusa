@@ -45,5 +45,5 @@ bool TextureAtlasFrameAnimationLayer::Initialize()
 
 
 
-MEDUSA_IMPLEMENT_LAYER(TextureAtlasFrameAnimationLayer, BaseCaseLayer, StringRef::Empty, StringRef::Empty);
+MEDUSA_IMPLEMENT_NODE(TextureAtlasFrameAnimationLayer);
 

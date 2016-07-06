@@ -37,8 +37,9 @@
 #define WAVE_FORMAT_IEEE_FLOAT  0x0003
 #endif
 
+#define DEVNAME_HEAD "OpenAL Soft on "
 
-TYPEDEF_VECTOR(al_string, vector_al_string)
+
 static vector_al_string PlaybackDevices;
 static vector_al_string CaptureDevices;
 
@@ -51,7 +52,6 @@ static void clear_devlist(vector_al_string *list)
 
 static void ProbePlaybackDevices(void)
 {
-    al_string *iter, *end;
     ALuint numdevs;
     ALuint i;
 
@@ -62,14 +62,17 @@ static void ProbePlaybackDevices(void)
     for(i = 0;i < numdevs;i++)
     {
         WAVEOUTCAPSW WaveCaps;
+        const al_string *iter;
         al_string dname;
 
         AL_STRING_INIT(dname);
         if(waveOutGetDevCapsW(i, &WaveCaps, sizeof(WaveCaps)) == MMSYSERR_NOERROR)
         {
             ALuint count = 0;
-            do {
-                al_string_copy_wcstr(&dname, WaveCaps.szPname);
+            while(1)
+            {
+                al_string_copy_cstr(&dname, DEVNAME_HEAD);
+                al_string_append_wcstr(&dname, WaveCaps.szPname);
                 if(count != 0)
                 {
                     char str[64];
@@ -78,14 +81,11 @@ static void ProbePlaybackDevices(void)
                 }
                 count++;
 
-                iter = VECTOR_ITER_BEGIN(PlaybackDevices);
-                end = VECTOR_ITER_END(PlaybackDevices);
-                for(;iter != end;iter++)
-                {
-                    if(al_string_cmp(*iter, dname) == 0)
-                        break;
-                }
-            } while(iter != end);
+#define MATCH_ENTRY(i) (al_string_cmp(dname, *(i)) == 0)
+                VECTOR_FIND_IF(iter, const al_string, PlaybackDevices, MATCH_ENTRY);
+                if(iter == VECTOR_END(PlaybackDevices)) break;
+#undef MATCH_ENTRY
+            }
 
             TRACE("Got device \"%s\", ID %u\n", al_string_get_cstr(dname), i);
         }
@@ -95,7 +95,6 @@ static void ProbePlaybackDevices(void)
 
 static void ProbeCaptureDevices(void)
 {
-    al_string *iter, *end;
     ALuint numdevs;
     ALuint i;
 
@@ -106,14 +105,17 @@ static void ProbeCaptureDevices(void)
     for(i = 0;i < numdevs;i++)
     {
         WAVEINCAPSW WaveCaps;
+        const al_string *iter;
         al_string dname;
 
         AL_STRING_INIT(dname);
         if(waveInGetDevCapsW(i, &WaveCaps, sizeof(WaveCaps)) == MMSYSERR_NOERROR)
         {
             ALuint count = 0;
-            do {
-                al_string_copy_wcstr(&dname, WaveCaps.szPname);
+            while(1)
+            {
+                al_string_copy_cstr(&dname, DEVNAME_HEAD);
+                al_string_append_wcstr(&dname, WaveCaps.szPname);
                 if(count != 0)
                 {
                     char str[64];
@@ -122,14 +124,11 @@ static void ProbeCaptureDevices(void)
                 }
                 count++;
 
-                iter = VECTOR_ITER_BEGIN(CaptureDevices);
-                end = VECTOR_ITER_END(CaptureDevices);
-                for(;iter != end;iter++)
-                {
-                    if(al_string_cmp(*iter, dname) == 0)
-                        break;
-                }
-            } while(iter != end);
+#define MATCH_ENTRY(i) (al_string_cmp(dname, *(i)) == 0)
+                VECTOR_FIND_IF(iter, const al_string, CaptureDevices, MATCH_ENTRY);
+                if(iter == VECTOR_END(CaptureDevices)) break;
+#undef MATCH_ENTRY
+            }
 
             TRACE("Got device \"%s\", ID %u\n", al_string_get_cstr(dname), i);
         }
@@ -165,7 +164,7 @@ static ALCboolean ALCwinmmPlayback_start(ALCwinmmPlayback *self);
 static void ALCwinmmPlayback_stop(ALCwinmmPlayback *self);
 static DECLARE_FORWARD2(ALCwinmmPlayback, ALCbackend, ALCenum, captureSamples, ALCvoid*, ALCuint)
 static DECLARE_FORWARD(ALCwinmmPlayback, ALCbackend, ALCuint, availableSamples)
-static DECLARE_FORWARD(ALCwinmmPlayback, ALCbackend, ALint64, getLatency)
+static DECLARE_FORWARD(ALCwinmmPlayback, ALCbackend, ClockLatency, getClockLatency)
 static DECLARE_FORWARD(ALCwinmmPlayback, ALCbackend, void, lock)
 static DECLARE_FORWARD(ALCwinmmPlayback, ALCbackend, void, unlock)
 DECLARE_DEFAULT_ALLOCATORS(ALCwinmmPlayback)
@@ -259,11 +258,11 @@ static ALCenum ALCwinmmPlayback_open(ALCwinmmPlayback *self, const ALCchar *devi
 #define MATCH_DEVNAME(iter) (!al_string_empty(*(iter)) && \
                              (!deviceName || al_string_cmp_cstr(*(iter), deviceName) == 0))
     VECTOR_FIND_IF(iter, const al_string, PlaybackDevices, MATCH_DEVNAME);
-    if(iter == VECTOR_ITER_END(PlaybackDevices))
+    if(iter == VECTOR_END(PlaybackDevices))
         return ALC_INVALID_VALUE;
 #undef MATCH_DEVNAME
 
-    DeviceID = (UINT)(iter - VECTOR_ITER_BEGIN(PlaybackDevices));
+    DeviceID = (UINT)(iter - VECTOR_BEGIN(PlaybackDevices));
 
 retry_open:
     memset(&self->Format, 0, sizeof(WAVEFORMATEX));
@@ -431,7 +430,7 @@ typedef struct ALCwinmmCapture {
 
     HWAVEIN InHdl;
 
-    RingBuffer *Ring;
+    ll_ringbuffer_t *Ring;
 
     WAVEFORMATEX Format;
 
@@ -452,7 +451,7 @@ static ALCboolean ALCwinmmCapture_start(ALCwinmmCapture *self);
 static void ALCwinmmCapture_stop(ALCwinmmCapture *self);
 static ALCenum ALCwinmmCapture_captureSamples(ALCwinmmCapture *self, ALCvoid *buffer, ALCuint samples);
 static ALCuint ALCwinmmCapture_availableSamples(ALCwinmmCapture *self);
-static DECLARE_FORWARD(ALCwinmmCapture, ALCbackend, ALint64, getLatency)
+static DECLARE_FORWARD(ALCwinmmCapture, ALCbackend, ClockLatency, getClockLatency)
 static DECLARE_FORWARD(ALCwinmmCapture, ALCbackend, void, lock)
 static DECLARE_FORWARD(ALCwinmmCapture, ALCbackend, void, unlock)
 DECLARE_DEFAULT_ALLOCATORS(ALCwinmmCapture)
@@ -515,8 +514,9 @@ static int ALCwinmmCapture_captureProc(void *arg)
             break;
 
         WaveHdr = ((WAVEHDR*)msg.lParam);
-        WriteRingBuffer(self->Ring, (ALubyte*)WaveHdr->lpData,
-                        WaveHdr->dwBytesRecorded/self->Format.nBlockAlign);
+        ll_ringbuffer_write(self->Ring, WaveHdr->lpData,
+            WaveHdr->dwBytesRecorded / self->Format.nBlockAlign
+        );
 
         // Send buffer back to capture more data
         waveInAddBuffer(self->InHdl, WaveHdr, sizeof(WAVEHDR));
@@ -544,11 +544,11 @@ static ALCenum ALCwinmmCapture_open(ALCwinmmCapture *self, const ALCchar *name)
     // Find the Device ID matching the deviceName if valid
 #define MATCH_DEVNAME(iter) (!al_string_empty(*(iter)) &&  (!name || al_string_cmp_cstr(*iter, name) == 0))
     VECTOR_FIND_IF(iter, const al_string, CaptureDevices, MATCH_DEVNAME);
-    if(iter == VECTOR_ITER_END(CaptureDevices))
+    if(iter == VECTOR_END(CaptureDevices))
         return ALC_INVALID_VALUE;
 #undef MATCH_DEVNAME
 
-    DeviceID = (UINT)(iter - VECTOR_ITER_BEGIN(CaptureDevices));
+    DeviceID = (UINT)(iter - VECTOR_BEGIN(CaptureDevices));
 
     switch(device->FmtChans)
     {
@@ -604,7 +604,7 @@ static ALCenum ALCwinmmCapture_open(ALCwinmmCapture *self, const ALCchar *name)
     if(CapturedDataSize < (self->Format.nSamplesPerSec / 10))
         CapturedDataSize = self->Format.nSamplesPerSec / 10;
 
-    self->Ring = CreateRingBuffer(self->Format.nBlockAlign, CapturedDataSize);
+    self->Ring = ll_ringbuffer_create(CapturedDataSize+1, self->Format.nBlockAlign);
     if(!self->Ring) goto failure;
 
     InitRef(&self->WaveBuffersCommitted, 0);
@@ -645,8 +645,7 @@ failure:
         free(BufferData);
     }
 
-    if(self->Ring)
-        DestroyRingBuffer(self->Ring);
+    ll_ringbuffer_free(self->Ring);
     self->Ring = NULL;
 
     if(self->InHdl)
@@ -679,7 +678,7 @@ static void ALCwinmmCapture_close(ALCwinmmCapture *self)
     }
     free(buffer);
 
-    DestroyRingBuffer(self->Ring);
+    ll_ringbuffer_free(self->Ring);
     self->Ring = NULL;
 
     // Close the Wave device
@@ -700,13 +699,13 @@ static void ALCwinmmCapture_stop(ALCwinmmCapture *self)
 
 static ALCenum ALCwinmmCapture_captureSamples(ALCwinmmCapture *self, ALCvoid *buffer, ALCuint samples)
 {
-    ReadRingBuffer(self->Ring, buffer, samples);
+    ll_ringbuffer_read(self->Ring, buffer, samples);
     return ALC_NO_ERROR;
 }
 
 static ALCuint ALCwinmmCapture_availableSamples(ALCwinmmCapture *self)
 {
-    return RingBufferSize(self->Ring);
+    return ll_ringbuffer_read_space(self->Ring);
 }
 
 

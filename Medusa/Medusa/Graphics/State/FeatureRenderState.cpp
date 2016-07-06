@@ -21,17 +21,17 @@ FeatureRenderState::~FeatureRenderState()
 void FeatureRenderState::Apply()const
 {
 	IRender& render= Render::Instance();
-	FOR_EACH_COLLECTION(i,mFeatures)
+	for(auto i:mFeatures)
 	{
-		GraphicsFeatures feature=(GraphicsFeatures)i->Key;
-		bool isEnabled=i->Value;
+		GraphicsFeatures feature=(GraphicsFeatures)i.Key;
+		bool isEnabled=i.Value;
 		render.EnableFeature(feature,isEnabled);
 	}
 }
 
-FeatureRenderState* FeatureRenderState::Clone() const
+Share<FeatureRenderState> FeatureRenderState::Clone() const
 {
-	FeatureRenderState* state=new FeatureRenderState();
+	Share<FeatureRenderState> state=new FeatureRenderState();
 	state->CopyFrom(*this);
 	return state;
 }
@@ -70,11 +70,11 @@ void FeatureRenderState::Enable(GraphicsFeatures feature, bool val)
 
 }
 
-FeatureRenderState* FeatureRenderState::Current()
+Share<FeatureRenderState> FeatureRenderState::Current()
 {
 	IRender& render=Render::Instance();
 
-	FeatureRenderState* state=new FeatureRenderState();
+	Share<FeatureRenderState> state=new FeatureRenderState();
 	state->Enable(GraphicsFeatures::Blend,render.IsFeatureEnabled(GraphicsFeatures::Blend));
 	state->Enable(GraphicsFeatures::CullFace,render.IsFeatureEnabled(GraphicsFeatures::CullFace));
 	state->Enable(GraphicsFeatures::DepthTest,render.IsFeatureEnabled(GraphicsFeatures::DepthTest));
@@ -88,6 +88,5 @@ FeatureRenderState* FeatureRenderState::Current()
 	return state;
 }
 
-MEDUSA_IMPLEMENT_RTTI(FeatureRenderState,IRenderState);
 
 MEDUSA_END;

@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 #include "MedusaPreCompiled.h"
 #include "Node_Binding.h"
-#include "Core/Command/EventArg/UserDataEventArg.h"
+#include "Core/Event/EventArg/UserDataEventArg.h"
 
 #ifdef MEDUSA_LUA
 #include "Core/Lua/LuaState.h"
@@ -37,8 +37,6 @@ bool Register_ILayer(IEventArg& e)
 	auto cls = module.BeginClass<ILayer>();
 	cls.InheritFrom<INode>();
 
-
-
 	return true;
 }
 
@@ -49,11 +47,14 @@ bool Register_IScene(IEventArg& e)
 	auto cls = module.BeginClass<IScene>();
 	cls.InheritFrom<INode>();
 
-	typedef  void (IScene::*PushObjectPtr)(ILayer* layer, NodePushFlags pushFlags);
+	typedef  ILayer* (IScene::*PushObjectPtr)(ILayer* layer, NodePushFlags pushFlags);
 	cls.AddMemberFunction("PushObject", (PushObjectPtr)&IScene::PushLayer);
 
 	auto pushDelegate = [](IScene* scene, const StringRef& className, NodePushFlags pushFlags)->ILayer* {return scene->PushLayer(className, pushFlags); };
-	cls.AddFunctionAsMember("PushName", pushDelegate);
+	cls.AddFunctionAsMember("Push", pushDelegate);
+
+	typedef  ILayer* (IScene::*PushLayerExPtr)(const StringRef& className, const FileIdRef& editorFile, const FileIdRef& scriptFile, NodePushFlags pushFlags);
+	cls.AddMemberFunction("PushEx", (PushLayerExPtr)&IScene::PushLayerEx);
 
 	return true;
 }

@@ -10,6 +10,12 @@ MEDUSA_BEGIN;
 class StringPropertySet :public PropertySet < HeapString, HeapString>
 {
 public:
+	using BaseType = PropertySet < HeapString, HeapString>;
+	using BaseType::RemoveKey;
+	using BaseType::Get;
+	using BaseType::Set;
+
+
 	template<typename T>
 	T GetOptionalT(const StringRef& key, const T& defaultVal)const
 	{
@@ -45,6 +51,12 @@ public:
 		return val.ToString();
 	}
 
+	StringRef Get(const StringRef& key)
+	{
+		const HeapString& val = this->GetOptionalByOtherKey(key, key.HashCode(), StringRef::Empty);
+		return val.ToString();
+	}
+
 	void Set(const StringRef& key, const StringRef& val)
 	{
 		//avoid: recursive on all control paths, function will cause runtime stack overflow
@@ -55,6 +67,20 @@ public:
 
 	bool Parse(const StringRef& str);
 
+	bool GetList(const StringRef& key, List<HeapString>& outItems)const;
+
+	HeapString ToString()const
+	{
+		HeapString result;
+		for (auto& keyValue:*this)
+		{
+			result.AppendFormat("{}={},",keyValue.Key,keyValue.Value);
+		}
+		result.RemoveLast();	//remove last ,
+		return result;
+	}
+
+	static StringRef GetDeclareType(const StringRef& val);
 };
 
 MEDUSA_END;

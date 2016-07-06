@@ -9,7 +9,7 @@
 #include "Geometry/Point2.h"
 #include "Geometry/Point3.h"
 #include "Core/Math/Math.h"
-#include "Core/Utility/Utility.h"
+#include "Core/System/BitConverter.h"
 #include "Core/Siren/SirenDefines.h"
 MEDUSA_BEGIN;
 

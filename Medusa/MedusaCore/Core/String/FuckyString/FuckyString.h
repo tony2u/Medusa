@@ -11,10 +11,10 @@
 #include "Core/Pattern/Singleton.h"
 #include "Core/Memory/MemoryData.h"
 #include "Core/String/HeapString.h"
-#include "Core/IO/IFileLoadable.h"
+#include "Core/IO/IFileLoadSavable.h"
 MEDUSA_BEGIN;
 
-class FuckyString :public Singleton<FuckyString>, public IFileLoadable
+class FuckyString :public Singleton<FuckyString>, public IFileLoadSavable
 {
 	friend class Singleton<FuckyString>;
 public:

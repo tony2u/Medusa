@@ -50,7 +50,7 @@ public:
 	TextureAtlasPage* Page() const { return mPage; }
 	void SetPage(TextureAtlasPage* val);
 
-	ITexture* Texture()const;
+	const Share<ITexture>& Texture()const;
 
 	bool UpdateMesh(const Size2U& textureSize);
 	bool AssertMeshLoaded();
@@ -66,7 +66,11 @@ public:
 
 	bool IsPolygon()const { return !mIndices.IsEmpty(); }
 
-	IMaterial* CreateMaterial();
+	Share<IMaterial> CreateMaterial();
+
+	void MapToFileSystem(FileEntry& fileEntry);
+	void UnmapToFileSystem(FileEntry& fileEntry);
+
 protected:
 	int mId = -1;
 
@@ -79,7 +83,7 @@ protected:
 
 protected:
 	TextureAtlasPage* mPage=nullptr;
-
+	FileMapOrderItem* mMapFileOrderItem=nullptr;
 	//cached for performance
 	List<Point3F> mVertices;
 	List<Point2F> mTexcoords;

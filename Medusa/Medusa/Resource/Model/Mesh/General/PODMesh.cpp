@@ -9,7 +9,7 @@
 #include "Resource/ResourceNames.h"
 #include "Resource/Effect/Shader/Parameter/ShaderAttribute.h"
 #include "Node/Sprite/Sprite.h"
-#include "Core/Utility/Endian.h"
+#include "Core/System/BitConverter.h"
 
 MEDUSA_BEGIN;
 
@@ -29,15 +29,14 @@ PODMesh::~PODMesh(void)
 
 void PODMesh::FixInterleavedEndianness()
 {
-	RETURN_IF(InterleavedData.IsNull()|| Endian::IsLittle());
+	RETURN_IF(InterleavedData.IsNull()|| BitConverter::IsLittle());
 	VertexList.FixInterleavedEndianness(InterleavedData,mVertexCount);
 	NormalList.FixInterleavedEndianness(InterleavedData,mVertexCount);
 	TangentList.FixInterleavedEndianness(InterleavedData,mVertexCount);
 	BinormalList.FixInterleavedEndianness(InterleavedData,mVertexCount);
 
-	FOR_EACH_COLLECTION(i,UVWList)
+	for(auto& data:UVWList)
 	{
-		PODData& data=*i;
 		data.FixInterleavedEndianness(InterleavedData,mVertexCount);
 	}
 	VertexColorList.FixInterleavedEndianness(InterleavedData,mVertexCount);
@@ -71,7 +70,7 @@ bool PODMesh::Initialzie()
 
 void PODMesh::Apply()
 {
-	BaseProgramRenderPass* pass = RenderingContext::Instance().ProgramRenderPass();
+	auto pass = RenderingContext::Instance().ProgramRenderPass();
 	ShaderAttribute* vertices= pass->FindAttributeByIndex(ShaderAttributeIndex::VertexArray);
 	if (vertices!=nullptr)
 	{
@@ -109,7 +108,7 @@ void PODMesh::Apply()
 void PODMesh::Restore()
 {
 	mIndexBufferObject.Restore();
-	BaseProgramRenderPass* pass = RenderingContext::Instance().ProgramRenderPass();
+	auto pass = RenderingContext::Instance().ProgramRenderPass();
 
 	ShaderAttribute* vertices= pass->FindAttributeByIndex(ShaderAttributeIndex::VertexArray);
 	if (vertices!=nullptr)
@@ -213,7 +212,7 @@ void PODData::FixInterleavedEndianness( MemoryData interleavedData,uint size )
 			{
 				FOR_EACH_SIZE(j,ComponentCount)	//each component
 				{
-					Utility::SwapBytes((byte*)data,typeSize);
+					BitConverter::SwapBytes((byte*)data,typeSize);
 				}
 				data+=Stride;
 			}

@@ -4,7 +4,6 @@
 #include "MedusaCorePreCompiled.h"
 #include "MemoryPackage.h"
 #include "Core/IO/FileIdRef.h"
-#include "Core/IO/Stream/MemoryStream.h"
 
 MEDUSA_BEGIN;
 
@@ -30,7 +29,7 @@ bool MemoryPackage::Initialize()
 
 bool MemoryPackage::Uninitialize()
 {
-	SAFE_RELEASE_DICTIONARY_VALUE(mMemoryStreamDict);
+	mMemoryStreamDict.Clear();
 	return true;
 }
 
@@ -44,22 +43,20 @@ bool MemoryPackage::OnRemoveDirectory(DirectoryEntry& dir)
 	return true;
 }
 
-const IStream* MemoryPackage::OnReadFile(const FileEntry& file, FileDataType dataType /*= FileDataType::Binary*/) const
+Share<const IStream> MemoryPackage::OnReadFile(const FileEntry& file, FileDataType dataType /*= FileDataType::Binary*/) const
 {
 	UN_USED(dataType);
-	MemoryStream* memoryStream = mMemoryStreamDict.GetOptional(&file, nullptr);
+	Share<MemoryStream> memoryStream = mMemoryStreamDict.GetOptional(&file, nullptr);
 	RETURN_NULL_IF_NULL(memoryStream);
-
 	memoryStream->Rewind();
-	SAFE_RETAIN(memoryStream);
-	
+
 	return memoryStream;
 }
 
-IStream* MemoryPackage::OnWriteFile(FileEntry& file, FileOpenMode openMode /*= FileOpenMode::ReadOnly*/, FileDataType dataType /*= FileDataType::Binary*/)
+Share<IStream> MemoryPackage::OnWriteFile(FileEntry& file, FileOpenMode openMode /*= FileOpenMode::ReadOnly*/, FileDataType dataType /*= FileDataType::Binary*/)
 {
 	UN_USED(dataType);
-	MemoryStream* memoryStream = mMemoryStreamDict.GetOptional(&file, nullptr);
+	Share<MemoryStream> memoryStream = mMemoryStreamDict.GetOptional(&file, nullptr);
 	if (memoryStream == nullptr)
 	{
 		if (openMode == FileOpenMode::ReadOnly)
@@ -68,18 +65,15 @@ IStream* MemoryPackage::OnWriteFile(FileEntry& file, FileOpenMode openMode /*= F
 		}
 		memoryStream = new MemoryStream();
 		mMemoryStreamDict.Add(&file, memoryStream);
-		SAFE_RETAIN(memoryStream);
 	}
 	memoryStream->Rewind();
-	SAFE_RETAIN(memoryStream);
 
 	return memoryStream;
 }
 
 bool MemoryPackage::OnRemoveFile(FileEntry& file)
 {
-	MemoryStream* stream = mMemoryStreamDict.RemoveKeyOptional(&file, nullptr);
-	RETURN_TRUE_IF_NULL(stream);
+	mMemoryStreamDict.RemoveKey(&file);
 	return true;
 }
 

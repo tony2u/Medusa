@@ -79,7 +79,7 @@ bool TestLayer::Initialize()
 
 	ListBox* listBox=NodeFactory::Instance().CreateStringListBox(mItems,true);
 	listBox->SetStretch(Medusa::Stretch::Fill);
-	StringListDataSource* dataSource=(StringListDataSource*)listBox->DataSource();
+	auto dataSource=listBox->DataSource().CastPtr<StringListDataSource>();
 	LabelItemTemplate* labelItemTemplate=(LabelItemTemplate*)dataSource->ItemTemplate();
 	labelItemTemplate->SetAlignment(Alignment::MiddleCenter);
 	//labelItemTemplate->MutableFontId().SetSize(88);
@@ -151,5 +151,5 @@ void TestLayer::OnItemClicked(ListBox& sender,const ListBoxItem& item)
 
 
 
-MEDUSA_IMPLEMENT_LAYER(TestLayer, ILayer, StringRef::Empty, StringRef::Empty);
+MEDUSA_IMPLEMENT_NODE(TestLayer);
 

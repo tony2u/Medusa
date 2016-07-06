@@ -10,14 +10,14 @@
 MEDUSA_BEGIN;
 
 
-PODCameraFOVTimeline::PODCameraFOVTimeline(PODCameraFOVTimelineModel* model, bool isRepeatForever, float beforeDelay /*= 0.f*/, float repeatDuration /*= 0.f*/, float afterDelay /*= 0.f*/, const StringRef& name /*= StringRef::Empty*/)
+PODCameraFOVTimeline::PODCameraFOVTimeline(const Share<PODCameraFOVTimelineModel>& model, bool isRepeatForever, float beforeDelay /*= 0.f*/, float repeatDuration /*= 0.f*/, float afterDelay /*= 0.f*/, const StringRef& name /*= StringRef::Empty*/)
 	: ITimeline(model, isRepeatForever, beforeDelay, repeatDuration, afterDelay, name)
 {
 	mCamera = nullptr;
 
 }
 
-PODCameraFOVTimeline::PODCameraFOVTimeline(PODCameraFOVTimelineModel* model, intp repeatCount, float beforeDelay /*= 0.f*/, float repeatDuration /*= 0.f*/, float afterDelay /*= 0.f*/, const StringRef& name /*= StringRef::Empty*/)
+PODCameraFOVTimeline::PODCameraFOVTimeline(const Share<PODCameraFOVTimelineModel>& model, intp repeatCount, float beforeDelay /*= 0.f*/, float repeatDuration /*= 0.f*/, float afterDelay /*= 0.f*/, const StringRef& name /*= StringRef::Empty*/)
 	: ITimeline(model, repeatCount, beforeDelay, repeatDuration, afterDelay, name)
 {
 	mCamera = nullptr;
@@ -27,14 +27,14 @@ PODCameraFOVTimeline::PODCameraFOVTimeline(PODCameraFOVTimelineModel* model, int
 
 PODCameraFOVTimeline::~PODCameraFOVTimeline()
 {
-	SAFE_RELEASE(mCamera);
+	
 }
 
 bool PODCameraFOVTimeline::Start()
 {
 	RETURN_FALSE_IF_FALSE((ITimeline::Start()));
 
-	PODCameraFOVTimelineModel* ani=(PODCameraFOVTimelineModel*)mModel;
+	auto ani = mModel.CastPtr<PODCameraFOVTimelineModel>();
 	StringRef cameraName=ani->CameraName();
 	StringRef targetName=ani->TargetNodeName();
 
@@ -51,7 +51,8 @@ bool PODCameraFOVTimeline::OnUpdate(float prevElapsed,float dt, float blend /*= 
 	float outPercent;
 	mModel->TryGetFrame(mElapsed, outPrevFrameIndex, outNextFrameIndex, outPercent);
 
-	PODCameraFOVTimelineModel* ani = (PODCameraFOVTimelineModel*)mModel;
+	auto ani = mModel.CastPtr<PODCameraFOVTimelineModel>();
+	
 
 	float prevFov = ani->GetFov(outPrevFrameIndex);
 	float nextFov = ani->GetFov(outNextFrameIndex);

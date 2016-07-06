@@ -11,7 +11,7 @@ MEDUSA_BEGIN;
 
 class AndroidEGLView :public BaseRenderView
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_RTTI(AndroidEGLView,BaseRenderView);
 
 public:
 	AndroidEGLView(StringRef name=StringRef::Empty);

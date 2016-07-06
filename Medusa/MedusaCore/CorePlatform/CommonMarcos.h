@@ -5,52 +5,19 @@
 
 #include "CorePlatform/CorePlatformDefines.h"
 
-#ifdef MEDUSA_MEMORY_DEBUG
-//ignore some private destructor
-#define private public 
 namespace Medusa
 {
+	template<typename T>
+	class Share;
+
 	namespace Private
 	{
-		template<typename T>
-		inline void DebugFree(T*& p)
+		template < typename T >
+		inline T* ToPtr(Share<T>& val)
 		{
-			if (p!=nullptr)
-			{
-				free(p);
-			}
-			p=nullptr;
+			return val.Ptr();
 		}
 
-		template<typename T>
-		inline void DebugDelete(T*& p)
-		{
-			if (p!=nullptr)
-			{
-				delete p;
-			}
-			p=nullptr;
-		}
-
-		template<typename T>
-		inline void DebugDeleteArray(T*& p)
-		{
-			if (p!=nullptr)
-			{
-				delete[] p;
-			}
-			p=nullptr;
-		}
-
-		
-	}
-}
-
-#endif
-namespace Medusa
-{
-	namespace Private
-	{
 		template < typename T >
 		inline T* ToPtr(T& val)
 		{
@@ -214,17 +181,10 @@ namespace Medusa
 #define CONTINUE_IF_NOT_EQUAL(first,second) if ((first)!=(second)){continue;}
 
 
-#ifdef MEDUSA_MEMORY_DEBUG
-#define SAFE_FREE(p)			{Medusa::Private::DebugFree(p);}
-#define SAFE_DELETE(p)			{Medusa::Private::DebugDelete(p);}
-#define SAFE_DELETE_ARRAY(p)    {Medusa::Private::DebugDeleteArray(p);}
-
-#else
 #define SAFE_FREE(p)			if(p!=nullptr) {free(p); p = nullptr; }
 #define SAFE_DELETE(p)			if(p!=nullptr) { delete p; p = nullptr; }
 #define SAFE_DELETE_ARRAY(p)    if(p!=nullptr) { delete[] p; p = nullptr; }
 
-#endif
 
 #define SAFE_ASSIGN(dest,src)	{if(dest!=src){SAFE_DELETE(dest);dest=src;}}
 #define SAFE_CONSTRUCT_PTR(type,dest,src)	{dest=src?new type(*src):nullptr;}
@@ -241,26 +201,12 @@ namespace Medusa
 #define SAFE_DELETE_ARRAY_EACH(p)    if(p!=nullptr) {	for (size_t z=0;z<sizeof(p)/sizeof(p[0]);++z){SAFE_DELETE(p[z]);}}
 #define SAFE_DELETE_ARRAY_EACH_WITH_SIZE(p,arraySize)   if(p!=nullptr) { for (size_t z=0;z<arraySize;++z){SAFE_DELETE(p[z]);}}
 
+#define SAFE_DELETE_COLLECTION(items) {for(auto z:items) {SAFE_DELETE(z);}(items).Clear();}
 
 
-
-#define SAFE_DELETE_QUEUE_STL(inQueue)		{while (!(inQueue).empty()){auto t=(inQueue).front();SAFE_DELETE(t);(inQueue).pop();}}
-#define SAFE_DELETE_STACK_STL(inStack)		{while (!inStack.empty()){auto t=inStack.top();SAFE_DELETE(t);inStack.pop();}}
-#define SAFE_DELETE_COLLECTION_STL(items)			{for(auto z=(items).begin();z!=(items).end();++z){SAFE_DELETE(*z);}(items).clear();}
-#define SAFE_DELETE_MAP_FIRST_STL(inMap)		{for(auto z=(inMap).begin();z!=(inMap).end();++z){SAFE_DELETE(z->first);}(inMap).clear();}
-#define SAFE_DELETE_MAP_SECOND_STL(inMap)		{for(auto z=(inMap).begin();z!=(inMap).end();++z){SAFE_DELETE(z->second);}(inMap).clear();}
-#define SAFE_DELETE_MAP_BOTH_STL(inMap)		{for(auto z=(inMap).begin();z!=(inMap).end();++z){SAFE_DELETE(z->first);SAFE_DELETE(z->second);}(inMap).clear();}
-
-#define SAFE_DELETE_COLLECTION(items) {for(auto z = (items).GetEnumerator();z.MoveNext();) {SAFE_DELETE(*z);}(items).Clear();}
-#define SAFE_RELEASE_COLLECTION(items) {for(auto z = (items).GetEnumerator();z.MoveNext();) {(*z)->Release();}(items).Clear();}
-#define SAFE_RETAIN_COLLECTION(items) {for(auto z = (items).GetEnumerator();z.MoveNext();) {(*z)->Retain();}}
-
-
-#define SAFE_DELETE_DICTIONARY_KEY(items) {for(auto z = (items).GetEnumerator();z.MoveNext();) {SAFE_DELETE(z->Key);}(items).Clear();}
-#define SAFE_DELETE_DICTIONARY_VALUE(items) {for(auto z = (items).GetEnumerator();z.MoveNext();) {SAFE_DELETE(z->Value);}(items).Clear();}
-#define SAFE_DELETE_DICTIONARY_BOTH(items) {for(auto z = (items).GetEnumerator();z.MoveNext();) {SAFE_DELETE(z->Key);SAFE_DELETE(z->Value);}(items).Clear();}
-
-#define SAFE_RELEASE_DICTIONARY_VALUE(items) {for(auto z = (items).GetEnumerator();z.MoveNext();) {(z->Value)->Release();}(items).Clear();}
+#define SAFE_DELETE_DICTIONARY_KEY(items) {for(auto z:items) {SAFE_DELETE(z.Key);}(items).Clear();}
+#define SAFE_DELETE_DICTIONARY_VALUE(items) {for(auto z:items) {SAFE_DELETE(z.Value);}(items).Clear();}
+#define SAFE_DELETE_DICTIONARY_BOTH(items) {for(auto z:items) {SAFE_DELETE(z.Key);SAFE_DELETE(z.Value);}(items).Clear();}
 
 
 #define FOR_EACH_ARRAY(i,items) for(size_t i=0;i<sizeof((items))/sizeof((items)[0]);++i)
@@ -269,7 +215,6 @@ namespace Medusa
 #define FOR_EACH_UINT32(i,size) for(uint i=0;i<size;++i)
 #define FOR_EACH_AUTO(i,size) for(decltype(size) i=0;i<size;++i)
 
-#define FOR_EACH_COLLECTION(i,items) for(auto i = (items).GetEnumerator();i.MoveNext();) 
 #define FOR_EACH_COLLECTION_VIRTUAL(i,items) for(auto i = (items).GetEnumeratorVirtual();i.MoveNext();) 
 
 
@@ -309,24 +254,23 @@ namespace Medusa
 #define FOR_EACH_CUSTOM_BEGIN_END(T,i,begin,end) for(T i = begin;i<=end;++i) 
 #define FOR_EACH_CUSTOM_END_BEGIN(T,i,end,begin) for(T i = end;i>=begin;--i) 
 
-#define FOR_EACH_COLLECTION_STL(i,items) for(auto i = (items).begin();i!=(items).end();++i) 
 
-#define FOR_EACH_ITEM(items,func) {for(auto z = (items).GetEnumerator();z.MoveNext();){func(*z);}}
-#define FOR_EACH_ITEM_TO(items,func) {for(auto z = (items).GetEnumerator();z.MoveNext();){Medusa::Private::ToPtr(*z)->func;}}
+#define FOR_EACH_APPLY(items,func) {for(auto z:items){func(z);}}
+#define FOR_EACH_TO(items,func) {for(auto z:items){Medusa::Private::ToPtr(z)->func;}}
 
-#define FOR_EACH_ITEM_CLEAR(items,func) {for(auto z = (items).GetEnumerator();z.MoveNext();){func(*z);}(items).Clear();}
-#define FOR_EACH_ITEM_TO_CLEAR(items,func) {for(auto z = (items).GetEnumerator();z.MoveNext();){Medusa::Private::ToPtr(*z)->func;}(items).Clear();}
+#define FOR_EACH_ITEM_CLEAR(items,func) {for(auto z:items){func(z);}(items).Clear();}
+#define FOR_EACH_TO_CLEAR(items,func) {for(auto z:items){Medusa::Private::ToPtr(z)->func;}(items).Clear();}
 
 
-#define FOR_EACH_DICTIONARY_KEY(items,func) {for(auto z = (items).GetEnumerator();z.MoveNext();) {func(z->Key);}}
-#define FOR_EACH_DICTIONARY_KEY_TO(items,func) {for(auto z = (items).GetEnumerator();z.MoveNext();){Medusa::Private::ToPtr(z->Key)->func;}}
-#define FOR_EACH_DICTIONARY_KEY_CLEAR(items,func) {for(auto z = (items).GetEnumerator();z.MoveNext();) {func(z->Key);}(items).Clear();}
-#define FOR_EACH_DICTIONARY_KEY_TO_CLEAR(items,func) {for(auto z = (items).GetEnumerator();z.MoveNext();){Medusa::Private::ToPtr(z->Key)->func;}(items).Clear();}
+#define FOR_EACH_DICTIONARY_KEY(items,func) {for(auto z:items) {func(z.Key);}}
+#define FOR_EACH_DICTIONARY_KEY_TO(items,func) {for(auto z:items){Medusa::Private::ToPtr(z.Key)->func;}}
+#define FOR_EACH_DICTIONARY_KEY_CLEAR(items,func) {for(auto z:items) {func(z.Key);}(items).Clear();}
+#define FOR_EACH_DICTIONARY_KEY_TO_CLEAR(items,func) {for(auto z:items){Medusa::Private::ToPtr(z.Key)->func;}(items).Clear();}
 
-#define FOR_EACH_DICTIONARY_VALUE(items,func) {for(auto z = (items).GetEnumerator();z.MoveNext();) {func(z->Value);}}
-#define FOR_EACH_DICTIONARY_VALUE_TO(items,func) {for(auto z = (items).GetEnumerator();z.MoveNext();){Medusa::Private::ToPtr(z->Value)->func;}}
-#define FOR_EACH_DICTIONARY_VALUE_CLEAR(items,func) {for(auto z = (items).GetEnumerator();z.MoveNext();) {func(z->Value);}(items).Clear();}
-#define FOR_EACH_DICTIONARY_VALUE_TO_CLEAR(items,func) {for(auto z = (items).GetEnumerator();z.MoveNext();){Medusa::Private::ToPtr(z->Value)->func;}(items).Clear();}
+#define FOR_EACH_DICTIONARY_VALUE(items,func) {for(auto z:items) {func(z.Value);}}
+#define FOR_EACH_DICTIONARY_VALUE_TO(items,func) {for(auto z:items){Medusa::Private::ToPtr(z.Value)->func;}}
+#define FOR_EACH_DICTIONARY_VALUE_CLEAR(items,func) {for(auto z:items) {func(z.Value);}(items).Clear();}
+#define FOR_EACH_DICTIONARY_VALUE_TO_CLEAR(items,func) {for(auto z:items){Medusa::Private::ToPtr(z.Value)->func;}(items).Clear();}
 
 
 #define MEDUSA_LOW_SHORT(x)     ((int16)(((int32)(x)) & 0xffff))

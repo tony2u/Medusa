@@ -7,14 +7,15 @@
 #include "Core/String/HeapString.h"
 #include "Resource/Effect/Pass/IRenderPass.h"
 #include "Core/Pattern/IInitializable.h"
+#include "Core/Pattern/Share.h"
 
 
 MEDUSA_BEGIN;
 
-class EffectTechnique:public IInitializable
+class EffectTechnique :public IInitializable
 {
 public:
-	typedef SortedList<IRenderPass*,DefaultCompare<IRenderPass*>,DefaultCompareForPointer<IRenderPass> > PassCollectionType;
+	using PassCollectionType = SortedList<Share<IRenderPass>, DefaultCompareForShare, DefaultCompareForShare >;
 	EffectTechnique(StringRef name);
 	virtual ~EffectTechnique();
 	virtual void Apply();
@@ -24,15 +25,15 @@ public:
 
 	virtual bool Initialize();
 	virtual bool Uninitialize();
-	
-	void AddPass(IRenderPass* pass);
-	IRenderPass* RemovePass(StringRef name);
-	IRenderPass* GetPassByIndex(uint index);
-	IRenderPass* GetPassByName(StringRef name);
-	IRenderPass* GetFirstPass()const;
+
+	void AddPass(const Share<IRenderPass>& pass);
+	Share<IRenderPass> RemovePass(StringRef name);
+	Share<IRenderPass> GetPassByIndex(uint index);
+	Share<IRenderPass> GetPassByName(StringRef name);
+	Share<IRenderPass> GetFirstPass()const;
 
 	PassCollectionType& RenderPasses() { return mRenderPasses; }
-	const PassCollectionType& RenderPasses() const{ return mRenderPasses; }
+	const PassCollectionType& RenderPasses() const { return mRenderPasses; }
 
 
 	EffectTechniqueGroup* Group() { return mGroup; }
@@ -44,8 +45,8 @@ private:
 protected:
 	HeapString mName;
 
-	SortedList<IRenderPass*,DefaultCompare<IRenderPass*>,DefaultCompareForPointer<IRenderPass> > mRenderPasses;
-	Dictionary<HeapString,IRenderPass*> mRenderPassDict;
+	PassCollectionType mRenderPasses;
+	Dictionary<HeapString, Share<IRenderPass>> mRenderPassDict;
 	EffectTechniqueGroup* mGroup;
 	RenderPassFlags mFlags;
 };

@@ -10,6 +10,8 @@
 #include "Core/Module/IModule.h"
 #include "Core/IO/FileId.h"
 #include "Core/Pattern/Singleton.h"
+#include "Core/System/SystemDefines.h"
+#include "Geometry/Size2.h"
 
 MEDUSA_BEGIN;
 
@@ -21,12 +23,12 @@ class ApplicationSettings :public Singleton<ApplicationSettings>, public IModule
 public:
 	void SetSettingsFile(FileIdRef val) { mSettingsFile = val; }
 
-	PublishTarget Tag()const {return mTag;}
+	PublishTarget Tag()const { return mTag; }
 	PublishTarget ResultTag()const;
 	Size2F DesignWinSize()const;
 	Size2F ResultWinSize()const;
 	ApplicationDebugInfoFlags ResultDebugInfo() const;
-
+	UIOrientation Orientation() const { return mOrientation; }
 public:
 	PublishVersions Version()const { return mTag.Version; }
 	void SetVersion(PublishVersions val) { mTag.Version = val; }
@@ -34,6 +36,9 @@ public:
 	void SetDevice(PublishDevices val) { mTag.Device = val; }
 	PublishLanguages Language()const { return mTag.Language; }
 	void SetLanguage(PublishLanguages val) { mTag.Language = val; }
+
+	Size2F DebugWinSize() const { return mDebugWinSize; }
+	void SetDebugWinSize(Size2F val) { mDebugWinSize = val; }
 
 	ApplicationDebugInfoFlags DebugInfo() const { return mDebugInfo; }
 	void SetDebugInfo(ApplicationDebugInfoFlags val) { mDebugInfo = val; }
@@ -60,7 +65,9 @@ protected:
 	PublishTarget mTag;
 	EngineFeatures mFeatures;
 	bool mIsDebug = false;
-	bool mHasScriptBinding=false;
+	bool mHasScriptBinding = false;
+	UIOrientation mOrientation = UIOrientation::None;
+	Size2F mDebugWinSize;
 	
 	List<HeapString> mNodeEditors;	//find editors in order
 };

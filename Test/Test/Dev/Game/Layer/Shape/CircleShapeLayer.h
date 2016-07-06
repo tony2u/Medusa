@@ -8,7 +8,7 @@
 
 class CircleShapeLayer :public BaseCaseLayer
 {
-	MEDUSA_DECLARE_LAYER(CircleShapeLayer);
+	MEDUSA_NODE(CircleShapeLayer, BaseCaseLayer);
 public:
 	CircleShapeLayer(StringRef name=StringRef::Empty,const IEventArg& e=IEventArg::Empty);
 	virtual ~CircleShapeLayer(void);

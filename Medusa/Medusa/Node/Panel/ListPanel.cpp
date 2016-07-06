@@ -6,7 +6,7 @@
 #include "Node/DataSource/IListDataSource.h"
 #include "Geometry/Scroll/IScrollMathModel.h"
 #include "Core/Log/Log.h"
-
+#include "Node/NodeFactory.h"
 MEDUSA_BEGIN;
 
 
@@ -16,7 +16,13 @@ ListPanel::ListPanel(StringRef name/*=StringRef::Empty*/, ScrollDirection direct
 	Log::AssertFormat(!direction.IsFreeOrNone(), "ListPanel only support one-way scroll");
 }
 
-ListPanel::~ListPanel( void )
+ListPanel::ListPanel(StringRef name /*= StringRef::Empty*/, const IEventArg& e /*= IEventArg::Empty*/)
+	: ScrollPanel(name, e)
+{
+
+}
+
+ListPanel::~ListPanel(void)
 {
 }
 
@@ -126,7 +132,7 @@ bool ListPanel::RefreshItem(uint index)
 }
 
 
-void ListPanel::SetDataSource(IDataSource* dataSource)
+void ListPanel::SetDataSource(const Share<IDataSource>& dataSource)
 {
 	Log::AssertFailedFormat("ListPanel didn't support data source");
 }
@@ -149,9 +155,8 @@ bool ListPanel::ArrangeChildren(const Rect2F& limitRect/*=Rect2F::Zero*/,NodeLay
 		childRect.Size.Height=mSize.Height;
 		childRect.Origin=begin;
 
-		FOR_EACH_COLLECTION(i,mItems)
+		for (auto child : mItems)
 		{
-			INode* child=*i;
 			const Size2F& childMeasuredSize=child->MeasuredSize();
 			childRect.Size.Width=childMeasuredSize.Width;
 			childRect.Origin.X+=childRect.Size.Width;
@@ -171,9 +176,8 @@ bool ListPanel::ArrangeChildren(const Rect2F& limitRect/*=Rect2F::Zero*/,NodeLay
 		childRect.Size.Width=mSize.Width;
 		childRect.Origin=begin;
 
-		FOR_EACH_COLLECTION(i,mItems)
+		for (auto child : mItems)
 		{
-			INode* child=*i;
 			const Size2F& childMeasuredSize=child->MeasuredSize();
 			childRect.Size.Height=childMeasuredSize.Height;
 			childRect.Origin.Y-=childRect.Size.Height;
@@ -200,9 +204,8 @@ void ListPanel::OnInitializeTargetBoundingBox()
 	if (!mItems.IsEmpty())
 	{
 		//try to optimize this
-		FOR_EACH_COLLECTION(i,mItems)
+		for (auto child : mItems)
 		{
-			INode* child=*i;
 			Rect2F boundingBox=child->GetBoundingBox().To2D();
 			targetBoundingBox.Union(boundingBox);
 		}
@@ -217,7 +220,7 @@ void ListPanel::OnUpdateTargetBoundingBox()
 }
 
 
-MEDUSA_IMPLEMENT_RTTI(ListPanel, IPanel);
+MEDUSA_IMPLEMENT_NODE(ListPanel);
 
 
 MEDUSA_END;

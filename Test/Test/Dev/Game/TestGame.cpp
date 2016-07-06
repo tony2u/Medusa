@@ -20,16 +20,16 @@ TestGame::TestGame()
 	mName = "Test";
 
 	FileSystem::Instance().SetCoders(0);
-	const static byte key[] = "123456";
-	FileSystem::Instance().SetCoderKey(MemoryData::FromStatic(key, 6));
+	const static char key[] = "123456";
+	FileSystem::Instance().SetCoderKey(MemoryData::FromStatic((const uint8*)key, 6));
 
 	System::Instance().Initialize("Resource", "Save", "Temp");
 
 	Application::Instance().SetExtension(new MedusaExtensionModule());
 	
-	ApplicationSettings::Instance().SetDebugInfo(ApplicationDebugInfoFlags::All);
+	//ApplicationSettings::Instance().SetDebugInfo(ApplicationDebugInfoFlags::All);
 	//ApplicationSettings::Instance().SetSettingsFile("ApplicationSettings.lua");
-
+	//ApplicationSettings::Instance().SetDebugWinSize(msize( 360, 640));
 }
 
 TestGame::~TestGame()

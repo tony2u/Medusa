@@ -2,9 +2,9 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 #pragma once
-
-
 #include "Resource/Model/IModelNode.h"
+#include "Resource/Camera/Camera.h"
+
 MEDUSA_BEGIN;
 
 class BaseCameraModelNode:public IModelNode
@@ -13,7 +13,7 @@ public:
 	BaseCameraModelNode(StringRef name);
 	virtual ~BaseCameraModelNode(void);
 	virtual ModelNodeType Type() const{return ModelNodeType::Camera;}
-	virtual Camera* CreateCamera()const{return nullptr;}
+	virtual Share<Camera> CreateCamera()const{return nullptr;}
 };
 
 MEDUSA_END;

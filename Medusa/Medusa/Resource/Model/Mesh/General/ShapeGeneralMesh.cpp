@@ -128,6 +128,16 @@ void ShapeGeneralMesh::AppendVertex(const Point3F& vertex, uint count/*=1*/)
 
 }
 
+void ShapeGeneralMesh::AppendVertexAndIndex(const Point3F& vertex)
+{
+	AppendVertex(vertex);
+	if (mVertices.Count() > 2)
+	{
+		AppendIndex((uint)mVertices.Count() - 2);
+	}
+	AppendIndex((uint)mVertices.Count() - 1);
+}
+
 void ShapeGeneralMesh::AppendColor(const Color4F& color, uint count/*=1*/)
 {
 	mColors.Append(color, count);

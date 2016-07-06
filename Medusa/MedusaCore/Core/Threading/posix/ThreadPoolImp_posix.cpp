@@ -28,7 +28,7 @@ bool ThreadPoolImp::InitializeHelper(uint minCount /*= ThreadPoolImp::MinCount*/
 
 	if (autoManaged)
 	{
-		uint cpuCount = Environment::Instance().GetCPUCount();
+		uint cpuCount = Environment::Instance().CPUCount();
 		mMinThreadCount = 2;
 		mMaxThreadCount = cpuCount * 2 + 2;
 	}
@@ -48,7 +48,7 @@ void ThreadPoolImp::UninitialzieHelper()
 
 }
 
-void ThreadPoolImp::Enqueue(ICommand* command)
+void ThreadPoolImp::Enqueue(const ShareCommand& command)
 {
 	//find a idle thread
 	PooledThread* thread = EnqueueWorkToIdleThread(command);
@@ -58,13 +58,12 @@ void ThreadPoolImp::Enqueue(ICommand* command)
 		//insert into work queue and wait for invoking
 		//we need these code because we may hit the point that all threads are busy without any work in queue, but we get a new work right now
 		ScopedLock lock(mCommandQueueMutex);
-		command->Retain();
-		mCommands.MutableFront().Push(command);
+		mCommands.MutableFront().Add(command);
 	}
 }
 
 
-PooledThread* ThreadPoolImp::EnqueueWorkToIdleThread(ICommand* command)
+PooledThread* ThreadPoolImp::EnqueueWorkToIdleThread(const ShareCommand& command)
 {
 	ScopedLock lock(mThreadMutex);
 	PooledThread* thread = nullptr;
@@ -88,7 +87,7 @@ PooledThread* ThreadPoolImp::EnqueueWorkToIdleThread(ICommand* command)
 			//create new thread
 			thread = CreateThread();
 			thread->Activate(command);
-			mAllThreads.Push(thread);
+			mAllThreads.Add(thread);
 		}
 	}
 
@@ -153,26 +152,25 @@ bool ThreadPoolImp::OnPooledThreadComplete(PooledThread& thread)
 }
 
 
-void ThreadPoolImp::CancelPendingCommands(ICommand* command)
+void ThreadPoolImp::CancelPendingCommands(const ShareCommand& command)
 {
 	ScopedLock lock(mCommandQueueMutex);
 	CommandQueue::ValueRef commands = mCommands.MutableBack();
 
-	RETURN_IF_EMPTY(commands);
-	RETURN_IF_FALSE(commands.Contains(command));
+	//TODO:
+	//RETURN_IF_EMPTY(commands);
+	//RETURN_IF_FALSE(commands.Contains(command));
 
-	FOR_EACH_COLLECTION(i, commands)
-	{
-		ICommand* temp = *i;
-		if (temp != command)
-		{
-			commands.Push(temp);
-		}
-		else
-		{
-			temp->Release();
-		}
-	}
+	//for(auto temp: commands)
+	//{
+	//	if (temp != command)
+	//	{
+	//		commands.Add(temp);
+	//	}
+	//	else
+	//	{
+	//	}
+	//}
 	commands.Clear();
 	mCommands.Swap();
 }

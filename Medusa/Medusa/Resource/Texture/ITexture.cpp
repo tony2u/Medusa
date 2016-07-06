@@ -26,9 +26,6 @@ ITexture::ITexture(const FileIdRef& fileId,GraphicsTextureType textureType,Strin
 ITexture::~ITexture(void)
 {
 	Render::Instance().DeleteTexture(mSamplerState->Texture());
-
-	SAFE_RELEASE(mSamplerState);
-	SAFE_RELEASE(mPixelStoreState);
 }
 
 bool ITexture::IsAvailable() const
@@ -40,7 +37,7 @@ void ITexture::Apply()
 {
 	if (!mSamplerName.IsEmpty())
 	{
-		BaseProgramRenderPass* pass = RenderingContext::Instance().ProgramRenderPass();
+		auto pass = RenderingContext::Instance().ProgramRenderPass();
 		if (pass != nullptr)
 		{
 			ShaderUniform* sampler = pass->FindUniform(mSamplerName);

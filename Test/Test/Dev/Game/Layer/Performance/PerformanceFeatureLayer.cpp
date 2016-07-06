@@ -15,5 +15,5 @@ PerformanceFeatureLayer::~PerformanceFeatureLayer(void)
 }
 
 
-MEDUSA_IMPLEMENT_LAYER(PerformanceFeatureLayer, BaseFeatureLayer, StringRef::Empty, StringRef::Empty);
+MEDUSA_IMPLEMENT_NODE(PerformanceFeatureLayer);
 

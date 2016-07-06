@@ -8,17 +8,16 @@
 #include "Graphics/ResolutionAdapter.h"
 #include "Resource/RenderTarget/RenderTargetFactory.h"
 #include "Node/Editor/NodeEditorFactory.h"
-#include "Core/Command/Processor/MainCommandProcessor.h"
+#include "Core/Command/Executor/SyncCommandExecutor.h"
 #include "Node/Layer/ILayer.h"
 #include "Core/Log/Log.h"
-#include "Node/Layer/LayerFactory.h"
-#include "Node/Scene/SceneFactory.h"
 #include "Application/ApplicationStatics.h"
 #include "Core/Pattern/IVisitor.h"
 #include "Resource/Model/Mesh/IMesh.h"
 #include "Node/NodeSweeper.h"
 #include "Core/IO/Path.h"
 #include "Core/IO/FileInfo.h"
+#include "Node/NodeFactory.h"
 
 MEDUSA_BEGIN;
 
@@ -31,16 +30,16 @@ IScene::IScene(const StringRef& name/*=StringRef::Empty*/, const IEventArg& e /*
 
 	mSize = ResolutionAdapter::Instance().WinSize();
 
-	SetStretch(Stretch::Fill);
-	SetSizeToContent(SizeToContent::WidthAndHeight);
+	SetStretch(ResolutionAdapter::Instance().GetStretch());
+	//SetSizeToContent(SizeToContent::WidthAndHeight);
 	Start();
 }
 
 
 IScene::~IScene(void)
 {
-	SAFE_RELEASE(mRenderTarget);
-	SAFE_RELEASE(mCamera);
+	Uninitialize();
+	
 }
 
 bool IScene::Uninitialize()
@@ -50,7 +49,7 @@ bool IScene::Uninitialize()
 }
 
 
-IRenderTarget* IScene::RenderTarget() const
+const Share<IRenderTarget>& IScene::RenderTarget() const
 {
 	if (mRenderTarget == nullptr)
 	{
@@ -60,25 +59,20 @@ IRenderTarget* IScene::RenderTarget() const
 }
 
 
-void IScene::SetRenderTarget(IRenderTarget* val)
+void IScene::SetRenderTarget(const Share<IRenderTarget>& val)
 {
 	RETURN_IF_EQUAL(mRenderTarget, val);
-	SAFE_ASSIGN_REF(mRenderTarget, val);
+	mRenderTarget = val;
 	OnRenderQueueChanged();
 }
 
-void IScene::SetCamera(Camera* val)
+void IScene::SetCamera(const Share<Camera>& val)
 {
 	RETURN_IF_EQUAL(mCamera, val);
-	SAFE_ASSIGN_REF(mCamera, val);
+	mCamera = val;
+	
 	OnRenderQueueChanged();
 }
-
-Camera* IScene::GetCamera() const
-{
-	return mCamera;
-}
-
 //////////////////////////////////////////////////////////////////////////
 
 bool IScene::DeleteLayer(StringRef name, NodeDeleteFlags deleteFlags/*=LayerDeleteFlags::None*/)
@@ -115,9 +109,9 @@ bool IScene::DeleteLayer(ILayer* layer, NodeDeleteFlags deleteFlags /*= LayerDel
 
 void IScene::DeleteLayers(const List<StringRef>& names, NodeDeleteFlags deleteFlags/*=LayerDeleteFlags::None*/)
 {
-	FOR_EACH_COLLECTION(i, names)
+	for(auto i: names)
 	{
-		DeleteLayer(*i, deleteFlags);
+		DeleteLayer(i, deleteFlags);
 	}
 }
 
@@ -131,15 +125,16 @@ ILayer* IScene::CurrentLayer() const
 
 
 
-void IScene::PushLayer(ILayer* layer, NodePushFlags pushFlags/*=NodePushFlags::None*/)
+ILayer* IScene::PushLayer(ILayer* layer, NodePushFlags pushFlags/*=NodePushFlags::None*/)
 {
 	Log::Assert(layer != nullptr, "thisLayer should not be null.");
-    RETURN_IF_NULL(layer);
+    RETURN_NULL_IF_NULL(layer);
 
 #ifdef MEDUSA_SAFE_CHECK
 	if (HasChild(layer))
 	{
 		Log::AssertFailed("The layer pushed is already in layer stack.");
+		return layer;
 	}
 #endif
 
@@ -154,9 +149,8 @@ void IScene::PushLayer(ILayer* layer, NodePushFlags pushFlags/*=NodePushFlags::N
 	{
 		if (MEDUSA_FLAG_HAS(pushFlags,NodePushFlags::HideAllPrevs))
 		{
-			FOR_EACH_COLLECTION(i, mNodes)
+			for(auto prevLayer: mNodes)
 			{
-				INode* prevLayer = *i;
 				if (prevLayer->IsVisible())
 				{
 					prevLayer->SetVisible(false);
@@ -185,49 +179,44 @@ void IScene::PushLayer(ILayer* layer, NodePushFlags pushFlags/*=NodePushFlags::N
 	}
 
 	layer->EnableInput(!MEDUSA_FLAG_HAS(pushFlags,NodePushFlags::DisableTouch));
+	return layer;
 }
 
 ILayer* IScene::PushLayer(const StringRef& className, NodePushFlags pushFlags/*=NodePushFlags::None*/, const IEventArg& e/*=IEventArg::Empty*/)
 {
-
-	if (Path::HasExtension(className))	//means a file
+	auto node = NodeFactory::Instance().Create(className);
+	if (node == nullptr)
 	{
-		FileType fileType = FileInfo::ExtractType(className);
-		if (FileInfo::IsScriptFile(fileType))
-		{
-			return PushLayerEx(StringRef::Empty, StringRef::Empty, className, pushFlags, e);
-		}
-		else
-		{
-			auto editor = NodeEditorFactory::Instance().Find(fileType);
-			if (editor != nullptr)
-			{
-				return PushLayerEx(StringRef::Empty, className, StringRef::Empty, pushFlags, e);
-			}
-			Log::AssertFailedFormat("Cannot support scene editor file:{}", className);
-			return nullptr;
-		}
-	}
-	else
-	{
-		return PushLayerEx(className, StringRef::Empty, StringRef::Empty, pushFlags, e);
+		Log::FormatError("Cannot create scene:{}", className);
+		return nullptr;
 	}
 
-	
+	if (!node->IsA<ILayer>())
+	{
+		Log::FormatError("Node:{} is not a layer.", className);
+		SAFE_DELETE(node);
+		return nullptr;
+	}
+	return PushLayer((ILayer*)node, pushFlags);
 }
 
 
 ILayer* IScene::PushLayerEx(const StringRef& className, const FileIdRef& editorFile /*= FileIdRef::Empty*/, const FileIdRef& scriptFile /*= FileIdRef::Empty*/, NodePushFlags pushFlags/*=NodePushFlags::None*/, const IEventArg& e/*=IEventArg::Empty*/)
 {
-	auto layer = LayerFactory::Instance().Create(className, editorFile, e);
-	if (!scriptFile.IsEmpty())
+	auto node = (ILayer*)NodeFactory::Instance().Create(className, editorFile, scriptFile, e);
+	if (node == nullptr)
 	{
-		layer->AddScriptFile(scriptFile);
+		Log::FormatError("Cannot create scene:{}", className);
+		return nullptr;
 	}
 
-	PushLayer(layer, pushFlags);
-
-	return layer;
+	if (!node->IsA<ILayer>())
+	{
+		Log::FormatError("Node:{} is not a layer.", className);
+		SAFE_DELETE(node);
+		return nullptr;
+	}
+	return PushLayer((ILayer*)node, pushFlags);
 }
 
 ILayer* IScene::PopLayer(NodePopFlags popFlags/*=NodePopFlags::None*/)
@@ -309,18 +298,16 @@ ILayer* IScene::ReplaceToLayer(ILayer* toLayer, NodePopFlags popFlags/*=NodePopF
 void IScene::OnSaveStatus()
 {
 	mLayerStatusDict.Clear();
-	FOR_EACH_COLLECTION(i, mNodes)
+	for (auto layer : mNodes)
 	{
-		INode* layer = *i;
 		mLayerStatusDict.Add(layer->Name(), NodeStatus(layer->IsVisible(), layer->IsInputEnabled()));
 	}
 }
 
 void IScene::OnRestoreStatus()
 {
-	FOR_EACH_COLLECTION(i, mNodes)
+	for (auto layer : mNodes)
 	{
-		INode* layer = *i;
 		NodeStatus* statusPtr = mLayerStatusDict.TryGet(layer->Name());
 		if (statusPtr != nullptr)
 		{
@@ -380,9 +367,8 @@ bool IScene::VisitScene(IVisitor < INode* >& visitor, RenderableChangedFlags& ou
 
 	RETURN_TRUE_IF_EMPTY(mVisitNodes);
 	ApplicationStatics::Instance().AddVisitNodeCount(mVisitNodes.Count());
-	FOR_EACH_COLLECTION(i, mVisitNodes)
+	for(auto node: mVisitNodes)
 	{
-		INode* node = *i;
 		if (node->NeedVisit())
 		{
 			node->VisitRecursively(visitor, outFlag, nodeFlag, renderStateFlag);
@@ -436,6 +422,5 @@ void IScene::VisitRecursively(IVisitor < INode* >& visitor, RenderableChangedFla
 
 #pragma endregion Update
 
-MEDUSA_IMPLEMENT_SCENE(IScene, INode,StringRef::Empty,StringRef::Empty);
 
 MEDUSA_END;

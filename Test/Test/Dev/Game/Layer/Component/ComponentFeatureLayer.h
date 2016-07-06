@@ -7,7 +7,7 @@
 
 class ComponentFeatureLayer :public BaseFeatureLayer
 {
-	MEDUSA_DECLARE_LAYER(ComponentFeatureLayer);
+	MEDUSA_NODE(ComponentFeatureLayer, BaseFeatureLayer);
 public:
 	ComponentFeatureLayer(StringRef name=StringRef::Empty,const IEventArg& e=IEventArg::Empty);
 	virtual ~ComponentFeatureLayer(void);

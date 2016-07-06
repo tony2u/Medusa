@@ -35,6 +35,9 @@
 #ifdef HAVE_MALLOC_H
 #include <malloc.h>
 #endif
+#ifdef HAVE_DIRENT_H
+#include <dirent.h>
+#endif
 
 #ifndef AL_NO_UID_DEFS
 #if defined(HAVE_GUIDDEF_H) || defined(HAVE_INITGUID_H)
@@ -85,7 +88,9 @@ DEFINE_PROPERTYKEY(PKEY_AudioEndpoint_FormFactor, 0x1da5d803, 0xd492, 0x4edd, 0x
 #include <ieeefp.h>
 #endif
 
-#ifdef _WIN32_IE
+#ifndef _WIN32
+#include <unistd.h>
+#elif defined(_WIN32_IE)
 #include <shlobj.h>
 #endif
 
@@ -147,8 +152,12 @@ void FillCPUCaps(ALuint capfilter)
                 if((cpuinf[0].regs[3]&(1<<26)))
                 {
                     caps |= CPU_CAP_SSE2;
-                    if((cpuinf[0].regs[2]&(1<<19)))
-                        caps |= CPU_CAP_SSE4_1;
+                    if((cpuinf[0].regs[2]&(1<<0)))
+                    {
+                        caps |= CPU_CAP_SSE3;
+                        if((cpuinf[0].regs[2]&(1<<19)))
+                            caps |= CPU_CAP_SSE4_1;
+                    }
                 }
             }
         }
@@ -191,8 +200,12 @@ void FillCPUCaps(ALuint capfilter)
                 if((cpuinf[0].regs[3]&(1<<26)))
                 {
                     caps |= CPU_CAP_SSE2;
-                    if((cpuinf[0].regs[2]&(1<<19)))
-                        caps |= CPU_CAP_SSE4_1;
+                    if((cpuinf[0].regs[2]&(1<<0)))
+                    {
+                        caps |= CPU_CAP_SSE3;
+                        if((cpuinf[0].regs[2]&(1<<19)))
+                            caps |= CPU_CAP_SSE4_1;
+                    }
                 }
             }
         }
@@ -201,7 +214,10 @@ void FillCPUCaps(ALuint capfilter)
     /* Assume support for whatever's supported if we can't check for it */
 #if defined(HAVE_SSE4_1)
 #warning "Assuming SSE 4.1 run-time support!"
-    caps |= CPU_CAP_SSE | CPU_CAP_SSE2 | CPU_CAP_SSE4_1;
+    caps |= CPU_CAP_SSE | CPU_CAP_SSE2 | CPU_CAP_SSE3 | CPU_CAP_SSE4_1;
+#elif defined(HAVE_SSE3)
+#warning "Assuming SSE 3 run-time support!"
+    caps |= CPU_CAP_SSE | CPU_CAP_SSE2 | CPU_CAP_SSE3;
 #elif defined(HAVE_SSE2)
 #warning "Assuming SSE 2 run-time support!"
     caps |= CPU_CAP_SSE | CPU_CAP_SSE2;
@@ -215,9 +231,10 @@ void FillCPUCaps(ALuint capfilter)
     caps |= CPU_CAP_NEON;
 #endif
 
-    TRACE("Extensions:%s%s%s%s%s\n",
+    TRACE("Extensions:%s%s%s%s%s%s\n",
         ((capfilter&CPU_CAP_SSE)    ? ((caps&CPU_CAP_SSE)    ? " +SSE"    : " -SSE")    : ""),
         ((capfilter&CPU_CAP_SSE2)   ? ((caps&CPU_CAP_SSE2)   ? " +SSE2"   : " -SSE2")   : ""),
+        ((capfilter&CPU_CAP_SSE3)   ? ((caps&CPU_CAP_SSE3)   ? " +SSE3"   : " -SSE3")   : ""),
         ((capfilter&CPU_CAP_SSE4_1) ? ((caps&CPU_CAP_SSE4_1) ? " +SSE4.1" : " -SSE4.1") : ""),
         ((capfilter&CPU_CAP_NEON)   ? ((caps&CPU_CAP_NEON)   ? " +Neon"   : " -Neon")   : ""),
         ((!capfilter) ? " -none-" : "")
@@ -226,61 +243,13 @@ void FillCPUCaps(ALuint capfilter)
 }
 
 
-void *al_malloc(size_t alignment, size_t size)
-{
-#if defined(HAVE_ALIGNED_ALLOC)
-    size = (size+(alignment-1))&~(alignment-1);
-    return aligned_alloc(alignment, size);
-#elif defined(HAVE_POSIX_MEMALIGN)
-    void *ret;
-    if(posix_memalign(&ret, alignment, size) == 0)
-        return ret;
-    return NULL;
-#elif defined(HAVE__ALIGNED_MALLOC)
-    return _aligned_malloc(size, alignment);
-#else
-    char *ret = malloc(size+alignment);
-    if(ret != NULL)
-    {
-        *(ret++) = 0x00;
-        while(((ptrdiff_t)ret&(alignment-1)) != 0)
-            *(ret++) = 0x55;
-    }
-    return ret;
-#endif
-}
-
-void *al_calloc(size_t alignment, size_t size)
-{
-    void *ret = al_malloc(alignment, size);
-    if(ret) memset(ret, 0, size);
-    return ret;
-}
-
-void al_free(void *ptr)
-{
-#if defined(HAVE_ALIGNED_ALLOC) || defined(HAVE_POSIX_MEMALIGN)
-    free(ptr);
-#elif defined(HAVE__ALIGNED_MALLOC)
-    _aligned_free(ptr);
-#else
-    if(ptr != NULL)
-    {
-        char *finder = ptr;
-        do {
-            --finder;
-        } while(*finder == 0x55);
-        free(finder);
-    }
-#endif
-}
-
-
 void SetMixerFPUMode(FPUCtl *ctl)
 {
 #ifdef HAVE_FENV_H
     fegetenv(STATIC_CAST(fenv_t, ctl));
 #if defined(__GNUC__) && defined(HAVE_SSE)
+    /* FIXME: Some fegetenv implementations can get the SSE environment too?
+     * How to tell when it does? */
     if((CPUCapFlags&CPU_CAP_SSE))
         __asm__ __volatile__("stmxcsr %0" : "=m" (*&ctl->sse_state));
 #endif
@@ -345,7 +314,63 @@ void RestoreFPUMode(const FPUCtl *ctl)
 }
 
 
+static int StringSortCompare(const void *str1, const void *str2)
+{
+    return al_string_cmp(*(const_al_string*)str1, *(const_al_string*)str2);
+}
+
 #ifdef _WIN32
+
+static WCHAR *strrchrW(WCHAR *str, WCHAR ch)
+{
+    WCHAR *ret = NULL;
+    while(*str)
+    {
+        if(*str == ch)
+            ret = str;
+        ++str;
+    }
+    return ret;
+}
+
+al_string GetProcPath(void)
+{
+    al_string ret = AL_STRING_INIT_STATIC();
+    WCHAR *pathname, *sep;
+    DWORD pathlen;
+    DWORD len;
+
+    pathlen = 256;
+    pathname = malloc(pathlen * sizeof(pathname[0]));
+    while(pathlen > 0 && (len=GetModuleFileNameW(NULL, pathname, pathlen)) == pathlen)
+    {
+        free(pathname);
+        pathlen <<= 1;
+        pathname = malloc(pathlen * sizeof(pathname[0]));
+    }
+    if(len == 0)
+    {
+        free(pathname);
+        ERR("Failed to get process name: error %lu\n", GetLastError());
+        return ret;
+    }
+
+    pathname[len] = 0;
+    if((sep = strrchrW(pathname, '\\')))
+    {
+        WCHAR *sep2 = strrchrW(pathname, '/');
+        if(sep2) *sep2 = 0;
+        else *sep = 0;
+    }
+    else if((sep = strrchrW(pathname, '/')))
+        *sep = 0;
+    al_string_copy_wcstr(&ret, pathname);
+    free(pathname);
+
+    TRACE("Got: %s\n", al_string_get_cstr(ret));
+    return ret;
+}
+
 
 static WCHAR *FromUTF8(const char *str)
 {
@@ -452,84 +477,174 @@ void al_print(const char *type, const char *func, const char *fmt, ...)
 static inline int is_slash(int c)
 { return (c == '\\' || c == '/'); }
 
-FILE *OpenDataFile(const char *fname, const char *subdir)
+static void DirectorySearch(const char *path, const char *ext, vector_al_string *results)
+{
+    al_string pathstr = AL_STRING_INIT_STATIC();
+    WIN32_FIND_DATAW fdata;
+    WCHAR *wpath;
+    HANDLE hdl;
+
+    al_string_copy_cstr(&pathstr, path);
+    al_string_append_cstr(&pathstr, "\\*");
+    al_string_append_cstr(&pathstr, ext);
+
+    TRACE("Searching %s\n", al_string_get_cstr(pathstr));
+
+    wpath = FromUTF8(al_string_get_cstr(pathstr));
+
+    hdl = FindFirstFileW(wpath, &fdata);
+    if(hdl != INVALID_HANDLE_VALUE)
+    {
+        size_t base = VECTOR_SIZE(*results);
+        do {
+            al_string str = AL_STRING_INIT_STATIC();
+            al_string_copy_cstr(&str, path);
+            al_string_append_char(&str, '\\');
+            al_string_append_wcstr(&str, fdata.cFileName);
+            TRACE("Got result %s\n", al_string_get_cstr(str));
+            VECTOR_PUSH_BACK(*results, str);
+        } while(FindNextFileW(hdl, &fdata));
+        FindClose(hdl);
+
+        if(VECTOR_SIZE(*results) > base)
+            qsort(VECTOR_BEGIN(*results)+base, VECTOR_SIZE(*results)-base,
+                    sizeof(VECTOR_FRONT(*results)), StringSortCompare);
+    }
+
+    free(wpath);
+    al_string_deinit(&pathstr);
+}
+
+vector_al_string SearchDataFiles(const char *ext, const char *subdir)
 {
     static const int ids[2] = { CSIDL_APPDATA, CSIDL_COMMON_APPDATA };
-    WCHAR *wname=NULL, *wsubdir=NULL;
-    FILE *f;
+    static RefCount search_lock;
+    vector_al_string results = VECTOR_INIT_STATIC();
     size_t i;
 
-    wname = FromUTF8(fname);
-    if(!wname)
+    while(ATOMIC_EXCHANGE(uint, &search_lock, 1) == 1)
+        althrd_yield();
+
+    /* If the path is absolute, use it directly. */
+    if(isalpha(subdir[0]) && subdir[1] == ':' && is_slash(subdir[2]))
     {
-        ERR("Failed to convert UTF-8 filename: \"%s\"\n", fname);
-        return NULL;
+        al_string path = AL_STRING_INIT_STATIC();
+        al_string_copy_cstr(&path, subdir);
+#define FIX_SLASH(i) do { if(*(i) == '/') *(i) = '\\'; } while(0)
+        VECTOR_FOR_EACH(char, path, FIX_SLASH);
+#undef FIX_SLASH
+
+        DirectorySearch(al_string_get_cstr(path), ext, &results);
+
+        al_string_deinit(&path);
     }
-
-    /* If the path is absolute, open it directly. */
-    if(wname[0] != '\0' && wname[1] == ':' && is_slash(wname[2]))
+    else if(subdir[0] == '\\' && subdir[1] == '\\' && subdir[2] == '?' && subdir[3] == '\\')
+        DirectorySearch(subdir, ext, &results);
+    else
     {
-        f = _wfopen(wname, L"rb");
-        if(f) TRACE("Opened %s\n", fname);
-        else WARN("Could not open %s\n", fname);
-        free(wname);
-        return f;
-    }
+        al_string path = AL_STRING_INIT_STATIC();
+        WCHAR *cwdbuf;
 
-    /* Try the current directory first before the data directories. */
-    if((f=_wfopen(wname, L"rb")) != NULL)
-    {
-        TRACE("Opened %s\n", fname);
-        free(wname);
-        return f;
-    }
-
-    wsubdir = FromUTF8(subdir);
-    if(!wsubdir)
-    {
-        ERR("Failed to convert UTF-8 subdir: \"%s\"\n", subdir);
-        free(wname);
-        return NULL;
-    }
-
-    for(i = 0;i < COUNTOF(ids);i++)
-    {
-        WCHAR buffer[PATH_MAX];
-        size_t len;
-
-        if(SHGetSpecialFolderPathW(NULL, buffer, ids[i], FALSE) == FALSE)
-            continue;
-
-        len = lstrlenW(buffer);
-        if(len > 0 && is_slash(buffer[len-1]))
-            buffer[--len] = '\0';
-        _snwprintf(buffer+len, PATH_MAX-len, L"/%ls/%ls", wsubdir, wname);
-        len = lstrlenW(buffer);
-        while(len > 0)
+        /* Search the app-local directory. */
+        if((cwdbuf=_wgetenv(L"ALSOFT_LOCAL_PATH")) && *cwdbuf != '\0')
         {
-            --len;
-            if(buffer[len] == '/')
-                buffer[len] = '\\';
+            al_string_copy_wcstr(&path, cwdbuf);
+            if(is_slash(VECTOR_BACK(path)))
+            {
+                VECTOR_POP_BACK(path);
+                *VECTOR_END(path) = 0;
+            }
+        }
+        else if(!(cwdbuf=_wgetcwd(NULL, 0)))
+            al_string_copy_cstr(&path, ".");
+        else
+        {
+            al_string_copy_wcstr(&path, cwdbuf);
+            if(is_slash(VECTOR_BACK(path)))
+            {
+                VECTOR_POP_BACK(path);
+                *VECTOR_END(path) = 0;
+            }
+            free(cwdbuf);
+        }
+#define FIX_SLASH(i) do { if(*(i) == '/') *(i) = '\\'; } while(0)
+        VECTOR_FOR_EACH(char, path, FIX_SLASH);
+#undef FIX_SLASH
+        DirectorySearch(al_string_get_cstr(path), ext, &results);
+
+        /* Search the local and global data dirs. */
+        for(i = 0;i < COUNTOF(ids);i++)
+        {
+            WCHAR buffer[PATH_MAX];
+            if(SHGetSpecialFolderPathW(NULL, buffer, ids[i], FALSE) != FALSE)
+            {
+                al_string_copy_wcstr(&path, buffer);
+                if(!is_slash(VECTOR_BACK(path)))
+                    al_string_append_char(&path, '\\');
+                al_string_append_cstr(&path, subdir);
+#define FIX_SLASH(i) do { if(*(i) == '/') *(i) = '\\'; } while(0)
+                VECTOR_FOR_EACH(char, path, FIX_SLASH);
+#undef FIX_SLASH
+
+                DirectorySearch(al_string_get_cstr(path), ext, &results);
+            }
         }
 
-        if((f=_wfopen(buffer, L"rb")) != NULL)
-        {
-            al_string filepath = AL_STRING_INIT_STATIC();
-            al_string_copy_wcstr(&filepath, buffer);
-            TRACE("Opened %s\n", al_string_get_cstr(filepath));
-            al_string_deinit(&filepath);
-            break;
-        }
+        al_string_deinit(&path);
     }
-    free(wname);
-    free(wsubdir);
 
-    if(f == NULL)
-        WARN("Could not open %s\\%s\n", subdir, fname);
-    return NULL;
+    ATOMIC_STORE(&search_lock, 0);
+
+    return results;
 }
 
 #else
+
+al_string GetProcPath(void)
+{
+    al_string ret = AL_STRING_INIT_STATIC();
+    const char *fname;
+    char *pathname, *sep;
+    size_t pathlen;
+    ssize_t len;
+
+    pathlen = 256;
+    pathname = malloc(pathlen);
+
+    fname = "/proc/self/exe";
+    len = readlink(fname, pathname, pathlen);
+    if(len == -1 && errno == ENOENT)
+    {
+        fname = "/proc/self/file";
+        len = readlink(fname, pathname, pathlen);
+    }
+
+    while(len > 0 && (size_t)len == pathlen)
+    {
+        free(pathname);
+        pathlen <<= 1;
+        pathname = malloc(pathlen);
+        len = readlink(fname, pathname, pathlen);
+    }
+    if(len <= 0)
+    {
+        free(pathname);
+        ERR("Failed to link %s: %s\n", fname, strerror(errno));
+        return ret;
+    }
+
+    pathname[len] = 0;
+    sep = strrchr(pathname, '/');
+    if(sep)
+        al_string_copy_range(&ret, pathname, sep);
+    else
+        al_string_copy_cstr(&ret, pathname);
+    free(pathname);
+
+    TRACE("Got: %s\n", al_string_get_cstr(ret));
+    return ret;
+}
+
 
 #ifdef HAVE_DLFCN_H
 
@@ -576,74 +691,123 @@ void al_print(const char *type, const char *func, const char *fmt, ...)
 }
 
 
-FILE *OpenDataFile(const char *fname, const char *subdir)
+static void DirectorySearch(const char *path, const char *ext, vector_al_string *results)
 {
-    char buffer[PATH_MAX] = "";
-    const char *str, *next;
-    FILE *f;
+    size_t extlen = strlen(ext);
+    DIR *dir;
 
-    if(fname[0] == '/')
+    TRACE("Searching %s for *%s\n", path, ext);
+    dir = opendir(path);
+    if(dir != NULL)
     {
-        if((f=al_fopen(fname, "rb")) != NULL)
+        size_t base = VECTOR_SIZE(*results);
+        struct dirent *dirent;
+        while((dirent=readdir(dir)) != NULL)
         {
-            TRACE("Opened %s\n", fname);
-            return f;
+            al_string str;
+            size_t len;
+            if(strcmp(dirent->d_name, ".") == 0 || strcmp(dirent->d_name, "..") == 0)
+                continue;
+
+            len = strlen(dirent->d_name);
+            if(!(len > extlen))
+                continue;
+            if(strcasecmp(dirent->d_name+len-extlen, ext) != 0)
+                continue;
+
+            AL_STRING_INIT(str);
+            al_string_copy_cstr(&str, path);
+            if(VECTOR_BACK(str) != '/')
+                al_string_append_char(&str, '/');
+            al_string_append_cstr(&str, dirent->d_name);
+            TRACE("Got result %s\n", al_string_get_cstr(str));
+            VECTOR_PUSH_BACK(*results, str);
         }
-        WARN("Could not open %s\n", fname);
-        return NULL;
+        closedir(dir);
+
+        if(VECTOR_SIZE(*results) > base)
+            qsort(VECTOR_BEGIN(*results)+base, VECTOR_SIZE(*results)-base,
+                  sizeof(VECTOR_FRONT(*results)), StringSortCompare);
     }
+}
 
-    if((f=al_fopen(fname, "rb")) != NULL)
+vector_al_string SearchDataFiles(const char *ext, const char *subdir)
+{
+    static RefCount search_lock;
+    vector_al_string results = VECTOR_INIT_STATIC();
+
+    while(ATOMIC_EXCHANGE(uint, &search_lock, 1) == 1)
+        althrd_yield();
+
+    if(subdir[0] == '/')
+        DirectorySearch(subdir, ext, &results);
+    else
     {
-        TRACE("Opened %s\n", fname);
-        return f;
-    }
+        al_string path = AL_STRING_INIT_STATIC();
+        const char *str, *next;
+        char cwdbuf[PATH_MAX];
 
-    if((str=getenv("XDG_DATA_HOME")) != NULL && str[0] != '\0')
-        snprintf(buffer, sizeof(buffer), "%s/%s/%s", str, subdir, fname);
-    else if((str=getenv("HOME")) != NULL && str[0] != '\0')
-        snprintf(buffer, sizeof(buffer), "%s/.local/share/%s/%s", str, subdir, fname);
-    if(buffer[0])
-    {
-        if((f=al_fopen(buffer, "rb")) != NULL)
-        {
-            TRACE("Opened %s\n", buffer);
-            return f;
-        }
-    }
-
-    if((str=getenv("XDG_DATA_DIRS")) == NULL || str[0] == '\0')
-        str = "/usr/local/share/:/usr/share/";
-
-    next = str;
-    while((str=next) != NULL && str[0] != '\0')
-    {
-        size_t len;
-        next = strchr(str, ':');
-
-        if(!next)
-            len = strlen(str);
+        /* Search the app-local directory. */
+        if((str=getenv("ALSOFT_LOCAL_PATH")) && *str != '\0')
+            DirectorySearch(str, ext, &results);
+        else if(getcwd(cwdbuf, sizeof(cwdbuf)))
+            DirectorySearch(cwdbuf, ext, &results);
         else
+            DirectorySearch(".", ext, &results);
+
+        // Search local data dir
+        if((str=getenv("XDG_DATA_HOME")) != NULL && str[0] != '\0')
         {
-            len = next - str;
-            next++;
+            al_string_copy_cstr(&path, str);
+            if(VECTOR_BACK(path) != '/')
+                al_string_append_char(&path, '/');
+            al_string_append_cstr(&path, subdir);
+            DirectorySearch(al_string_get_cstr(path), ext, &results);
+        }
+        else if((str=getenv("HOME")) != NULL && str[0] != '\0')
+        {
+            al_string_copy_cstr(&path, str);
+            if(VECTOR_BACK(path) == '/')
+            {
+                VECTOR_POP_BACK(path);
+                *VECTOR_END(path) = 0;
+            }
+            al_string_append_cstr(&path, "/.local/share/");
+            al_string_append_cstr(&path, subdir);
+            DirectorySearch(al_string_get_cstr(path), ext, &results);
         }
 
-        if(len > sizeof(buffer)-1)
-            len = sizeof(buffer)-1;
-        strncpy(buffer, str, len);
-        buffer[len] = '\0';
-        snprintf(buffer+len, sizeof(buffer)-len, "/%s/%s", subdir, fname);
+        // Search global data dirs
+        if((str=getenv("XDG_DATA_DIRS")) == NULL || str[0] == '\0')
+            str = "/usr/local/share/:/usr/share/";
 
-        if((f=al_fopen(buffer, "rb")) != NULL)
+        next = str;
+        while((str=next) != NULL && str[0] != '\0')
         {
-            TRACE("Opened %s\n", buffer);
-            return f;
+            next = strchr(str, ':');
+            if(!next)
+                al_string_copy_cstr(&path, str);
+            else
+            {
+                al_string_copy_range(&path, str, next);
+                ++next;
+            }
+            if(!al_string_empty(path))
+            {
+                if(VECTOR_BACK(path) != '/')
+                    al_string_append_char(&path, '/');
+                al_string_append_cstr(&path, subdir);
+
+                DirectorySearch(al_string_get_cstr(path), ext, &results);
+            }
         }
+
+        al_string_deinit(&path);
     }
-    WARN("Could not open %s/%s\n", subdir, fname);
 
-    return NULL;
+    ATOMIC_STORE(&search_lock, 0);
+
+    return results;
 }
 
 #endif
@@ -692,9 +856,12 @@ ALboolean vector_reserve(char *ptr, size_t base_size, size_t obj_size, size_t ob
         /* Need to be explicit with the caller type's base size, because it
          * could have extra padding before the start of the array (that is,
          * sizeof(*vector_) may not equal base_size). */
-        temp = realloc(*vecptr, base_size + obj_size*obj_count);
+        temp = al_calloc(16, base_size + obj_size*obj_count);
         if(temp == NULL) return AL_FALSE;
+        memcpy(((ALubyte*)temp)+base_size, ((ALubyte*)*vecptr)+base_size,
+               obj_size*old_size);
 
+        al_free(*vecptr);
         *vecptr = temp;
         (*vecptr)->Capacity = obj_count;
         (*vecptr)->Size = old_size;
@@ -714,35 +881,6 @@ ALboolean vector_resize(char *ptr, size_t base_size, size_t obj_size, size_t obj
     return AL_TRUE;
 }
 
-ALboolean vector_insert(char *ptr, size_t base_size, size_t obj_size, void *ins_pos, const void *datstart, const void *datend)
-{
-    vector_ *vecptr = (vector_*)ptr;
-    if(datstart != datend)
-    {
-        ptrdiff_t ins_elem = (*vecptr ? ((char*)ins_pos - ((char*)(*vecptr) + base_size)) :
-                                        ((char*)ins_pos - (char*)NULL)) /
-                             obj_size;
-        ptrdiff_t numins = ((const char*)datend - (const char*)datstart) / obj_size;
-
-        assert(numins > 0);
-        if((size_t)numins + VECTOR_SIZE(*vecptr) < (size_t)numins ||
-           !vector_reserve((char*)vecptr, base_size, obj_size, VECTOR_SIZE(*vecptr)+numins, AL_TRUE))
-            return AL_FALSE;
-
-        /* NOTE: ins_pos may have been invalidated if *vecptr moved. Use ins_elem instead. */
-        if((size_t)ins_elem < (*vecptr)->Size)
-        {
-            memmove((char*)(*vecptr) + base_size + ((ins_elem+numins)*obj_size),
-                    (char*)(*vecptr) + base_size + ((ins_elem       )*obj_size),
-                    ((*vecptr)->Size-ins_elem)*obj_size);
-        }
-        memcpy((char*)(*vecptr) + base_size + (ins_elem*obj_size),
-               datstart, numins*obj_size);
-        (*vecptr)->Size += numins;
-    }
-    return AL_TRUE;
-}
-
 
 extern inline void al_string_deinit(al_string *str);
 extern inline size_t al_string_length(const_al_string str);
@@ -751,12 +889,16 @@ extern inline const al_string_char_type *al_string_get_cstr(const_al_string str)
 
 void al_string_clear(al_string *str)
 {
-    /* Reserve one more character than the total size of the string. This is to
-     * ensure we have space to add a null terminator in the string data so it
-     * can be used as a C-style string. */
-    VECTOR_RESERVE(*str, 1);
-    VECTOR_RESIZE(*str, 0);
-    *VECTOR_ITER_END(*str) = 0;
+    if(!al_string_empty(*str))
+    {
+        /* Reserve one more character than the total size of the string. This
+         * is to ensure we have space to add a null terminator in the string
+         * data so it can be used as a C-style string.
+         */
+        VECTOR_RESERVE(*str, 1);
+        VECTOR_RESIZE(*str, 0);
+        *VECTOR_END(*str) = 0;
+    }
 }
 
 static inline int al_string_compare(const al_string_char_type *str1, size_t str1len,
@@ -785,26 +927,44 @@ int al_string_cmp_cstr(const_al_string str1, const al_string_char_type *str2)
 void al_string_copy(al_string *str, const_al_string from)
 {
     size_t len = al_string_length(from);
+    size_t i;
+
     VECTOR_RESERVE(*str, len+1);
-    VECTOR_RESIZE(*str, 0);
-    VECTOR_INSERT(*str, VECTOR_ITER_END(*str), VECTOR_ITER_BEGIN(from), VECTOR_ITER_BEGIN(from)+len);
-    *VECTOR_ITER_END(*str) = 0;
+    VECTOR_RESIZE(*str, len);
+    for(i = 0;i < len;i++)
+        VECTOR_ELEM(*str, i) = VECTOR_ELEM(from, i);
+    *VECTOR_END(*str) = 0;
 }
 
 void al_string_copy_cstr(al_string *str, const al_string_char_type *from)
 {
     size_t len = strlen(from);
+    size_t i;
+
     VECTOR_RESERVE(*str, len+1);
-    VECTOR_RESIZE(*str, 0);
-    VECTOR_INSERT(*str, VECTOR_ITER_END(*str), from, from+len);
-    *VECTOR_ITER_END(*str) = 0;
+    VECTOR_RESIZE(*str, len);
+    for(i = 0;i < len;i++)
+        VECTOR_ELEM(*str, i) = from[i];
+    *VECTOR_END(*str) = 0;
+}
+
+void al_string_copy_range(al_string *str, const al_string_char_type *from, const al_string_char_type *to)
+{
+    size_t len = to - from;
+    size_t i;
+
+    VECTOR_RESERVE(*str, len+1);
+    VECTOR_RESIZE(*str, len);
+    for(i = 0;i < len;i++)
+        VECTOR_ELEM(*str, i) = from[i];
+    *VECTOR_END(*str) = 0;
 }
 
 void al_string_append_char(al_string *str, const al_string_char_type c)
 {
     VECTOR_RESERVE(*str, al_string_length(*str)+2);
     VECTOR_PUSH_BACK(*str, c);
-    *VECTOR_ITER_END(*str) = 0;
+    *VECTOR_END(*str) = 0;
 }
 
 void al_string_append_cstr(al_string *str, const al_string_char_type *from)
@@ -812,9 +972,14 @@ void al_string_append_cstr(al_string *str, const al_string_char_type *from)
     size_t len = strlen(from);
     if(len != 0)
     {
-        VECTOR_RESERVE(*str, al_string_length(*str)+len+1);
-        VECTOR_INSERT(*str, VECTOR_ITER_END(*str), from, from+len);
-        *VECTOR_ITER_END(*str) = 0;
+        size_t base = al_string_length(*str);
+        size_t i;
+
+        VECTOR_RESERVE(*str, base+len+1);
+        VECTOR_RESIZE(*str, base+len);
+        for(i = 0;i < len;i++)
+            VECTOR_ELEM(*str, base+i) = from[i];
+        *VECTOR_END(*str) = 0;
     }
 }
 
@@ -822,9 +987,15 @@ void al_string_append_range(al_string *str, const al_string_char_type *from, con
 {
     if(to != from)
     {
-        VECTOR_RESERVE(*str, al_string_length(*str)+(to-from)+1);
-        VECTOR_INSERT(*str, VECTOR_ITER_END(*str), from, to);
-        *VECTOR_ITER_END(*str) = 0;
+        size_t base = al_string_length(*str);
+        size_t len = to - from;
+        size_t i;
+
+        VECTOR_RESERVE(*str, base+len+1);
+        VECTOR_RESIZE(*str, base+len);
+        for(i = 0;i < len;i++)
+            VECTOR_ELEM(*str, base+i) = from[i];
+        *VECTOR_END(*str) = 0;
     }
 }
 
@@ -837,7 +1008,33 @@ void al_string_copy_wcstr(al_string *str, const wchar_t *from)
         VECTOR_RESERVE(*str, len);
         VECTOR_RESIZE(*str, len-1);
         WideCharToMultiByte(CP_UTF8, 0, from, -1, &VECTOR_FRONT(*str), len, NULL, NULL);
-        *VECTOR_ITER_END(*str) = 0;
+        *VECTOR_END(*str) = 0;
+    }
+}
+
+void al_string_append_wcstr(al_string *str, const wchar_t *from)
+{
+    int len;
+    if((len=WideCharToMultiByte(CP_UTF8, 0, from, -1, NULL, 0, NULL, NULL)) > 0)
+    {
+        size_t strlen = al_string_length(*str);
+        VECTOR_RESERVE(*str, strlen+len);
+        VECTOR_RESIZE(*str, strlen+len-1);
+        WideCharToMultiByte(CP_UTF8, 0, from, -1, &VECTOR_FRONT(*str) + strlen, len, NULL, NULL);
+        *VECTOR_END(*str) = 0;
+    }
+}
+
+void al_string_append_wrange(al_string *str, const wchar_t *from, const wchar_t *to)
+{
+    int len;
+    if((len=WideCharToMultiByte(CP_UTF8, 0, from, (int)(to-from), NULL, 0, NULL, NULL)) > 0)
+    {
+        size_t strlen = al_string_length(*str);
+        VECTOR_RESERVE(*str, strlen+len+1);
+        VECTOR_RESIZE(*str, strlen+len);
+        WideCharToMultiByte(CP_UTF8, 0, from, (int)(to-from), &VECTOR_FRONT(*str) + strlen, len+1, NULL, NULL);
+        *VECTOR_END(*str) = 0;
     }
 }
 #endif

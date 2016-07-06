@@ -2,6 +2,8 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 #include "MedusaPreCompiled.h"
+#ifdef MEDUSA_AL
+
 
 #ifdef MEDUSA_AL
 #include "OpenALDevice.h"
@@ -25,20 +27,19 @@ OpenALDevice::OpenALDevice() :mDevice(nullptr), mCaptureDevice(nullptr)
 
 OpenALDevice::~OpenALDevice()
 {
-
 }
 
 
 
 bool OpenALDevice::Initialize()
 {
-	Dictionary<AudioContextAttribute, uint, SafeEnumHashCoder<AudioContextAttribute>> attributes;
+	Dictionary<AudioContextAttribute, uint, SafeEnumHashCoder> attributes;
 	StringRef outDeviceName = StringRef::Empty;
 	TryGetContextString(AudioContextStringName::DefaultDeviceName, outDeviceName);
 	return Initialize(attributes, outDeviceName);
 }
 
-bool OpenALDevice::Initialize(const Dictionary<AudioContextAttribute, uint, SafeEnumHashCoder<AudioContextAttribute>>& attributes, const StringRef& deviceName/*=StringRef::Empty*/)
+bool OpenALDevice::Initialize(const Dictionary<AudioContextAttribute, uint, SafeEnumHashCoder>& attributes, const StringRef& deviceName/*=StringRef::Empty*/)
 {
 	mDevice = alcOpenDevice(nullptr);
 	if (mDevice == nullptr)
@@ -54,11 +55,11 @@ bool OpenALDevice::Initialize(const Dictionary<AudioContextAttribute, uint, Safe
 	else
 	{
 		List<int> data;
-		FOR_EACH_COLLECTION(i, attributes)
+		for(auto i: attributes)
 		{
-			AudioContextAttribute attr = i->Key;
+			AudioContextAttribute attr = i.Key;
 			data.Add((int)attr);
-			data.Add(i->Value);
+			data.Add(i.Value);
 		}
 		data.Add(0);	//terminated with 0
 		mContext = alcCreateContext(mDevice, data.Items());
@@ -651,5 +652,7 @@ bool OpenALDevice::GetCapureSamples(uint samplesCount, void* outBuffer)
 #pragma endregion Capture
 
 MEDUSA_END;
+
+#endif
 
 #endif

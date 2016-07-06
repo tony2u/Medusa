@@ -6,7 +6,7 @@ function _M:ctor()
 end
 
 function _M:Start()
-	
+
 	return true;
 end
 
@@ -17,3 +17,5 @@ end
 function _M:Update(dt)
 	return true;
 end
+
+return _M;

@@ -26,8 +26,7 @@ ResolutionAdapter::ResolutionAdapter()
 
 ResolutionAdapter::~ResolutionAdapter(void)
 {
-	SAFE_RELEASE(mDefaultCamera2D);
-	SAFE_RELEASE(mDefaultCamera3D);
+
 
 }
 
@@ -36,12 +35,13 @@ bool ResolutionAdapter::Initialize(const Size2F& winSize)
 {
 	mWinSize = winSize;
 	mWinRect.Size = mWinSize;
-	
+	Environment::Instance().OnUIOrientationChanged += Bind(&ResolutionAdapter::OnUIOrientationChanged, this);
+
 	return true;
 }
 
 
-bool Medusa::ResolutionAdapter::InitializeCameras()
+bool ResolutionAdapter::InitializeCameras()
 {
 	mDefaultCamera2D = CameraFactory::Instance().CreateDefault(MEDUSA_PREFIX(Default2D), true, true, ResourceShareType::Share);
 	mDefaultCamera3D = CameraFactory::Instance().CreateDefault(MEDUSA_PREFIX(Default3D), false, true, ResourceShareType::Share);
@@ -50,6 +50,10 @@ bool Medusa::ResolutionAdapter::InitializeCameras()
 
 bool ResolutionAdapter::Uninitialize()
 {
+	mDefaultCamera2D = nullptr;
+	mDefaultCamera3D = nullptr;
+
+	Environment::Instance().OnUIOrientationChanged.Clear();
 	return true;
 }
 
@@ -60,9 +64,8 @@ void ResolutionAdapter::SetWinSize(const Size2F& val)
 	mWinRect.Size = mWinSize;
 
 	
-	FOR_EACH_COLLECTION(i, SceneManager::Instance().MutableScenes())
+	for(auto scene: SceneManager::Instance().MutableScenes())
 	{
-		IScene* scene = *i;
 		scene->SetSize(mWinSize);
 		TryAddDirytNode(scene);
 	}
@@ -105,15 +108,19 @@ bool ResolutionAdapter::IsTopDirtyNode(INode* node) const
 }
 
 
+void ResolutionAdapter::OnUIOrientationChanged(UIOrientation val)
+{
+
+}
+
 void ResolutionAdapter::UpdateLayout()
 {
 	RETURN_IF_FALSE(IsLayoutDirty());
 
 	mIsLayoutUpdating = true;
 	//generate dirty nodes
-	FOR_EACH_COLLECTION(i, mDirtyNodes)
+	for (auto node : mDirtyNodes)
 	{
-		INode* node = *i;
 		if (IsTopDirtyNode(node))
 		{
 			mDirtyList.Add(node);
@@ -121,9 +128,8 @@ void ResolutionAdapter::UpdateLayout()
 	}
 	mDirtyNodes.Clear();
 
-	FOR_EACH_COLLECTION(i, mDirtyList)
+	for (auto node : mDirtyList)
 	{
-		INode* node = *i;
 		node->UpdateLayout(mWinSize);
 	}
 

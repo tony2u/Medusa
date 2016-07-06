@@ -23,7 +23,7 @@ public:
 public:
 	SIREN_METHOD(uint, MinAppVersion);
 	SIREN_METHOD(uint, CurFileVersion);
-	SIREN_METHOD(HeapString, Description);
+	SIREN_STRING(HeapString, Description);
 	SIREN_METHOD(UpdateServerStatus, Status);
 	SIREN_METHOD_DICTIONARY(uint, UpdatePackageInfo, Patches);
 	SIREN_METHOD_DICTIONARY(uint, UpdatePackageInfo, JumpPatches);

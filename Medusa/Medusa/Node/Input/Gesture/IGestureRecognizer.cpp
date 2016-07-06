@@ -45,9 +45,8 @@ bool IGestureRecognizer::TryTransformToNodeSpace( const Touch& touch,Touch& outT
 
 bool IGestureRecognizer::HasValidTouch( const List<Touch>& touches ) const
 {
-	FOR_EACH_COLLECTION(i,touches)
+	for (const auto& touch : touches)
 	{
-		const Touch& touch=*i;
 		if (mNode->HitTestWorld(touch.Pos))
 		{
 			return true;

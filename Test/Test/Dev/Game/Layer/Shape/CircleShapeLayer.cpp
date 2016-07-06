@@ -30,5 +30,5 @@ bool CircleShapeLayer::Initialize()
 
 
 
-MEDUSA_IMPLEMENT_LAYER(CircleShapeLayer, BaseCaseLayer, StringRef::Empty, StringRef::Empty);
+MEDUSA_IMPLEMENT_NODE(CircleShapeLayer);
 

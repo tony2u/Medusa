@@ -5,11 +5,12 @@
 
 #include "MedusaCorePreDeclares.h"
 #include "ThreadingDefines.h"
+#include "Core/Pattern/INonCopyable.h"
 
 MEDUSA_BEGIN;
 
 
-class Mutex :public MutexImp
+class Mutex :public MutexImp, public INonCopyable
 {
 	friend class ThreadEvent;
 public:
@@ -20,15 +21,11 @@ public:
 	void Uninitialize();
 	void Lock();
 	bool TryLock();
-	bool LockTimeout(long milliseconds);
-	bool TryLockTimeout(long milliseconds);
+	bool TryLockFor(long milliseconds);
 
 	void Unlock();
 private:
-	Mutex(const Mutex &);
-	Mutex& operator=(const Mutex &);
-private:
-	bool mIsInitialized;
+	bool mIsInitialized = false;
 };
 
 /*
@@ -65,7 +62,7 @@ public:
 };
 
 
-class NoMutex
+class NoMutex :public INonCopyable
 {
 	friend class ThreadEvent;
 public:
@@ -77,12 +74,9 @@ public:
 	void Lock() {}
 	bool TryLock() { return false; }
 	bool LockTimeout(long milliseconds) { return false; }
-	bool TryLockTimeout(long milliseconds) { return false; }
+	bool TryLockFor(long milliseconds) { return false; }
 
 	void Unlock() {}
-private:
-	NoMutex(const NoMutex &);
-	NoMutex& operator=(const NoMutex &);
 };
 
 MEDUSA_END;

@@ -14,7 +14,6 @@ public:
 	const static byte LightLCDFilter[5];	// FT_LCD_FILTER_LIGHT   is (0x00, 0x55, 0x56, 0x55, 0x00)
 	const static byte DefaultLCDFilter[5];	// FT_LCD_FILTER_DEFAULT is (0x10, 0x40, 0x70, 0x40, 0x10)
 	const static FontId Empty;
-	const static FontId Default;
 
 public:
 	FontId(const FileIdRef& fileId = FileIdRef::Empty, uint size = 0);

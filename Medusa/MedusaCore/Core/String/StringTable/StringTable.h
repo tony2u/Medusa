@@ -10,13 +10,13 @@
 //SIREN_HEADER_INCLUDE_END
 #include "Core/IO/FileIdRef.h"
 #include "Core/Pattern/Singleton.h"
-#include "Core/IO/IFileLoadable.h"
+#include "Core/IO/IFileLoadSavable.h"
 #include "Core/String/Format/Format.h"
 #include "Core/Log/Log.h"
 
 MEDUSA_BEGIN;
 
-class StringTable :public Singleton<StringTable>, public IFileLoadable
+class StringTable :public Singleton<StringTable>, public IFileLoadSavable
 {
 	friend class Singleton < StringTable >;
 public:

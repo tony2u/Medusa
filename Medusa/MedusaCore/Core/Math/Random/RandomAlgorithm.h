@@ -43,9 +43,8 @@ public:
 
 		if (maxProb == 0)
 		{
-			FOR_EACH_COLLECTION(i, probs)
+			for(auto item : probs)
 			{
-				typename List<T>::TConstReferenceType item = *i;
 				uint prob = TProbalityFunc::Get(item);
 				maxProb += prob;
 			}
@@ -79,9 +78,8 @@ public:
 		}
 		if (maxProb == 0)
 		{
-			FOR_EACH_COLLECTION(i, probs)
+			for (auto item : probs)
 			{
-				typename List<T>::TConstReferenceType item = *i;
 				if (TPredicateFunc::Get(item, userData))
 				{
 					uint prob = TProbalityFunc::Get(item);
@@ -117,9 +115,8 @@ public:
 		RETURN_FALSE_IF_EMPTY(probs);
 		if (maxProb == 0)
 		{
-			FOR_EACH_COLLECTION(i, probs)
+			for (auto item : probs)
 			{
-				typename List<T>::TConstReferenceType item = *i;
 				uint prob = TProbalityFunc::Get(item);
 				maxProb += prob;
 			}
@@ -168,7 +165,7 @@ public:
 						if (resultProb < prob)
 						{
 							outResults.Add(j);
-							cloneProbs.RemoveAtUnordered(j);
+							cloneProbs.RemoveAtSwap(j);
 							--count;
 							//update max prob
 							maxProb -= prob;

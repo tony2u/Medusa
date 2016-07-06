@@ -2,9 +2,10 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 #include "MedusaPreCompiled.h"
+#ifdef MEDUSA_AL
 #include "Audio/Device/AudioDevice.h"
 #include "IAudioSource.h"
-#include "Core/Command/EventArg/IEventArg.h"
+#include "Core/Event/EventArg/IEventArg.h"
 
 MEDUSA_BEGIN;
 
@@ -210,3 +211,5 @@ void IAudioSource::FireEndEvent()
 
 
 MEDUSA_END;
+
+#endif

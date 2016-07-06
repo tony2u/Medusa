@@ -5,13 +5,14 @@
 #include "Core/IO/Stream/IStream.h"
 #include "Core/Hash/HasherType.h"
 #include "Core/IO/Stream/MemoryStream.h"
+#include "Core/Pattern/Share.h"
 
 MEDUSA_BEGIN;
 
 class FileCodeWriteStream :public IStream
 {
 public:
-	FileCodeWriteStream(IStream& stream, const CoderChain& coderChain, FileEntry& fileEntry);
+	FileCodeWriteStream(const Share<IStream>& stream, const CoderChain& coderChain, FileEntry& fileEntry);
 
 	virtual ~FileCodeWriteStream(void);
 	virtual StreamType Type()const override{ return StreamType::Hash; }
@@ -57,7 +58,7 @@ public:
 	virtual bool CanSeek()const  override{ return mSourceStream->CanSeek(); }
 	virtual StreamDataOperation Operations()const override { return StreamDataOperation::WriteSeek; }
 private:
-	IStream* mSourceStream;
+	Share<IStream> mSourceStream;
 	const CoderChain* mCoderChain;
 	FileEntry* mFileEntry;
 	MemoryStream mBuffer;

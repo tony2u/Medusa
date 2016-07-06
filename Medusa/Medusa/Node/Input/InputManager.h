@@ -9,7 +9,7 @@
 
 MEDUSA_BEGIN;
 
-class InputManager:public Singleton<InputManager>,public IInputHandler,public FrameTask
+class InputManager :public Singleton<InputManager>, public IInputHandler, public FrameTask
 {
 	friend class Singleton<InputManager>;
 	InputManager();
@@ -46,16 +46,16 @@ protected:
 private:
 	void UpdateInputPassingRecursively();
 
-	void TouchesBeganHelper(INode* node,TouchEventArg& e);
-	void TouchesMovedHelper(INode* node,TouchEventArg& e);
-	void TouchesEndedHelper(INode* node,TouchEventArg& e);
-	void TouchesCancelledHelper(INode* node,TouchEventArg& e);
-	void MockTouchHelper(INode* node,TouchEventArg& e);
-	
-	void KeyDownHelper(INode* node,KeyDownEventArg& e);
-	void KeyUpHelper(INode* node,KeyUpEventArg& e);
-	void CharInputHelper(INode* node,CharInputEventArg& e);
-	void ScrollHelper(INode* node,ScrollEventArg& e);
+	void TouchesBeganHelper(INode* node, TouchEventArg& e);
+	void TouchesMovedHelper(INode* node, TouchEventArg& e);
+	void TouchesEndedHelper(INode* node, TouchEventArg& e);
+	void TouchesCancelledHelper(INode* node, TouchEventArg& e);
+	void MockTouchHelper(INode* node, TouchEventArg& e);
+
+	void KeyDownHelper(INode* node, KeyDownEventArg& e);
+	void KeyUpHelper(INode* node, KeyUpEventArg& e);
+	void CharInputHelper(INode* node, CharInputEventArg& e);
+	void ScrollHelper(INode* node, ScrollEventArg& e);
 
 	void KeyboardWillShowHelper(INode* node, KeyboardEventArg& e);
 	void KeyboardShowedHelper(INode* node, KeyboardEventArg& e);
@@ -63,7 +63,7 @@ private:
 	void KeyboardHidedHelper(INode* node, KeyboardEventArg& e);
 
 private:
-	INode* mFirstResponder=nullptr;
+	INode* mFirstResponder = nullptr;
 
 	HashSet<INode*> mDispatchers;
 	bool mIsDirty;

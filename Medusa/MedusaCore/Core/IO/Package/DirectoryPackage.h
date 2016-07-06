@@ -31,8 +31,8 @@ public:
 protected:
 	virtual bool OnCreateDirectory(const StringRef& dir)override;
 	virtual bool OnRemoveDirectory(DirectoryEntry& dir)override;
-	virtual const IStream* OnReadFile(const FileEntry& file, FileDataType dataType = FileDataType::Binary)const override;
-	virtual IStream* OnWriteFile(FileEntry& file, FileOpenMode openMode = FileOpenMode::ReadOnly, FileDataType dataType = FileDataType::Binary) override;
+	virtual Share<const IStream> OnReadFile(const FileEntry& file, FileDataType dataType = FileDataType::Binary)const override;
+	virtual Share<IStream> OnWriteFile(FileEntry& file, FileOpenMode openMode = FileOpenMode::ReadOnly, FileDataType dataType = FileDataType::Binary) override;
 	virtual bool OnRemoveFile(FileEntry& file) override;
 
 protected:

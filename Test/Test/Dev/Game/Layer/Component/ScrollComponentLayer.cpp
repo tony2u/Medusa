@@ -51,5 +51,5 @@ void ScrollComponentLayer::OnRestart()
 
 }
 
-MEDUSA_IMPLEMENT_LAYER(ScrollComponentLayer, BaseCaseLayer, StringRef::Empty, StringRef::Empty);
+MEDUSA_IMPLEMENT_NODE(ScrollComponentLayer);
 

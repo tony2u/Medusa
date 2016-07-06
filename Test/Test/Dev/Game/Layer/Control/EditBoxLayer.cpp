@@ -33,5 +33,5 @@ bool EditBoxLayer::Initialize()
 
 
 
-MEDUSA_IMPLEMENT_LAYER(EditBoxLayer, BaseCaseLayer, StringRef::Empty, StringRef::Empty);
+MEDUSA_IMPLEMENT_NODE(EditBoxLayer);
 

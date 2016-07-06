@@ -14,9 +14,10 @@ public:
 
 	virtual bool OnValue(bool& obj) override{ this->mStream.ReadTo(obj); return true; }
 	virtual bool OnValue(char& obj) override { this->mStream.ReadTo(obj); return true; }
-	virtual bool OnValue(byte& obj) override { this->mStream.ReadTo(obj); return true; }
-	virtual bool OnValue(short& obj) override { this->mStream.ReadTo(obj); return true; }
-	virtual bool OnValue(ushort& obj)override { this->mStream.ReadTo(obj); return true; }
+	virtual bool OnValue(int8& obj) override { this->mStream.ReadTo(obj); return true; }
+	virtual bool OnValue(uint8& obj) override { this->mStream.ReadTo(obj); return true; }
+	virtual bool OnValue(int16& obj) override { this->mStream.ReadTo(obj); return true; }
+	virtual bool OnValue(uint16& obj)override { this->mStream.ReadTo(obj); return true; }
 	virtual bool OnValue(int32& obj) override { this->mStream.ReadTo(obj); return true; }
 	virtual bool OnValue(uint32& obj) override { this->mStream.ReadTo(obj); return true; }
 	virtual bool OnValue(int64& obj)override { this->mStream.ReadTo(obj); return true; }
@@ -28,8 +29,8 @@ public:
 		obj.Clear();
 		uint length;
 		this->mStream.ReadTo(length);
-		obj.ReserveLength(length);
-		this->mStream.ReadDataToString(obj,length);
+		obj.ReserveLength(length-1);	//include \0
+		this->mStream.ReadDataToString(obj,length,true);
 
 		return true; 
 	}

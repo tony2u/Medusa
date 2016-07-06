@@ -100,7 +100,7 @@ public:
 	PODData			NormalList;		/*!< List of vertex normals (Nx0, Ny0, Nz0, Nx1, Ny1, Nz1, Nx2, etc...) */
 	PODData			TangentList;		/*!< List of vertex tangents (Tx0, Ty0, Tz0, Tx1, Ty1, Tz1, Tx2, etc...) */
 	PODData			BinormalList;		/*!< List of vertex binormals (Bx0, By0, Bz0, Bx1, By1, Bz1, Bx2, etc...) */
-	List<PODData, NoCompare<PODData> >	UVWList;			/*!< List of UVW coordinate sets; size of array given by 'nNumUVW' */
+	List<PODData, NoCompare >	UVWList;			/*!< List of UVW coordinate sets; size of array given by 'nNumUVW' */
 	PODData			VertexColorList;	/*!< A colour per vertex */
 	PODData			BoneIndexList;		/*!< nNumBones*nNumVertex ints (Vtx0Idx0, Vtx0Idx1, ... Vtx1Idx0, Vtx1Idx1, ...) */
 	PODData			BoneWeights;	/*!< nNumBones*nNumVertex floats (Vtx0Wt0, Vtx0Wt1, ... Vtx1Wt0, Vtx1Wt1, ...) */

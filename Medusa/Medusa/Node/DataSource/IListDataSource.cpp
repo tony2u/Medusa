@@ -107,6 +107,5 @@ void IListDataSource::FireDataChangedEvent()
 }
 
 
-MEDUSA_IMPLEMENT_RTTI(IListDataSource,IDataSource);
 
 MEDUSA_END;

@@ -172,6 +172,7 @@ void FileInfo::OnInitFileExtDict()
 	Extensions[(uint)FileType::pod] = FileExtensions::pod;
 	Extensions[(uint)FileType::pfx] = FileExtensions::pfx;
 	Extensions[(uint)FileType::ttf] = FileExtensions::ttf;
+	Extensions[(uint)FileType::ttc] = FileExtensions::ttc;
 	Extensions[(uint)FileType::fnt] = FileExtensions::fnt;
 	Extensions[(uint)FileType::json] = FileExtensions::json;
 	Extensions[(uint)FileType::xml] = FileExtensions::xml;

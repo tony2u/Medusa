@@ -5,7 +5,7 @@
 #include "MedusaCorePreDeclares.h"
 #include "BaseSirenBinaryWriter.h"
 #include "Core/Siren/Code/SirenCoderType.h"
-#include "Core/Utility/Utility.h"
+#include "Core/System/BitConverter.h"
 #include "SirenCompactBinarySizeCounter.h"
 
 MEDUSA_BEGIN;
@@ -16,21 +16,23 @@ public:
 	using BaseSirenBinaryWriter::BaseSirenBinaryWriter;
 
 	
-	virtual bool OnValue(bool val) override { this->mStream.Write(val);  return true; }
-	virtual bool OnValue(char val)override { return this->WriteVariableUnsigned(Utility::EncodeZigZag(val)); }
-	virtual bool OnValue(byte val) override { return WriteVariableUnsigned(val); }
-	virtual bool OnValue(short val) override { return this->WriteVariableUnsigned(Utility::EncodeZigZag(val)); }
-	virtual bool OnValue(ushort val) override { return WriteVariableUnsigned(val); }
-	virtual bool OnValue(int32 val)override { return this->WriteVariableUnsigned(Utility::EncodeZigZag(val)); }
-	virtual bool OnValue(uint32 val)override { return WriteVariableUnsigned(val); }
-	virtual bool OnValue(int64 val) override { return this->WriteVariableUnsigned(Utility::EncodeZigZag(val)); }
-	virtual bool OnValue(uint64 val)override { return WriteVariableUnsigned(val); }
-	virtual bool OnValue(float val) override { this->mStream.Write(val); return true; }
-	virtual bool OnValue(double val) override { this->mStream.Write(val); return true; }
+	virtual bool OnValue(const bool& val) override { this->mStream.Write(val);  return true; }
+	virtual bool OnValue(const char& val)override { return this->WriteVariableUnsigned(BitConverter::EncodeZigZag(val)); }
+	virtual bool OnValue(const int8& val)override { return this->WriteVariableUnsigned(BitConverter::EncodeZigZag(val)); }
+
+	virtual bool OnValue(const uint8& val) override { return WriteVariableUnsigned(val); }
+	virtual bool OnValue(const int16& val) override { return this->WriteVariableUnsigned(BitConverter::EncodeZigZag(val)); }
+	virtual bool OnValue(const uint16& val) override { return WriteVariableUnsigned(val); }
+	virtual bool OnValue(const int32& val)override { return this->WriteVariableUnsigned(BitConverter::EncodeZigZag(val)); }
+	virtual bool OnValue(const uint32& val)override { return WriteVariableUnsigned(val); }
+	virtual bool OnValue(const int64& val) override { return this->WriteVariableUnsigned(BitConverter::EncodeZigZag(val)); }
+	virtual bool OnValue(const uint64& val)override { return WriteVariableUnsigned(val); }
+	virtual bool OnValue(const float& val) override { this->mStream.Write(val); return true; }
+	virtual bool OnValue(const double& val) override { this->mStream.Write(val); return true; }
 	virtual bool OnValue(const StringRef& val)override 
 	{
-		this->WriteVariableUnsigned((uint)val.Length());
-		this->mStream.WriteString(val, false);
+		this->WriteVariableUnsigned((uint)val.Length()+1);
+		this->mStream.WriteString(val, true);
 
 		return true; 
 	}
@@ -89,21 +91,21 @@ public:
 	typename std::enable_if<TWithHeader>::type OnField(const StringRef& name, ushort id, const TObject& obj)
 	{
 		OnFieldBegin(name, id, Siren::GetDataType<TObject>::Type);
-		SirenSchemaSerializer::Visit(*this, obj);
+		SirenSchemaSerializer<false>::Visit(*this, obj);
 		OnFieldEnd();
 	}
 
 	template<typename TObject, bool TWithHeader = true>
 	typename std::enable_if<!TWithHeader>::type OnField(const StringRef& name, ushort id, const TObject& obj)
 	{
-		SirenSchemaSerializer::Visit(*this, obj);
+		SirenSchemaSerializer<false>::Visit(*this, obj);
 	}
 
 
 	template<typename TObject>
 	void OnStruct(const TObject& obj)
 	{
-		SirenSchemaSerializer::Visit(*this, obj);
+		SirenSchemaSerializer<false>::Visit(*this, obj);
 	}
 };
 

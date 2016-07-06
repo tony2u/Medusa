@@ -40,6 +40,9 @@ public:
 
 	operator IdType()const { return mId; }
 	BatchGroup& operator=(IdType v) { mId = v; return *this; }
+
+	GraphicsDrawMode DrawMode()const;
+	bool IsMatch(const BatchGroup& val)const;
 public:
 	static IdType Calculate(uint priority, uint effectId, uint materialId, uint stateTreeNodeId, uint drawMode, uint strategy);
 	static IdType Calculate(RenderingPriority priority, const IEffect& effect, const IMaterial& material, const RenderStateTreeLeafNode& stateTreeNode, GraphicsDrawMode drawMode, RenderingStrategy strategy);

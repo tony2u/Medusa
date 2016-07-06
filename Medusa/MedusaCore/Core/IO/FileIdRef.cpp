@@ -36,7 +36,14 @@ HeapString FileIdRef::ToString(const PublishTarget& tag /*= PublishTarget::Match
 
 	HeapString str;
 	intp index=Name.LastIndexOf('.');
-	str.Append(Name.c_str(), index);
+	if (index>0)
+	{
+		str.Append(Name.c_str(), index);
+	}
+	else
+	{
+		str.Append(Name);
+	}
 
 	if (tag.Version!=PublishVersions::All)
 	{
@@ -61,8 +68,10 @@ HeapString FileIdRef::ToString(const PublishTarget& tag /*= PublishTarget::Match
 		str.Append('-');
 		str += StringParser::ToString(Order);
 	}
-	
-	str.Append(Name.c_str() + index);
+	if (index > 0)
+	{
+		str.Append(Name.c_str() + index);
+	}
 	return str;
 }
 

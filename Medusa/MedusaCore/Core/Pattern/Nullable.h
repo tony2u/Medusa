@@ -21,8 +21,8 @@ public:
 	Nullable(const Nullable& field) { mValue = field.mValue; mHasValue = field.HasValue(); }
 	Nullable& operator=(const Nullable& field) { mValue = field.mValue; mHasValue = field.HasValue(); return *this; }
 
-	Nullable(Nullable&& field) 
-		:mValue(std::move(field.mValue)) 
+	Nullable(Nullable&& field)
+		:mValue(std::move(field.mValue))
 	{
 		mHasValue = field.HasValue(); field.mHasValue = false;
 	}
@@ -30,6 +30,29 @@ public:
 
 	Nullable& operator=(TParameterType val) { mValue = val; mHasValue = true; return *this; }
 	Nullable& operator=(void* p) { if (p == nullptr) { mHasValue = false; } else { MEDUSA_ASSERT_FAILED("Invalid assign."); } return *this; }
+
+	explicit operator bool() const { return HasValue(); }
+	const ValueType& operator*() const& { return mValue; }
+	ValueType& operator*()& { return mValue; }
+	ValueType  operator*()&& { return std::move(mValue); }
+
+	const ValueType* operator->() const { return &mValue; }
+	ValueType* operator->() { return &mValue; }
+
+	bool operator==(const Nullable& other)const
+	{
+		if (HasValue()!=other->HasValue())
+		{
+			return false;
+		}
+
+		if (HasValue())
+		{
+			return mValue == other->mValue;
+		}
+		return true;
+	}
+
 public:
 	bool HasValue() const { return mHasValue; }
 	void Clear() { mHasValue = false; }

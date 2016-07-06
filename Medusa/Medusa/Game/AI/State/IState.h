@@ -12,7 +12,7 @@ MEDUSA_BEGIN;
 
 class IState :public RTTIObject
 {
-	MEDUSA_DECLARE_RTTI_ROOT;
+	MEDUSA_RTTI_ROOT(IState);
 public:
 	IState();
 	virtual ~IState(void);
@@ -41,19 +41,16 @@ protected:
 };
 
 
-#define MEDUSA_DECLARE_STATE(index)													\
-		MEDUSA_DECLARE_RTTI;\
+#define MEDUSA_DECLARE_STATE(className,baseClassName,index)													\
+		MEDUSA_RTTI(className,baseClassName);\
 public:\
 virtual uint GetIndex()const override { return index; }\
 const static uint Index = index;\
 private:																				\
-	const static StaticConstructor mStaticConstructor;							\
-	static void SelfRegisterStaticCallback();
+	const static StaticConstructor mStaticConstructor;							
 
-#define MEDUSA_IMPLEMENT_STATE(className,baseClassName) 																					 \
-	MEDUSA_IMPLEMENT_RTTI(className,baseClassName);\
-	const StaticConstructor className::mStaticConstructor(SelfRegisterStaticCallback);					 \
-	void className::SelfRegisterStaticCallback(){StateFactory::Instance().Register<className>(#className);}
+#define MEDUSA_IMPLEMENT_STATE(className) 																					 \
+	const StaticConstructor className::mStaticConstructor([]{StateFactory::Instance().Register<className>(#className);});					 \
 
 
 

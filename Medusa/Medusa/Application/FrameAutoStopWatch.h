@@ -4,13 +4,13 @@
 #pragma once
 #include "MedusaPreDeclares.h"
 #include "Core/Pattern/INonCopyable.h"
-#include "Core/Profile/StopWatch.h"
+#include "Core/Chrono/StopWatch.h"
 #include "Application/FrameStep.h"
 MEDUSA_BEGIN;
 
 
 
-class FrameAutoStopWatch :public INonCopyable<FrameAutoStopWatch>
+class FrameAutoStopWatch :public INonCopyable
 {
 public:
 	FrameAutoStopWatch(StopWatch& watch,FrameStep step);

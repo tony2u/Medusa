@@ -26,10 +26,10 @@ public:
 	virtual bool Initialize()override;
 	virtual bool Uninitialize()override;
 public:
-	TextureAtlas* CreateEmpty(const FileIdRef& fileId, ResourceShareType shareType = ResourceShareType::Share);
+	Share<TextureAtlas> CreateEmpty(const FileIdRef& fileId, ResourceShareType shareType = ResourceShareType::Share);
 
-	TextureAtlas* Create(const FileIdRef& fileId, TextureAtlasType fileFormat = TextureAtlasType::None, ResourceShareType shareType = ResourceShareType::Share);
-	TextureAtlas* CreateTiledAtlas(const FileIdRef& textureFileId, const Size2U textureSize, const Size2U& tileSize, ResourceShareType shareType = ResourceShareType::Share);
+	Share<TextureAtlas> Create(const FileIdRef& fileId, TextureAtlasType fileFormat = TextureAtlasType::None, ResourceShareType shareType = ResourceShareType::Share);
+	Share<TextureAtlas> CreateTiledAtlas(const FileIdRef& textureFileId, const Size2U textureSize, const Size2U& tileSize, ResourceShareType shareType = ResourceShareType::Share);
 
 	TextureAtlasRegion* CreateAtlasRegion(StringRef regionName, const FileIdRef& atlasFileId, TextureAtlasType fileFormat = TextureAtlasType::None);
 	TextureAtlasRegion* CreateAtlasRegion(int regionId, const FileIdRef& atlasFileId, TextureAtlasType fileFormat = TextureAtlasType::None);

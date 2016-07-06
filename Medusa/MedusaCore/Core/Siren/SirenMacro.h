@@ -19,6 +19,11 @@ const Type& Name() const { return m##Name; }\
 Type& Mutable##Name() { return m##Name; }\
 void Set##Name(const Type& val) { m##Name = val; }
 
+#define SIREN_STRING(Type,Name) \
+StringRef Name() const { return m##Name; }\
+Type& Mutable##Name() { return m##Name; }\
+void Set##Name(const StringRef& val) { m##Name = val; }
+
 #define SIREN_METHOD_LIST(Type,Name) \
 const List<Type>& Name() const { return m##Name; }\
 List<Type>& Mutable##Name() { return m##Name; }\

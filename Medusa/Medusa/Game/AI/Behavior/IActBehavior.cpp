@@ -48,6 +48,5 @@ bool IActBehavior::LoadFromXmlNode(const pugi::xml_node& node)
 	return true;
 }
 
-MEDUSA_IMPLEMENT_RTTI(IActBehavior, IBehavior);
 
 MEDUSA_END;

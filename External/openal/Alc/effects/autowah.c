@@ -53,8 +53,9 @@ typedef struct ALautowahState {
     ALfilterState LowPass;
 } ALautowahState;
 
-static ALvoid ALautowahState_Destruct(ALautowahState *UNUSED(state))
+static ALvoid ALautowahState_Destruct(ALautowahState *state)
 {
+    ALeffectState_Destruct(STATIC_CAST(ALeffectState,state));
 }
 
 static ALboolean ALautowahState_deviceUpdate(ALautowahState *state, ALCdevice *device)
@@ -63,22 +64,22 @@ static ALboolean ALautowahState_deviceUpdate(ALautowahState *state, ALCdevice *d
     return AL_TRUE;
 }
 
-static ALvoid ALautowahState_update(ALautowahState *state, ALCdevice *device, const ALeffectslot *slot)
+static ALvoid ALautowahState_update(ALautowahState *state, const ALCdevice *device, const ALeffectslot *slot, const ALeffectProps *props)
 {
     ALfloat attackTime, releaseTime;
 
-    attackTime = slot->EffectProps.Autowah.AttackTime * state->Frequency;
-    releaseTime = slot->EffectProps.Autowah.ReleaseTime * state->Frequency;
+    attackTime = props->Autowah.AttackTime * state->Frequency;
+    releaseTime = props->Autowah.ReleaseTime * state->Frequency;
 
     state->AttackRate = powf(1.0f/GAIN_SILENCE_THRESHOLD, 1.0f/attackTime);
     state->ReleaseRate = powf(GAIN_SILENCE_THRESHOLD/1.0f, 1.0f/releaseTime);
-    state->PeakGain = slot->EffectProps.Autowah.PeakGain;
-    state->Resonance = slot->EffectProps.Autowah.Resonance;
+    state->PeakGain = props->Autowah.PeakGain;
+    state->Resonance = props->Autowah.Resonance;
 
-    ComputeAmbientGains(device, slot->Gain, state->Gain);
+    ComputeAmbientGains(device->Dry, slot->Params.Gain, state->Gain);
 }
 
-static ALvoid ALautowahState_process(ALautowahState *state, ALuint SamplesToDo, const ALfloat *SamplesIn, ALfloat (*SamplesOut)[BUFFERSIZE], ALuint NumChannels)
+static ALvoid ALautowahState_process(ALautowahState *state, ALuint SamplesToDo, const ALfloat (*restrict SamplesIn)[BUFFERSIZE], ALfloat (*restrict SamplesOut)[BUFFERSIZE], ALuint NumChannels)
 {
     ALuint it, kt;
     ALuint base;
@@ -91,7 +92,8 @@ static ALvoid ALautowahState_process(ALautowahState *state, ALuint SamplesToDo, 
 
         for(it = 0;it < td;it++)
         {
-            ALfloat smp = SamplesIn[it+base];
+            ALfloat smp = SamplesIn[0][it+base];
+            ALfloat a[3], b[3];
             ALfloat alpha, w0;
             ALfloat amplitude;
             ALfloat cutoff;
@@ -112,24 +114,23 @@ static ALvoid ALautowahState_process(ALautowahState *state, ALuint SamplesToDo, 
              * ALfilterType_LowPass. However, instead of passing a bandwidth,
              * we use the resonance property for Q. This also inlines the call.
              */
-            w0 = F_2PI * cutoff / state->Frequency;
+            w0 = F_TAU * cutoff / state->Frequency;
 
             /* FIXME: Resonance controls the resonant peak, or Q. How? Not sure
              * that Q = resonance*0.1. */
             alpha = sinf(w0) / (2.0f * state->Resonance*0.1f);
-            state->LowPass.b[0] = (1.0f - cosf(w0)) / 2.0f;
-            state->LowPass.b[1] =  1.0f - cosf(w0);
-            state->LowPass.b[2] = (1.0f - cosf(w0)) / 2.0f;
-            state->LowPass.a[0] =  1.0f + alpha;
-            state->LowPass.a[1] = -2.0f * cosf(w0);
-            state->LowPass.a[2] =  1.0f - alpha;
+            b[0] = (1.0f - cosf(w0)) / 2.0f;
+            b[1] =  1.0f - cosf(w0);
+            b[2] = (1.0f - cosf(w0)) / 2.0f;
+            a[0] =  1.0f + alpha;
+            a[1] = -2.0f * cosf(w0);
+            a[2] =  1.0f - alpha;
 
-            state->LowPass.b[2] /= state->LowPass.a[0];
-            state->LowPass.b[1] /= state->LowPass.a[0];
-            state->LowPass.b[0] /= state->LowPass.a[0];
-            state->LowPass.a[2] /= state->LowPass.a[0];
-            state->LowPass.a[1] /= state->LowPass.a[0];
-            state->LowPass.a[0] /= state->LowPass.a[0];
+            state->LowPass.a1 = a[1] / a[0];
+            state->LowPass.a2 = a[2] / a[0];
+            state->LowPass.b1 = b[1] / a[0];
+            state->LowPass.b2 = b[2] / a[0];
+            state->LowPass.input_gain = b[0] / a[0];
 
             temps[it] = ALfilterState_processSingle(&state->LowPass, smp);
         }

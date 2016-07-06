@@ -8,10 +8,10 @@
 MEDUSA_BEGIN;
 
 
-class RenderStateTreeLeafNode :public BaseRenderStateTreeNode, public ISharableSingleThread
+class RenderStateTreeLeafNode :public BaseRenderStateTreeNode
 {
 public:
-	RenderStateTreeLeafNode(IRenderState* state, RenderStateTreeCompositeNode* parent);
+	RenderStateTreeLeafNode(const Share<IRenderState>& state, RenderStateTreeCompositeNode* parent);
 	~RenderStateTreeLeafNode(void);
 	
 	

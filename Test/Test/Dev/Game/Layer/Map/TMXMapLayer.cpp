@@ -17,7 +17,7 @@ bool TMXMapLayer::Initialize()
 {
 	RETURN_FALSE_IF_FALSE(BaseCaseLayer::Initialize());
 
-	TmxTiledMap* tiledMap = TiledMapFactory::Instance().Create("Home.tmx");
+	auto tiledMap = TiledMapFactory::Instance().Create("Home.tmx");
 
 	INode* node= tiledMap->Instantiate();
 	AddChild(node);
@@ -28,5 +28,5 @@ bool TMXMapLayer::Initialize()
 
 
 
-MEDUSA_IMPLEMENT_LAYER(TMXMapLayer, BaseCaseLayer, StringRef::Empty, StringRef::Empty);
+MEDUSA_IMPLEMENT_NODE(TMXMapLayer);
 

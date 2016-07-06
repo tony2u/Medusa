@@ -14,7 +14,7 @@ public:
 	using TextureAtlas::TextureAtlas;
 	virtual TextureAtlasType AtlasType()const { return TextureAtlasType::MedusaCustom; }
 protected:
-	virtual TextureAtlasPage* OnCreatePage(const FileIdRef& fileId, const IStream& stream) override;
+	virtual TextureAtlasPage* OnCreatePage(FileEntry& fileEntry, const FileIdRef& fileId, const IStream& stream) override;
 protected:
 	static TextureAtlasRegion* CreateAtlasRegion(const IStream& stream);
 };

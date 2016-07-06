@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 #include "MedusaPreCompiled.h"
 #include "NotPredicate.h"
-
+#include "PredicateFactory.h"
 MEDUSA_BEGIN;
 
 NotPredicate::NotPredicate(const IPredicate* right /*= nullptr*/)
@@ -20,6 +20,5 @@ int NotPredicate::Evaluate(void* p) const
 	return !mItems.First()->Evaluate(p);
 }
 
-MEDUSA_IMPLEMENT_RTTI(NotPredicate, IPredicate);
-
+MEDUSA_IMPLEMENT_PREDICATE(NotPredicate);
 MEDUSA_END;

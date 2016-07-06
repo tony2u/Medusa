@@ -27,9 +27,8 @@ bool BrainCache::LoadFromData(const FileIdRef& fileId, const MemoryData& data, u
 		return false;
 	}
 
-	FOR_EACH_COLLECTION_STL(i, doc.first_child().children())
+	for(const auto& child: doc.first_child().children())
 	{
-		pugi::xml_node child = *i;
 		StringRef typeName = child.name();
 		StringRef id = child.attribute("Id").value();
 		if (id.IsEmpty())
@@ -43,7 +42,7 @@ bool BrainCache::LoadFromData(const FileIdRef& fileId, const MemoryData& data, u
 			Log::AssertFailedFormat("Duplicate id:{} in {}", id.c_str(), typeName.c_str());
 		}
 #endif
-		IBrain* brain = BrainFactory::Instance().SmartCreate(typeName);
+		auto brain = BrainFactory::Instance().SmartCreate(typeName);
 		StringRef paramter = child.attribute("Paramter").value();
 		brain->SetParamter(paramter);
 		brain->Initialize();
@@ -67,14 +66,13 @@ bool BrainCache::LoadFromData(const FileIdRef& fileId, const MemoryData& data, u
 		}
 
 		//event handler
-		FOR_EACH_COLLECTION_STL(j, child.children())
+		for (const auto& eventChild : child.children())
 		{
-			pugi::xml_node eventChild = *j;
 			StringRef eventName = eventChild.name();
 			StringRef behaviorName = eventChild.attribute("Behavior").value();
 			if (!behaviorName.IsEmpty())
 			{
-				IBehavior* behavior = BehaviorConfig::Instance().SmartCreate(behaviorName);
+				auto behavior = BehaviorConfig::Instance().SmartCreate(behaviorName);
 				brain->RegisterEventBehavior(eventName, behavior);
 			}
 		}

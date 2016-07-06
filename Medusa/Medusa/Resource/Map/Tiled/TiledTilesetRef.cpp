@@ -15,7 +15,7 @@ TiledTilesetRef::TiledTilesetRef()
 
 TiledTilesetRef::~TiledTilesetRef()
 {
-	SAFE_RELEASE(mTileset);
+	mTileset = nullptr;
 }
 
 bool TiledTilesetRef::Parse(const pugi::xml_node& node)
@@ -31,20 +31,20 @@ bool TiledTilesetRef::Parse(const pugi::xml_node& node)
 	const char* sourceName = node.attribute("source").as_string(nullptr);
 	if (sourceName != nullptr)
 	{
-		TiledTileset* tileset = TiledTilesetFactory::Instance().Create(FileIdRef(sourceName));
+		auto tileset = TiledTilesetFactory::Instance().Create(FileIdRef(sourceName));
 		SetTileset(tileset);
 		return true;
 	}
 
-	TiledTileset* tileset = new TiledTileset(FileIdRef(sourceName));
+	Share<TiledTileset> tileset = new TiledTileset(FileIdRef(sourceName));
 	tileset->Parse(node);
 	SetTileset(tileset);
 	return true;
 }
 
-void TiledTilesetRef::SetTileset(const TiledTileset* val)
+void TiledTilesetRef::SetTileset(const Share<TiledTileset>& val)
 {
-	SAFE_ASSIGN_REF(mTileset, val);
+	mTileset = val;
 }
 
 

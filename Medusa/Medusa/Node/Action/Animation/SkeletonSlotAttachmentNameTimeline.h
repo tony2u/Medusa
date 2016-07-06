@@ -9,7 +9,7 @@ MEDUSA_BEGIN;
 class SkeletonSlotAttachmentNameTimeline:public ITimeline
 {
 public:
-	SkeletonSlotAttachmentNameTimeline(StringTimelineModel* model, bool isRepeatForever = false);
+	SkeletonSlotAttachmentNameTimeline(const Share<StringTimelineModel>& model, bool isRepeatForever = false);
 	virtual ~SkeletonSlotAttachmentNameTimeline();
 	virtual bool Initialize(void* target)override;
 

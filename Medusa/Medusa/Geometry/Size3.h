@@ -8,7 +8,7 @@
 
 #include "Geometry/Size2.h"
 #include "Core/Math/Math.h"
-#include "Core/Utility/Utility.h"
+#include "Core/System/BitConverter.h"
 
 MEDUSA_BEGIN;
 template<typename T>

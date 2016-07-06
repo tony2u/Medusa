@@ -5,6 +5,8 @@
 #include "Core/Collection/Dictionary.h"
 #include "Core/String/HeapString.h"
 #include "Core/Pattern/IInitializable.h"
+#include "Resource/Effect/IEffect.h"
+#include "Core/Pattern/Share.h"
 
 MEDUSA_BEGIN;
 
@@ -32,8 +34,8 @@ public:
 	EffectTechnique* CurrentTechnique() const { return mCurrentTechnique; }
 	void SetCurrentTechnique(StringRef name);
 
-	IEffect* Effect() { return mEffect; }
-	void SetEffect(IEffect* val);
+	const Share<IEffect>& Effect() { return mEffect; }
+	void SetEffect(const Share<IEffect>& val);
 protected:
 	HeapString mName;
 	EffectTechnique* mCurrentTechnique;
@@ -41,7 +43,7 @@ protected:
 	Dictionary<HeapString,EffectTechnique*> mTechniqueDict;
 	const static StringRef mDefaultTechniqueName;
 
-	IEffect* mEffect;
+	Share<IEffect> mEffect;
 	
 };
 

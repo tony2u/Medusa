@@ -14,8 +14,8 @@ MEDUSA_BEGIN;
 class TextureAtlasPage
 {
 public:
-	TextureAtlasPage(const FileIdRef& textureFileId);
-	TextureAtlasPage(int id);
+	TextureAtlasPage(const FileIdRef& textureFileId, FileEntry* fileEntry=nullptr);
+	TextureAtlasPage(int id, FileEntry* fileEntry = nullptr);
 
 	virtual ~TextureAtlasPage();
 
@@ -43,9 +43,9 @@ public:
 
 	bool IsLoaded()const { return mTexture != nullptr; }
 
-	ITexture* LoadTexture();
-	ITexture* GetTexture() const { return mTexture; }
-	void SetTexture(ITexture* val);
+	const Share<ITexture>& LoadTexture();
+	const Share<ITexture>& GetTexture() const { return mTexture; }
+	void SetTexture(const Share<ITexture>& val);
 
 	FileIdRef TextureFileId() const { return mTextureFileId.ToRef(); }
 	void SetTextureFileId(FileIdRef val) { mTextureFileId = val; }
@@ -65,7 +65,7 @@ public:
 	RotateDirection GetRotateDirection() const { return mRotateDirection; }
 	void SetRotateDirection(RotateDirection val) { mRotateDirection = val; }
 protected:
-	TextureAtlas* mAtlas = nullptr;
+	TextureAtlas* mAtlas=nullptr;	//weak ptr
 
 	FileId mTextureFileId;
 
@@ -84,7 +84,9 @@ protected:
 	int mId = -1;
 
 	Size2U mPageSize;//always equal with texture size
-	ITexture* mTexture = nullptr;	//cached,lazy load
+	Share<ITexture> mTexture;	//cached,lazy load
+
+	FileEntry* mFileEntry = nullptr;	//point to real file in file system
 };
 
 MEDUSA_END;

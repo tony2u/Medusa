@@ -17,7 +17,7 @@ bool Environment::IsNetworkAvailable()
 	return true;
 }
 
-uint Environment::GetCPUCount() const
+uint Environment::CPUCount() const
 {
 	SYSTEM_INFO info;
 	GetSystemInfo(&info);

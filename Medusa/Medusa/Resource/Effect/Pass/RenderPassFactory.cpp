@@ -70,22 +70,22 @@ bool RenderPassFactory::UnregisterRenderPassDescription(StringRef name)
 	return false;
 }
 
-IRenderPass* RenderPassFactory::CreateRenderPass(const RenderPassDescription& description, const List<HeapString>* defines/*=nullptr*/, ResourceShareType shareType /*= ResourceShareType::Share*/)
+Share<IRenderPass> RenderPassFactory::CreateRenderPass(const RenderPassDescription& description, const List<HeapString>* defines/*=nullptr*/, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
 	return CreateRenderPass(description.Name, description.VertexShaderFile, description.PixelShaderFile, description.Index, defines, shareType);
 }
 
-IRenderPass* RenderPassFactory::CreateRenderPass(const FileIdRef& fileId, const FileIdRef& vertexShaderFile, const FileIdRef& pixelShaderFile, int index/*=0*/, const List<HeapString>* defines/*=nullptr*/, ResourceShareType shareType /*= ResourceShareType::Share*/)
+Share<IRenderPass> RenderPassFactory::CreateRenderPass(const FileIdRef& fileId, const FileIdRef& vertexShaderFile, const FileIdRef& pixelShaderFile, int index/*=0*/, const List<HeapString>* defines/*=nullptr*/, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
-	IShader* vertexShader = ShaderFactory::Instance().CreateShader(vertexShaderFile, defines);
-	IShader* pixelShader = ShaderFactory::Instance().CreateShader(pixelShaderFile, defines);
+	auto vertexShader = ShaderFactory::Instance().CreateShader(vertexShaderFile, defines);
+	auto pixelShader = ShaderFactory::Instance().CreateShader(pixelShaderFile, defines);
 
 	return CreateRenderPass(fileId, vertexShader, pixelShader, index, shareType);
 }
 
-IRenderPass* RenderPassFactory::CreateRenderPass(const FileIdRef& fileId, IShader* vertexShader, IShader* pixelShader, int index/*=0*/, ResourceShareType shareType /*= ResourceShareType::Share*/)
+Share<IRenderPass> RenderPassFactory::CreateRenderPass(const FileIdRef& fileId, const Share<IShader>& vertexShader, const Share<IShader>& pixelShader, int index/*=0*/, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
-	IRenderPass* pass = nullptr;
+	Share<IRenderPass> pass;
 	if (shareType != ResourceShareType::None)
 	{
 		pass = Find(fileId);
@@ -100,7 +100,7 @@ IRenderPass* RenderPassFactory::CreateRenderPass(const FileIdRef& fileId, IShade
 
 	if (pass != nullptr&&!pass->Initialize())
 	{
-		SAFE_DELETE(pass);
+		pass = nullptr;
         return nullptr;
 	}
 
@@ -109,9 +109,9 @@ IRenderPass* RenderPassFactory::CreateRenderPass(const FileIdRef& fileId, IShade
 	return pass;
 }
 
-IRenderPass* RenderPassFactory::CreateRenderPass(const FileIdRef& fileId, const List<HeapString>* defines/*=nullptr*/, ResourceShareType shareType /*= ResourceShareType::Share*/)
+Share<IRenderPass> RenderPassFactory::CreateRenderPass(const FileIdRef& fileId, const List<HeapString>* defines/*=nullptr*/, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
-	IRenderPass* pass = nullptr;
+	Share<IRenderPass> pass;
 	if (shareType != ResourceShareType::None)
 	{
 		pass = Find(fileId);

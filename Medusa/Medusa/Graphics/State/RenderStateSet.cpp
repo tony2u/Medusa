@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 #include "MedusaPreCompiled.h"
 #include "RenderStateSet.h"
-#include "Core/Pattern/Ptr/LazyStrongPtr.inl"
+#include "Core/Pattern/LazyStrongPtr.inl"
 
 #include "Graphics/GraphicsTypes.h"
 #include "Graphics/State/IRenderState.h"
@@ -25,7 +25,7 @@ RenderStateSet::RenderStateSet()
 
 RenderStateSet::~RenderStateSet(void)
 {
-
+	mItems.Clear();
 }
 
 
@@ -36,7 +36,7 @@ bool RenderStateSet::Equals(const RenderStateSet& states) const
 
 void RenderStateSet::Apply()const
 {
-	for (auto* state:mItems)
+	for (auto& state:mItems)
 	{
 		if (state!=nullptr)
 		{
@@ -48,7 +48,7 @@ void RenderStateSet::Apply()const
 
 void RenderStateSet::Restore()const
 {
-	for (auto* state : mItems)
+	for (auto& state : mItems)
 	{
 		if (state != nullptr)
 		{
@@ -59,23 +59,23 @@ void RenderStateSet::Restore()const
 
 bool RenderStateSet::IsBlendEnabled() const
 {
-	BlendRenderState* state = GetState<BlendRenderState>();
+	auto state = GetState<BlendRenderState>();
 	return state != nullptr&&state->IsEnabled();
 }
 
 void RenderStateSet::EnableBlend(bool val)
 {
-	BlendRenderState* state = AllocState<BlendRenderState>();
+	auto state = AllocState<BlendRenderState>();
 	state->Enable(val);
 }
 
 void RenderStateSet::SetBlendFunc(GraphicsBlendSrcFunc srcFunc, GraphicsBlendDestFunc destFunc)
 {
-	BlendRenderState* state = AllocState<BlendRenderState>();
+	auto state = AllocState<BlendRenderState>();
 	state->SetBlendFunc(srcFunc, destFunc);
 }
 
-BlendRenderState* RenderStateSet::RemoveBlend()
+Share<BlendRenderState> RenderStateSet::RemoveBlend()
 {
 	return RemoveState<BlendRenderState>();
 }
@@ -83,30 +83,30 @@ BlendRenderState* RenderStateSet::RemoveBlend()
 
 bool RenderStateSet::HasScissorBox() const
 {
-	ScissorRenderState* state = GetState<ScissorRenderState>();
+	auto state = GetState<ScissorRenderState>();
 	return state != nullptr;
 }
 
 
 bool RenderStateSet::IsScissorEnabled() const
 {
-	ScissorRenderState* state = GetState<ScissorRenderState>();
+	auto state = GetState<ScissorRenderState>();
 	return state != nullptr&&state->IsEnabled();
 }
 
 void RenderStateSet::SetScissorBox(const Rect2F& val)
 {
-	ScissorRenderState* state = AllocState<ScissorRenderState>();
+	auto state = AllocState<ScissorRenderState>();
 	state->SetScissorBox(val);
 }
 
 void RenderStateSet::EnableScissor(bool val)
 {
-	ScissorRenderState* state = AllocState<ScissorRenderState>();
+	auto state = AllocState<ScissorRenderState>();
 	state->Enable(val);
 }
 
-ScissorRenderState* RenderStateSet::RemoveScissor()
+Share<ScissorRenderState> RenderStateSet::RemoveScissor()
 {
 	return RemoveState<ScissorRenderState>();
 
@@ -114,14 +114,14 @@ ScissorRenderState* RenderStateSet::RemoveScissor()
 
 const Rect2F* RenderStateSet::TryGetScissorBox() const
 {
-	ScissorRenderState* state = GetState<ScissorRenderState>();
+	auto state = GetState<ScissorRenderState>();
 	RETURN_NULL_IF_NULL(state);
 	return &state->ScissorBox();
 }
 
 const Rect2F& RenderStateSet::GetScissorBoxOrEmpty() const
 {
-	ScissorRenderState* state = GetState<ScissorRenderState>();
+	auto state = GetState<ScissorRenderState>();
 	if (state != nullptr)
 	{
 		return state->ScissorBox();
@@ -132,20 +132,20 @@ const Rect2F& RenderStateSet::GetScissorBoxOrEmpty() const
 
 ShaderUniformValue* RenderStateSet::FindOrCreateUniform(StringRef name)
 {
-	ShaderUniformRenderState* state = AllocState<ShaderUniformRenderState>();
+	auto state = AllocState<ShaderUniformRenderState>();
 	return state->FindOrCreate(name);
 }
 
 void RenderStateSet::UpdateFromParent(const RenderStateSet& selfRenderState, const RenderStateSet& parentRenderState, const Matrix4& selfWorldMatrix, RenderStateType flag)
 {
-	FOR_EACH_SIZE(i, (uint)RenderStateType::Count)
+	FOR_EACH_UINT32(i, (uint)RenderStateType::Count)
 	{
 		uint index = 1 << i;
 		CONTINUE_IF_FALSE(MEDUSA_FLAG_HAS(flag, index));
 
-		auto* state = mItems[i];
-		auto* selfState = selfRenderState.mItems[i];
-		auto* parentState = parentRenderState.mItems[i];
+		auto& state = mItems[i];
+		auto& selfState = selfRenderState.mItems[i];
+		auto& parentState = parentRenderState.mItems[i];
 
 		if (selfState == nullptr&&parentState == nullptr)
 		{
@@ -173,13 +173,13 @@ void RenderStateSet::UpdateFromParent(const RenderStateSet& selfRenderState, con
 
 void RenderStateSet::UpdateFromSelf(const RenderStateSet& selfRenderState, const Matrix4& selfWorldMatrix, RenderStateType flag)
 {
-	FOR_EACH_SIZE(i, (uint)RenderStateType::Count)
+	FOR_EACH_UINT32(i, (uint)RenderStateType::Count)
 	{
 		uint index = 1 << i;
 		CONTINUE_IF_FALSE(MEDUSA_FLAG_HAS(flag, index));
 		
-		auto* state = mItems[i];
-		auto* selfState = selfRenderState.mItems[i];
+		auto& state = mItems[i];
+		auto& selfState = selfRenderState.mItems[i];
 
 		if (selfState!=nullptr)
 		{
@@ -207,16 +207,16 @@ void RenderStateSet::OnStateChangedEvent(IRenderState& state)
 	OnStateChanged(state);
 }
 
-IRenderState* RenderStateSet::GetState(RenderStateType type) const
+Share<IRenderState> RenderStateSet::GetState(RenderStateType type) const
 {
 	uint32 index = Math::CountTrailingZero((uint32)type);
 	return mItems[index];
 }
 
-IRenderState* RenderStateSet::AllocState(RenderStateType type)
+Share<IRenderState> RenderStateSet::AllocState(RenderStateType type)
 {
 	uint32 index = Math::CountTrailingZero((uint32)type);
-	IRenderState* state = mItems[index];
+	auto& state = mItems[index];
 	if (state == nullptr)
 	{
 		state = RenderStateFactory::Instance().Create(index);
@@ -227,22 +227,17 @@ IRenderState* RenderStateSet::AllocState(RenderStateType type)
 	return state;
 }
 
-IRenderState* RenderStateSet::RemoveState(RenderStateType type)
+Share<IRenderState> RenderStateSet::RemoveState(RenderStateType type)
 {
 	uint32 index = Math::CountTrailingZero((uint32)type);
-	IRenderState* state = mItems[index];
+	auto state = mItems[index];
 	RETURN_NULL_IF_NULL(state);
 
 	state->OnChanged -= Bind(&RenderStateSet::OnStateChangedEvent, this);
 	OnStateRemoved(type);
 	mItems[index] = nullptr;
-	if (state->IsShared())
-	{
-		state->Release();
-		return state;
-	}
-	state->Release();	//release it self
-	return nullptr;
+	return state;
+	
 }
 
 MEDUSA_END;

@@ -28,10 +28,10 @@ public:
 	virtual bool Initialize();
 	virtual bool Uninitialize();
 public:
-	IImage* CreateFromFile(const FileIdRef& fileId, ResourceShareType shareType = ResourceShareType::Share);
-	IImage* CreateFromOrderItem(const FileIdRef& fileId, const FileMapOrderItem& orderItem, ResourceShareType shareType = ResourceShareType::Share);
+	Share<IImage> CreateFromFile(const FileIdRef& fileId, ResourceShareType shareType = ResourceShareType::Share);
+	Share<IImage> CreateFromOrderItem(const FileIdRef& fileId, const FileMapOrderItem& orderItem, ResourceShareType shareType = ResourceShareType::Share);
 
-	IImage* CreateFromMemory(const FileIdRef& fileId, const FileEntry& fileEntry, MemoryData data, ResourceShareType shareType = ResourceShareType::Share);
+	Share<IImage> CreateFromMemory(const FileIdRef& fileId, const FileEntry& fileEntry, MemoryData data, ResourceShareType shareType = ResourceShareType::Share);
 private:
 	MEDUSA_FORCE_INLINE static void RGB_RGBA_Normal(byte* dest, const byte* src);
 	MEDUSA_FORCE_INLINE static void RGB_RGBA_Real(byte* dest, const byte* src);

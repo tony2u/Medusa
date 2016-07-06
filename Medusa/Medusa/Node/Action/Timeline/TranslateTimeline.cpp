@@ -8,13 +8,13 @@
 
 MEDUSA_BEGIN;
 
-TranslateTimeline::TranslateTimeline(TranslateTimelineModel* model, bool isRepeatForever, float beforeDelay /*= 0.f*/, float repeatDuration /*= 0.f*/, float afterDelay /*= 0.f*/, const StringRef& name /*= StringRef::Empty*/)
+TranslateTimeline::TranslateTimeline(const Share<TranslateTimelineModel>& model, bool isRepeatForever, float beforeDelay /*= 0.f*/, float repeatDuration /*= 0.f*/, float afterDelay /*= 0.f*/, const StringRef& name /*= StringRef::Empty*/)
 	: ITimeline(model, isRepeatForever, beforeDelay, repeatDuration, afterDelay, name)
 {
 
 }
 
-TranslateTimeline::TranslateTimeline(TranslateTimelineModel* model, intp repeatCount, float beforeDelay /*= 0.f*/, float repeatDuration /*= 0.f*/, float afterDelay /*= 0.f*/, const StringRef& name /*= StringRef::Empty*/)
+TranslateTimeline::TranslateTimeline(const Share<TranslateTimelineModel>& model, intp repeatCount, float beforeDelay /*= 0.f*/, float repeatDuration /*= 0.f*/, float afterDelay /*= 0.f*/, const StringRef& name /*= StringRef::Empty*/)
 	: ITimeline(model, repeatCount, beforeDelay, repeatDuration, afterDelay, name)
 {
 
@@ -27,7 +27,7 @@ TranslateTimeline::~TranslateTimeline()
 
 bool TranslateTimeline::OnUpdate(float prevElapsed,float dt, float blend /*= 1.f*/)
 {
-	TranslateTimelineModel* model = (TranslateTimelineModel*)mModel;
+	auto model = mModel.CastPtr<TranslateTimelineModel>();
 	Point3F val = model->GetTranslate(Elapsed())*blend;
 	INode* node = (INode*)mTarget;
 	node->SetPosition(val);

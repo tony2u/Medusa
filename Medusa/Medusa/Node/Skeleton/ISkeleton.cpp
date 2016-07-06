@@ -22,36 +22,33 @@
 #include "Core/Action/Composite/CountDownAction.h"
 
 #include "Geometry/Range.h"
-
+#include "Node/NodeFactory.h"
 
 MEDUSA_BEGIN;
 
-ISkeleton::ISkeleton(StringRef name, ISkeletonModel* model)
+ISkeleton::ISkeleton(StringRef name, const Share<ISkeletonModel>& model)
 	:INode(name), mModel(model),
 	mAvatarModel(nullptr),
 	mIsBoneVisible(false),
 	mIsSlotVisible(true)
 {
 	Start();
-	SAFE_RETAIN(mModel);
 	SetSize(model->GetBoundingSize());
 
 	SetAvatarModel(mModel->DefaultAvatar());
 
 	//create bones
 	const List<SkeletonBoneModel*>& bones = mModel->Bones();
-	FOR_EACH_COLLECTION(i, bones)
+	for (auto boneModel : bones)
 	{
-		SkeletonBoneModel* boneModel = *i;
 		SkeletonBone* bone = new SkeletonBone(boneModel);
 		bone->SetSkeleton(this);
 		mBones.Add(bone);
 		mBoneDict.Add(boneModel->Name(), bone);
 	}
 
-	FOR_EACH_COLLECTION(i, mBones)
+	for (auto bone : mBones)
 	{
-		SkeletonBone* bone = *i;
 		SkeletonBoneModel* parentBoneModel = bone->Model()->Parent();
 		if (parentBoneModel != nullptr)
 		{
@@ -81,9 +78,8 @@ ISkeleton::ISkeleton(StringRef name, ISkeletonModel* model)
 
 	//ik
 	const List<SkeletonIKModel*> iks = mModel->IKs();
-	FOR_EACH_COLLECTION(i, iks)
+	for (auto ikModel : iks)
 	{
-		SkeletonIKModel* ikModel = *i;
 		SkeletonIK* ik = new SkeletonIK(this, ikModel);
 		mIKs.Add(ik);
 		mIKDict.Add(ikModel->Name(), ik);
@@ -127,12 +123,18 @@ ISkeleton::ISkeleton(StringRef name, ISkeletonModel* model)
 }
 
 
+ISkeleton::ISkeleton(const StringRef& name /*= StringRef::Empty*/, const IEventArg& e /*= IEventArg::Empty*/)
+	:INode(name,e)
+{
+
+}
+
 ISkeleton::~ISkeleton()
 {
 	SAFE_DELETE_COLLECTION(mBones);
 	SAFE_DELETE_COLLECTION(mIKs);
 
-	SAFE_RELEASE(mModel);
+	mModel = nullptr;
 
 	SAFE_DELETE_DICTIONARY_VALUE(mTriggers);
 }
@@ -156,11 +158,7 @@ void ISkeleton::UpdateBones()
 	FOR_EACH_SIZE(i, updateCount)
 	{
 		List<SkeletonBone*>& bones = mBoneUpdateList[i];
-		FOR_EACH_COLLECTION(j, bones)
-		{
-			SkeletonBone* bone = *j;
-			bone->Apply();
-		}
+		FOR_EACH_TO(bones, Apply());
 
 		if (i < ikCount)
 		{
@@ -175,9 +173,8 @@ void ISkeleton::ApplyBoneBoundingToSize()
 {
 	RangeF rangeX;
 	RangeF rangeY;
-	FOR_EACH_COLLECTION(i, mBones)
+	for(auto bone: mBones)
 	{
-		SkeletonBone* bone = *i;
 		const BoundingBox& boundingBox = bone->WorldBoundingBox();
 		rangeX.Expand(boundingBox.Left());
 		rangeX.Expand(boundingBox.Right());
@@ -194,9 +191,8 @@ void ISkeleton::ApplySlotBoundingToSize()
 {
 	RangeF rangeX;
 	RangeF rangeY;
-	FOR_EACH_COLLECTION(i, mSlots)
+	for (auto slot : mSlots)
 	{
-		INode* slot = *i;
 		const BoundingBox& boundingBox = slot->GetBoundingBox();
 		rangeX.Expand(boundingBox.Left());
 		rangeX.Expand(boundingBox.Right());
@@ -217,9 +213,8 @@ void ISkeleton::SetToSetupPose()
 
 void ISkeleton::SetBonesToSetupPose()
 {
-	FOR_EACH_COLLECTION(i, mBones)
+	for (auto bone : mBones)
 	{
-		SkeletonBone* bone = *i;
 		bone->SetToSetupPose(false);
 	}
 
@@ -228,9 +223,8 @@ void ISkeleton::SetBonesToSetupPose()
 
 void ISkeleton::SetSlotsToSetupBose()
 {
-	FOR_EACH_COLLECTION(i, mSlots)
+	for (auto slot : mSlots)
 	{
-		SkeletonSlot* slot = *i;
 		slot->SetToSetupPose();
 	}
 }
@@ -271,9 +265,8 @@ void ISkeleton::SetDrawOrderToSetupPose()
 	}
 
 	RemoveAllSlotsFromParent();
-	FOR_EACH_COLLECTION(i, mSlots)
+	for (auto slot : mSlots)
 	{
-		SkeletonSlot* slot = *i;
 		AddSlotToParent(slot);
 	}
 }
@@ -311,9 +304,8 @@ void ISkeleton::SetBoneVisible(bool val)
 	RETURN_IF_EQUAL(mIsBoneVisible, val);
 	mIsBoneVisible = val;
 
-	FOR_EACH_COLLECTION(i, mBones)
+	for(auto bone: mBones)
 	{
-		SkeletonBone* bone = *i;
 		bone->SetIsVisible(val);
 	}
 }
@@ -323,9 +315,8 @@ void ISkeleton::SetSlotVisible(bool val)
 	RETURN_IF_EQUAL(mIsSlotVisible, val);
 	mIsSlotVisible = val;
 
-	FOR_EACH_COLLECTION(i, mSlots)
+	for (auto slot : mSlots)
 	{
-		SkeletonSlot* slot = *i;
 		slot->SetVisible(val);
 	}
 }
@@ -340,9 +331,8 @@ void ISkeleton::RemoveAllSlots()
 
 void ISkeleton::RemoveAllSlotsFromParent()
 {
-	FOR_EACH_COLLECTION(i, mSlots)
+	for (auto slot : mSlots)
 	{
-		SkeletonSlot* slot = *i;
 		RemoveChild(slot);
 	}
 }
@@ -438,9 +428,8 @@ bool ISkeleton::StopAnimation(const StringRef& name)
 void ISkeleton::StopAllAnimations()
 {
 	const List<SkeletonAnimationModel*>& animations = mModel->Animations();
-	FOR_EACH_COLLECTION(i, animations)
+	for (auto ani : animations)
 	{
-		SkeletonAnimationModel* ani = *i;
 		StopActionByName(ani->Name());
 	}
 	SetToSetupPose();
@@ -454,9 +443,8 @@ size_t ISkeleton::AnimationCount() const
 intp ISkeleton::CurrentAnimationIndex() const
 {
 	const List<SkeletonAnimationModel*>& animations = mModel->Animations();
-	FOR_EACH_COLLECTION(i, animations)
+	for (auto model : animations)
 	{
-		SkeletonAnimationModel* model = *i;
 		SkeletonAnimation* ani = FindAnimation(model->Name());
 		if (ani != nullptr)
 		{
@@ -538,5 +526,5 @@ bool ISkeleton::FireTrigger(SkeletonAnimation* ani, float time, const TriggerEve
 
 
 
-MEDUSA_IMPLEMENT_RTTI(ISkeleton, INode);
+
 MEDUSA_END;

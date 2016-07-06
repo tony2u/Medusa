@@ -4,13 +4,14 @@
 #pragma once
 #include "Core/IO/Stream/IStream.h"
 #include "Core/IO/Stream/MemoryStream.h"
+#include "Core/Pattern/Share.h"
 
 MEDUSA_BEGIN;
 
 class BlockReadStream :public IStream
 {
 public:
-	BlockReadStream(const IStream& stream,uint32 blockSize);
+	BlockReadStream(const Share<const IStream>& stream,uint32 blockSize);
 	virtual ~BlockReadStream(void);
 	
 	BlockReadStream(const BlockReadStream&) = delete;
@@ -55,7 +56,7 @@ protected:
 	virtual size_t LoadCurrentBlock()const;
 	virtual size_t LoadBlockTo(uint blockIndex, MemoryStream& output)const = 0;
 protected:
-	const IStream* mSourceStream;
+	Share<const IStream> mSourceStream;
 
 	mutable MemoryStream mBuffer;
 	mutable uintp mBufferLength;

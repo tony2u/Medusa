@@ -7,7 +7,7 @@
 
 class MaskLayer :public BaseCaseLayer
 {
-	MEDUSA_DECLARE_LAYER(MaskLayer);
+	MEDUSA_NODE(MaskLayer, BaseCaseLayer);
 public:
 	MaskLayer(StringRef name=StringRef::Empty,const IEventArg& e=IEventArg::Empty);
 	virtual ~MaskLayer(void);

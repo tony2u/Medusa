@@ -7,7 +7,7 @@
 
 class TextureAtlasFrameAnimationLayer :public BaseCaseLayer
 {
-	MEDUSA_DECLARE_LAYER(TextureAtlasFrameAnimationLayer);
+	MEDUSA_NODE(TextureAtlasFrameAnimationLayer,BaseCaseLayer);
 public:
 	TextureAtlasFrameAnimationLayer(StringRef name=StringRef::Empty,const IEventArg& e=IEventArg::Empty);
 	virtual ~TextureAtlasFrameAnimationLayer(void);

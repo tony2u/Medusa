@@ -8,7 +8,7 @@
 
 class EditBoxLayer :public BaseCaseLayer
 {
-	MEDUSA_DECLARE_LAYER(EditBoxLayer);
+	MEDUSA_NODE(EditBoxLayer, BaseCaseLayer);
 public:
 	EditBoxLayer(StringRef name=StringRef::Empty,const IEventArg& e=IEventArg::Empty);
 	virtual ~EditBoxLayer(void);

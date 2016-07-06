@@ -3,10 +3,11 @@
 // license that can be found in the LICENSE file.
 #include "MedusaPreCompiled.h"
 #include "ViewPanel.h"
-
+#include "Node/NodeFactory.h"
 MEDUSA_BEGIN;
 
-ViewPanel::ViewPanel(StringRef name/*=StringRef::Empty*/):IPanel(name),mChildStretch(Stretch::Uniform)
+ViewPanel::ViewPanel(StringRef name/*=StringRef::Empty*/, const IEventArg& e /*= IEventArg::Empty*/)
+	:IPanel(name,e),mChildStretch(Stretch::Uniform)
 {
 	EnableClipToBound(true);
 }
@@ -22,9 +23,8 @@ bool ViewPanel::ArrangeChildren(const Rect2F& limitRect/*=Rect2F::Zero*/,NodeLay
 	{
 	case Stretch::None:
 		{
-			FOR_EACH_COLLECTION(i,mNodes)
+			for (auto child : mNodes)
 			{
-				INode* child=*i;
 				child->ArrangeRecursively(Rect2F::Zero);
 			}
 		}
@@ -35,9 +35,8 @@ bool ViewPanel::ArrangeChildren(const Rect2F& limitRect/*=Rect2F::Zero*/,NodeLay
 			Scale3F resultScale=Scale3F::One;
 			Rect2F resultRect=Rect2F::Zero;
 
-			FOR_EACH_COLLECTION(i,mNodes)
+			for (auto child : mNodes)
 			{
-				INode* child=*i;
 				const Size3F& childSize=child->Size();
 
 				resultScale.X=limitRect.Size.Width/childSize.Width;
@@ -58,9 +57,8 @@ bool ViewPanel::ArrangeChildren(const Rect2F& limitRect/*=Rect2F::Zero*/,NodeLay
 			Scale3F resultScale=Scale3F::One;
 			Rect2F resultRect=Rect2F::Zero;
 
-			FOR_EACH_COLLECTION(i,mNodes)
+			for (auto child : mNodes)
 			{
-				INode* child=*i;
 				const Size3F& childSize=child->Size();
 
 				resultScale.X=limitRect.Size.Width/childSize.Width;
@@ -83,9 +81,8 @@ bool ViewPanel::ArrangeChildren(const Rect2F& limitRect/*=Rect2F::Zero*/,NodeLay
 			Scale3F resultScale=Scale3F::One;
 			Rect2F resultRect=Rect2F::Zero;
 
-			FOR_EACH_COLLECTION(i,mNodes)
+			for (auto child : mNodes)
 			{
-				INode* child=*i;
 				const Size3F& childSize=child->Size();
 
 				resultScale.Y=limitRect.Size.Height/childSize.Height;
@@ -107,9 +104,8 @@ bool ViewPanel::ArrangeChildren(const Rect2F& limitRect/*=Rect2F::Zero*/,NodeLay
 		{
 			Scale3F resultScale=Scale3F::One;
 			Rect2F resultRect=Rect2F::Zero;
-			FOR_EACH_COLLECTION(i,mNodes)
+			for (auto child : mNodes)
 			{
-				INode* child=*i;
 				const Size3F& childSize=child->Size();
 
 				resultScale.X=limitRect.Size.Width/childSize.Width;
@@ -134,9 +130,8 @@ bool ViewPanel::ArrangeChildren(const Rect2F& limitRect/*=Rect2F::Zero*/,NodeLay
 			Scale3F resultScale=Scale3F::One;
 			Rect2F resultRect=Rect2F::Zero;
 
-			FOR_EACH_COLLECTION(i,mNodes)
+			for (auto child : mNodes)
 			{
-				INode* child=*i;
 				const Size3F& childSize=child->Size();
 
 				resultScale.X=limitRect.Size.Width/childSize.Width;
@@ -162,6 +157,6 @@ bool ViewPanel::ArrangeChildren(const Rect2F& limitRect/*=Rect2F::Zero*/,NodeLay
 	return true;
 }
 
-MEDUSA_IMPLEMENT_RTTI(ViewPanel, IPanel);
+MEDUSA_IMPLEMENT_NODE(ViewPanel);
 
 MEDUSA_END;

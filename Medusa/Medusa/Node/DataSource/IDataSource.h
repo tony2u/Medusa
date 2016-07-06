@@ -11,7 +11,7 @@ MEDUSA_BEGIN;
 
 class IDataSource:public ISharableThreadSafe,public RTTIObject
 {
-	MEDUSA_DECLARE_RTTI_ROOT;
+	MEDUSA_RTTI_ROOT(IDataSource);
 public:
 	typedef Event<void (const IDataSource&)> DataChangedEvent;
 	DataChangedEvent OnDataChanged;

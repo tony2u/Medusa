@@ -107,9 +107,8 @@ public:
 
 	virtual ActionItemType* FindActionByTag(int tag)const override
 	{
-		FOR_EACH_COLLECTION(i, mActions)
+		for(auto action: mActions)
 		{
-			ActionItemType* action = *i;
 			if (action->Tag() == tag)
 			{
 				return action;
@@ -120,9 +119,8 @@ public:
 	virtual ActionItemType* FindActionByName(const StringRef& name)const override
 	{
 		RETURN_NULL_IF_EMPTY(name);
-		FOR_EACH_COLLECTION(i, mActions)
+		for (auto action : mActions)
 		{
-			ActionItemType* action = *i;
 			if (action->Name() == name)
 			{
 				return action;
@@ -136,9 +134,8 @@ public:
 		ActionItemType* result = FindActionByTag(tag);
 		RETURN_SELF_IF_NOT_NULL(result);
 
-		FOR_EACH_COLLECTION(i, mActions)
+		for (auto action : mActions)
 		{
-			ActionItemType* action = *i;
 			result = action->FindActionByTagRecursively(tag);
 			RETURN_SELF_IF_NOT_NULL(result);
 		}
@@ -149,10 +146,8 @@ public:
 	{
 		ActionItemType* result = FindActionByName(name);
 		RETURN_SELF_IF_NOT_NULL(result);
-
-		FOR_EACH_COLLECTION(i, mActions)
+		for (auto action : mActions)
 		{
-			ActionItemType* action = *i;
 			ActionItemType* tempResult = action->FindActionByNameRecursively(name);
 			RETURN_SELF_IF_NOT_NULL(tempResult);
 		}
@@ -162,18 +157,17 @@ public:
 
 	virtual void PauseAllActions()override
 	{
-		FOR_EACH_ITEM_TO(mActions, Pause());
+		FOR_EACH_TO(mActions, Pause());
 	}
 	virtual void ResumeAllActions()override
 	{
-		FOR_EACH_ITEM_TO(mActions, Resume());
+		FOR_EACH_TO(mActions, Resume());
 	}
 	virtual void StopAllActions()override
 	{
 		RETURN_IF_EMPTY(mActions);
-		FOR_EACH_COLLECTION(i, mActions)
+		for (auto action : mActions)
 		{
-			ActionItemType* action = *i;
 			action->Stop();
 			delete action;
 		}
@@ -182,25 +176,24 @@ public:
 
 	virtual void ResetAllActions()override
 	{
-		FOR_EACH_ITEM_TO(mActions, Reset());
+		FOR_EACH_TO(mActions, Reset());
 	}
 	virtual void StartAllActions()override
 	{
-		FOR_EACH_ITEM_TO(mActions, Start());
+		FOR_EACH_TO(mActions, Start());
 	}
 
 	virtual void RestartAllActions()override
 	{
-		FOR_EACH_ITEM_TO(mActions, Restart());
+		FOR_EACH_TO(mActions, Restart());
 	}
 
 
 	virtual bool PauseActionsByTag(int tag) override
 	{
 		bool isFound = false;
-		FOR_EACH_COLLECTION(i, mActions)
+		for (auto action : mActions)
 		{
-			ActionItemType* action = *i;
 			if (action->Tag() == tag)
 			{
 				action->Pause();
@@ -212,9 +205,8 @@ public:
 	virtual bool ResumeActionsByTag(int tag) override
 	{
 		bool isFound = false;
-		FOR_EACH_COLLECTION(i, mActions)
+		for (auto action : mActions)
 		{
-			ActionItemType* action = *i;
 			if (action->Tag() == tag)
 			{
 				action->Stop();
@@ -226,9 +218,8 @@ public:
 	virtual bool ResetActionsByTag(int tag) override
 	{
 		bool isFound = false;
-		FOR_EACH_COLLECTION(i, mActions)
+		for (auto action : mActions)
 		{
-			ActionItemType* action = *i;
 			if (action->Tag() == tag)
 			{
 				action->Reset();
@@ -241,9 +232,8 @@ public:
 	virtual bool StartActionsByTag(int tag) override
 	{
 		bool isFound = false;
-		FOR_EACH_COLLECTION(i, mActions)
+		for (auto action : mActions)
 		{
-			ActionItemType* action = *i;
 			if (action->Tag() == tag)
 			{
 				action->Start();
@@ -256,9 +246,8 @@ public:
 	virtual bool RestartActionsByTag(int tag) override
 	{
 		bool isFound = false;
-		FOR_EACH_COLLECTION(i, mActions)
+		for (auto action : mActions)
 		{
-			ActionItemType* action = *i;
 			if (action->Tag() == tag)
 			{
 				action->Restart();

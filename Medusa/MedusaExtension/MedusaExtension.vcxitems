@@ -30,11 +30,22 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\INodeReader.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\ButtonReader.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\LayerReader.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\ListViewReader.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\LoadingBarReader.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\NodeReader.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\PageViewReader.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\PanelReader.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\ProjectNodeReader.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\ReaderFactory.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\SceneReader.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\ScrollViewReader.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\SingleNodeReader.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\SpriteReader.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\TextAtlasReader.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\TextBMFontReader.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\TextFieldReader.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\TextReader.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\TmxMapReader.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ExtensionLib\android\ExtensionLib_android.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ExtensionLib\Common\flatbuffers.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ExtensionLib\ExtensionLib.h" />
@@ -59,11 +70,22 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\INodeReader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\ButtonReader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\LayerReader.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\ListViewReader.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\LoadingBarReader.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\NodeReader.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\PageViewReader.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\PanelReader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\ProjectNodeReader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\ReaderFactory.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\SceneReader.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\ScrollViewReader.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\SingleNodeReader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\SpriteReader.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\TextAtlasReader.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\TextBMFontReader.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\TextFieldReader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\TextReader.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\TmxMapReader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MedusaExtensionPreCompiled.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
       <PrecompiledHeaderFile>MedusaExtensionPreCompiled.h</PrecompiledHeaderFile>

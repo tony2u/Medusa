@@ -34,9 +34,9 @@ void RenderTargetRenderState::Apply()const
 
 }
 
-RenderTargetRenderState* RenderTargetRenderState::Clone() const
+Share<RenderTargetRenderState> RenderTargetRenderState::Clone() const
 {
-	RenderTargetRenderState* state=new RenderTargetRenderState();
+	Share<RenderTargetRenderState> state=new RenderTargetRenderState();
 	state->CopyFrom(*this);
 	return state;
 }
@@ -62,7 +62,7 @@ bool RenderTargetRenderState::Equals(const IRenderState& state) const
 		mClearColor==val.ClearColor();
 }
 
-RenderTargetRenderState* RenderTargetRenderState::Current(bool isDefault/*=false*/)
+Share<RenderTargetRenderState> RenderTargetRenderState::Current(bool isDefault/*=false*/)
 {
 	IRender& render=Render::Instance();
 
@@ -76,6 +76,5 @@ RenderTargetRenderState* RenderTargetRenderState::Current(bool isDefault/*=false
 }
 
 
-MEDUSA_IMPLEMENT_RTTI(RenderTargetRenderState,IRenderState);
 
 MEDUSA_END;

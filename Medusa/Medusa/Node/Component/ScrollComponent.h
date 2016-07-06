@@ -10,7 +10,7 @@ MEDUSA_BEGIN;
 
 class ScrollComponent :public IComponent,public StaticScrollMathModel
 {
-	MEDUSA_DECLARE_COMPONENT;
+	MEDUSA_DECLARE_COMPONENT(ScrollComponent,IComponent);
 public:
 	ScrollComponent(const StringRef& name = StringRef::Empty, int priority = 0, void* userData = nullptr);
 	virtual ~ScrollComponent(void);

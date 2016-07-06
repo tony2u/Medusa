@@ -8,8 +8,9 @@ MEDUSA_BEGIN;
 
 class NodeButton :public IButton
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_NODE(NodeButton, IButton);
 public:
+	NodeButton(StringRef name = StringRef::Empty, const IEventArg& e = IEventArg::Empty);
 	NodeButton(StringRef name, INode* normalNode, INode* selectedNode = nullptr, INode* disabledNode = nullptr, INode* disabledSelectedNode = nullptr);
 	virtual ~NodeButton(void);
 	virtual bool Initialize()override;
@@ -30,10 +31,10 @@ protected:
 	virtual void OnButtonStateChanged()override;
 	void InitNode(INode* node);
 protected:
-	INode* mNormalNode;
-	INode* mSelectedNode;
-	INode* mDisabledNode;
-	INode* mDisabledSelectedNode;
+	INode* mNormalNode = nullptr;
+	INode* mSelectedNode = nullptr;
+	INode* mDisabledNode = nullptr;
+	INode* mDisabledSelectedNode = nullptr;
 
 };
 

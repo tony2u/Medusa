@@ -10,28 +10,25 @@
 MEDUSA_BEGIN;
 
 
-HashStream::HashStream(IStream& stream, HasherType hasher, Delegate<void(StringRef)> onComplete/* = nullptr*/)
-	: mSourceStream(&stream), mIsSourceReadonly(false), mOnComplete(onComplete)
+HashStream::HashStream(const Share<IStream>& stream, HasherType hasher, Delegate<void(StringRef)> onComplete/* = nullptr*/)
+	: mSourceStream(stream), mIsSourceReadonly(false), mOnComplete(onComplete)
 {
 	mHasher = HasherFactory::Instance().Create(hasher);
 	Log::AssertNotNullFormat(mHasher, "Cannot create hasher:{}", hasher);
-	SAFE_RETAIN(mSourceStream);
 }
-HashStream::HashStream(const IStream& stream, HasherType hasher, Delegate<void(StringRef)> onComplete/* = nullptr*/)
-	: mSourceStream((IStream*)&stream), mIsSourceReadonly(true), mOnComplete(onComplete)
+HashStream::HashStream(const Share<const IStream>& stream, HasherType hasher, Delegate<void(StringRef)> onComplete/* = nullptr*/)
+	: mSourceStream(stream.CastPtr<IStream>()), mIsSourceReadonly(true), mOnComplete(onComplete)
 {
 	mHasher = HasherFactory::Instance().Create(hasher);
 	Log::AssertNotNullFormat(mHasher, "Cannot create hasher:{}", hasher);
-	SAFE_RETAIN(mSourceStream);
 }
 
 HashStream::HashStream(HashStream&& other)
-	:mSourceStream(nullptr),
+	:mSourceStream(std::move(other.mSourceStream)),
 	mIsSourceReadonly(other.mIsSourceReadonly),
 	mHasher(other.mHasher),
 	mOnComplete(std::move(other.mOnComplete))
 {
-	SAFE_MOVE_REF(mSourceStream, other.mSourceStream);
 	other.mHasher = nullptr;
 }
 
@@ -40,7 +37,7 @@ HashStream& HashStream::operator=(HashStream&& other)
 	if (this != &other)
 	{
 		Close();
-		SAFE_MOVE_REF(mSourceStream, other.mSourceStream);
+		mSourceStream = std::move(other.mSourceStream);
 		mIsSourceReadonly = other.mIsSourceReadonly;
 		mHasher = other.mHasher;
 		other.mHasher = nullptr;
@@ -94,7 +91,7 @@ bool HashStream::Flush()
 
 bool HashStream::Close()
 {
-	SAFE_RELEASE(mSourceStream);
+	mSourceStream = nullptr;
 	if (mOnComplete != nullptr&&mHasher != nullptr)
 	{
 		mHasher->Final();

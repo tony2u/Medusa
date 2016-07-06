@@ -28,7 +28,7 @@ ApplicationStatics::ApplicationStatics()
 	mIsPrintLog(false),
 	mDebugLabel(nullptr),
 	mRenderQueue(nullptr)
-	
+
 {
 
 	Reset();
@@ -36,7 +36,7 @@ ApplicationStatics::ApplicationStatics()
 
 ApplicationStatics::~ApplicationStatics()
 {
-	Uninitialize();
+	
 }
 
 
@@ -45,17 +45,10 @@ bool ApplicationStatics::Initialize(ApplicationDebugInfoFlags val)
 	Memory::ClearZero(mElapseds);
 	mEnabled = true;
 	mIsDrawingPerformance = false;
-	if (mRenderQueue == nullptr)
-	{
-		mRenderQueue = new SingleBatchRenderQueue();
-		mRenderQueue->SetRenderTarget(nullptr);
-		mRenderQueue->SetCamera(ResolutionAdapter::Instance().DefaultCamera2D());
-	}
-
 	Reset();
 	mDebugInfoFlag = val;
 	mUpdateWatch.Enable(IsShowPerformance());
-
+	CreateRenderQueue();
 	return true;
 }
 
@@ -65,6 +58,7 @@ void ApplicationStatics::Uninitialize()
 	SAFE_DELETE(mPerformanceLabel);
 	SAFE_DELETE(mGPULabel);
 	SAFE_DELETE(mRenderQueue);
+	RenderingStatics::Instance().Uninitialize();
 }
 
 void ApplicationStatics::Reset()
@@ -117,7 +111,7 @@ void ApplicationStatics::UpdateLabels()
 	}
 	else
 	{
-		if (mGPULabel!=nullptr)
+		if (mGPULabel != nullptr)
 		{
 			mRenderQueue->RemoveNode(mGPULabel);
 		}
@@ -169,11 +163,21 @@ void ApplicationStatics::UpdateLabels()
 			mRenderQueue->RemoveNode(mDebugLabel);
 		}
 		SAFE_DELETE(mDebugLabel);
-		
+
 	}
 
 }
 
+
+void ApplicationStatics::CreateRenderQueue()
+{
+	if (mDebugInfoFlag != ApplicationDebugInfoFlags::None&& mRenderQueue == nullptr)
+	{
+		mRenderQueue = new SingleBatchRenderQueue();
+		mRenderQueue->SetRenderTarget(nullptr);
+		mRenderQueue->SetCamera(ResolutionAdapter::Instance().DefaultCamera2D());
+	}
+}
 
 void ApplicationStatics::EnableDebugInfo(ApplicationDebugInfoFlags val)
 {
@@ -258,7 +262,7 @@ void ApplicationStatics::Update(float dt)
 			updateSystemElapsed, updateSceneElapsed, updateLayoutElapsed, visitSceneElapsed, updateElapsed,
 			updateRenderQueueElapsed, drawElapsed, swapBufferElapsed, totalDrawElapsed,
 			loopElapsed, dt*1000.f, 1000.f / loopElapsed, 1.f / dt
-			);
+		);
 
 		if (mIsPrintLog)
 		{
@@ -306,7 +310,7 @@ void ApplicationStatics::Draw(float dt)
 	mIsDrawingPerformance = true;
 	size_t batchDrawCount = RenderingStatics::Instance().BatchDrawCount();
 	RenderingFlags renderingFlags = RenderingFlags::KeepRenderTarget;
-	if (batchDrawCount<=0)
+	if (batchDrawCount <= 0)
 	{
 		renderingFlags = RenderingFlags::None;
 		mRenderQueue->SetRenderTarget(RenderTargetFactory::Instance().Default());
@@ -327,6 +331,7 @@ void ApplicationStatics::ShowPerformance(bool val /*= true*/)
 	RETURN_IF_EQUAL(IsShowPerformance(), val);
 	MEDUSA_FLAG_ENABLE(mDebugInfoFlag, ApplicationDebugInfoFlags::Performance, val);
 	mUpdateWatch.Enable(val);
+	CreateRenderQueue();
 	UpdateLabels();
 }
 
@@ -334,6 +339,7 @@ void ApplicationStatics::ShowGPU(bool val /*= true*/)
 {
 	RETURN_IF_EQUAL(IsShowTouch(), val);
 	MEDUSA_FLAG_ENABLE(mDebugInfoFlag, ApplicationDebugInfoFlags::GPU, val);
+	CreateRenderQueue();
 	UpdateLabels();
 }
 
@@ -341,6 +347,7 @@ void ApplicationStatics::ShowTouch(bool val /*= true*/)
 {
 	RETURN_IF_EQUAL(IsShowTouch(), val);
 	MEDUSA_FLAG_ENABLE(mDebugInfoFlag, ApplicationDebugInfoFlags::Touch, val);
+	CreateRenderQueue();
 	UpdateLabels();
 }
 

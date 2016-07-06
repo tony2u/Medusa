@@ -13,27 +13,28 @@
 MEDUSA_BEGIN;
 
 
-class ThreadPoolWork :protected ThreadPoolWorkImp,public ICommand
+class ThreadPoolWork :protected ThreadPoolWorkImp, public ICommand
 {
 	friend class ThreadPool;
-	ThreadPoolWork(const StringRef& name,ICommand* command);
+	ThreadPoolWork(ThreadPool* pool, const StringRef& name, const ShareCommand& command);
 	~ThreadPoolWork(void);
 public:
 	StringRef Name() const { return mName; }
+	ThreadPool* Pool() const { return mPool; }
+	void SetPool(ThreadPool* val) { mPool = val; }
 
-	ICommand* Command() const { return mCommand; }
-	void SetCommand(ICommand* val) { SAFE_ASSIGN_REF(mCommand, val); }
+	const ShareCommand& Command() const { return mCommand; }
+	void SetCommand(const ShareCommand& val) { mCommand = val; }
 
 	void Sumbit();
 	void Wait(bool cancelPending = false);
 
 	virtual bool OnExecute() override;
-private:
-	ThreadPoolWork(const ThreadPoolWork&);
-	ThreadPoolWork& operator=(const ThreadPoolWork&);
 protected:
 	HeapString mName;
-	ICommand* mCommand;
+	ShareCommand mCommand;
+
+	ThreadPool* mPool = nullptr;
 
 };
 

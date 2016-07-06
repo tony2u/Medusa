@@ -175,7 +175,6 @@ bool FontId::operator==(const FontId& val) const
 const byte FontId::LightLCDFilter[5] = { 0x00, 0x55, 0x56, 0x55, 0x00 };
 const byte FontId::DefaultLCDFilter[5] = { 0x10, 0x40, 0x70, 0x40, 0x10 };
 const FontId FontId::Empty(StringRef::Empty);
-const FontId FontId::Default("arial.ttf");
 
 
 

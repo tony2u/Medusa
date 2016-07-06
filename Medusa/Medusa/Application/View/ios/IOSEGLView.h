@@ -10,7 +10,7 @@ MEDUSA_BEGIN;
 
 class IOSEGLView :public BaseRenderView
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_RTTI(IOSEGLView,BaseRenderView);
 public:
 	IOSEGLView(StringRef name=StringRef::Empty);
 	virtual ~IOSEGLView(void);

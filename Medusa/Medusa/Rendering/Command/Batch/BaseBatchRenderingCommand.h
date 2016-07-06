@@ -12,7 +12,7 @@ MEDUSA_BEGIN;
 class BaseBatchRenderingCommand :public IRenderingCommand
 {
 	
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_RTTI(BaseBatchRenderingCommand,IRenderingCommand);
 public:
 	BaseBatchRenderingCommand();
 	~BaseBatchRenderingCommand(void);

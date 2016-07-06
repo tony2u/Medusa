@@ -26,7 +26,7 @@ namespace ThreadingPrivate
 #endif
 
 
-	int ToOSThreadPriority(ThreadPriority::ThreadPriority_t priority, ThreadingSchedulePolicy policy)
+	int ToOSThreadPriority(ThreadPriority priority, ThreadingSchedulePolicy policy)
 	{
 		int min = sched_get_priority_min((int)policy);
 		int max = sched_get_priority_max((int)policy);
@@ -104,12 +104,7 @@ void Thread::Sleep(long milliSeconds)
 
 }
 
-void Thread::YieldSelf()
-{
-	sched_yield();
-}
-
-void Thread::SetPriority(ThreadPriority::ThreadPriority_t val)
+void Thread::SetPriority(ThreadPriority val)
 {
 	RETURN_IF_EQUAL(mPriority, val);
 	mPriority = val;
@@ -127,6 +122,7 @@ bool Thread::Start()
 	{
 		return true;
 	}
+	OnBeforeStart();
 
 	int result = pthread_create(&mThread, nullptr, ThreadingPrivate::OnThreadCallback, this);
 	if (result == 0)
@@ -137,16 +133,19 @@ bool Thread::Start()
 			SetPriority(mPriority);
 		}
 	}
+	OnAfterStart();
 	return result == 0;
 }
 
 bool Thread::Join()
 {
 	RETURN_TRUE_IF_FALSE(mThreadState != ThreadState::Running);
+	OnBeforeJoin();
 	mThreadState = ThreadState::Cancelled;
 	if (pthread_join(mThread, &mResult) == 0)
 	{
 		mThreadState = ThreadState::None;
+		OnAfterJoin();
 		return true;
 	}
 

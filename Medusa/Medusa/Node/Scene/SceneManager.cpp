@@ -8,7 +8,6 @@
 #include "Node/Scene/IScene.h"
 #include "Core/Log/Log.h"
 #include "Application/View/BaseRenderView.h"
-#include "SceneFactory.h"
 #include "Application/ApplicationStatics.h"
 #include "Graphics/ResolutionAdapter.h"
 #include "Application/FrameAutoStopWatch.h"
@@ -17,15 +16,15 @@
 #include "Core/IO/Path.h"
 #include "Core/IO/FileInfo.h"
 #include "Node/Editor/NodeEditorFactory.h"
-
+#include "Node/NodeFactory.h"
 MEDUSA_BEGIN;
 
 SceneManager::SceneManager(void)
 {
 	mDisableThreading = true;
 
-	Log::AlertViewEvent += Log::AlertViewDelegate(&SceneManager::ShowAlertView, this);
-	Log::WAlertViewEvent += Log::WAlertViewDelegate(&SceneManager::ShowAlertView, this);
+	//Log::AlertViewEvent += Log::AlertViewDelegate(&SceneManager::ShowAlertView, this);
+	//Log::WAlertViewEvent += Log::WAlertViewDelegate(&SceneManager::ShowAlertView, this);
 }
 
 
@@ -51,24 +50,23 @@ bool SceneManager::Uninitialize()
 }
 
 
-void SceneManager::Push(IScene* scene, NodePushFlags pushFlag /*= NodePushFlags::None*/)
+IScene* SceneManager::Push(IScene* scene, NodePushFlags pushFlag /*= NodePushFlags::None*/)
 {
 #ifdef MEDUSA_SAFE_CHECK
 	if (mScenes.Contains(scene))
 	{
 		Log::Error("scene has been already pushed.");
-		return;
+		return scene;
 	}
 #endif
 
 	IScene* originalScene = Current();
 	if (originalScene != nullptr)
 	{
-		if (MEDUSA_FLAG_HAS(pushFlag,NodePushFlags::HideAllPrevs))
+		if (MEDUSA_FLAG_HAS(pushFlag, NodePushFlags::HideAllPrevs))
 		{
-			FOR_EACH_COLLECTION(i, mScenes)
+			for (auto prevScene : mScenes)
 			{
-				IScene* prevScene = *i;
 				if (prevScene->IsVisible())
 				{
 					prevScene->SetVisible(false);
@@ -78,26 +76,28 @@ void SceneManager::Push(IScene* scene, NodePushFlags pushFlag /*= NodePushFlags:
 			}
 		}
 
-		if (!MEDUSA_FLAG_HAS(pushFlag,NodePushFlags::ShowPrev))
+		if (!MEDUSA_FLAG_HAS(pushFlag, NodePushFlags::ShowPrev))
 		{
 			originalScene->SetVisible(false);
 			originalScene->ExitRecursively();
 		}
-		originalScene->EnableInput(MEDUSA_FLAG_HAS(pushFlag,NodePushFlags::ShowPrev));
+		originalScene->EnableInput(MEDUSA_FLAG_HAS(pushFlag, NodePushFlags::ShowPrev));
 	}
 
 	mScenes.Push(scene);
 	scene->SetVisible(true);
 	scene->EnterRecursively();
 
-	if (!MEDUSA_FLAG_HAS(pushFlag,NodePushFlags::SuppressUpdateLogic))
+	if (!MEDUSA_FLAG_HAS(pushFlag, NodePushFlags::SuppressUpdateLogic))
 	{
 		scene->UpdateLogicRecursively();
 	}
 
-	scene->EnableInput(!MEDUSA_FLAG_HAS(pushFlag,NodePushFlags::DisableTouch));
+	scene->EnableInput(!MEDUSA_FLAG_HAS(pushFlag, NodePushFlags::DisableTouch));
 
 	mIsSceneChanged = true;
+
+	return scene;
 }
 
 IScene* SceneManager::Pop(NodePopFlags popFlag /*= NodePopFlags::None*/)
@@ -105,7 +105,7 @@ IScene* SceneManager::Pop(NodePopFlags popFlag /*= NodePopFlags::None*/)
 	IScene* scene = Current();
 	Log::AssertNotNull(scene, "Scene stack should not be empty when pop.");
 
-	if (!MEDUSA_FLAG_HAS(popFlag,NodePopFlags::ShowCurrent) || MEDUSA_FLAG_HAS(popFlag,NodePopFlags::DeleteCurrent) || MEDUSA_FLAG_HAS(popFlag,NodePopFlags::DeleteCurrentAsync))
+	if (!MEDUSA_FLAG_HAS(popFlag, NodePopFlags::ShowCurrent) || MEDUSA_FLAG_HAS(popFlag, NodePopFlags::DeleteCurrent) || MEDUSA_FLAG_HAS(popFlag, NodePopFlags::DeleteCurrentAsync))
 	{
 		scene->SetVisible(false);
 		scene->ExitRecursively();
@@ -115,20 +115,20 @@ IScene* SceneManager::Pop(NodePopFlags popFlag /*= NodePopFlags::None*/)
 	mScenes.Pop();
 	mIsSceneChanged = true;
 
-	if (MEDUSA_FLAG_HAS(popFlag,NodePopFlags::DeleteCurrent) || MEDUSA_FLAG_HAS(popFlag,NodePopFlags::DeleteCurrentAsync))
+	if (MEDUSA_FLAG_HAS(popFlag, NodePopFlags::DeleteCurrent) || MEDUSA_FLAG_HAS(popFlag, NodePopFlags::DeleteCurrentAsync))
 	{
-		DeleteScene(scene, MEDUSA_FLAG_HAS(popFlag,NodePopFlags::DeleteCurrentAsync));
+		DeleteScene(scene, MEDUSA_FLAG_HAS(popFlag, NodePopFlags::DeleteCurrentAsync));
 		scene = nullptr;
 	}
 
-	if (!MEDUSA_FLAG_HAS(popFlag,NodePopFlags::IgnorePrev))
+	if (!MEDUSA_FLAG_HAS(popFlag, NodePopFlags::IgnorePrev))
 	{
 		IScene* prevScene = Current();
 		if (prevScene != nullptr)
 		{
 			prevScene->SetVisible(true);
-			prevScene->EnableInput(!MEDUSA_FLAG_HAS(popFlag,NodePopFlags::DisableTouch));
-			if (!MEDUSA_FLAG_HAS(popFlag,NodePopFlags::SuppressUpdateLogic))
+			prevScene->EnableInput(!MEDUSA_FLAG_HAS(popFlag, NodePopFlags::DisableTouch));
+			if (!MEDUSA_FLAG_HAS(popFlag, NodePopFlags::SuppressUpdateLogic))
 			{
 				prevScene->UpdateLogicRecursively();
 			}
@@ -163,43 +163,40 @@ bool SceneManager::DeleteScene(IScene* scene, bool isAsync /*= false*/)
 
 IScene* SceneManager::Push(const StringRef& className, NodePushFlags pushFlag /*= NodePushFlags::None*/, const IEventArg& e /*= IEventArg::Empty*/)
 {
-	if (Path::HasExtension(className))	//means a file
+	auto node = NodeFactory::Instance().Create(className);
+	if (node == nullptr)
 	{
-		FileType fileType = FileInfo::ExtractType(className);
-		if (FileInfo::IsScriptFile(fileType))
-		{
-			return PushEx(StringRef::Empty, StringRef::Empty, className, pushFlag, e);
-		}
-		else
-		{
-			auto editor = NodeEditorFactory::Instance().Find(fileType);
-			if (editor != nullptr)
-			{
-				return PushEx(StringRef::Empty, className, StringRef::Empty, pushFlag, e);
-			}
-			Log::AssertFailedFormat("Cannot support scene editor file:{}", className);
-			return nullptr;
-		}
-	}
-	else
-	{
-		return PushEx(className,StringRef::Empty, StringRef::Empty, pushFlag, e);
+		Log::FormatError("Cannot create scene:{}", className);
+		return nullptr;
 	}
 
+	if (!node->IsA<IScene>())
+	{
+		Log::FormatError("Node:{} is not a scene.", className);
+		SAFE_DELETE(node);
+		return nullptr;
+	}
+	return Push((IScene*)node, pushFlag);
 }
 
 
 IScene* SceneManager::PushEx(const StringRef& className, const FileIdRef& editorFile /*= FileIdRef::Empty*/, const FileIdRef& scriptFile /*= FileIdRef::Empty*/, NodePushFlags pushFlag /*= NodePushFlags::None*/, const IEventArg& e /*= IEventArg::Empty*/)
 {
 	NodeCreateFlags createFlags = (NodeCreateFlags)((uint)pushFlag&(uint)NodeCreateFlags::All);
-	IScene* scene = SceneFactory::Instance().Create(className, editorFile, e,createFlags);
-	if (!scriptFile.IsEmpty())
+	auto node = NodeFactory::Instance().Create(className, editorFile, scriptFile, e, createFlags);
+	if (node == nullptr)
 	{
-		scene->AddScriptFile(scriptFile);
+		Log::FormatError("Cannot create scene:{}", className);
+		return nullptr;
 	}
 
-	Push(scene, pushFlag);
-	return scene;
+	if (!node->IsA<IScene>())
+	{
+		Log::FormatError("Node:{} is not a scene.", className);
+		SAFE_DELETE(node);
+		return nullptr;
+	}
+	return Push((IScene*)node, pushFlag);
 }
 
 IScene* SceneManager::ReplaceTo(const StringRef& className, NodePopFlags popFlag /*= NodePopFlags::None*/, NodePushFlags pushFlag /*= NodePushFlags::None*/, const IEventArg& e /*= IEventArg::Empty*/)
@@ -224,7 +221,7 @@ void SceneManager::HideActivityIndicator()
 
 }
 
-void SceneManager::ShowAlertView(StringRef text, Action0 callback /*= nullptr*/)
+void SceneManager::ShowAlertView(StringRef text, Action callback /*= nullptr*/)
 {
 	//TODO: show alert view
 	if (callback)
@@ -234,7 +231,7 @@ void SceneManager::ShowAlertView(StringRef text, Action0 callback /*= nullptr*/)
 	}
 }
 
-void SceneManager::ShowAlertView(WStringRef text, Action0 callback /*= nullptr*/)
+void SceneManager::ShowAlertView(WStringRef text, Action callback /*= nullptr*/)
 {
 	//TODO: show alert view
 	if (callback)
@@ -257,9 +254,8 @@ void SceneManager::Update(float dt)
 	if (mIsSceneChanged)
 	{
 		mSceneGraphStage.Clear();
-		FOR_EACH_COLLECTION(i, mScenes)
+		for (auto scene : mScenes)
 		{
-			IScene* scene = *i;
 			ISceneGraph* graph = scene->GraphPtr();
 			mSceneGraphStage.Add(graph);
 		}
@@ -270,9 +266,8 @@ void SceneManager::Update(float dt)
 
 	{
 		FrameAutoStopWatch watch(ApplicationStatics::Instance().UpdateWatch(), FrameStep::UpdateScene);
-		FOR_EACH_COLLECTION(i, mScenes)
+		for (auto scene : mScenes)
 		{
-			IScene* scene = *i;
 			scene->UpdateScene(dt);
 		}
 	}
@@ -285,9 +280,8 @@ void SceneManager::Update(float dt)
 
 	{
 		FrameAutoStopWatch watch(ApplicationStatics::Instance().UpdateWatch(), FrameStep::VisitScene);
-		FOR_EACH_COLLECTION(i, mScenes)
+		for (auto scene : mScenes)
 		{
-			IScene* scene = *i;
 			RenderableChangedFlags outFlag;
 			//scene->VisitRecursively(mChangedNodeCollector, outFlag);
 			scene->VisitScene(mChangedNodeCollector, outFlag);
@@ -297,9 +291,8 @@ void SceneManager::Update(float dt)
 
 	{
 		FrameAutoStopWatch watch(ApplicationStatics::Instance().UpdateWatch(), FrameStep::UpdateRenderQueue);
-		FOR_EACH_COLLECTION(i, mScenes)
+		for (auto scene : mScenes)
 		{
-			IScene* scene = *i;
 			scene->Graph().Update(dt);
 		}
 

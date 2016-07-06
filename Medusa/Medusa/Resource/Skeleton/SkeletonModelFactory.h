@@ -5,6 +5,7 @@
 #include "Core/Pattern/Singleton.h"
 #include "Resource/BaseResourceFactory.h"
 #include "Resource/Skeleton/ISkeletonModel.h"
+#include "Resource/Skeleton/SpineSkeletonModel.h"
 
 MEDUSA_BEGIN;
 
@@ -18,8 +19,8 @@ public:
 	virtual bool Initialize()override;
 	virtual bool Uninitialize()override;
 public:
-	SpineSkeletonModel* CreateSpineFromJson(const FileIdRef& skeletonfileId, const FileIdRef& atlasFileId, bool isPreCalculated = false, ResourceShareType shareType = ResourceShareType::Share);
-	SpineSkeletonModel* CreateSpineFromJson(const FileIdRef& name, bool isPreCalculated = false, ResourceShareType shareType = ResourceShareType::Share);
+	Share<SpineSkeletonModel> CreateSpineFromJson(const FileIdRef& skeletonfileId, const FileIdRef& atlasFileId, bool isPreCalculated = false, ResourceShareType shareType = ResourceShareType::Share);
+	Share<SpineSkeletonModel> CreateSpineFromJson(const FileIdRef& name, bool isPreCalculated = false, ResourceShareType shareType = ResourceShareType::Share);
 
 };
 

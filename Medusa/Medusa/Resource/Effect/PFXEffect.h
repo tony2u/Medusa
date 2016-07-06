@@ -12,9 +12,9 @@ public:
 	PFXEffect(const FileIdRef& fileId);
 	virtual ~PFXEffect();
 	
-	static PFXEffect* CreateFromFile(const FileIdRef& fileId);
-	static PFXEffect* CreateFromData(const FileIdRef& fileId,MemoryData data);
-	static PFXEffect* CreateFromLines(const FileIdRef& fileId,const List<HeapString>& lines);
+	static Share<PFXEffect> CreateFromFile(const FileIdRef& fileId);
+	static Share<PFXEffect> CreateFromData(const FileIdRef& fileId,MemoryData data);
+	static Share<PFXEffect> CreateFromLines(const FileIdRef& fileId,const List<HeapString>& lines);
 };
 
 

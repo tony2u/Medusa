@@ -48,6 +48,5 @@ void StringListDataSource::Clear()
 	FireDataChangedEvent();
 }
 
-MEDUSA_IMPLEMENT_RTTI(StringListDataSource,BaseSingleListDataSource);
 
 MEDUSA_END;

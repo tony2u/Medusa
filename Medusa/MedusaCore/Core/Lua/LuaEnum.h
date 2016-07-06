@@ -23,7 +23,7 @@ public:
 	explicit LuaEnum(lua_State* state, const StringRef& name = StringRef::Empty)
 		:BaseType(state, name.IsEmpty() ? FixedClassName() : name)
 	{
-		int hashCode = typeid(TEnum).hash_code();
+		int hashCode = (int)typeid(TEnum).hash_code();
 		LuaRef classTable= LuaRef::ClassTable(state);
 		classTable.Rawset(hashCode, mRef);	//set integer index
 		classTable.Rawset(this->mName, mRef);	//also set name index

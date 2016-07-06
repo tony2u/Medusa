@@ -1,9 +1,10 @@
 #include "MedusaExtensionPreCompiled.h"
 #include "SceneReader.h"
-#include "Node/Scene/SceneFactory.h"
 #include "Node/Scene/UIScene.h"
 #include "ReaderFactory.h"
 #include "CocosStudio/CSParseBinary_generated.h"
+#include "Node/NodeFactory.h"
+
 MEDUSA_COCOS_BEGIN;
 
 
@@ -12,11 +13,11 @@ INode* SceneReader::CreateNodeWithFlatBuffers(INodeEditor& editor, const flatbuf
 	IScene* node = nullptr;
 	if (className.IsEmpty())
 	{
-		node = SceneFactory::Instance().Create<UIScene>(IEventArg::Empty,flags);
+		node = NodeFactory::Instance().Create<UIScene>(IEventArg::Empty,flags);
 	}
 	else
 	{
-		node = SceneFactory::Instance().Create(className, FileIdRef::Empty,IEventArg::Empty,flags);
+		node = (IScene*)NodeFactory::Instance().Create(className, FileIdRef::Empty, FileIdRef::Empty,IEventArg::Empty,flags);
 	}
 
 	SetPropsWithFlatBuffers(node, nodeOptions, flags);
@@ -29,17 +30,23 @@ INode* SceneReader::CreateNodeWithJson(INodeEditor& editor, const rapidjson::Val
 	IScene* node = nullptr;
 	if (className.IsEmpty())
 	{
-		node = SceneFactory::Instance().Create<UIScene>(IEventArg::Empty,flags);
+		node = NodeFactory::Instance().Create<UIScene>(IEventArg::Empty,flags);
 	}
 	else
 	{
-		node = SceneFactory::Instance().Create(className, FileIdRef::Empty,IEventArg::Empty,flags);
+		node = (IScene*)NodeFactory::Instance().Create(className, FileIdRef::Empty, FileIdRef::Empty,IEventArg::Empty,flags);
 	}
 
+	/*const rapidjson::Value* contentNode = nodeTree.GetMember("Content")->GetMember("Content");
+	const rapidjson::Value* animationNode = contentNode->GetMember("Animation");
+	const rapidjson::Value* animationListNode = contentNode->GetMember("AnimationList");
+	const rapidjson::Value* objectDataNode = contentNode->GetMember("ObjectData");*/
+
 	SetPropsWithJson(node, nodeTree, flags);
+
+
 	return node;
 }
 
-MEDUSA_IMPLEMENT_COCOS_READER(SceneReader);
 MEDUSA_COCOS_END;
 

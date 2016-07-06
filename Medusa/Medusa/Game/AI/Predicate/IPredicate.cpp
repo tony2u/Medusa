@@ -29,6 +29,5 @@ void IPredicate::Clear()
 }
 
 
-MEDUSA_IMPLEMENT_RTTI_ROOT(IPredicate);
 
 MEDUSA_END;

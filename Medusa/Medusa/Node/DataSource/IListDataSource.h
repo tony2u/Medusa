@@ -12,7 +12,7 @@ MEDUSA_BEGIN;
 
 class IListDataSource:public IDataSource
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_RTTI(IListDataSource,IDataSource);
 
 public:
 	typedef Event<void(size_t index)> ItemAddedEvent;

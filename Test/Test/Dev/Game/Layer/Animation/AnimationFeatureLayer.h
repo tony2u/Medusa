@@ -7,7 +7,7 @@
 
 class AnimationFeatureLayer :public BaseFeatureLayer
 {
-	MEDUSA_DECLARE_LAYER(AnimationFeatureLayer);
+	MEDUSA_NODE(AnimationFeatureLayer, BaseFeatureLayer);
 public:
 	AnimationFeatureLayer(StringRef name=StringRef::Empty,const IEventArg& e=IEventArg::Empty);
 	virtual ~AnimationFeatureLayer(void);

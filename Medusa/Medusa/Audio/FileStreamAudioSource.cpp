@@ -2,6 +2,7 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 #include "MedusaPreCompiled.h"
+#ifdef MEDUSA_AL
 #include "FileStreamAudioSource.h"
 #include "Core/Threading/ScopedLock.h"
 #include "Resource/Audio/AudioFactory.h"
@@ -61,3 +62,4 @@ bool FileStreamAudioSource::OnFetchData(MemoryData& outData)
 
 
 MEDUSA_END;
+#endif

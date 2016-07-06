@@ -13,7 +13,7 @@ USING_MEDUSA;
 
 extern "C"
 {
-	MEDUSA_EXPORT_API bool MInitializeApplication( MedusaNativeWindowType parentWindow )
+	MEDUSA_EXPORT_API bool MInitializeApplication( HWND parentWindow )
 	{
 		Application::Instance().Initialize(parentWindow);
 
@@ -22,7 +22,7 @@ extern "C"
 
 	MEDUSA_EXPORT_API bool MGameLoop( float interval )
 	{
-		return Application::Instance().GameLoop(interval);
+		return Application::Instance().UpdateAndDraw(interval);
 	}
 
 	MEDUSA_EXPORT_API bool MGameCleanUp()

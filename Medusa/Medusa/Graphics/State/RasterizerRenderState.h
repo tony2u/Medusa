@@ -9,14 +9,14 @@ MEDUSA_BEGIN;
 
 class RasterizerRenderState :public IRenderState
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_RTTI(RasterizerRenderState,IRenderState);
 
 public:
 	RasterizerRenderState();
 	virtual ~RasterizerRenderState();
 	virtual void Apply()const override;
 
-	virtual RasterizerRenderState* Clone()const override;
+	Share<RasterizerRenderState> Clone()const;
 	virtual void CopyFrom(const IRenderState& other)override;
 
 	virtual bool Equals(const IRenderState& state)const override;
@@ -36,7 +36,7 @@ public:
 	void SetColorMask(GraphicsColorMask val) { RETURN_IF_EQUAL(mColorMask, val); mColorMask = val; OnStateChanged(); }
 
 
-	static RasterizerRenderState* Current();
+	static Share<RasterizerRenderState> Current();
 protected:
 	bool mCullFaceEnabled;
 

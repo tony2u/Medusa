@@ -9,10 +9,10 @@ MEDUSA_BEGIN;
 //use default behavior
 class RelativePanel :public IPanel
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_NODE(RelativePanel,IPanel);
 
 public:
-	RelativePanel(StringRef name=StringRef::Empty);
+	using IPanel::IPanel;
 	virtual ~RelativePanel(void);
 	virtual PanelType GetPanelType()const override{return PanelType::Relative;}
 protected:

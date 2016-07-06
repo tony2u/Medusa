@@ -36,14 +36,14 @@ bool RenderStateTree::Initialize()
 
 bool RenderStateTree::Uninitialize()
 {
-	SAFE_DELETE(mRoot);
-	SAFE_DELETE(mEmptyNode);
+	mRoot = nullptr;
+	mEmptyNode = nullptr;
 
 	return true;
 }
 
 
-RenderStateTreeLeafNode* RenderStateTree::FindUniqueNode(const RenderStateSet& state)
+Share<RenderStateTreeLeafNode> RenderStateTree::FindUniqueNode(const RenderStateSet& state)
 {
 	RenderStateType type = (RenderStateType)1;	//first
 	return mRoot->FindUniqueNode(state, type);
@@ -59,7 +59,7 @@ uint RenderStateTree::CalcuateId(const RenderStateTreeLeafNode& node) const
 	return node.Id() - MinId();
 }
 
-void RenderStateTree::Release(RenderStateTreeLeafNode* node)
+void RenderStateTree::Release(const Share<RenderStateTreeLeafNode>& node)
 {
 	RETURN_IF_NULL(node);
 
@@ -73,7 +73,6 @@ void RenderStateTree::Release(RenderStateTreeLeafNode* node)
 		else
 		{
 			//single ref
-			node->Release();
 			parent->Remove(node);
 			//find most top empty parent
 			if (parent->IsEmpty())
@@ -86,14 +85,13 @@ void RenderStateTree::Release(RenderStateTreeLeafNode* node)
 					top = top->Parent();
 				} while (top != mRoot&&top->IsSingle());
 
-				top->Delete(prevTop);
+				top->Remove(prevTop);
 			}
 
 		}
 	}
 	else
 	{
-		node->Release();
 	}
 
 }

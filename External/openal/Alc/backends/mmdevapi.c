@@ -62,6 +62,8 @@ DEFINE_PROPERTYKEY(PKEY_AudioEndpoint_FormFactor, 0x1da5d803, 0xd492, 0x4edd, 0x
 #define X7DOT1 (SPEAKER_FRONT_LEFT|SPEAKER_FRONT_RIGHT|SPEAKER_FRONT_CENTER|SPEAKER_LOW_FREQUENCY|SPEAKER_BACK_LEFT|SPEAKER_BACK_RIGHT|SPEAKER_SIDE_LEFT|SPEAKER_SIDE_RIGHT)
 #define X7DOT1_WIDE (SPEAKER_FRONT_LEFT|SPEAKER_FRONT_RIGHT|SPEAKER_FRONT_CENTER|SPEAKER_LOW_FREQUENCY|SPEAKER_BACK_LEFT|SPEAKER_BACK_RIGHT|SPEAKER_FRONT_LEFT_OF_CENTER|SPEAKER_FRONT_RIGHT_OF_CENTER)
 
+#define DEVNAME_HEAD "OpenAL Soft on "
+
 
 typedef struct {
     al_string name;
@@ -123,10 +125,13 @@ static void get_device_name(IMMDevice *device, al_string *name)
     PROPVARIANT pvname;
     HRESULT hr;
 
+    al_string_copy_cstr(name, DEVNAME_HEAD);
+
     hr = IMMDevice_OpenPropertyStore(device, STGM_READ, &ps);
     if(FAILED(hr))
     {
         WARN("OpenPropertyStore failed: 0x%08lx\n", hr);
+        al_string_append_cstr(name, "Unknown Device Name");
         return;
     }
 
@@ -134,11 +139,17 @@ static void get_device_name(IMMDevice *device, al_string *name)
 
     hr = IPropertyStore_GetValue(ps, (const PROPERTYKEY*)&DEVPKEY_Device_FriendlyName, &pvname);
     if(FAILED(hr))
+    {
         WARN("GetValue Device_FriendlyName failed: 0x%08lx\n", hr);
+        al_string_append_cstr(name, "Unknown Device Name");
+    }
     else if(pvname.vt == VT_LPWSTR)
-        al_string_copy_wcstr(name, pvname.pwszVal);
+        al_string_append_wcstr(name, pvname.pwszVal);
     else
+    {
         WARN("Unexpected PROPVARIANT type: 0x%04x\n", pvname.vt);
+        al_string_append_cstr(name, "Unknown Device Name");
+    }
 
     PropVariantClear(&pvname);
     IPropertyStore_Release(ps);
@@ -200,8 +211,7 @@ static void add_device(IMMDevice *device, LPCWSTR devid, vector_DevMap *list)
 
 #define MATCH_ENTRY(i) (al_string_cmp(entry.name, (i)->name) == 0)
         VECTOR_FIND_IF(iter, const DevMap, *list, MATCH_ENTRY);
-        if(iter == VECTOR_ITER_END(*list))
-            break;
+        if(iter == VECTOR_END(*list)) break;
 #undef MATCH_ENTRY
         count++;
     }
@@ -498,7 +508,7 @@ static void ALCmmdevPlayback_stop(ALCmmdevPlayback *self);
 static void ALCmmdevPlayback_stopProxy(ALCmmdevPlayback *self);
 static DECLARE_FORWARD2(ALCmmdevPlayback, ALCbackend, ALCenum, captureSamples, ALCvoid*, ALCuint)
 static DECLARE_FORWARD(ALCmmdevPlayback, ALCbackend, ALCuint, availableSamples)
-static ALint64 ALCmmdevPlayback_getLatency(ALCmmdevPlayback *self);
+static ClockLatency ALCmmdevPlayback_getClockLatency(ALCmmdevPlayback *self);
 static DECLARE_FORWARD(ALCmmdevPlayback, ALCbackend, void, lock)
 static DECLARE_FORWARD(ALCmmdevPlayback, ALCbackend, void, unlock)
 DECLARE_DEFAULT_ALLOCATORS(ALCmmdevPlayback)
@@ -662,8 +672,8 @@ static ALCenum ALCmmdevPlayback_open(ALCmmdevPlayback *self, const ALCchar *devi
 {
     HRESULT hr = S_OK;
 
-    self->NotifyEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
-    self->MsgEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
+    self->NotifyEvent = CreateEventW(NULL, FALSE, FALSE, NULL);
+    self->MsgEvent = CreateEventW(NULL, FALSE, FALSE, NULL);
     if(self->NotifyEvent == NULL || self->MsgEvent == NULL)
     {
         ERR("Failed to create message events: %lu\n", GetLastError());
@@ -674,7 +684,7 @@ static ALCenum ALCmmdevPlayback_open(ALCmmdevPlayback *self, const ALCchar *devi
     {
         if(deviceName)
         {
-            const DevMap *iter, *end;
+            const DevMap *iter;
 
             if(VECTOR_SIZE(PlaybackDevices) == 0)
             {
@@ -684,19 +694,18 @@ static ALCenum ALCmmdevPlayback_open(ALCmmdevPlayback *self, const ALCchar *devi
             }
 
             hr = E_FAIL;
-            iter = VECTOR_ITER_BEGIN(PlaybackDevices);
-            end = VECTOR_ITER_END(PlaybackDevices);
-            for(;iter != end;iter++)
-            {
-                if(al_string_cmp_cstr(iter->name, deviceName) == 0)
-                {
-                    self->devid = strdupW(iter->devid);
-                    hr = S_OK;
-                    break;
-                }
-            }
-            if(FAILED(hr))
+#define MATCH_NAME(i) (al_string_cmp_cstr((i)->name, deviceName) == 0)
+            VECTOR_FIND_IF(iter, const DevMap, PlaybackDevices, MATCH_NAME);
+            if(iter == VECTOR_END(PlaybackDevices))
                 WARN("Failed to find device name matching \"%s\"\n", deviceName);
+            else
+            {
+                ALCdevice *device = STATIC_CAST(ALCbackend,self)->mDevice;
+                self->devid = strdupW(iter->devid);
+                al_string_copy(&device->DeviceName, iter->name);
+                hr = S_OK;
+            }
+#undef MATCH_NAME
         }
     }
 
@@ -752,7 +761,8 @@ static HRESULT ALCmmdevPlayback_openProxy(ALCmmdevPlayback *self)
     if(SUCCEEDED(hr))
     {
         self->client = ptr;
-        get_device_name(self->mmdev, &device->DeviceName);
+        if(al_string_empty(device->DeviceName))
+            get_device_name(self->mmdev, &device->DeviceName);
     }
 
     if(FAILED(hr))
@@ -1129,10 +1139,17 @@ static void ALCmmdevPlayback_stopProxy(ALCmmdevPlayback *self)
 }
 
 
-static ALint64 ALCmmdevPlayback_getLatency(ALCmmdevPlayback *self)
+static ClockLatency ALCmmdevPlayback_getClockLatency(ALCmmdevPlayback *self)
 {
     ALCdevice *device = STATIC_CAST(ALCbackend, self)->mDevice;
-    return (ALint64)self->Padding * 1000000000 / device->Frequency;
+    ClockLatency ret;
+
+    ALCmmdevPlayback_lock(self);
+    ret.ClockTime = GetDeviceClockTime(device);
+    ret.Latency = self->Padding * DEVICE_CLOCK_RES / device->Frequency;
+    ALCmmdevPlayback_unlock(self);
+
+    return ret;
 }
 
 
@@ -1171,7 +1188,7 @@ static void ALCmmdevCapture_stop(ALCmmdevCapture *self);
 static void ALCmmdevCapture_stopProxy(ALCmmdevCapture *self);
 static ALCenum ALCmmdevCapture_captureSamples(ALCmmdevCapture *self, ALCvoid *buffer, ALCuint samples);
 static ALuint ALCmmdevCapture_availableSamples(ALCmmdevCapture *self);
-static DECLARE_FORWARD(ALCmmdevCapture, ALCbackend, ALint64, getLatency)
+static DECLARE_FORWARD(ALCmmdevCapture, ALCbackend, ClockLatency, getClockLatency)
 static DECLARE_FORWARD(ALCmmdevCapture, ALCbackend, void, lock)
 static DECLARE_FORWARD(ALCmmdevCapture, ALCbackend, void, unlock)
 DECLARE_DEFAULT_ALLOCATORS(ALCmmdevCapture)
@@ -1298,8 +1315,8 @@ static ALCenum ALCmmdevCapture_open(ALCmmdevCapture *self, const ALCchar *device
 {
     HRESULT hr = S_OK;
 
-    self->NotifyEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
-    self->MsgEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
+    self->NotifyEvent = CreateEventW(NULL, FALSE, FALSE, NULL);
+    self->MsgEvent = CreateEventW(NULL, FALSE, FALSE, NULL);
     if(self->NotifyEvent == NULL || self->MsgEvent == NULL)
     {
         ERR("Failed to create message events: %lu\n", GetLastError());
@@ -1322,11 +1339,13 @@ static ALCenum ALCmmdevCapture_open(ALCmmdevCapture *self, const ALCchar *device
             hr = E_FAIL;
 #define MATCH_NAME(i) (al_string_cmp_cstr((i)->name, deviceName) == 0)
             VECTOR_FIND_IF(iter, const DevMap, CaptureDevices, MATCH_NAME);
-            if(iter == VECTOR_ITER_END(CaptureDevices))
+            if(iter == VECTOR_END(CaptureDevices))
                 WARN("Failed to find device name matching \"%s\"\n", deviceName);
             else
             {
+                ALCdevice *device = STATIC_CAST(ALCbackend,self)->mDevice;
                 self->devid = strdupW(iter->devid);
+                al_string_copy(&device->DeviceName, iter->name);
                 hr = S_OK;
             }
 #undef MATCH_NAME
@@ -1403,7 +1422,8 @@ static HRESULT ALCmmdevCapture_openProxy(ALCmmdevCapture *self)
     if(SUCCEEDED(hr))
     {
         self->client = ptr;
-        get_device_name(self->mmdev, &device->DeviceName);
+        if(al_string_empty(device->DeviceName))
+            get_device_name(self->mmdev, &device->DeviceName);
     }
 
     if(FAILED(hr))
@@ -1544,6 +1564,7 @@ static HRESULT ALCmmdevCapture_resetProxy(ALCmmdevCapture *self)
                                     OutputType.Format.wBitsPerSample / 8;
     OutputType.Format.nAvgBytesPerSec = OutputType.Format.nSamplesPerSec *
                                         OutputType.Format.nBlockAlign;
+    OutputType.Format.cbSize = sizeof(OutputType) - sizeof(OutputType.Format);
 
     hr = IAudioClient_IsFormatSupported(self->client,
         AUDCLNT_SHAREMODE_SHARED, &OutputType.Format, &wfx
@@ -1560,9 +1581,10 @@ static HRESULT ALCmmdevCapture_resetProxy(ALCmmdevCapture *self)
        wfx->nChannels != OutputType.Format.nChannels ||
        wfx->nBlockAlign != OutputType.Format.nBlockAlign)
     {
-        ERR("Did not get matching format, wanted: %s %s %uhz, got: %d channel(s) %d-bit %luhz\n",
-            DevFmtChannelsString(device->FmtChans), DevFmtTypeString(device->FmtType), device->Frequency,
-            wfx->nChannels, wfx->wBitsPerSample, wfx->nSamplesPerSec);
+        ERR("Failed to get matching format, wanted: %s %s %uhz, got: %d channel%s %d-bit %luhz\n",
+            DevFmtChannelsString(device->FmtChans), DevFmtTypeString(device->FmtType),
+            device->Frequency, wfx->nChannels, (wfx->nChannels==1)?"":"s", wfx->wBitsPerSample,
+            wfx->nSamplesPerSec);
         CoTaskMemFree(wfx);
         return E_FAIL;
     }
@@ -1686,7 +1708,7 @@ static void ALCmmdevCapture_stopProxy(ALCmmdevCapture *self)
 
 ALuint ALCmmdevCapture_availableSamples(ALCmmdevCapture *self)
 {
-    return ll_ringbuffer_read_space(self->Ring);
+    return (ALuint)ll_ringbuffer_read_space(self->Ring);
 }
 
 ALCenum ALCmmdevCapture_captureSamples(ALCmmdevCapture *self, ALCvoid *buffer, ALCuint samples)
@@ -1725,7 +1747,7 @@ static BOOL MMDevApiLoad(void)
         ThreadRequest req;
         InitResult = E_FAIL;
 
-        req.FinishedEvt = CreateEvent(NULL, FALSE, FALSE, NULL);
+        req.FinishedEvt = CreateEventW(NULL, FALSE, FALSE, NULL);
         if(req.FinishedEvt == NULL)
             ERR("Failed to create event: %lu\n", GetLastError());
         else
@@ -1768,7 +1790,12 @@ static void ALCmmdevBackendFactory_deinit(ALCmmdevBackendFactory* UNUSED(self))
 
 static ALCboolean ALCmmdevBackendFactory_querySupport(ALCmmdevBackendFactory* UNUSED(self), ALCbackend_Type type)
 {
-    if(type == ALCbackend_Playback || type == ALCbackend_Capture)
+    /* TODO: Disable capture with mmdevapi for now, since it doesn't do any
+     * rechanneling or resampling; if the device is configured for 48000hz
+     * stereo input, for example, and the app asks for 22050hz mono,
+     * initialization will fail.
+     */
+    if(type == ALCbackend_Playback /*|| type == ALCbackend_Capture*/)
         return ALC_TRUE;
     return ALC_FALSE;
 }
@@ -1777,7 +1804,7 @@ static void ALCmmdevBackendFactory_probe(ALCmmdevBackendFactory* UNUSED(self), e
 {
     ThreadRequest req = { NULL, 0 };
 
-    req.FinishedEvt = CreateEvent(NULL, FALSE, FALSE, NULL);
+    req.FinishedEvt = CreateEventW(NULL, FALSE, FALSE, NULL);
     if(req.FinishedEvt == NULL)
         ERR("Failed to create event: %lu\n", GetLastError());
     else

@@ -30,11 +30,18 @@ CoderFactory::CoderFactory()
 	Register<XOREncoder>(CoderType::Encoder_XOR);
 	Register<XORDecoder>(CoderType::Decoder_XOR);
 
+#ifdef MEDUSA_LZMA
+
 	Register<LZMADecoder>(CoderType::Decoder_LZMA);
 	Register<LZMAEncoder>(CoderType::Encoder_LZMA);
 
+#endif
+
+#ifdef MEDUSA_LZ4
+
 	Register<LZ4Decoder>(CoderType::Decoder_LZ4);
 	Register<LZ4Encoder>(CoderType::Encoder_LZ4);
+#endif
 
 	Register<XXTEADecoder>(CoderType::Decoder_XXTEA);
 	Register<XXTEAEncoder>(CoderType::Encoder_XXTEA);

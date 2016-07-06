@@ -2,6 +2,8 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 #include "MedusaCorePreCompiled.h"
+#ifdef MEDUSA_HTTP
+
 #include "Core/Network/HTTP/IHTTPDownloader.h"
 #include "Core/IO/Stream/FileStream.h"
 #include "Core/Log/Log.h"
@@ -38,3 +40,4 @@ int IHTTPDownloader::ProgressCallback( void *clientp, double dltotal, double dln
 	return 0;
 }
 MEDUSA_END;
+#endif

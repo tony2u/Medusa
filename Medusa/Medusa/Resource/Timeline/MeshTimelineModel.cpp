@@ -20,7 +20,7 @@ MeshTimelineModel::MeshTimelineModel(const FileIdRef& fileId, float duration /*=
 
 MeshTimelineModel::~MeshTimelineModel(void)
 {
-	SAFE_RELEASE_COLLECTION(mMeshes);
+	mMeshes.Clear();
 }
 
 bool MeshTimelineModel::InitializeWithSingleTexture(const FileIdRef& textureName, uint coloumn, uint row, float fps /*= 24.f*/)
@@ -28,7 +28,7 @@ bool MeshTimelineModel::InitializeWithSingleTexture(const FileIdRef& textureName
 	RETURN_FALSE_IF_FALSE(ITimelineModel::Initialize());
 	float frameInterval = 1.f / fps;
 
-	IMaterial* material = MaterialFactory::Instance().CreateSingleTexture(textureName);
+	auto material = MaterialFactory::Instance().CreateSingleTexture(textureName);
 	const Size2U& textureSize = material->FirstTexture()->Size();
 
 	Rect2F textureRect;
@@ -41,7 +41,7 @@ bool MeshTimelineModel::InitializeWithSingleTexture(const FileIdRef& textureName
 		{
 			textureRect.Origin.X = j*textureRect.Size.Width;
 			textureRect.Origin.Y = i*textureRect.Size.Height;
-			TextureQuadMesh* mesh = new TextureQuadMesh();
+			Share<TextureQuadMesh> mesh = new TextureQuadMesh();
 			mesh->Initialize(textureSize, textureRect);
 			AddMeshWithInterval(frameInterval, mesh);
 		}
@@ -51,16 +51,16 @@ bool MeshTimelineModel::InitializeWithSingleTexture(const FileIdRef& textureName
 	return true;
 }
 
-bool MeshTimelineModel::InitializeWithMeshes(SortedDictionary<uint, TextureQuadMesh*>& meshes, float fps /*= 24.f*/)
+bool MeshTimelineModel::InitializeWithMeshes(SortedDictionary<uint, Share<TextureQuadMesh>>& meshes, float fps /*= 24.f*/)
 {
 	RETURN_FALSE_IF_FALSE(ITimelineModel::Initialize());
 	float frameInterval = 1.f / fps;
 	RETURN_FALSE_IF_EMPTY(meshes);
 
-	FOR_EACH_COLLECTION_STL(i, meshes.STLItems())
+	for (auto i : meshes.STLItems())
 	{
-		uint order = i->first;
-		TextureQuadMesh* mesh = i->second;
+		uint order = i.first;
+		auto& mesh = i.second;
 		AddMesh(frameInterval*order, mesh);
 	}
 	uint maxOrder = meshes.LastKey();
@@ -69,12 +69,12 @@ bool MeshTimelineModel::InitializeWithMeshes(SortedDictionary<uint, TextureQuadM
 }
 
 
-IMesh* MeshTimelineModel::GetMeshByIndex(uint frame) const
+Share<IMesh> MeshTimelineModel::GetMeshByIndex(uint frame) const
 {
 	return mMeshes[frame];
 }
 
-IMesh* MeshTimelineModel::GetMeshByTime(float time) const
+Share<IMesh> MeshTimelineModel::GetMeshByTime(float time) const
 {
 	intp index = GetSteppedFrameIndex(time);
 	if (index<0)
@@ -84,17 +84,15 @@ IMesh* MeshTimelineModel::GetMeshByTime(float time) const
 	return GetMeshByIndex((uint)index);
 }
 
-void MeshTimelineModel::AddMesh(float time, IMesh* mesh)
+void MeshTimelineModel::AddMesh(float time, const Share<IMesh>& mesh)
 {
-	SAFE_RETAIN(mesh);
 	mMeshes.Add(mesh);
 	uint frameIndex = (uint)mMeshes.Count() - 1;
 	AddFrame(time, frameIndex,Math::TweenType::None);
 }
 
-void MeshTimelineModel::AddMeshWithInterval(float frameInterval, IMesh* mesh)
+void MeshTimelineModel::AddMeshWithInterval(float frameInterval, const Share<IMesh>& mesh)
 {
-	SAFE_RETAIN(mesh);
 	mMeshes.Add(mesh);
 	uint frameIndex = (uint)mMeshes.Count() - 1;
 	AddFrameWithInterval(frameInterval, frameIndex, Math::TweenType::None);

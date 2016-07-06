@@ -6,20 +6,23 @@
 #include "Resource/RenderTarget/IRenderTarget.h"
 #include "Core/Collection/SortedDictionary.h"
 #include "Rendering/IRenderGroup.h"
+#include "Resource/Camera/Camera.h"
+#include "Resource/RenderTarget/IRenderTarget.h"
+#include "Core/Pattern/Share.h"
 
 MEDUSA_BEGIN;
 
 class SceneRenderGroup :public IRenderGroup
 {
 public:
-	SceneRenderGroup(IRenderTarget* renderTarget, Camera* camera);
+	SceneRenderGroup(const Share<IRenderTarget>& renderTarget, const Share<Camera>& camera);
 	virtual ~SceneRenderGroup();
 public:
-	IRenderTarget* RenderTarget() const { return mRenderTarget; }
-	void SetRenderTarget(IRenderTarget* val);
+	const Share<IRenderTarget>& RenderTarget() const { return mRenderTarget; }
+	void SetRenderTarget(const Share<IRenderTarget>& val) { mRenderTarget = val; }
 
-	Camera* GetCamera() const { return mCamera; }
-	void SetCamera(Camera* val);
+	const Share<Camera>& GetCamera() const { return mCamera; }
+	void SetCamera(const Share<Camera>& val) { mCamera = val; }
 
 	virtual bool Initialize()override;
 	virtual bool Uninitialize()override;
@@ -28,8 +31,8 @@ public:
 	virtual void Draw(IRenderQueue& renderQueue, RenderingFlags renderingFlags = RenderingFlags::None)override;
 	virtual void Print(HeapString& ioStr, uint level)override;
 private:
-	IRenderTarget* mRenderTarget;
-	Camera* mCamera;
+	Share<IRenderTarget> mRenderTarget;
+	Share<Camera> mCamera;
 
 	List<EffectRenderGroup*> mGroups;
 };

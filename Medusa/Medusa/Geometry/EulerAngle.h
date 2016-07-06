@@ -5,7 +5,7 @@
 #include "MedusaPreDeclares.h"
 #include "Core/Assertion/CommonAssert.h"
 #include "Core/Math/Math.h"
-#include "Core/Utility/Utility.h"
+#include "Core/System/BitConverter.h"
 #include "Geometry/Rotation3.h"
 
 MEDUSA_BEGIN;

@@ -12,9 +12,10 @@ FileStream::FileStream(void) :mFile(nullptr)
 {
 }
 
-FileStream::FileStream(StringRef inFileName, FileOpenMode openMode/*=FileOpenMode::ReadOnly*/, FileDataType dataType/*=FileDataType::Binary*/) : mFile(nullptr)
+FileStream::FileStream(StringRef fileName, FileOpenMode openMode/*=FileOpenMode::ReadOnly*/, FileDataType dataType/*=FileDataType::Binary*/, FileShareMode shareMode /*= FileShareMode::None*/)
+	: mFile(nullptr)
 {
-	Open(inFileName, openMode, dataType);
+	Open(fileName, openMode, dataType, shareMode);
 }
 
 FileStream::FileStream(FileStream&& other)
@@ -78,14 +79,14 @@ bool FileStream::OpenNewWriteText(StringRef fileName)
 	return Open(fileName, FileOpenMode::DestoryWriteOrCreate, FileDataType::Text);
 }
 
-bool FileStream::Open(StringRef inFileName, FileOpenMode openMode, FileDataType dataType)
+bool FileStream::Open(StringRef fileName, FileOpenMode openMode, FileDataType dataType, FileShareMode shareMode /*= FileShareMode::None*/)
 {
-	RETURN_FALSE_IF_EMPTY(inFileName);
+	RETURN_FALSE_IF_EMPTY(fileName);
 
 	StackString<4> openModeString;
 
 	mPrevOperation = StreamDataOperation::None;
-	mSupportedOperation= StreamDataOperation::Seek;
+	mSupportedOperation = StreamDataOperation::Seek;
 	switch (openMode)
 	{
 	case FileOpenMode::ReadOnly:
@@ -133,14 +134,28 @@ bool FileStream::Open(StringRef inFileName, FileOpenMode openMode, FileDataType 
 	}
 
 #ifdef MEDUSA_WINDOWS
-	fopen_s(&mFile, inFileName.Buffer(), openModeString.Buffer());
+	if (shareMode != FileShareMode::None)
+	{
+		mFile = _fsopen(fileName.c_str(), openModeString.c_str(), (int)shareMode);
+	}
+	else
+	{
+		fopen_s(&mFile, fileName.c_str(), openModeString.c_str());
+	}
 #else 
-	mFile = fopen(inFileName.Buffer(), openModeString.Buffer());
+	if (shareMode != FileShareMode::None)
+	{
+		mFile = _fsopen(fileName.c_str(), openModeString.c_str(), (int)shareMode);
+	}
+	else
+	{
+		mFile = fopen(fileName.c_str(), openModeString.c_str());
+}
 #endif
 
 	if (mFile != nullptr)
 	{
-		mFileName = inFileName;
+		mFileName = fileName;
 		return true;
 	}
 	return false;
@@ -149,6 +164,7 @@ bool FileStream::Open(StringRef inFileName, FileOpenMode openMode, FileDataType 
 bool FileStream::Close()
 {
 	RETURN_TRUE_IF_NULL(mFile);
+	Flush();
 	bool result = fclose(mFile) == 0;
 	mFile = nullptr;
 
@@ -270,7 +286,7 @@ size_t FileStream::ReadStringTo(WHeapString& outString)const
 	while (true)
 	{
 		int result = fgetwc(mFile);
-		if (result != -1&&result!= (ushort)WEOF)
+		if (result != -1 && result != (ushort)WEOF)
 		{
 			++count;
 			outString.Append((wchar)result);
@@ -301,7 +317,7 @@ size_t FileStream::ReadLineToString(HeapString& outString, bool includeNewLine/*
 	}
 	outString.ForceUpdateLength();
 
-	
+
 	if (outString.EndWith(StdString::ConstValues<char>::Return) || outString.EndWith(StdString::ConstValues<char>::LineSeparator))
 	{
 		//current line is completed
@@ -393,10 +409,10 @@ size_t FileStream::WriteString(const StringRef& str, bool withNullTermitated /*=
 	RETURN_ZERO_IF_FALSE(CanWrite());
 	FlushOnReadWrite(StreamDataOperation::Write);
 	MemoryData data = str.ToData().Cast<byte>();
-	size_t size = WriteData(data);
+	size_t size = fwrite(data.Data(), 1, data.Size(), mFile);
 	if (withNullTermitated)
 	{
-		size += WriteChar('\0') ? sizeof(char) : 0;
+		size += fputc('\0', mFile) != EOF ? sizeof(char) : 0;
 	}
 	return size;
 }
@@ -406,10 +422,10 @@ size_t FileStream::WriteString(const WStringRef& str, bool withNullTermitated /*
 	RETURN_ZERO_IF_FALSE(CanWrite());
 	FlushOnReadWrite(StreamDataOperation::Write);
 	MemoryData data = str.ToData().Cast<byte>();
-	size_t size = WriteData(data);
+	size_t size = fwrite(data.Data(), 1, data.Size(), mFile);
 	if (withNullTermitated)
 	{
-		size += WriteChar(L'\0') ? sizeof(wchar_t) : 0;
+		size += fputc(L'\0', mFile) != EOF ? sizeof(wchar_t) : 0;
 	}
 	return size;
 }

@@ -37,7 +37,7 @@ public:
 //SIREN_HEADER_METHOD_BEGIN
 public:
 	SIREN_METHOD(uint, Position);
-	SIREN_METHOD(HeapString, Value);
+	SIREN_STRING(HeapString, Value);
 //SIREN_HEADER_METHOD_END
 //SIREN_HEADER_FIELD_BEGIN
 protected:

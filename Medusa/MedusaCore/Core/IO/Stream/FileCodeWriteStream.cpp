@@ -12,13 +12,11 @@
 MEDUSA_BEGIN;
 
 
-FileCodeWriteStream::FileCodeWriteStream(IStream& stream, const CoderChain& coderChain, FileEntry& fileEntry)
-	: mSourceStream(&stream),
+FileCodeWriteStream::FileCodeWriteStream(const Share<IStream>& stream, const CoderChain& coderChain, FileEntry& fileEntry)
+	: mSourceStream(stream),
 	mFileEntry(&fileEntry),
 	mCoderChain(&coderChain)
 {
-	SAFE_RETAIN(mSourceStream);
-
 	mFileEntry->MutableCoderOffsets().Clear();
 	mBuffer.Rewind();
 
@@ -27,12 +25,11 @@ FileCodeWriteStream::FileCodeWriteStream(IStream& stream, const CoderChain& code
 }
 
 FileCodeWriteStream::FileCodeWriteStream(FileCodeWriteStream&& other)
-	:mSourceStream(nullptr),
+	:mSourceStream(std::move(other.mSourceStream)),
 	mFileEntry(other.mFileEntry),
 	mCoderChain(std::move(other.mCoderChain)),
 	mBuffer(std::move(other.mBuffer))
 {
-	SAFE_MOVE_REF(mSourceStream, other.mSourceStream);
 	other.mFileEntry = nullptr;
 	other.mCoderChain = nullptr;
 }
@@ -42,7 +39,7 @@ FileCodeWriteStream& FileCodeWriteStream::operator=(FileCodeWriteStream&& other)
 	if (this != &other)
 	{
 		Close();
-		SAFE_MOVE_REF(mSourceStream, other.mSourceStream);
+		mSourceStream = std::move(other.mSourceStream);
 		mCoderChain = other.mCoderChain;
 		mFileEntry = other.mFileEntry;
 		mBuffer = std::move(other.mBuffer);
@@ -90,7 +87,7 @@ bool FileCodeWriteStream::Close()
 
 	mFileEntry->SetOriginalSize((uint32)data.Size());
 	size_t writeSize= mCoderChain->Encode(input, *mSourceStream);
-	SAFE_RELEASE(mSourceStream);
+	mSourceStream = nullptr;
 	mBuffer.Rewind();
 	mFileEntry->SetSize((uint32)writeSize);
 

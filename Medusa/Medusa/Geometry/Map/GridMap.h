@@ -10,7 +10,7 @@
 
 MEDUSA_BEGIN;
 
-template<typename TCell, typename TCellCompare = EqualCompare<TCell>>
+template<typename TCell, typename TCellCompare = EqualCompare>
 class GridMap
 {
 public:

@@ -25,8 +25,7 @@ IRenderable::IRenderable(const StringRef& name /*= StringRef::Empty*/)
 	mWorldRenderState.SetUpdateDelegate(Bind(&IRenderable::OnUpdateWorldRenderState, this));
 
 	mRenderStateTreeNode = RenderStateTree::Instance().EmptyNode();
-	mRenderStateTreeNode->Retain();
-
+	
 	mRenderState.OnStateChanged += Bind(&IRenderable::OnStateChanged, this);
 	mRenderState.OnStateAdded += Bind(&IRenderable::OnStateAdded, this);
 	mRenderState.OnStateRemoved += Bind(&IRenderable::OnStateRemoved, this);
@@ -42,7 +41,7 @@ IRenderable::~IRenderable(void)
 	{
 		mBatch->RemoveNode(this);
 	}
-	RenderStateTree::Instance().Release(mRenderStateTreeNode);
+	mRenderStateTreeNode = nullptr;
 }
 
 
@@ -67,7 +66,7 @@ bool IRenderable::IsValidToRenderQueue() const
 }
 
 
-void IRenderable::SetMesh(IMesh* val)
+void IRenderable::SetMesh(const Share<IMesh>& val)
 {
 	RETURN_IF_EQUAL(mRenderingObject.Mesh(), val);
 
@@ -97,7 +96,7 @@ void IRenderable::SetMesh(IMesh* val)
 	OnMeshChanged(changeFlag);
 }
 
-void IRenderable::SetMaterial(IMaterial* val)
+void IRenderable::SetMaterial(const Share<IMaterial>& val)
 {
 	RETURN_IF_EQUAL(mRenderingObject.Material(), val);
 	mRenderingObject.UnregisterMaterialChanged(Bind(&IRenderable::OnMaterialChanged, this));
@@ -274,13 +273,7 @@ void IRenderable::ForceUpdateRenderState(RenderStateType updateFlag /*= RenderSt
 		mWorldRenderState.CompleteUpdate();
 	}
 
-	RenderStateTreeLeafNode* newVal = RenderStateTree::Instance().FindUniqueNode(mWorldRenderState.OldValue());
-	if (mRenderStateTreeNode != newVal)
-	{
-		newVal->Retain();
-		RenderStateTree::Instance().Release(mRenderStateTreeNode);
-		mRenderStateTreeNode = newVal;
-	}
+	mRenderStateTreeNode = RenderStateTree::Instance().FindUniqueNode(mWorldRenderState.OldValue());
 
 	if (IsValidToDrawSelf())
 	{

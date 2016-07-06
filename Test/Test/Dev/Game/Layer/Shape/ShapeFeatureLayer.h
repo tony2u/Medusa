@@ -7,7 +7,7 @@
 
 class ShapeFeatureLayer :public BaseFeatureLayer
 {
-	MEDUSA_DECLARE_LAYER(ShapeFeatureLayer);
+	MEDUSA_NODE(ShapeFeatureLayer,BaseFeatureLayer);
 public:
 	ShapeFeatureLayer(StringRef name=StringRef::Empty,const IEventArg& e=IEventArg::Empty);
 	virtual ~ShapeFeatureLayer(void);

@@ -418,13 +418,12 @@ FileEntry* FileStorage::FindFile(const StringRef& path, DirectoryEntry* parent /
 
 MemoryData FileStorage::ReadAllData(const FileEntry& fileEntry, DataReadingMode mode /*= DataReadingMode::AlwaysCopy*/) const
 {
-	const IStream* stream = ReadFileHelper(fileEntry, FileDataType::Binary);
+	Share<const IStream> stream = ReadFileHelper(fileEntry, FileDataType::Binary);
 	if (stream == nullptr)
 	{
 		return MemoryData::Empty;
 	}
 	MemoryData data = stream->ReadToEnd(mode);
-	SAFE_RELEASE(stream);
 	return data;
 }
 
@@ -443,7 +442,7 @@ FileEntry* FileStorage::SaveFile(const MemoryData& data, const StringRef& path /
 {
 	FileEntry* fileEntry = FindOrCreateFileEntry(path, parent);
 
-	IStream* stream = WriteFileHelper(*fileEntry, FileOpenMode::DestoryWriteOrCreate, FileDataType::Binary);
+	Share<IStream> stream = WriteFileHelper(*fileEntry, FileOpenMode::DestoryWriteOrCreate, FileDataType::Binary);
 	if (stream == nullptr)
 	{
 		RemoveFile(fileEntry);	//remove new created file entry
@@ -451,14 +450,13 @@ FileEntry* FileStorage::SaveFile(const MemoryData& data, const StringRef& path /
 	}
 
 	stream->WriteData(data, mode);
-	SAFE_RELEASE(stream);
 	return fileEntry;
 }
 
 FileEntry* FileStorage::SaveFile(const IStream& sourceStream, const StringRef& path /*= StringRef::Empty*/, DirectoryEntry* parent /*= nullptr*/)
 {
 	FileEntry* fileEntry = FindOrCreateFileEntry(path, parent);
-	IStream* stream = WriteFileHelper(*fileEntry, FileOpenMode::DestoryWriteOrCreate, FileDataType::Binary);
+	Share<IStream> stream = WriteFileHelper(*fileEntry, FileOpenMode::DestoryWriteOrCreate, FileDataType::Binary);
 	if (stream == nullptr)
 	{
 		RemoveFile(fileEntry);	//remove back file
@@ -466,17 +464,15 @@ FileEntry* FileStorage::SaveFile(const IStream& sourceStream, const StringRef& p
 	}
 
 	sourceStream.CopyTo(*stream);
-	SAFE_RELEASE(stream);
 
 	return fileEntry;
 }
 
 bool FileStorage::SaveFile(FileEntry& fileEntry, const IStream& sourceStream)
 {
-	IStream* stream = WriteFileHelper(fileEntry, FileOpenMode::DestoryWriteOrCreate, FileDataType::Binary);
+	Share<IStream> stream = WriteFileHelper(fileEntry, FileOpenMode::DestoryWriteOrCreate, FileDataType::Binary);
 	RETURN_FALSE_IF_NULL(stream);
 	sourceStream.CopyTo(*stream);
-	SAFE_RELEASE(stream);
 
 	return true;
 }
@@ -766,7 +762,7 @@ FileEntry* FileStorage::FindOrCreateFileEntry(const StringRef& path, DirectoryEn
 	return fileEntry;
 }
 
-const IStream* FileStorage::ReadFile(const StringRef& path, DirectoryEntry* parent /*= nullptr*/, FileDataType dataType /*= FileDataType::Binary*/)const
+Share<const IStream> FileStorage::ReadFile(const StringRef& path, DirectoryEntry* parent /*= nullptr*/, FileDataType dataType /*= FileDataType::Binary*/)const
 {
 	const FileEntry* fileEntry = FindFile(path, parent);
 	RETURN_NULL_IF_NULL(fileEntry);
@@ -774,7 +770,7 @@ const IStream* FileStorage::ReadFile(const StringRef& path, DirectoryEntry* pare
 	return ReadFileHelper(*fileEntry, dataType);
 }
 
-IStream* FileStorage::WriteFile(const StringRef& path, DirectoryEntry* parent /*= nullptr*/, FileOpenMode openMode /*= FileOpenMode::DestoryWriteOrCreate*/, FileDataType dataType /*= FileDataType::Binary*/)
+Share<IStream> FileStorage::WriteFile(const StringRef& path, DirectoryEntry* parent /*= nullptr*/, FileOpenMode openMode /*= FileOpenMode::DestoryWriteOrCreate*/, FileDataType dataType /*= FileDataType::Binary*/)
 {
 	RETURN_NULL_IF_TRUE(IsReadOnly());
 
@@ -806,7 +802,7 @@ IStream* FileStorage::WriteFile(const StringRef& path, DirectoryEntry* parent /*
 		}
 
 		fileEntry = FindOrCreateFileEntry(path, parent);
-		IStream* stream = WriteFileHelper(*fileEntry, openMode, dataType);
+		Share<IStream> stream = WriteFileHelper(*fileEntry, openMode, dataType);
 		if (stream == nullptr)
 		{
 			RemoveFile(fileEntry);	//remove back file
@@ -871,16 +867,16 @@ IStream* FileStorage::WriteFile(const StringRef& path, DirectoryEntry* parent /*
 			break;
 		}
 
-		IStream* stream = WriteFileHelper(*fileEntry, openMode, dataType);
+		Share<IStream> stream = WriteFileHelper(*fileEntry, openMode, dataType);
 		RETURN_NULL_IF_NULL(stream);
 
 		return stream;
 	}
 }
 
-const IStream* FileStorage::ReadFileHelper(const FileEntry& file, FileDataType dataType /*= FileDataType::Binary*/) const
+Share<const IStream> FileStorage::ReadFileHelper(const FileEntry& file, FileDataType dataType /*= FileDataType::Binary*/) const
 {
-	const IStream* resultStream = OnReadFile(file, dataType);
+	Share<const IStream> resultStream = OnReadFile(file, dataType);
 	RETURN_NULL_IF_NULL(resultStream);
 
 	const CoderChain* coderChain = GetFileCoderChain(file);
@@ -888,55 +884,42 @@ const IStream* FileStorage::ReadFileHelper(const FileEntry& file, FileDataType d
 	{
 		if (IsWholeFileCoding())
 		{
-			MemoryStream* tempStream = new MemoryStream(file.OriginalSize(), false);
+			Share<MemoryStream> tempStream = new MemoryStream(file.OriginalSize(), false);
 			coderChain->Decode(*resultStream, *tempStream);
 			const auto data = tempStream->CurrentBuffer();
-			SAFE_DELETE(tempStream);
-			MemoryStream* outputStream = new MemoryStream(data);
-
-			const IStream* tempStream2 = resultStream;
-			resultStream = outputStream;
-			tempStream2->Release();
+		
+			resultStream=new MemoryStream(data);
 		}
 		else
 		{
-			const IStream* tempStream = resultStream;
-			resultStream = new BlockCodeReadStream(*resultStream, BlockSize(), *coderChain, file);
-			tempStream->Release();
-
+			resultStream = new BlockCodeReadStream(resultStream, BlockSize(), *coderChain, file);
+	
 		}
 	}
 
 	return resultStream;
 }
 
-IStream* FileStorage::WriteFileHelper(FileEntry& file, FileOpenMode openMode /*= FileOpenMode::ReadOnly*/, FileDataType dataType /*= FileDataType::Binary*/)
+Share<IStream> FileStorage::WriteFileHelper(FileEntry& file, FileOpenMode openMode /*= FileOpenMode::ReadOnly*/, FileDataType dataType /*= FileDataType::Binary*/)
 {
-	IStream* resultStream = OnWriteFile(file, openMode, dataType);;
+	Share<IStream> resultStream = OnWriteFile(file, openMode, dataType);;
 
 	const CoderChain* coderChain = GetFileCoderChain(file);
 	if (coderChain != nullptr)
 	{
 		if (IsWholeFileCoding())
 		{
-			IStream* tempStream = resultStream;
-			resultStream = new FileCodeWriteStream(*resultStream, *coderChain, file);
-			tempStream->Release();
+			resultStream = new FileCodeWriteStream(resultStream, *coderChain, file);
 		}
 		else
 		{
-			IStream* tempStream = resultStream;
-			resultStream = new BlockCodeWriteStream(*resultStream, BlockSize(), *coderChain, file);
-			tempStream->Release();
+			resultStream = new BlockCodeWriteStream(resultStream, BlockSize(), *coderChain, file);
 		}
 	}
 
 	if (Hasher() != HasherType::None)
 	{
-		IStream* tempStream = resultStream;
-		resultStream = new HashStream(*resultStream, Hasher(), [&file](StringRef result) {file.SetSignature(result); });
-		tempStream->Release();
-
+		resultStream = new HashStream(resultStream, Hasher(), [&file](StringRef result) {file.SetSignature(result); });
 	}
 
 	return resultStream;

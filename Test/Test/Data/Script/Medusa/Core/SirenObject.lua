@@ -13,3 +13,5 @@ end
 function _M:Deserialize(data)
 	return Siren.DeserializeTo(self,self.protoType,data);
 end
+
+return _M;

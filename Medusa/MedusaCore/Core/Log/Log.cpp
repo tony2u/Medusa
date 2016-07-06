@@ -5,16 +5,22 @@
 #include "Core/Log/Log.h"
 #include "Core/Log/FileLogger.h"
 #include "Core/IO/Path.h"
+#include "Core/IO/FileSystem.h"
 
+#ifdef MEDUSA_DEBUG
 #ifdef MEDUSA_WINDOWS
-#ifdef _CONSOLE
-#include "Core/Log/win/WindowsConsoleLogger.h"
-#define DEFAULT_LOGGER WindowsConsoleLogger
-#else
-#include "Core/Log/win/WindowsTraceLogger.h"
-#define DEFAULT_LOGGER WindowsTraceLogger
+#pragma warning( push)
+#pragma warning(disable:4091)	//warning C4091: 'typedef ': ignored on left of '' when no variable is declared (compiling source file
+#include <Dbghelp.h>	//include this to support print stack trace
+#pragma comment(lib, "Dbghelp.lib")
+#pragma warning( pop)
+
+#endif
 #endif
 
+#ifdef MEDUSA_WINDOWS
+#include "Core/Log/win/WindowsConsoleLogger.h"
+#include "Core/Log/win/WindowsTraceLogger.h"
 #elif defined(MEDUSA_IOS)
 #include "Core/Log/ios/IOSConsoleLogger.h"
 #define DEFAULT_LOGGER IOSConsoleLogger
@@ -32,14 +38,28 @@
 
 MEDUSA_BEGIN;
 
-bool Log::Initialize(StringRef name /*= StringRef::Empty*/)
+bool Log::Initialize(bool isConsole /*= false*/, StringRef name /*= StringRef::Empty*/)
 {
+#ifdef MEDUSA_WINDOWS
+	if (isConsole)
+	{
+		mLoggers.Append(new WindowsConsoleLogger(name));
+	}
+	else
+	{
+		mLoggers.Append(new WindowsTraceLogger(name));
+	}
+#else
 	mLoggers.Append(new DEFAULT_LOGGER(name));
+#endif
 	return true;
 }
 
 bool Log::Uninitialize()
 {
+	LogMessagePool::Instance().Clear();
+	WLogMessagePool::Instance().Clear();
+
 	SAFE_DELETE_COLLECTION(mLoggers);
 	return true;
 }
@@ -51,240 +71,33 @@ void Log::AddLogger(ILogger* logger)
 	mLoggers.Append(logger);
 }
 
-void Log::AddFileLogger(StringRef filePath, StringRef name /*= StringRef::Empty*/)
+bool Log::AddFileLogger(const StringRef& filePath)
 {
-	FileLogger* logger = new FileLogger(filePath, name);
-	AddLogger(logger);
-}
-
-void Log::SetCurrentLevel(LogLevel val)
-{
-	for (auto logger : mLoggers)
+	FileStream fs;
+	if (fs.Open(filePath, FileOpenMode::AppendReadWriteClearEOFOrCreate, FileDataType::Text))
 	{
-		logger->SetCurrentLevel(val);
+		fs.Close();
+		FileLogger* logger = new FileLogger(filePath);
+		AddLogger(logger);
+		return true;
 	}
-}
-
-void Log::EnableLogHeader(bool val)
-{
-	for (auto logger : mLoggers)
-	{
-		logger->EnableLogHeader(val);
-	}
-}
-
-//////////////////////////////////////////////////////////////////////////
-
-
-
-void Log::Info(const char* inString)
-{
-	RETURN_IF_FALSE(mLevel <= LogLevel::Info);
-	RETURN_IF_NULL(inString);
-
-	FOR_EACH_COLLECTION(i, mLoggers)
-	{
-		ILogger* logger = *i;
-		logger->Info(inString);
-	}
-}
-
-void Log::Error(const char* inString)
-{
-	RETURN_IF_FALSE(mLevel <= LogLevel::Error);
-	RETURN_IF_NULL(inString);
-
-	FOR_EACH_COLLECTION(i, mLoggers)
-	{
-		ILogger* logger = *i;
-		logger->Error(inString);
-	}
-
+	return false;
 }
 
 
-void Log::Assert(bool condition, StringRef inString)
+void Log::Update(float dt /*= 0.f*/)
 {
-	RETURN_IF_FALSE(mLevel <= LogLevel::Error);
-
-	if (!condition)
-	{
-		FOR_EACH_COLLECTION(i, mLoggers)
-		{
-			ILogger* logger = *i;
-			logger->Error(inString);
-		}
-		if (AlertViewEvent.IsEmpty())
-		{
-			AssertCallback();
-		}
-		else
-		{
-			AlertViewEvent(inString, Log::AssertCallback);
-		}
-	}
+	FOR_EACH_TO(mLoggers, Update(dt));
 }
 
-
-void Log::AssertFailed(StringRef inString)
+void Log::PrintStackTrace(WHeapString& str)
 {
-	RETURN_IF_FALSE(mLevel <= LogLevel::Error);
-
-	FOR_EACH_COLLECTION(i, mLoggers)
-	{
-		ILogger* logger = *i;
-		logger->Error(inString);
-	}
-	if (AlertViewEvent.IsEmpty())
-	{
-		AssertCallback();
-	}
-	else
-	{
-		AlertViewEvent(inString, Log::AssertCallback);
-	}
+	HeapString temp;
+	PrintStackTrace(temp);
+	str += StringParser::ToW(temp);
 }
 
-void Log::AssertNotNull(const void* item, StringRef paramName)
-{
-	RETURN_IF_FALSE(mLevel <= LogLevel::Error);
-
-	if (item == nullptr)
-	{
-		if (AlertViewEvent.IsEmpty())
-		{
-			FOR_EACH_COLLECTION(i, mLoggers)
-			{
-				ILogger* logger = *i;
-				logger->FormatError("{} should not be null!", paramName);
-			}
-			AssertCallback();
-
-		}
-		else
-		{
-			HeapString text;
-			FOR_EACH_COLLECTION(i, mLoggers)
-			{
-				ILogger* logger = *i;
-				logger->FormatError("{} should not be null!", paramName);
-				text = logger->GetLogStringA();
-			}
-			AlertViewEvent(text, Log::AssertCallback);
-
-		}
-
-
-	}
-}
-
-
-void Log::Info(const wchar_t* inString)
-{
-	RETURN_IF_FALSE(mLevel <= LogLevel::Info);
-	RETURN_IF_NULL(inString);
-
-	FOR_EACH_COLLECTION(i, mLoggers)
-	{
-		ILogger* logger = *i;
-		logger->Info(inString);
-	}
-}
-
-void Log::Error(const wchar_t* inString)
-{
-	RETURN_IF_FALSE(mLevel <= LogLevel::Error);
-	RETURN_IF_NULL(inString);
-
-
-	FOR_EACH_COLLECTION(i, mLoggers)
-	{
-		ILogger* logger = *i;
-		logger->Error(inString);
-	}
-
-}
-
-void Log::Assert(bool condition, WStringRef inString)
-{
-	RETURN_IF_FALSE(mLevel <= LogLevel::Error);
-
-	if (!condition)
-	{
-		FOR_EACH_COLLECTION(i, mLoggers)
-		{
-			ILogger* logger = *i;
-			logger->Error(inString);
-		}
-		if (WAlertViewEvent.IsEmpty())
-		{
-			AssertCallback();
-		}
-		else
-		{
-			WAlertViewEvent(inString, Log::AssertCallback);
-		}
-	}
-}
-
-void Log::AssertFailed(WStringRef inString)
-{
-	RETURN_IF_FALSE(mLevel <= LogLevel::Error);
-
-	FOR_EACH_COLLECTION(i, mLoggers)
-	{
-		ILogger* logger = *i;
-		logger->Error(inString);
-	}
-	if (WAlertViewEvent.IsEmpty())
-	{
-		AssertCallback();
-	}
-	else
-	{
-		WAlertViewEvent(inString, Log::AssertCallback);
-	}
-}
-
-void Log::AssertNotNull(const void* item, WStringRef paramName)
-{
-	RETURN_IF_FALSE(mLevel <= LogLevel::Error);
-
-	if (item == nullptr)
-	{
-		if (WAlertViewEvent.IsEmpty())
-		{
-			FOR_EACH_COLLECTION(i, mLoggers)
-			{
-				ILogger* logger = *i;
-				logger->FormatError(L"{} should not be null!", paramName);
-			}
-			AssertCallback();
-		}
-		else
-		{
-			WHeapString text;
-			FOR_EACH_COLLECTION(i, mLoggers)
-			{
-				ILogger* logger = *i;
-				logger->FormatError(L"{} should not be null!", paramName);
-				text = logger->GetLogStringW();
-			}
-			WAlertViewEvent(text, Log::AssertCallback);
-		}
-
-
-	}
-}
-
-void Log::AssertCallback()
-{
-	PrintStackTrace();
-	__MedusaAssertFailed();
-}
-
-
-void Log::PrintStackTrace()
+void Log::PrintStackTrace(HeapString& str)
 {
 #ifdef MEDUSA_DEBUG
 #ifdef MEDUSA_WINDOWS
@@ -297,7 +110,6 @@ void Log::PrintStackTrace()
 	SYMBOL_INFO* symbol = (SYMBOL_INFO *)calloc(sizeof(SYMBOL_INFO) + 256 * sizeof(char), 1);
 	symbol->MaxNameLen = 255;
 	symbol->SizeOfStruct = sizeof(SYMBOL_INFO);
-	HeapString str;
 	str.AppendLine("***************STACK_BEGIN***************");
 	FOR_EACH_SIZE_BEGIN_END(i, 1U, (size_t)frameCount - 1)	//start from 1 to remove  "Log::PrintStackTrace" self
 	{
@@ -305,19 +117,9 @@ void Log::PrintStackTrace()
 		str.AppendFormat("{}:\t{}\n", frameCount - i - 1, symbol->Name);
 	}
 	str.AppendLine("***************STACK_END***************");
-
-	FOR_EACH_COLLECTION(i, mLoggers)
-	{
-		ILogger* logger = *i;
-		bool val = logger->IsLogHeaderEnabled();
-		logger->EnableLogHeader(false);
-		logger->Info(str);
-		logger->EnableLogHeader(val);
-	}
-
 	SAFE_FREE(symbol);
+
 #elif defined(MEDUSA_ANDROID)||defined(MEDUSA_IOS)
-	HeapString str;
 
 	void* buffer[100];
 	std::pair<void**, void**> state = { buffer, buffer + 100 };
@@ -347,7 +149,7 @@ void Log::PrintStackTrace()
 	FOR_EACH_SIZE(i, frameCount)
 	{
 		const void* addr = buffer[i];
-		const char* symbol = "";
+		StringRef symbol = "";
 
 		Dl_info info;
 		if (dladdr(addr, &info) && info.dli_sname)
@@ -358,14 +160,7 @@ void Log::PrintStackTrace()
 		str.AppendFormat("{}:{:x}\t{}\n", frameCount - i - 1, addr, symbol);
 	}
 	str.AppendLine("***************STACK_END***************");
-	FOR_EACH_COLLECTION(i, mLoggers)
-	{
-		ILogger* logger = *i;
-		bool val = logger->IsLogHeaderEnabled();
-		logger->EnableLogHeader(false);
-		logger->Info(str);
-		logger->EnableLogHeader(val);
-	}
+
 #else
 
 	void *frames[100];
@@ -376,41 +171,25 @@ void Log::PrintStackTrace()
 	*  would produce similar output to the following: */
 	char** strs = backtrace_symbols(frames, frameCount);
 
-	HeapString str;
 	str.AppendLine("***************STACK_BEGIN***************");
 	FOR_EACH_SIZE_BEGIN_END(i, 1U, (size_t)frameCount - 1)	//start from 1 to remove  "Log::PrintStackTrace" self
 	{
 		str.AppendFormat("{}:\t{}\n", frameCount - i - 1, str[i]);
 	}
 	str.AppendLine("***************STACK_END***************");
-
-	FOR_EACH_COLLECTION(i, mLoggers)
-	{
-		ILogger* logger = *i;
-		bool val = logger->IsLogHeaderEnabled();
-		logger->EnableLogHeader(false);
-		logger->Info(str);
-		logger->EnableLogHeader(val);
-	}
-
 	SAFE_FREE(strs);
 #endif
 #endif
 }
 
-Event<void(WStringRef text, Action0 callback)> Log::WAlertViewEvent;
-Event<void(StringRef text, Action0 callback)> Log::AlertViewEvent;
 
 bool Log::mEnabled = true;
-LogLevel Log::mLevel = LogLevel::Info;
-
-
-HeapString Log::mBufferString;
-WHeapString Log::mBufferStringW;
-
-
+LogLevel Log::mLogLevel = (LogLevel)MEDUSA_FLAG_AND(LogLevel::Info,LogLevel::WithHeader);
 List<ILogger*> Log::mLoggers;
 
+
+
 #undef  DEFAULT_LOGGER
+
 
 MEDUSA_END;

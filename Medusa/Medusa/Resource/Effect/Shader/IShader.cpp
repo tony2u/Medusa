@@ -39,9 +39,9 @@ bool IShader::Initialize(StringRef source,const List<HeapString>* defines/*=null
 	else
 	{
 		HeapString tempSource;
-		FOR_EACH_COLLECTION(i,*defines)
+		for(auto& i:*defines)
 		{
-			tempSource+=*i;
+			tempSource+=i;
 		}
 
 		tempSource+=source;

@@ -5,14 +5,15 @@
 #include "Core/IO/Stream/IStream.h"
 #include "Core/Hash/HasherType.h"
 #include "Core/IO/Stream/MemoryStream.h"
+#include "Core/Pattern/Share.h"
 
 MEDUSA_BEGIN;
 
 class HashStream :public IStream
 {
 public:
-	HashStream(IStream& stream, HasherType hasher, Delegate<void(StringRef)> onComplete=nullptr);
-	HashStream(const IStream& stream, HasherType hasher, Delegate<void(StringRef)> onComplete = nullptr);
+	HashStream(const Share<IStream>& stream, HasherType hasher, Delegate<void(StringRef)> onComplete=nullptr);
+	HashStream(const Share<const IStream>& stream, HasherType hasher, Delegate<void(StringRef)> onComplete = nullptr);
 
 	virtual ~HashStream(void);
 	virtual StreamType Type()const  override{ return StreamType::Hash; }
@@ -61,7 +62,7 @@ public:
 	const Delegate<void(StringRef)>& OnComplete() const { return mOnComplete; }
 	void SetOnComplete(const Delegate<void(StringRef)>& val) { mOnComplete = val; }
 private:
-	IStream* mSourceStream;
+	Share<IStream> mSourceStream;
 	bool mIsSourceReadonly;
 
 	IHasher* mHasher;

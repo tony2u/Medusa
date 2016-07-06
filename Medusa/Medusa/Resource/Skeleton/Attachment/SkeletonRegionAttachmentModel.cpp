@@ -17,6 +17,7 @@ SkeletonRegionAttachmentModel::SkeletonRegionAttachmentModel(const StringRef& na
 	mRotation(Rotation3F::Zero),
 	mScale(Scale3F::One)
 {
+	mMesh.Retain();
 }
 
 
@@ -53,7 +54,7 @@ bool SkeletonRegionAttachmentModel::Initialize()
 
 RenderingObject SkeletonRegionAttachmentModel::GetRenderingObject() const
 {
-	return RenderingObject((IMesh*)&mMesh, mRegion->CreateMaterial());
+	return RenderingObject(Share<IMesh>((IMesh*)&mMesh), mRegion->CreateMaterial());
 }
 
 

@@ -2,6 +2,9 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 #pragma once
+#include "MedusaCorePreDeclares.h"
+#ifdef MEDUSA_LZMA
+
 #include "Core/Coder/ICoder.h"
 
 MEDUSA_BEGIN;
@@ -23,3 +26,4 @@ private:
 };
 
 MEDUSA_END;
+#endif

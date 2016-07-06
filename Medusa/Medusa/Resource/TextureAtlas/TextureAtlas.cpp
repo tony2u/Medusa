@@ -34,11 +34,12 @@ bool TextureAtlas::LoadFromFileSystem(const FileIdRef& fileId)
 		{
 			if (FileSystem::Instance().Exists(fileIdCopy))
 			{
-				const IStream* stream = FileSystem::Instance().Read(fileIdCopy, FileDataType::Text);
-				Log::AssertNotNullFormat(stream, "Cannot find file:", fileIdCopy);
-				auto* page = OnCreatePage(fileIdCopy, *stream);
+				auto fileEntry = FileSystem::Instance().Find(fileIdCopy);
+				Log::AssertNotNullFormat(fileEntry, "Cannot find file:", fileIdCopy);
+				auto stream = fileEntry->Read(FileDataType::Text);
+				auto* page = OnCreatePage(*fileEntry,fileIdCopy, *stream);
 				RETURN_FALSE_IF_NULL(page);
-				page->SetId(mPages.Count());
+				page->SetId((uint)mPages.Count());
 				AddPage(page);
 				++fileIdCopy.Order;
 			}
@@ -50,9 +51,10 @@ bool TextureAtlas::LoadFromFileSystem(const FileIdRef& fileId)
 	}
 	else
 	{
-		const IStream* stream = FileSystem::Instance().Read(fileId, FileDataType::Text);
+		auto fileEntry = FileSystem::Instance().Find(fileId);
+		auto stream=fileEntry->Read(FileDataType::Text);
 		Log::AssertNotNullFormat(stream, "Cannot find file:", fileId);
-		auto* page = OnCreatePage(fileId, *stream);
+		auto* page = OnCreatePage(*fileEntry,fileId, *stream);
 		RETURN_FALSE_IF_NULL(page);
 		AddPage(page);
 	}
@@ -66,15 +68,10 @@ bool TextureAtlas::LoadFromNameItem(const FileMapNameItem& nameItem)
 	{
 		auto orderItem = order.Value;
 		auto* fileEntry = orderItem->MutableFileEntry();	//only get first entry, ignore others with lower priority
-		const IStream* stream = fileEntry->Read(FileDataType::Text);
-		auto* page = OnCreatePage(orderItem->GetFileId(), *stream);
+		auto stream = fileEntry->Read(FileDataType::Text);
+		auto* page = OnCreatePage(*fileEntry,orderItem->GetFileId(), *stream);
 		RETURN_FALSE_IF_NULL(page);
 		AddPage(page);
-
-		for (auto* region : page->Regions())
-		{
-			FileSystem::Instance().MapFileReference(region->Name(), *fileEntry, region);
-		}
 	}
 
 	return true;
@@ -103,9 +100,8 @@ void TextureAtlas::AddPage(TextureAtlasPage* page)
 	page->SetAtlas(this);
 
 	const List<TextureAtlasRegion*>& regions = page->Regions();
-	FOR_EACH_COLLECTION(i, regions)
+	for(auto region:regions)
 	{
-		TextureAtlasRegion* region = *i;
 		if (!TryAddRegion(region))
 		{
 			Log::AssertFailedFormat("Duplicate region name:{} id:{}", region->Name(), region->Id());

@@ -27,6 +27,5 @@ bool BaseBufferRenderState::Equals( const IRenderState& state ) const
 }
 
 
-MEDUSA_IMPLEMENT_RTTI(BaseBufferRenderState,IRenderState);
 
 MEDUSA_END;

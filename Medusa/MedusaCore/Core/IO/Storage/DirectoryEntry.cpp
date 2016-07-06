@@ -30,10 +30,12 @@ DirectoryEntry::DirectoryEntry(StringRef name, EntryOperation operation/*=EntryO
 
 DirectoryEntry::~DirectoryEntry()
 {
+	Uninitialize();
 	//SIREN_BODY_DESTRUCT_BEGIN
 	SAFE_DELETE_COLLECTION(mDirs);
 	SAFE_DELETE_COLLECTION(mFiles);
 //SIREN_BODY_DESTRUCT_END
+
 }
 
 bool DirectoryEntry::Initialize(FileStorage* storage, DirectoryEntry* parent /*= nullptr*/)

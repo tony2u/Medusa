@@ -23,6 +23,7 @@ namespace FileExtensions
 	const StringRef pod = ".pod";
 	const StringRef pfx = ".pfx";
 	const StringRef ttf = ".ttf";
+	const StringRef ttc = ".ttc";
 	const StringRef fnt = ".fnt";
 	const StringRef json = ".json";
 	const StringRef xml = ".xml";

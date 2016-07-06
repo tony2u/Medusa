@@ -11,7 +11,7 @@ MEDUSA_BEGIN;
 
 class StringListDataSource:public BaseSingleListDataSource
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_RTTI(StringListDataSource,BaseSingleListDataSource);
 
 public:
 	StringListDataSource(const List<WHeapString>& strItems,bool isSingleLine=true);

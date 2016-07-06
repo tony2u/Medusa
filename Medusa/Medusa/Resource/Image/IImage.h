@@ -33,7 +33,7 @@ public:
 	void SetPixelType(PixelType val) { mPixelType = val; }
 
 	GraphicsTextureType TextureType() const { return mTextureType; }
-	uint BytesPerComponent() const { return mPixelType.BytesPerComponent(); }
+	uint BytesPerComponent() const { return (uint)mPixelType.BytesPerComponent(); }
 
 	const MemoryData& Data() const { return mImageData; }
 	MemoryData& MutableData() { return mImageData; }

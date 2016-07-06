@@ -36,13 +36,13 @@ namespace Memory
 		return 0.0;
 	}
 
-	template <typename T, typename TCompare = DefaultCompare<T>>
+	template <typename T, typename TCompare = DefaultCompare>
 	inline typename std::enable_if<Compile::TypeTraits<T>::IsPOD, int>::type Compare(const T* first, const T* second, size_t count)
 	{
 		return memcmp(first, second, count);
 	}
 
-	template <typename T, typename TCompare = DefaultCompare<T>>
+	template <typename T, typename TCompare = DefaultCompare>
 	inline typename std::enable_if<!Compile::TypeTraits<T>::IsPOD, int>::type Compare(const T* first, const T* second, size_t count)
 	{
 		FOR_EACH_SIZE(i, count)
@@ -53,7 +53,7 @@ namespace Memory
 		return 0;
 	}
 
-	template <typename T, size_t N, typename TCompare = DefaultCompare<T>>
+	template <typename T, size_t N, typename TCompare = DefaultCompare>
 	inline int Compare(const T(&first)[N], const T(&second)[N])
 	{
 		return Compare<T, TCompare>(first, second, N);
@@ -165,15 +165,28 @@ namespace Memory
 	}
 
 	template<typename T>
-	inline void Realloc(T*& buffer, size_t count)
+	inline void Realloc(T*& buffer,size_t count, size_t newCount)
 	{
-		const uint size = sizeof(T);
-		T* temp = buffer;
-		buffer = (T*)realloc(buffer, count*size);
-		if (buffer == nullptr&&temp != nullptr)
+#if defined(MEDUSA_VLD)||defined(MEDUSA_MEMORY_LEAK_DETECT)
+		//vld will check realloc as memory leak
+		T* temp= Alloc<T>(newCount);
+		auto copyCount = count < newCount ? count : newCount;	//maybe shrink to a small size
+		SafeCopyShallow(temp, newCount, buffer, copyCount);
+		free(buffer);
+		buffer = temp;
+#else
+		T* temp = (T*)realloc(buffer, newCount * sizeof(T));
+		if (temp != nullptr)
 		{
-			SAFE_FREE(temp);
+			buffer = temp;
 		}
+		else
+		{
+			SAFE_FREE(buffer);
+		}
+#endif
+
+		
 	}
 
 	template <typename T>
@@ -297,7 +310,7 @@ namespace Memory
 	template <typename T>
 	inline bool Equals(const T* first, const T* second, size_t count)
 	{
-		return memcmp(first, second, count) == 0;
+		return memcmp(first, second, count*sizeof(T)) == 0;
 	}
 
 	inline bool EqualsFloat(const float* first, const float* second, size_t count)
@@ -340,16 +353,24 @@ namespace Memory
 	template<typename T, typename... TArgs>
 	inline void Construct(T* p, TArgs&&... args)
 	{
+#pragma push_macro("new")
+#undef new
 		::new (static_cast<void*>(p)) T(std::forward<TArgs>(args)...);
+#pragma pop_macro("new")
+
 	}
 
 	template<typename T, typename... TArgs>
 	inline void ConstructRange(T* p, size_t size, TArgs&&... args)
 	{
+#pragma push_macro("new")
+#undef new
 		FOR_EACH_SIZE(i, size)
 		{
 			::new (static_cast<void*>(p + i)) T(std::forward<TArgs>(args)...);
 		}
+#pragma pop_macro("new")
+
 	}
 
 	template<typename T, typename TP>
@@ -361,6 +382,8 @@ namespace Memory
 	template<typename T, typename TP>
 	inline typename std::enable_if<!Compile::TypeTraits<T>::IsPOD, void>::type CopyConstruct(T* p, TP val)
 	{
+#pragma push_macro("new")
+#undef new
 		::new (static_cast<void*>(p)) T(val);
 	}
 
@@ -374,10 +397,14 @@ namespace Memory
 	template<typename T, typename TP>
 	inline typename std::enable_if<!Compile::TypeTraits<T>::IsPOD, void>::type CopyConstructRange(T* p, TP val, size_t size)
 	{
+#pragma push_macro("new")
+#undef new
 		FOR_EACH_SIZE(i, size)
 		{
 			::new (static_cast<void*>(p + i)) T(val);
 		}
+#pragma pop_macro("new")
+
 	}
 
 	template<typename T>
@@ -389,10 +416,14 @@ namespace Memory
 	template<typename T>
 	inline typename std::enable_if<!Compile::TypeTraits<T>::IsPOD, void>::type CopyConstructIterator(T* dest, const T* src, size_t size)
 	{
+#pragma push_macro("new")
+#undef new
 		FOR_EACH_SIZE(i, size)
 		{
 			::new (static_cast<void*>(dest + i)) T(*(src + i));
 		}
+#pragma pop_macro("new")
+
 	}
 
 	template<typename T>

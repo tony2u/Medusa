@@ -3,6 +3,7 @@
 // license that can be found in the LICENSE file.
 #include "MedusaPreCompiled.h"
 #include "NodeButton.h"
+#include "Node/NodeFactory.h"
 
 MEDUSA_BEGIN;
 
@@ -68,6 +69,12 @@ NodeButton::NodeButton(StringRef name,
 			//hasSize = true;
 		}
 	}
+}
+
+NodeButton::NodeButton(StringRef name /*= StringRef::Empty*/, const IEventArg& e /*= IEventArg::Empty*/)
+	:IButton(name,e)
+{
+
 }
 
 NodeButton::~NodeButton(void)
@@ -271,5 +278,5 @@ void NodeButton::InitNode(INode* node)
 	node->SetAnchorPoint(AnchorPoint::MiddleCenter);
 }
 
-MEDUSA_IMPLEMENT_RTTI(NodeButton, IButton);
+MEDUSA_IMPLEMENT_NODE(NodeButton);
 MEDUSA_END;

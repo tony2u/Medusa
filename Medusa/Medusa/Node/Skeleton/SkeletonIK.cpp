@@ -33,9 +33,8 @@ void SkeletonIK::SetToSetupPose()
 
 	mBones.Clear();
 	const List<SkeletonBoneModel*>& bones = mModel->Bones();
-	FOR_EACH_COLLECTION(i, bones)
+	for(auto boneModel: bones)
 	{
-		SkeletonBoneModel* boneModel = *i;
 		SkeletonBone* bone = mAnimation->FindBone(boneModel->Name());
 		mBones.Add(bone);
 	}

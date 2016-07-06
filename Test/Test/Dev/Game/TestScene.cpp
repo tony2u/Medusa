@@ -4,6 +4,8 @@
 #include "TestPreCompiled.h"
 #include "TestScene.h"
 #include "TestLayer.h"
+#include "Game/Layer/Cocos/CocosHelloLayer.h"
+
 
 TestScene::TestScene(StringRef name/*=StringRef::Empty*/, const IEventArg& e /*= IEventArg::Empty*/)
 	:UIScene(name,e)
@@ -20,8 +22,11 @@ bool TestScene::Initialize()
 {
 	RETURN_FALSE_IF_FALSE(UIScene::Initialize());
 	PushLayer<TestLayer>();
+	//PushLayer<CocosHelloLayer>();
+
+	//SceneManager::Instance().Current()->PushLayer<CocosFeatureLayer>();
 
 	return true;
 }
 
-MEDUSA_IMPLEMENT_SCENE(TestScene, UIScene, StringRef::Empty, StringRef::Empty);
+MEDUSA_IMPLEMENT_NODE(TestScene);

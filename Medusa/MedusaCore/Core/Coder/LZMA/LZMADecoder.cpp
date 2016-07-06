@@ -2,6 +2,7 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 #include "MedusaCorePreCompiled.h"
+#ifdef MEDUSA_LZMA
 #include "Core/Coder/LZMA/LZMADecoder.h"
 #include "Core/Coder/CoderFactory.h"
 #include "CoreLib/Common/Lzma/LzmaDec.h"
@@ -107,3 +108,4 @@ size_t LZMADecoder::OnCode(const MemoryData& input, MemoryData& output) const
 
 MEDUSA_END;
 
+#endif

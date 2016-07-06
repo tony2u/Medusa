@@ -29,15 +29,15 @@ bool SkeletonModelFactory::Uninitialize()
 	return true;
 }
 
-SpineSkeletonModel* SkeletonModelFactory::CreateSpineFromJson(const FileIdRef& skeletonfileId, const FileIdRef& atlasFileId, bool isPreCalculated/*=false*/, ResourceShareType shareType /*= ResourceShareType::Share*/)
+Share<SpineSkeletonModel> SkeletonModelFactory::CreateSpineFromJson(const FileIdRef& skeletonfileId, const FileIdRef& atlasFileId, bool isPreCalculated/*=false*/, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
 	if (shareType!=ResourceShareType::None)
 	{
-		ISkeletonModel* val = Find(skeletonfileId);
-		RETURN_SELF_IF_NOT_NULL((SpineSkeletonModel*)val);
+		auto val = Find(skeletonfileId).CastPtr<SpineSkeletonModel>();
+		RETURN_SELF_IF_NOT_NULL(val);
 	}
 
-	SpineSkeletonModel* model = SpineSkeletonModel::CreateFromJsonFile(skeletonfileId, atlasFileId);
+	Share<SpineSkeletonModel> model = SpineSkeletonModel::CreateFromJsonFile(skeletonfileId, atlasFileId);
 	RETURN_NULL_IF_NULL(model);
 	if (isPreCalculated)
 	{
@@ -49,7 +49,7 @@ SpineSkeletonModel* SkeletonModelFactory::CreateSpineFromJson(const FileIdRef& s
 	return model;
 }
 
-SpineSkeletonModel* SkeletonModelFactory::CreateSpineFromJson(const FileIdRef& name, bool isPreCalculated /*= false*/, ResourceShareType shareType /*= ResourceShareType::Share*/)
+Share<SpineSkeletonModel> SkeletonModelFactory::CreateSpineFromJson(const FileIdRef& name, bool isPreCalculated /*= false*/, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
 	FileId skeletonfileId = name;
 	FileId atlasFileId = name;

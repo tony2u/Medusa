@@ -9,24 +9,22 @@
 MEDUSA_BEGIN;
 
 
-BlockReadStream::BlockReadStream(const IStream& stream,uint32 blockSize)
-	: mSourceStream(&stream),
+BlockReadStream::BlockReadStream(const Share<const IStream>& stream,uint32 blockSize)
+	: mSourceStream(stream),
 	mBuffer(blockSize, false),
 	mBufferLength(0),
 	mBlockIndex(Math::UIntMaxValue)
 {
-	SAFE_RETAIN(mSourceStream);
+	
 }
 
 
 BlockReadStream::BlockReadStream(BlockReadStream&& other)
-	:mSourceStream(nullptr),
+	:mSourceStream(std::move(other.mSourceStream)),
 	mBuffer(std::move(other.mBuffer)),
 	mBufferLength(other.mBufferLength),
 	mBlockIndex(other.mBlockIndex)
-
 {
-	SAFE_MOVE_REF(mSourceStream, other.mSourceStream);
 	other.mBufferLength = 0;
 	other.mBlockIndex = Math::UIntMaxValue;
 
@@ -37,7 +35,7 @@ BlockReadStream& BlockReadStream::operator=(BlockReadStream&& other)
 	if (this != &other)
 	{
 		Close();
-		SAFE_MOVE_REF(mSourceStream, other.mSourceStream);
+		mSourceStream = std::move(other.mSourceStream);
 		mBuffer = std::move(other.mBuffer);
 		mBufferLength = other.mBufferLength;
 		mBlockIndex = other.mBlockIndex;
@@ -56,7 +54,7 @@ BlockReadStream::~BlockReadStream(void)
 
 bool BlockReadStream::Close()
 {
-	SAFE_RELEASE(mSourceStream);
+	mSourceStream = nullptr;
 
 	return true;
 }
@@ -82,7 +80,7 @@ size_t BlockReadStream::LoadCurrentBlock()const
 
 bool BlockReadStream::Flush()
 {
-	return ((IStream*)mSourceStream)->Flush();
+	return ((IStream*)mSourceStream.Ptr())->Flush();
 }
 
 uintp BlockReadStream::Position() const
@@ -99,7 +97,7 @@ bool BlockReadStream::Seek(intp offset, SeekOrigin direction /*= SeekOrigin::Cur
 {
 	switch (direction)
 	{
-	case SeekOrigin::Head:
+	case SeekOrigin::Begin:
 	{
 		RETURN_FALSE_IF(offset<0||(uintp)offset > Length());
 		uint blockIndex = (uint)offset / (uint32)mBuffer.Length();
@@ -127,7 +125,7 @@ bool BlockReadStream::Seek(intp offset, SeekOrigin direction /*= SeekOrigin::Cur
 			return false;
 		}
 
-		return Seek(pos, SeekOrigin::Head);
+		return Seek(pos, SeekOrigin::Begin);
 	}
 	case SeekOrigin::End:
 	{
@@ -136,7 +134,7 @@ bool BlockReadStream::Seek(intp offset, SeekOrigin direction /*= SeekOrigin::Cur
 		{
 			return false;
 		}
-		return Seek(offset, SeekOrigin::Head);
+		return Seek(offset, SeekOrigin::Begin);
 	}
 	default:
 		break;

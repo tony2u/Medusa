@@ -10,13 +10,15 @@ MEDUSA_COCOS_BEGIN;
 
 class SpriteReader : public INodeReader
 {
-	MEDUSA_DECLARE_COCOS_READER;
+	MEDUSA_RTTI(SpriteReader,INodeReader);
 public:
 	SpriteReader() {};
 	virtual ~SpriteReader() {};
 public:
 	virtual INode* CreateNodeWithFlatBuffers(INodeEditor& editor, const flatbuffers::Table* spriteOptions, const StringRef& className = StringRef::Empty, NodeCreateFlags flags = NodeCreateFlags::None) override;
 	virtual INode* CreateNodeWithJson(INodeEditor& editor, const rapidjson::Value& nodeTree, const StringRef& className = StringRef::Empty, NodeCreateFlags flags = NodeCreateFlags::None) override;
+private:
+	Sprite* CreateSprite(StringRef fullName);
 };
 
 MEDUSA_COCOS_END;

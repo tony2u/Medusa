@@ -26,9 +26,8 @@ void BaseSceneModel::UpdateWorldMatrixRecursively( const Matrix4& parentWorldMat
 {
 	BaseMultipleModel::UpdateWorldMatrixRecursively(parentWorldMatrix);
 
-	FOR_EACH_COLLECTION(i,mNodes)
+	for(auto node:mNodes)
 	{
-		IModelNode* node=*i;
 		node->UpdateWorldMatrixRecursively(mWorldMatrix.OldValue());
 	}
 }

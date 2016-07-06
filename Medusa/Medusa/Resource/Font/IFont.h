@@ -103,8 +103,8 @@ public:
 	uint OriginalSize() const { return mOriginalSize; }
 	void SetOriginalSize(uint val) { mOriginalSize = val; }
 
-	TextureAtlas* Atlas() const { return mAtlas; }
-	void SetAtlas(TextureAtlas* val);
+	const Share<TextureAtlas>& Atlas() const { return mAtlas; }
+	void SetAtlas(const Share<TextureAtlas>& val);
 
 	virtual uint Preload(const WStringRef& str) { return 0; }
 protected:
@@ -137,7 +137,7 @@ protected:
 	uintp mUnderlineTickness = 0;
 
 	//contents
-	TextureAtlas* mAtlas;
+	Share<TextureAtlas> mAtlas;
 
 	Dictionary<wchar_t, FontChar*> mChars;
 	Dictionary<uint64, FontKerning*> mKernings;

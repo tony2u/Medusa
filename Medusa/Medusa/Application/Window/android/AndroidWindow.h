@@ -11,7 +11,7 @@ MEDUSA_BEGIN;
 
 class AndroidWindow:public IWindow
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_RTTI(AndroidWindow,IWindow);
 
 public:
 	AndroidWindow(MedusaWindowHandle parentWindow,StringRef name=StringRef::Empty);

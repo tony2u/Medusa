@@ -5,14 +5,14 @@
 #include "MedusaPreDeclares.h"
 #include "Core/Pattern/Singleton.h"
 #include "Core/Pattern/Object/IdObjectCache.h"
-#include "Core/IO/IFileLoadable.h"
+#include "Core/IO/IFileLoadSavable.h"
 #include "StateMachineModel.h"
 
 
 MEDUSA_BEGIN;
 
 
-class StateMachineModelConfig :public Singleton < StateMachineModelConfig >, public IdObjectCache < HeapString, StateMachineModel*>, public IFileLoadable
+class StateMachineModelConfig :public Singleton < StateMachineModelConfig >, public IdObjectCache < HeapString, StateMachineModel*>, public IFileLoadSavable
 {
 	friend class Singleton < StateMachineModelConfig > ;
 	StateMachineModelConfig() {}

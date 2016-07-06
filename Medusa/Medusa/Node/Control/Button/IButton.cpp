@@ -5,12 +5,13 @@
 #include "IButton.h"
 #include "Node/Input/Gesture/TapGestureRecognizer.h"
 #include "Node/Input/InputDispatcher.h"
-
+#include "Node/NodeFactory.h"
 MEDUSA_BEGIN;
 
 
 
-IButton::IButton(StringRef name/*=StringRef::Empty*/) :INode(name), mButtonState(ButtonState::Normal)
+IButton::IButton(StringRef name/*=StringRef::Empty*/, const IEventArg& e /*= IEventArg::Empty*/) 
+	:INode(name,e), mButtonState(ButtonState::Normal)
 {
 	mRecognizer=MutableInput().AddTapGestureHandler(Bind(&IButton::OnTapCallback, this));
 	mRecognizer->StateChangedEvent+=Bind(&IButton::OnTapStateChanged,this);
@@ -105,5 +106,5 @@ void IButton::OnButtonStateChanged()
 
 }
 
-MEDUSA_IMPLEMENT_RTTI(IButton, INode);
+
 MEDUSA_END;

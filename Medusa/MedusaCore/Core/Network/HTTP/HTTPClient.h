@@ -3,8 +3,14 @@
 // license that can be found in the LICENSE file.
 #pragma once
 #include "MedusaCorePreDeclares.h"
+#ifdef MEDUSA_HTTP
+
+#ifdef MEDUSA_WINDOWS
+#include <WinSock2.h>
+#endif
+
 #include "Core/Network/HTTP/IHTTPDownloader.h"
-#include "Core/Command/EventArg/IEventArg.h"
+#include "Core/Event/EventArg/IEventArg.h"
 #include "Core/Collection/Queue.h"
 #include "Core/String/StringRef.h"
 #include "CoreLib/Common/curl/curl.h"
@@ -58,3 +64,4 @@ protected:
 };
 
 MEDUSA_END;
+#endif

@@ -9,8 +9,8 @@ MEDUSA_BEGIN;
 class TranslateTimeline:public ITimeline
 {
 public:
-	TranslateTimeline(TranslateTimelineModel* model, intp repeatCount, float beforeDelay = 0.f, float repeatDuration = 0.f, float afterDelay = 0.f, const StringRef& name = StringRef::Empty);
-	TranslateTimeline(TranslateTimelineModel* model, bool isRepeatForever, float beforeDelay = 0.f, float repeatDuration = 0.f, float afterDelay = 0.f, const StringRef& name = StringRef::Empty);
+	TranslateTimeline(const Share<TranslateTimelineModel>& model, intp repeatCount, float beforeDelay = 0.f, float repeatDuration = 0.f, float afterDelay = 0.f, const StringRef& name = StringRef::Empty);
+	TranslateTimeline(const Share<TranslateTimelineModel>& model, bool isRepeatForever, float beforeDelay = 0.f, float repeatDuration = 0.f, float afterDelay = 0.f, const StringRef& name = StringRef::Empty);
 
 	virtual ~TranslateTimeline();
 protected:

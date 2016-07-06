@@ -11,7 +11,7 @@ MEDUSA_BEGIN;
 class SingleLineFontModel:public BaseFontModel
 {
 public:
-	SingleLineFontModel(IFont* font,Alignment alignment=Alignment::LeftBottom,Size2U restrictSize=Size2U::Zero);
+	SingleLineFontModel(const Share<IFont>& font,Alignment alignment=Alignment::LeftBottom,Size2U restrictSize=Size2U::Zero);
 	virtual ~SingleLineFontModel(void);
 
 

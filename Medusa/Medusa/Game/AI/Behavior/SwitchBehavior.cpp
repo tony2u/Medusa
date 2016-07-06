@@ -12,9 +12,9 @@ MEDUSA_BEGIN;
 
 SwitchBehavior::~SwitchBehavior()
 {
-	FOR_EACH_COLLECTION(i, mItems)
+	for (auto i : mItems)
 	{
-		List<const IBehavior*>* items = i->Value;
+		List<const IBehavior*>* items = i.Value;
 		SAFE_DELETE_COLLECTION(*items);
 		delete items;
 	}
@@ -29,9 +29,8 @@ const IBehavior* SwitchBehavior::Behave(IBrainBody& brainBody, void* sender) con
 	List<const IBehavior*>* items = mItems.GetOptional(result, nullptr);
 	if (items != nullptr)
 	{
-		FOR_EACH_COLLECTION(i, *items)
+		for (auto item : *items)
 		{
-			const IBehavior* item = *i;
 			const IBehavior* tempResult = item->Behave(brainBody, sender);
 			RETURN_SELF_IF_NOT_NULL(tempResult);
 		}
@@ -39,9 +38,8 @@ const IBehavior* SwitchBehavior::Behave(IBrainBody& brainBody, void* sender) con
 	else
 	{
 		RETURN_NULL_IF_EMPTY(mDefaultItems);
-		FOR_EACH_COLLECTION(i, mDefaultItems)
+		for (auto item : mDefaultItems)
 		{
-			const IBehavior* item = *i;
 			const IBehavior* tempResult = item->Behave(brainBody, sender);
 			RETURN_SELF_IF_NOT_NULL(tempResult);
 		}
@@ -55,9 +53,8 @@ const IBehavior* SwitchBehavior::ReceiveEvent(IBrainBody& brainBody, void* sende
 	List<const IBehavior*>* items = mItems.GetOptional(result, nullptr);
 	if (items != nullptr)
 	{
-		FOR_EACH_COLLECTION(i, *items)
+		for (auto item : *items)
 		{
-			const IBehavior* item = *i;
 			const IBehavior* tempResult = item->ReceiveEvent(brainBody, sender, e);
 			RETURN_SELF_IF_NOT_NULL(tempResult);
 		}
@@ -66,9 +63,8 @@ const IBehavior* SwitchBehavior::ReceiveEvent(IBrainBody& brainBody, void* sende
 	else
 	{
 		RETURN_NULL_IF_EMPTY(mDefaultItems);
-		FOR_EACH_COLLECTION(i, mDefaultItems)
+		for (auto item : mDefaultItems)
 		{
-			const IBehavior* item = *i;
 			const IBehavior* tempResult = item->ReceiveEvent(brainBody, sender, e);
 			RETURN_SELF_IF_NOT_NULL(tempResult);
 		}
@@ -80,10 +76,8 @@ bool SwitchBehavior::LoadFromXmlNode(const pugi::xml_node& node)
 {
 	RETURN_FALSE_IF_FALSE(IPredicateBehavior::LoadFromXmlNode(node));
 
-	FOR_EACH_COLLECTION_STL(i, node.children())
+	for (const auto& child : node.children())
 	{
-		pugi::xml_node child = *i;
-
 		StringRef typeName = child.name();
 		IBehavior* behavior = BehaviorFactory::Instance().SmartCreate(typeName);
 		behavior->LoadFromXmlNode(child);
@@ -112,6 +106,5 @@ bool SwitchBehavior::LoadFromXmlNode(const pugi::xml_node& node)
 	return true;
 }
 
-MEDUSA_IMPLEMENT_RTTI(SwitchBehavior, IPredicateBehavior);
-
+MEDUSA_IMPLEMENT_BEHAVIOR(SwitchBehavior);
 MEDUSA_END;

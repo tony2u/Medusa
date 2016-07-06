@@ -20,13 +20,16 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Alc\alstring.h" />
+    <ClInclude Include="..\Alc\ambdec.h" />
+    <ClInclude Include="..\Alc\backends\base.h" />
+    <ClInclude Include="..\Alc\bformatdec.h" />
     <ClInclude Include="..\Alc\compat.h" />
-    <ClInclude Include="..\Alc\evtqueue.h" />
     <ClInclude Include="..\Alc\hrtf.h" />
-    <ClInclude Include="..\Alc\midi\base.h" />
     <ClInclude Include="..\Alc\mixer_defs.h" />
+    <ClInclude Include="..\Alc\uhjfilter.h" />
     <ClInclude Include="..\Alc\vector.h" />
     <ClInclude Include="..\include\align.h" />
+    <ClInclude Include="..\include\almalloc.h" />
     <ClInclude Include="..\include\AL\al.h" />
     <ClInclude Include="..\include\AL\alc.h" />
     <ClInclude Include="..\include\AL\alext.h" />
@@ -35,6 +38,7 @@
     <ClInclude Include="..\include\AL\efx.h" />
     <ClInclude Include="..\include\atomic.h" />
     <ClInclude Include="..\include\bool.h" />
+    <ClInclude Include="..\include\math_defs.h" />
     <ClInclude Include="..\include\rwlock.h" />
     <ClInclude Include="..\include\static_assert.h" />
     <ClInclude Include="..\include\threads.h" />
@@ -46,7 +50,6 @@
     <ClInclude Include="..\OpenAL32\Include\alFilter.h" />
     <ClInclude Include="..\OpenAL32\Include\alListener.h" />
     <ClInclude Include="..\OpenAL32\Include\alMain.h" />
-    <ClInclude Include="..\OpenAL32\Include\alMidi.h" />
     <ClInclude Include="..\OpenAL32\Include\alSource.h" />
     <ClInclude Include="..\OpenAL32\Include\alThunk.h" />
     <ClInclude Include="..\OpenAL32\Include\alu.h" />
@@ -59,13 +62,16 @@
     <ClCompile Include="..\Alc\alcConfig.c" />
     <ClCompile Include="..\Alc\alcRing.c" />
     <ClCompile Include="..\Alc\ALu.c" />
+    <ClCompile Include="..\Alc\ambdec.c" />
     <ClCompile Include="..\Alc\backends\base.c" />
     <ClCompile Include="..\Alc\backends\loopback.c" />
     <ClCompile Include="..\Alc\backends\mmdevapi.c" />
     <ClCompile Include="..\Alc\backends\null.c" />
     <ClCompile Include="..\Alc\backends\wave.c" />
     <ClCompile Include="..\Alc\backends\winmm.c" />
+    <ClCompile Include="..\Alc\bformatdec.c" />
     <ClCompile Include="..\Alc\bs2b.c" />
+    <ClCompile Include="..\Alc\bsinc.c" />
     <ClCompile Include="..\Alc\effects\autowah.c" />
     <ClCompile Include="..\Alc\effects\chorus.c" />
     <ClCompile Include="..\Alc\effects\compressor.c" />
@@ -79,17 +85,15 @@
     <ClCompile Include="..\Alc\effects\reverb.c" />
     <ClCompile Include="..\Alc\helpers.c" />
     <ClCompile Include="..\Alc\hrtf.c" />
-    <ClCompile Include="..\Alc\midi\base_midi.c" />
-    <ClCompile Include="..\Alc\midi\dummy.c" />
-    <ClCompile Include="..\Alc\midi\fluidsynth.c" />
-    <ClCompile Include="..\Alc\midi\sf2load.c" />
-    <ClCompile Include="..\Alc\midi\soft.c" />
     <ClCompile Include="..\Alc\mixer.c" />
     <ClCompile Include="..\Alc\mixer_c.c" />
     <ClCompile Include="..\Alc\mixer_sse.c" />
     <ClCompile Include="..\Alc\mixer_sse2.c" />
+    <ClCompile Include="..\Alc\mixer_sse3.c" />
     <ClCompile Include="..\Alc\mixer_sse41.c" />
     <ClCompile Include="..\Alc\panning.c" />
+    <ClCompile Include="..\Alc\uhjfilter.c" />
+    <ClCompile Include="..\common\almalloc.c" />
     <ClCompile Include="..\common\atomic.c" />
     <ClCompile Include="..\common\rwlock.c" />
     <ClCompile Include="..\common\threads.c" />
@@ -100,11 +104,7 @@
     <ClCompile Include="..\OpenAL32\alError.c" />
     <ClCompile Include="..\OpenAL32\alExtension.c" />
     <ClCompile Include="..\OpenAL32\alFilter.c" />
-    <ClCompile Include="..\OpenAL32\alFontsound.c" />
     <ClCompile Include="..\OpenAL32\alListener.c" />
-    <ClCompile Include="..\OpenAL32\alMidi.c" />
-    <ClCompile Include="..\OpenAL32\alPreset.c" />
-    <ClCompile Include="..\OpenAL32\alSoundfont.c" />
     <ClCompile Include="..\OpenAL32\alSource.c" />
     <ClCompile Include="..\OpenAL32\alState.c" />
     <ClCompile Include="..\OpenAL32\alThunk.c" />

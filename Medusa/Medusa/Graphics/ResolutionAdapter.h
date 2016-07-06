@@ -10,11 +10,14 @@
 #include "Core/Pattern/IInitializable.h"
 #include "Core/Pattern/Event.h"
 #include "Core/Collection/HashSet.h"
+#include "Core/System/SystemDefines.h"
+#include "Geometry/GeometryDefines.h"
+#include "Resource/Camera/Camera.h"
 
 MEDUSA_BEGIN;
 
 
-class ResolutionAdapter:public Singleton<ResolutionAdapter>
+class ResolutionAdapter :public Singleton<ResolutionAdapter>
 {
 	friend class Singleton<ResolutionAdapter>;
 	ResolutionAdapter();
@@ -32,9 +35,8 @@ public:
 	void SetWinSize(const Size2F& val);
 
 
-	Camera* DefaultCamera2D() const { return mDefaultCamera2D; }
-	Camera* DefaultCamera3D() const { return mDefaultCamera3D; }
-
+	const Share<Camera>& DefaultCamera2D() const { return mDefaultCamera2D; }
+	const Share<Camera>& DefaultCamera3D() const { return mDefaultCamera3D; }
 
 	bool IsLayoutDirty() const;
 	bool IsNodeLayoutDirty(INode* node)const;
@@ -43,21 +45,24 @@ public:
 
 	void UpdateLayout();
 
+	Stretch GetStretch() const { return mStretch; }
+	void SetStretch(Stretch val) { mStretch = val; }
 	static Size2U ScreenSize();
-
-
 private:
 	bool IsTopDirtyNode(INode* node)const;
+	void OnUIOrientationChanged(UIOrientation val);
 protected:
-	Camera* mDefaultCamera2D;
-	Camera* mDefaultCamera3D;
+	Share<Camera> mDefaultCamera2D;
+	Share<Camera> mDefaultCamera3D;
 
 	Size2F mWinSize;
 	Rect2F mWinRect;	//cache
 
 	HashSet<INode*> mDirtyNodes;
 	List<INode*> mDirtyList;
-	bool mIsLayoutUpdating;
+	bool mIsLayoutUpdating = false;
+
+	Stretch mStretch = Stretch::Uniform;
 };
 
 MEDUSA_END;

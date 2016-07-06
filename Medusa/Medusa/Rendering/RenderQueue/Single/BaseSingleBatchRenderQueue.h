@@ -13,24 +13,24 @@ MEDUSA_BEGIN;
 class BaseSingleBatchRenderQueue :public IRenderQueue
 {
 public:
-	BaseSingleBatchRenderQueue(IRenderTarget* renderTarget = nullptr, Camera* camera = nullptr, 
+	BaseSingleBatchRenderQueue(const Share<IRenderTarget>& renderTarget = nullptr, const Share<Camera>& camera = nullptr,
 							   RenderingStrategy strategy = RenderingStrategy::MultipleDynamicBatch);
 	virtual ~BaseSingleBatchRenderQueue(void);
 public:
-	virtual IRenderTarget* RenderTarget() const override{ return mRenderTarget; }
-	virtual void SetRenderTarget(IRenderTarget* val)override;
+	virtual const Share<IRenderTarget>& RenderTarget() const override{ return mRenderTarget; }
+	virtual void SetRenderTarget(const Share<IRenderTarget>& val)override;
 
-	virtual Camera* GetCamera() const override{ return mCamera; }
-	virtual void SetCamera(Camera* val)override;
+	virtual const Share<Camera>& GetCamera() const override{ return mCamera; }
+	virtual void SetCamera(const Share<Camera>& val)override;
 public:
 	virtual void Update(RenderableChangedFlags changedFlag)override;
 protected:
 	virtual bool OnUpdateCommands(RenderingFlags renderingFlags = RenderingFlags::None)override;
 
 protected:
-	IRenderTarget* mRenderTarget;
-	Camera* mCamera;
-	IRenderBatch* mBatch;
+	Share<IRenderTarget> mRenderTarget;
+	Share<Camera> mCamera;
+	IRenderBatch* mBatch=nullptr;
 
 };
 

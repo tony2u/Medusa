@@ -3,26 +3,20 @@
 // license that can be found in the LICENSE file.
 #include "MedusaCorePreCompiled.h"
 #include "CallbackLogger.h"
-
+#include "Core/Log/LogMessage.h"
+#include "Core/Pattern/Share.h"
 MEDUSA_BEGIN;
 
-CallbackLogger::CallbackLogger(LogCallback callback, StringRef name /*= StringRef::Empty*/,bool isLogHeader/*=true*/)
-	:ILogger(name,isLogHeader),mCallback(callback)
+void CallbackLogger::Print(const Share<LogMessage>& message)
 {
+	OnMessageA(message->Content());
 }
 
-
-CallbackLogger::~CallbackLogger(void)
+void CallbackLogger::Print(const Share<WLogMessage>& message)
 {
+	OnMessageW(message->Content());
 }
 
-void CallbackLogger::OutputLogString( StringRef inString ,LogType logType/*=LogType::Info*/ )
-{
-	if (mCallback!=nullptr)
-	{
-		mCallback((char*)inString.c_str());
-	}
-}
 
 
 MEDUSA_END;

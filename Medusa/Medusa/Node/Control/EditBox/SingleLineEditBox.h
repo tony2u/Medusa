@@ -9,9 +9,11 @@ MEDUSA_BEGIN;
 
 class SingleLineEditBox :public BaseSingleLineEditBox
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_NODE(SingleLineEditBox,BaseSingleLineEditBox);
 
 public:
+	SingleLineEditBox(const StringRef& name = StringRef::Empty, const IEventArg& e = IEventArg::Empty);
+
 	SingleLineEditBox(StringRef name, const Size2F& size, const FontId& fontId, WStringRef text = WStringRef::Empty, Alignment alignment = Alignment::LeftBottom);
 	virtual ~SingleLineEditBox(void);
 };

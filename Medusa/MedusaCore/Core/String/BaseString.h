@@ -65,7 +65,7 @@ protected:
 
 	}*/
 public:
-	virtual void Clear(){}
+	virtual void Clear() {}
 	BaseString& operator=(const BaseString& inString)
 	{
 		size_t length = inString.Length();
@@ -218,25 +218,63 @@ public:
 	size_t Length() const { return mLength; }
 	void ForceSetLength(size_t length) { mLength = length; mBuffer[mLength] = 0; }
 	void ForceAppendLength(size_t length) { mLength += length; mBuffer[mLength] = 0; }
+	size_t* ForceMutableLengthPtr() { return &mLength; }
 
 	void ForceUpdateLength()
 	{
 		mLength = mBuffer != nullptr ? StdString::GetLength(mBuffer) : 0;
 	}
 
-	size_t LeftLength() const 
+	size_t LeftLength() const
 	{
-		if (mLength>=mBufferSize)
+		if (mLength >= mBufferSize)
 		{
 			return 0;
 		}
-		return mBufferSize - mLength - 1; 
+		return mBufferSize - mLength - 1;
 	}
 
 	intp HashCode()const
 	{
-		return HashUtility::HashString(mBuffer,mBuffer+Length());
+		return HashUtility::HashString(mBuffer, mBuffer + Length());
 	}
+
+public:
+	class ConstInterator	//[IGNORE_PRE_DECLARE]
+	{
+	public:
+		explicit ConstInterator(const T* cur) :mCurrent(cur) {}
+		T operator*()const { return *mCurrent; }
+		const T* operator->()const { return mCurrent; }
+		bool operator==(const ConstInterator& other)const { return mCurrent == other.mCurrent; }
+		bool operator!=(const ConstInterator& other)const { return mCurrent != other.mCurrent; }
+		ConstInterator& operator++() { ++mCurrent; return *this; }
+		ConstInterator operator++(int)const { return ConstInterator(mCurrent + 1); }
+		ConstInterator& operator--() { --mCurrent; return *this; }
+		ConstInterator operator--(int)const { return ConstInterator(mCurrent - 1); }
+	protected:
+		const T* mCurrent;
+	};
+
+	class Interator	//[IGNORE_PRE_DECLARE]
+	{
+	public:
+		explicit Interator(T* cur) :mCurrent(cur) {}
+		T operator*()const { return *mCurrent; }
+		T* operator->()const { return mCurrent; }
+		bool operator==(const Interator& other)const { return mCurrent == other.mCurrent; }
+		bool operator!=(const Interator& other)const { return mCurrent != other.mCurrent; }
+		Interator& operator++() { ++mCurrent; return *this; }
+		Interator operator++(int)const { return Interator(mCurrent + 1); }
+		Interator& operator--() { --mCurrent; return *this; }
+		Interator operator--(int)const { return Interator(mCurrent - 1); }
+	protected:
+		T* mCurrent;
+	};
+	ConstInterator begin()const { return ConstInterator(this->mBuffer); }
+	ConstInterator end()const { return ConstInterator(this->mBuffer + this->Length()); }
+	Interator begin() { return Interator(this->mBuffer); }
+	Interator end() { return Interator(this->mBuffer + this->Length()); }
 public:
 	int Compare(const TStringRef<T>& inString, bool isIgnoreCase = false)const
 	{
@@ -282,13 +320,13 @@ public:
 	intp LastIndexOf(T inFindChar)const
 	{
 		RETURN_OBJECT_IF(IsEmpty(), -1);
-		return ToString().LastIndexOf(inFindChar, 0,Length()-1);
+		return ToString().LastIndexOf(inFindChar, 0, Length() - 1);
 	}
 
 	intp LastIndexOf(T inFindChar, intp beginIndex, intp endIndex)const
 	{
 		RETURN_OBJECT_IF(IsEmpty(), -1);
-		return ToString().LastIndexOf(inFindChar, beginIndex,endIndex);
+		return ToString().LastIndexOf(inFindChar, beginIndex, endIndex);
 	}
 
 	intp LastIndexOf(const TStringRef<T>& inString)const
@@ -300,7 +338,7 @@ public:
 	intp LastIndexOf(const TStringRef<T>& inString, intp beginIndex, intp endIndex)const
 	{
 		RETURN_OBJECT_IF(IsEmpty(), -1);
-		return ToString().LastIndexOf(inString, beginIndex,endIndex);
+		return ToString().LastIndexOf(inString, beginIndex, endIndex);
 	}
 
 	intp LastIndexOfAny(const TStringRef<T>& inString)const
@@ -312,7 +350,7 @@ public:
 	intp LastIndexOfAny(const TStringRef<T>& inString, intp beginIndex, intp endIndex)const
 	{
 		RETURN_OBJECT_IF(IsEmpty(), -1);
-		return ToString().LastIndexOfAny(inString, beginIndex,endIndex);
+		return ToString().LastIndexOfAny(inString, beginIndex, endIndex);
 	}
 
 	bool IndicesOf(T val, List<intp>& outIndices)const
@@ -511,13 +549,13 @@ public:
 	void ToUpper()
 	{
 		RETURN_IF(IsEmpty());
-		StdString::ToUpper(mBuffer, mLength+1);
+		StdString::ToUpper(mBuffer, mLength + 1);
 	}
 
 	void ToLower()
 	{
 		RETURN_IF(IsEmpty());
-		StdString::ToLower(mBuffer, mLength+1);
+		StdString::ToLower(mBuffer, mLength + 1);
 	}
 
 	void Reverse()
@@ -612,7 +650,7 @@ public:
 		{
 			size_t srcLength = srcEnd - mBuffer;
 
-			T* index = (T*)StdString::FindString(mBuffer, srcLength,oldString.Buffer(),oldString.Length());
+			T* index = (T*)StdString::FindString(mBuffer, srcLength, oldString.Buffer(), oldString.Length());
 			while (index != nullptr)
 			{
 				Memory::SafeCopy(index, mBuffer + mBufferSize - index, newString.Buffer(), newLength);
@@ -622,7 +660,7 @@ public:
 				index += oldLength - newLength;
 
 				srcLength = srcEnd - index;
-				index = (T*)StdString::FindString(index, srcLength,oldString.Buffer(),oldString.Length());
+				index = (T*)StdString::FindString(index, srcLength, oldString.Buffer(), oldString.Length());
 			}
 
 			//do a compress 

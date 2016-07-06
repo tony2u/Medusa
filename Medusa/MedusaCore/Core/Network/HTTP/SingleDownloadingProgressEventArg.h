@@ -3,7 +3,9 @@
 // license that can be found in the LICENSE file.
 #pragma once
 #include "MedusaCorePreDeclares.h"
-#include "Core/Command/EventArg/IEventArg.h"
+#ifdef MEDUSA_HTTP
+
+#include "Core/Event/EventArg/IEventArg.h"
 
 MEDUSA_BEGIN;
 
@@ -31,3 +33,4 @@ protected:
 
 MEDUSA_END;
 
+#endif

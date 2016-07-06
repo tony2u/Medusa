@@ -9,6 +9,17 @@
 
 MEDUSA_BEGIN;
 
+#ifdef MEDUSA_WINDOWS
+
+#ifndef strtoll
+#define strtoll  _strtoi64
+#endif 
+
+#ifndef strtoull
+#define strtoull  _strtoui64
+#endif 
+
+#endif
 
 template<typename TValue>
 TValue StringParser::StringToT(const TStringRef<char>& inString, int base /*= 10*/)
@@ -45,6 +56,16 @@ StringParser::ResultString<char, char> StringParser::ToStringTWithoutSign(const 
 	temp.ForceSetLength(end - temp.Buffer());
 	return temp;
 }
+
+template<>
+StringParser::ResultString<char, int8> StringParser::ToStringTWithoutSign(const int8& inValue, bool& outSign)
+{
+	ResultString<char, int8> temp;
+	char* end = i32toa_branchlut_without_sign(inValue, temp.MutableBuffer(), outSign);
+	temp.ForceSetLength(end - temp.Buffer());
+	return temp;
+}
+
 
 template<>
 StringParser::ResultString<char, wchar_t> StringParser::ToStringTWithoutSign(const wchar_t& inValue, bool& outSign)
@@ -485,6 +506,16 @@ StringParser::ResultString<char, bool> StringParser::ToString(const bool& inValu
 
 template<>
 StringParser::ResultString<char, char> StringParser::ToString(const char& inValue)
+{
+	ResultString<char, char> temp;
+	temp[0] = inValue;
+	temp[1] = '\0';
+	temp.ForceSetLength(1);
+	return temp;
+}
+
+template<>
+StringParser::ResultString<char, char> StringParser::ToString(const int8& inValue)
 {
 	ResultString<char, char> temp;
 	temp[0] = inValue;

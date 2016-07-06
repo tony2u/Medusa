@@ -5,11 +5,13 @@
 #include "Core/String/StringRef.h"
 #include "Resource/IResourceFactory.h"
 #include "Core/IO/FileId.h"
+#include "Core/Pattern/Share.h"
+#include "Core/Log/Log.h"
 
 MEDUSA_BEGIN;
 
 template<typename T>
-class BaseResourceFactory:public IResourceFactory<FileIdRef,T*>
+class BaseResourceFactory:public IResourceFactory<FileIdRef,T>
 {
 public:
 	virtual ~BaseResourceFactory()
@@ -21,10 +23,10 @@ public:
 	{
 		RETURN_IF_EMPTY(mItems);
 		List<FileIdRef> unusedKeys;
-		FOR_EACH_COLLECTION(i,mItems)
+		for(auto& i:mItems)
 		{
-			FileIdRef fileId=i->Key.ToRef();
-			T* item=i->Value;
+			FileIdRef fileId=i.Key.ToRef();
+			auto& item=i.Value;
 			if (!item->IsShared())
 			{
 				unusedKeys.Add(fileId);
@@ -32,29 +34,35 @@ public:
 		}
 
 		RETURN_IF_EMPTY(unusedKeys);
-		FOR_EACH_COLLECTION(i,unusedKeys)
+		for (auto& i : unusedKeys)
 		{
-			Remove(*i);
+			Remove(i);
 		}
 	}
 
 	virtual void Clear()override
 	{
 		RETURN_IF_EMPTY(mItems);
-		SAFE_RELEASE_COLLECTION(mCacheItems);
-
-		SAFE_RELEASE_DICTIONARY_VALUE(mItems);
+		mCacheItems.Clear();
+#ifdef MEDUSA_SAFE_CHECK
+		for (auto& i:mItems)
+		{
+			auto& item = i.Value;
+			if (item->IsShared())
+			{
+				Log::FormatError("Not zero ref count", item->RefCount());
+			}
+		}
+#endif
+		mItems.Clear();
 	}
 
 	virtual bool Remove(const FileIdRef& fileId)override
 	{
-		T* item=mItems.RemoveOtherKeyOptional(fileId,fileId.HashCode(),nullptr);
-		RETURN_FALSE_IF_NULL(item);
-		item->Release();
-		return true;
+		return mItems.RemoveOtherKey(fileId,fileId.HashCode());
 	}
 
-	virtual T* Find(const FileIdRef& fileId)const override
+	virtual ItemType Find(const FileIdRef& fileId)const override
 	{
 		if (!fileId.IsValid())
 		{
@@ -63,7 +71,7 @@ public:
 		return mItems.GetOptionalByOtherKey(fileId,fileId.HashCode(),nullptr);
 	}
 
-	virtual bool Add(T* val, ResourceShareType shareType = ResourceShareType::Share)override
+	virtual bool Add(const ItemType& val, ResourceShareType shareType = ResourceShareType::Share)override
 	{
 		if (!val->GetFileId().IsValid())
 		{
@@ -76,17 +84,14 @@ public:
 			case ResourceShareType::Share:
 				if (mItems.TryAdd(val->GetFileId(), val))
 				{
-					val->Retain();
+					
 					return true;
 				}
 				break;
 			case ResourceShareType::ShareAndCache:
 				if (mItems.TryAdd(val->GetFileId(), val))
 				{
-					val->Retain();
 					mCacheItems.Add(val);
-					val->Retain();
-
 					return true;
 				}
 
@@ -100,13 +105,13 @@ public:
 
 	virtual void ReleaseCache()  override
 	{
-		SAFE_RELEASE_COLLECTION(mCacheItems);
+		mCacheItems.Clear();
 		Shrink();
 	}
 
 protected:
-	Dictionary<FileId,T*> mItems;
-	List<T*> mCacheItems;
+	Dictionary<FileId, ItemType> mItems;
+	List<ItemType> mCacheItems;
 };
 
 MEDUSA_END;

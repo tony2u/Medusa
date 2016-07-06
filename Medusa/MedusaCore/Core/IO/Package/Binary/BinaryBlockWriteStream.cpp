@@ -13,7 +13,7 @@
 MEDUSA_BEGIN;
 
 
-BinaryBlockWriteStream::BinaryBlockWriteStream(IStream& stream, BinaryPackage& package, FileEntry& fileEntry)
+BinaryBlockWriteStream::BinaryBlockWriteStream(const Share<IStream>& stream, BinaryPackage& package, FileEntry& fileEntry)
 	: BlockWriteStream(stream, package.Header().BlockSize()),
 	mPackage(&package),
 	mFileEntry(&fileEntry)

@@ -37,5 +37,5 @@ bool CocosHelloLayer::OnStart(INode* sender, IEventArg* e)
 	return true;
 }
 
-MEDUSA_IMPLEMENT_LAYER(CocosHelloLayer, BaseCaseLayer, "MainLayer.csb", StringRef::Empty);
+MEDUSA_IMPLEMENT_NODE(CocosHelloLayer);
 

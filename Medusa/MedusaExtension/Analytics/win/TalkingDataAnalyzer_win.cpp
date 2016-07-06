@@ -136,10 +136,10 @@ void TalkingDataAnalyzer::LogEvent(const StringRef& eventId,const Dictionary<Hea
 {
 	LOG_ASSERT_STRING_MAX_LENGTH(eventId,32);
 	LOG_ASSERT_COLLECTION_MAX_COUNT(attributes,10);
-	FOR_EACH_COLLECTION(i,attributes)
+	for (auto i : attributes)
 	{
-		LOG_ASSERT_STRING_MAX_LENGTH(i->Key,32);
-		LOG_ASSERT_STRING_MAX_LENGTH(i->Value,32);
+		LOG_ASSERT_STRING_MAX_LENGTH(i.Key, 32);
+		LOG_ASSERT_STRING_MAX_LENGTH(i.Value, 32);
 
 	}
 
@@ -150,9 +150,9 @@ void TalkingDataAnalyzer::LogEvent(const StringRef& eventId,const Dictionary<Hea
 void TalkingDataAnalyzer::LogEvent(const StringRef& eventId,const Dictionary<HeapString,int>& attributes)
 {
 	LOG_ASSERT_STRING_MAX_LENGTH(eventId,32);
-	FOR_EACH_COLLECTION(i,attributes)
+	for (auto i : attributes)
 	{
-		LOG_ASSERT_STRING_MAX_LENGTH(i->Key,32);
+		LOG_ASSERT_STRING_MAX_LENGTH(i.Key,32);
 
 	}
 }

@@ -83,10 +83,10 @@ Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
 		SccNumberOfProjects = 1
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-		SccTeamFoundationServer = https://fjz.visualstudio.com/defaultcollection
+		SccTeamFoundationServer = https://fjz.visualstudio.com/
 		SccProjectUniqueName0 = Packer.vcxproj
 		SccProjectName0 = .
-		SccAuxPath0 = https://fjz.visualstudio.com/defaultcollection
+		SccAuxPath0 = https://fjz.visualstudio.com
 		SccLocalPath0 = .
 		SccProvider0 = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 	EndGlobalSection

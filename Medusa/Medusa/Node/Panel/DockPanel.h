@@ -9,10 +9,10 @@ MEDUSA_BEGIN;
 
 class DockPanel :public IPanel
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_NODE(DockPanel,IPanel);
 
 public:
-	DockPanel(StringRef name=StringRef::Empty);
+	using IPanel::IPanel;
 	virtual ~DockPanel(void);
 	virtual PanelType GetPanelType()const override{return PanelType::Dock;}
 

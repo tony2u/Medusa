@@ -3,14 +3,15 @@
 // license that can be found in the LICENSE file.
 #pragma once
 #include "Core/IO/Stream/IStream.h"
+#include "Core/Pattern/Share.h"
 
 MEDUSA_BEGIN;
 
 class SpanStream :public IStream
 {
 public:
-	SpanStream(IStream& stream, uintp limitBegin = 0, uintp litmitSize = 0);
-	SpanStream(const IStream& stream, uintp limitBegin = 0, uintp litmitSize = 0);
+	SpanStream(const Share<IStream>& stream, uintp limitBegin = 0, uintp litmitSize = 0);
+	SpanStream(const Share<const IStream>& stream, uintp limitBegin = 0, uintp litmitSize = 0);
 
 	virtual ~SpanStream(void);
 	virtual StreamType Type()const  override{ return StreamType::Span; }
@@ -59,7 +60,7 @@ public:
 private:
 	bool IsSourcePosValid()const;
 private:
-	IStream* mSourceStream;
+	Share<IStream> mSourceStream;
 	bool mIsSourceReadonly;
 
 	uintp mLimitBegin;

@@ -29,4 +29,4 @@ bool HelloWorldScene::OnEnter()
 	return true;
 }
 
-MEDUSA_IMPLEMENT_SCENE(HelloWorldScene, UIScene,StringRef::Empty, StringRef::Empty);
+MEDUSA_IMPLEMENT_NODE(HelloWorldScene);

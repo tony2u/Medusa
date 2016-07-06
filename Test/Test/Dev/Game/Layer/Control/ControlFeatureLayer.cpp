@@ -27,5 +27,5 @@ ControlFeatureLayer::~ControlFeatureLayer(void)
 }
 
 
-MEDUSA_IMPLEMENT_LAYER(ControlFeatureLayer, BaseFeatureLayer, StringRef::Empty, StringRef::Empty);
+MEDUSA_IMPLEMENT_NODE(ControlFeatureLayer);
 

@@ -7,7 +7,7 @@
 
 class NodeButtonLayer :public BaseCaseLayer
 {
-	MEDUSA_DECLARE_LAYER(NodeButtonLayer);
+	MEDUSA_NODE(NodeButtonLayer, BaseCaseLayer);
 public:
 	NodeButtonLayer(StringRef name=StringRef::Empty,const IEventArg& e=IEventArg::Empty);
 	virtual ~NodeButtonLayer(void);

@@ -22,7 +22,7 @@ FileMapOrderItem::FileMapOrderItem(uint order/*=0*/)
 
 FileIdRef FileMapOrderItem::GetFileId() const
 {
-	if (mParent!=nullptr)
+	if (mParent != nullptr)
 	{
 		return FileIdRef(mParent->Name(), mOrder);
 	}
@@ -43,10 +43,33 @@ int FileMapOrderItem::DiffScore() const
 	return mParent->Parent()->DiffScore();
 }
 
-void FileMapOrderItem::AddFileEntry(FileEntry& fileEntry, void* region /*= nullptr*/)
+void FileMapOrderItem::AddFileEntry(FileEntry& fileEntry, const StringRef& name/* = StringRef::Empty*/, void* region /*= nullptr*/)
 {
-	mFiles.Add((IPackage*)fileEntry.Parent()->Storage(), FileEntryRef(&fileEntry, region));
-	UpdateFirstValidFileEntry();
+	auto package = (IPackage*)fileEntry.Parent()->Storage();
+	auto* fileEntryRef = mFiles.TryGet(package);
+	if (fileEntryRef==nullptr)
+	{
+		if (region==nullptr)
+		{
+			mFiles.Add(package, FileEntryRef(&fileEntry, StringRef::Empty, region));	//ignore region name when have no region
+		}
+		else
+		{
+			mFiles.Add(package, FileEntryRef(&fileEntry, name, region));
+		}
+		UpdateFirstValidFileEntry();
+	}
+	else
+	{
+		if (fileEntryRef->RegionName==name)	//only apply region
+		{
+			fileEntryRef->Region = region;
+		}
+		else
+		{
+			Log::AssertFailedFormat("Duplicate add file entry:{} with name:{}", fileEntry.Name(),name);
+		}
+	}
 }
 
 bool FileMapOrderItem::RemoveFileEntry(const FileEntry& fileEntry)
@@ -60,17 +83,26 @@ bool FileMapOrderItem::RemoveFileEntry(const FileEntry& fileEntry)
 }
 
 
+bool FileMapOrderItem::RemoveFileEntryRegion(const FileEntry& fileEntry)
+{
+	auto* fileEntryRef= mFiles.TryGet((IPackage*)fileEntry.Parent()->Storage());
+	if (fileEntryRef!=nullptr)
+	{
+		fileEntryRef->Region = nullptr;
+		return true;
+	}
+	return false;
+}
+
 void FileMapOrderItem::UpdateFirstValidFileEntry()
 {
 	//re search first valid
-	mFirstValidFileEntry.Entry = nullptr;
-	mFirstValidFileEntry.Region = nullptr;
-
-	for (const auto& file : mFiles)
+	mFirstValidFileEntry = nullptr;
+	for (auto& file : mFiles)
 	{
 		if (file.second.Entry->IsValid())
 		{
-			mFirstValidFileEntry = file.second;
+			mFirstValidFileEntry = &file.second;
 		}
 	}
 }

@@ -11,7 +11,7 @@ MEDUSA_BEGIN;
 
 class CharInputEventArg :public BaseKeyEventArg
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_RTTI(CharInputEventArg,BaseKeyEventArg);
 
 public:
 	CharInputEventArg(uint key, uint status);

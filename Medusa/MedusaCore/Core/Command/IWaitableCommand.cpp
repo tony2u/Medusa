@@ -27,6 +27,5 @@ bool IWaitableCommand::Wait()
 	return mCompleteEvent.Wait();
 }
 
-MEDUSA_IMPLEMENT_RTTI(IWaitableCommand, ICommand);
 
 MEDUSA_END;

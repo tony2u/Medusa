@@ -15,11 +15,14 @@ MEDUSA_BEGIN;
 class ThreadPoolTimer :protected ThreadPoolTimerImp,public ICommand
 {
 	friend class ThreadPool;
-	ThreadPoolTimer(const StringRef& name, ICommand* command, uint delay = 0, uint repeatCount = 0, uint repeatInterval = 0, uint repeatIntervalRange = 0);
+	ThreadPoolTimer(ThreadPool* pool, const StringRef& name, const ShareCommand& command, uint delay = 0, uint repeatCount = 0, uint repeatInterval = 0, uint repeatIntervalRange = 0);
 	~ThreadPoolTimer(void);
 public:
+	ThreadPool* Pool() const { return mPool; }
+	void SetPool(ThreadPool* val) { mPool = val; }
+
 	StringRef Name() const { return mName; }
-	ICommand* Command() const { return mCommand; }
+	const ShareCommand& Command() const { return mCommand; }
 
 	uint Delay() const { return mDelay; }
 	void SetDelay(uint val) { mDelay = val; }
@@ -39,12 +42,11 @@ public:
 
 	void Cancel();
 	virtual bool OnExecute()override;
-private:
-	ThreadPoolTimer(const ThreadPoolTimer&);
-	ThreadPoolTimer& operator=(const ThreadPoolTimer&);
 protected:
+	ThreadPool* mPool = nullptr;
+
 	HeapString mName;
-	ICommand* mCommand;
+	ShareCommand mCommand;
 
 	uint mDelay;	//0 means invoke this right now, others to wait sometime in milliseconds
 	uint mRepeatCount;	//0 means not repeat,-1 means repeat forever

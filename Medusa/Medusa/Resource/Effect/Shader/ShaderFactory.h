@@ -19,7 +19,7 @@ public:
 	virtual bool Initialize();
 	virtual bool Uninitialize();
 public:
-	IShader* CreateShader(const FileIdRef& fileId,const List<HeapString>* defines=nullptr,ResourceShareType shareType = ResourceShareType::Share);
+	Share<IShader> CreateShader(const FileIdRef& fileId,const List<HeapString>* defines=nullptr,ResourceShareType shareType = ResourceShareType::Share);
 
 };
 

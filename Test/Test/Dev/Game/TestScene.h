@@ -8,7 +8,7 @@
 
 class TestScene:public UIScene
 {
-	MEDUSA_DECLARE_SCENE(TestScene);
+	MEDUSA_NODE(TestScene,UIScene);
 public:
 	TestScene(StringRef name=StringRef::Empty, const IEventArg& e = IEventArg::Empty);
 	virtual ~TestScene(void);

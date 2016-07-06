@@ -24,17 +24,14 @@ TiledImage::TiledImage()
 
 TiledImage::~TiledImage()
 {
-	if (mTexturePage != nullptr)
-	{
-		mTexturePage->Atlas()->Release();
-	}
+	mTextureAtlas = nullptr;
 		
 }
 
 bool TiledImage::Parse(const pugi::xml_node& node)
 {
 	// Read all the attribute into member variables.
-	mSource = node.attribute("source").as_string(nullptr);
+	mSource= FileId::ParseFrom(node.attribute("source").as_string(nullptr));
 	if (mSource.IsEmpty())
 	{
 		Log::AssertFailed("Invalid image xml node source attribute");
@@ -86,18 +83,15 @@ bool TiledImage::Parse(const pugi::xml_node& node)
 
 bool TiledImage::LoadTiledTexture(Size2I tileSize)
 {
-	auto* textureAtlas=TextureAtlasFactory::Instance().CreateTiledAtlas(mSource, mSize, tileSize);
+	auto textureAtlas=TextureAtlasFactory::Instance().CreateTiledAtlas(mSource, mSize, tileSize);
 	RETURN_FALSE_IF_NULL(textureAtlas);
 	mTexturePage = textureAtlas->FindPage(0);
-	if (mTexturePage!=nullptr)
-	{
-		SAFE_RETAIN(mTexturePage->Atlas());
-	}
+	mTextureAtlas = textureAtlas;
 	return true;
 }
 
 
-ITexture* TiledImage::LoadSeparateTexture()const
+Share<ITexture> TiledImage::LoadSeparateTexture()const
 {
 	return TextureFactory::Instance().CreateFromFile(mSource);
 }

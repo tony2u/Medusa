@@ -9,8 +9,8 @@ MEDUSA_BEGIN;
 class RotationTimeline:public ITimeline
 {
 public:
-	RotationTimeline(RotationTimelineModel* model, intp repeatCount, float beforeDelay = 0.f, float repeatDuration = 0.f, float afterDelay = 0.f, const StringRef& name = StringRef::Empty);
-	RotationTimeline(RotationTimelineModel* model, bool isRepeatForever, float beforeDelay = 0.f, float repeatDuration = 0.f, float afterDelay = 0.f, const StringRef& name = StringRef::Empty);
+	RotationTimeline(const Share<RotationTimelineModel>& model, intp repeatCount, float beforeDelay = 0.f, float repeatDuration = 0.f, float afterDelay = 0.f, const StringRef& name = StringRef::Empty);
+	RotationTimeline(const Share<RotationTimelineModel>& model, bool isRepeatForever, float beforeDelay = 0.f, float repeatDuration = 0.f, float afterDelay = 0.f, const StringRef& name = StringRef::Empty);
 
 	virtual ~RotationTimeline();
 protected:

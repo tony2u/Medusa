@@ -10,16 +10,22 @@
 
 #include "Core/Log/Log.h"
 #include "ISkeleton.h"
-
+#include "Node/NodeFactory.h"
 MEDUSA_BEGIN;
 
 SkeletonSlot::SkeletonSlot(ISkeleton* skeleton, SkeletonSlotModel* model)
-	:INode(model->Name()), mSkeleton(skeleton),mModel(model), mAttachment(nullptr)
+	:INode(model->Name()), mSkeleton(skeleton),mModel(model)
 {
 	SetToSetupPose();
 	Stop();
 }
 
+
+SkeletonSlot::SkeletonSlot(const StringRef& name /*= StringRef::Empty*/, const IEventArg& e /*= IEventArg::Empty*/)
+	:INode(name,e)
+{
+
+}
 
 SkeletonSlot::~SkeletonSlot()
 {
@@ -98,9 +104,8 @@ Rect2F SkeletonSlot::CalculateBoundingBox()
 
 		RangeF rangeX;
 		RangeF rangeY;
-		FOR_EACH_COLLECTION(i, vertices)
+		for(auto pos: vertices)
 		{
-			Point2F pos = *i;
 			pos = TransformToWorld(pos);
 			rangeX.Expand(pos.X);
 			rangeY.Expand(pos.Y);
@@ -127,7 +132,7 @@ void SkeletonSlot::SetAttachmentFromModel()
 	SetAttachment(mModel->AttachmentName());
 }
 
-MEDUSA_IMPLEMENT_RTTI(SkeletonSlot, INode);
+MEDUSA_IMPLEMENT_NODE(SkeletonSlot);
 
 
 MEDUSA_END;

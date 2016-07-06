@@ -27,17 +27,21 @@ ResourceManager::ResourceManager(void)
 {
 	mResourceFactories.Add(&TimelineModelFactory::Instance());
 	mResourceFactories.Add(&CameraFactory::Instance());
-	mResourceFactories.Add(&RenderPassFactory::Instance());
 	mResourceFactories.Add(&ShaderFactory::Instance());
+	mResourceFactories.Add(&RenderPassFactory::Instance());
 	mResourceFactories.Add(&EffectFactory::Instance());
-	mResourceFactories.Add(&FontFactory::Instance());
 	mResourceFactories.Add(&ImageFactory::Instance());
 	mResourceFactories.Add(&LightFactory::Instance());
+	mResourceFactories.Add(&TextureFactory::Instance());
 	mResourceFactories.Add(&MaterialFactory::Instance());
 	mResourceFactories.Add(&ModelFactory::Instance());
 	mResourceFactories.Add(&RenderTargetFactory::Instance());
-	mResourceFactories.Add(&TextureFactory::Instance());
+	mResourceFactories.Add(&FontFactory::Instance());
+
+#ifdef MEDUSA_AL
 	mResourceFactories.Add(&AudioFactory::Instance());
+#endif
+
 	mResourceFactories.Add(&TextureAtlasFactory::Instance());
 	mResourceFactories.Add(&SkeletonModelFactory::Instance());
 
@@ -53,9 +57,8 @@ ResourceManager::~ResourceManager(void)
 
 bool ResourceManager::Initialize()
 {
-	FOR_EACH_COLLECTION(i, mResourceFactories)
+	for(auto item: mResourceFactories)
 	{
-		IResourceManageable* item = *i;
 		RETURN_FALSE_IF_FALSE(item->Initialize());
 	}
 
@@ -65,11 +68,14 @@ bool ResourceManager::Initialize()
 
 bool ResourceManager::Uninitialize()
 {
-	FOR_EACH_COLLECTION(i, mResourceFactories)
+	//reverse order
+	int count = (int)mResourceFactories.Count();
+	FOR_EACH_INT32_END_BEGIN(i, count - 1, 0)
 	{
-		IResourceManageable* item = *i;
+		auto item = mResourceFactories[i];
 		RETURN_FALSE_IF_FALSE(item->Uninitialize());
 	}
+	
 
 	RETURN_FALSE_IF_FALSE(FrameTask::Uninitialize());
 	
@@ -79,19 +85,19 @@ bool ResourceManager::Uninitialize()
 
 void ResourceManager::Clear()
 {
-	FOR_EACH_ITEM_TO(mResourceFactories, Clear());
+	FOR_EACH_TO(mResourceFactories, Clear());
 }
 
 
 void ResourceManager::Shrink()
 {
-	FOR_EACH_ITEM_TO(mResourceFactories, Shrink());
+	FOR_EACH_TO(mResourceFactories, Shrink());
 }
 
 
 void ResourceManager::ReleaseCache()
 {
-	FOR_EACH_ITEM_TO(mResourceFactories, ReleaseCache());
+	FOR_EACH_TO(mResourceFactories, ReleaseCache());
 }
 
 void ResourceManager::OnUpdate(float dt)

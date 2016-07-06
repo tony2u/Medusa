@@ -39,9 +39,9 @@ public:
 //SIREN_HEADER_COMPARE_END
 //SIREN_HEADER_METHOD_BEGIN
 public:
-	SIREN_METHOD(HeapString, Description);
-	SIREN_METHOD(HeapString, Path);
-	SIREN_METHOD(HeapString, Signature);
+	SIREN_STRING(HeapString, Description);
+	SIREN_STRING(HeapString, Path);
+	SIREN_STRING(HeapString, Signature);
 //SIREN_HEADER_METHOD_END
 //SIREN_HEADER_FIELD_BEGIN
 protected:

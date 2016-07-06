@@ -68,13 +68,18 @@ Size2F ApplicationSettings::DesignWinSize() const
 Size2F ApplicationSettings::ResultWinSize() const
 {
 #ifdef MEDUSA_WINDOWS
+	if (mDebugWinSize != Size2F::Zero)
+	{
+		return mDebugWinSize;
+	}
+
 	return DesignWinSize();
 #else
 
 #ifdef MEDUSA_DEBUG
 	if (IsDebug() && !Environment::Instance().IsArm())
 	{
-		return DesignWinSize();
+		return DesignWinSize();	//simulator
 	}
 #endif
 
@@ -124,6 +129,7 @@ bool ApplicationSettings::OnLoad(IEventArg& e /*= IEventArg::Empty*/)
 
 			IJsonSettings settings(&root);
 
+			mOrientation = (UIOrientation)settings.Optional("Orientation", (uint)UIOrientation::LandscapeLeft);
 			mDebugInfo = (ApplicationDebugInfoFlags)settings.Optional("DebugInfo", (uint)ApplicationDebugInfoFlags::None);
 			mTag.Version = (PublishVersions)settings.Optional("Version", PublishVersions::main.IntValue);
 			mTag.Language = (PublishLanguages)settings.Optional("Language", PublishLanguages::enus.IntValue);
@@ -136,25 +142,39 @@ bool ApplicationSettings::OnLoad(IEventArg& e /*= IEventArg::Empty*/)
 			{
 				str.Push('.');
 			}
+
+			auto debugWinSizeNode = settings.JsonValue()->FindMember("DebugWinSize");
+			if (debugWinSizeNode != settings.JsonValue()->MemberEnd())
+			{
+				mDebugWinSize.Width = debugWinSizeNode->value.Get("Width", 0.f);
+				mDebugWinSize.Height = debugWinSizeNode->value.Get("Height", 0.f);
+			}
 		}
 		else if (type == FileType::lua)
 		{
 #ifdef MEDUSA_LUA
 			ScriptObject settings = ScriptEngine::State()->DoFileWithReturn(mSettingsFile);
 
+			mOrientation = (UIOrientation)settings.Optional("Orientation", (uint)UIOrientation::LandscapeLeft);
 			mDebugInfo = (ApplicationDebugInfoFlags)settings.Optional("DebugInfo", (uint)ApplicationDebugInfoFlags::None);
 			mTag.Version = (PublishVersions)settings.Optional("Version", PublishVersions::main.IntValue);
 			mTag.Language = (PublishLanguages)settings.Optional("Language", PublishLanguages::enus.IntValue);
 			mTag.Device = (PublishDevices)settings.Optional("Device", PublishDevices::hd.IntValue);
 			mFeatures = (EngineFeatures)settings.Optional("Features", (uint)EngineFeatures::None);
 			mIsDebug = settings.Optional("IsDebug", false);
-			StringRef nodeEditors= settings.Optional("NodeEditors", StringRef::Empty);
+			StringRef nodeEditors = settings.Optional("NodeEditors", StringRef::Empty);
 			StringParser::Split(nodeEditors, ".", mNodeEditors);
-			for (auto& str:mNodeEditors)
+			for (auto& str : mNodeEditors)
 			{
 				str.Push('.');
 			}
 
+			auto debugWinSizeNode= settings.Get("DebugWinSize");
+			if (debugWinSizeNode)
+			{
+				mDebugWinSize.Width = debugWinSizeNode.Optional("Width", 0.f);
+				mDebugWinSize.Height = debugWinSizeNode.Optional("Height", 0.f);
+			}
 #else
 			Log::AssertFailedFormat("Engine not enable lua feature for :{}", mSettingsFile.Name);
 			return false;
@@ -168,7 +188,7 @@ bool ApplicationSettings::OnLoad(IEventArg& e /*= IEventArg::Empty*/)
 		}
 	}
 
-	Application::Instance().EnableModule("Core.ThreadCommandProcessor", MEDUSA_FLAG_HAS(mFeatures,EngineFeatures::SupportThreadEvent));
+	Application::Instance().EnableModule("Core.ThreadCommandProcessor", MEDUSA_FLAG_HAS(mFeatures, EngineFeatures::SupportThreadEvent));
 	Application::Instance().EnableModule("Core.Message", MEDUSA_FLAG_HAS(mFeatures, EngineFeatures::SupportMessage));
 	Application::Instance().EnableModule("Core.FileUpdater", MEDUSA_FLAG_HAS(mFeatures, EngineFeatures::SupportFileUpdating));
 

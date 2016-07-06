@@ -5,6 +5,8 @@
 #include "Core/Pattern/Singleton.h"
 #include "Core/Collection/HashSet.h"
 #include "Graphics/GraphicsTypes.h"
+#include "Resource/Material/IMaterial.h"
+#include "Resource/Texture/ITexture.h"
 
 MEDUSA_BEGIN;
 
@@ -45,10 +47,10 @@ public:
 	void CountTriangleCount(size_t count);
 	void CountRenderQueue(size_t count = 1);
 	void CountRenderPass(size_t count = 1);
-	void CountMaterial(const IMaterial* material);
-	void CountMaterialTextures(const IMaterial* material);
+	void CountMaterial(const Share<IMaterial>& material);
+	void CountMaterialTextures(const Share<IMaterial>& material);
 
-	void CountTexture(const ITexture* texture);
+	void CountTexture(const Share<ITexture>& texture);
 	void CountDrawMode(GraphicsDrawMode mode);
 	void IncreaseBuffer(size_t count = 1);
 	void DecreaseBuffer(size_t count = 1);
@@ -82,9 +84,9 @@ private:
 	size_t mTotalNodeCount;
 	size_t mChangedNodeCount;
 
-	HashSet<const IMaterial*> mMaterials;
-	HashSet<const ITexture*> mTextures;
-	HashSet<GraphicsDrawMode, SafeEnumHashCoder<GraphicsDrawMode>> mDrawModes;
+	HashSet<Share<IMaterial>> mMaterials;
+	HashSet<Share<ITexture>> mTextures;
+	HashSet<GraphicsDrawMode, SafeEnumHashCoder> mDrawModes;
 
 	bool mEnabled;
 

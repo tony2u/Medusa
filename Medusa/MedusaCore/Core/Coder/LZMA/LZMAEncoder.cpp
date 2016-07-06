@@ -2,6 +2,8 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 #include "MedusaCorePreCompiled.h"
+#ifdef MEDUSA_LZMA
+
 #include "Core/Coder/LZMA/LZMAEncoder.h"
 #include "Core/Coder/CoderFactory.h"
 #include "CoreLib/Common/Lzma/LzmaEnc.h"
@@ -88,3 +90,5 @@ size_t LZMAEncoder::OnCode(const IStream& input, IStream& output) const
 }
 
 MEDUSA_END;
+
+#endif

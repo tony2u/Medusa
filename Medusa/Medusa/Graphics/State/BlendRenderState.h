@@ -16,16 +16,14 @@ DestColor*DestFactor (blendEquation) SrcColor*SrcFactor
 
 class BlendRenderState:public IRenderState
 {
-	MEDUSA_DECLARE_RTTI;
-
-
+	MEDUSA_RTTI(BlendRenderState,IRenderState);
 public:
 	BlendRenderState(bool blendEnabled=false);
 	virtual ~BlendRenderState();
 
 	virtual void Apply()const override;
 
-	virtual BlendRenderState* Clone()const override;
+	Share<BlendRenderState> Clone()const;
 	virtual void CopyFrom(const IRenderState& other)override;
 
 	virtual bool Equals(const IRenderState& state)const override;
@@ -52,8 +50,8 @@ public:
 	bool SetBlendColor(const Color4F& val);
 
 	bool SetBlendFunc(GraphicsBlendSrcFunc srcFunc, GraphicsBlendDestFunc destFunc);
-	static BlendRenderState* Current();	//OpenGL default blend src is one-zero, which is not valid for blend
-	static BlendRenderState* Default();
+	static Share<BlendRenderState> Current();	//OpenGL default blend src is one-zero, which is not valid for blend
+	static Share<BlendRenderState> Default();
 	virtual intp HashCode() const override;
 
 protected:

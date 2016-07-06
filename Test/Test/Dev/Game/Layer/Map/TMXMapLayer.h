@@ -8,7 +8,7 @@
 
 class TMXMapLayer :public BaseCaseLayer
 {
-	MEDUSA_DECLARE_LAYER(TMXMapLayer);
+	MEDUSA_NODE(TMXMapLayer, BaseCaseLayer);
 public:
 	TMXMapLayer(StringRef name=StringRef::Empty,const IEventArg& e=IEventArg::Empty);
 	virtual ~TMXMapLayer(void);

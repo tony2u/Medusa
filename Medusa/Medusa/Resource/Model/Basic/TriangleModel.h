@@ -11,7 +11,7 @@ MEDUSA_BEGIN;
 class TriangleModel:public BaseSingleTextureModel<TextureTriangleMesh>
 {
 public:
-	TriangleModel(const FileIdRef& fileId,IMaterial* material);
+	TriangleModel(const FileIdRef& fileId, const Share<IMaterial>& material);
 	virtual ~TriangleModel(void);
 
 };

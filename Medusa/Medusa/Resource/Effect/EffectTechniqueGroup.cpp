@@ -104,7 +104,7 @@ EffectTechnique* EffectTechniqueGroup::GetTechniqueByName( StringRef name )
 	return mTechniqueDict.GetOptional(name,nullptr);
 }
 
-void EffectTechniqueGroup::SetEffect( IEffect* val )
+void EffectTechniqueGroup::SetEffect(const Share<IEffect>& val )
 {
 	
 }

@@ -27,20 +27,20 @@ bool CameraFactory::Initialize()
 
 bool CameraFactory::Uninitialize()
 {
-	Clear();
 	mResizeableCameras.Clear();
+	Clear();
 	return true;
 }
 
-Camera* CameraFactory::CreateDefault(StringRef name, bool isOrtho /*= false*/, bool isResizeable /*= true*/,ResourceShareType shareType /*= ResourceShareType::Share*/)
+Share<Camera> CameraFactory::CreateDefault(StringRef name, bool isOrtho /*= false*/, bool isResizeable /*= true*/,ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
 	Size2F winSize = ResolutionAdapter::Instance().WinSize();
 	return CreateDefault(name, winSize, isOrtho, isResizeable,shareType);
 }
 
-Camera* CameraFactory::CreateDefault(StringRef name, const Size2F& winSize, bool isOrtho/*=false*/, bool isResizeable /*= true*/, ResourceShareType shareType /*= ResourceShareType::Share*/)
+Share<Camera> CameraFactory::CreateDefault(StringRef name, const Size2F& winSize, bool isOrtho/*=false*/, bool isResizeable /*= true*/, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
-	Camera* camera = nullptr;
+	Share<Camera> camera;
 	if (shareType!=ResourceShareType::None)
 	{
 		camera = Find(name);
@@ -64,9 +64,9 @@ Camera* CameraFactory::CreateDefault(StringRef name, const Size2F& winSize, bool
 }
 
 
-Camera* CameraFactory::CreateFromModel(StringRef name, StringRef modelName, const Size2F& winSize, bool isResizeable /*= true*/, ResourceShareType shareType /*= ResourceShareType::Share*/)
+Share<Camera> CameraFactory::CreateFromModel(StringRef name, StringRef modelName, const Size2F& winSize, bool isResizeable /*= true*/, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
-	Camera* camera = nullptr;
+	Share<Camera> camera;
 	if (shareType != ResourceShareType::None)
 	{
 		camera = Find(name);
@@ -75,7 +75,7 @@ Camera* CameraFactory::CreateFromModel(StringRef name, StringRef modelName, cons
 
 	if (camera == nullptr)
 	{
-		BaseSceneModel* model = (BaseSceneModel*)ModelFactory::Instance().Create(modelName);
+		auto model = ModelFactory::Instance().Create(modelName).CastPtr<BaseSceneModel>();
 		if (model != nullptr)
 		{
 			camera = model->CreateCamera(name, winSize);
@@ -93,7 +93,7 @@ Camera* CameraFactory::CreateFromModel(StringRef name, StringRef modelName, cons
 
 void CameraFactory::Resize(const Size2F& newSize)
 {
-	FOR_EACH_ITEM_TO(mResizeableCameras,Resize(newSize));
+	FOR_EACH_TO(mResizeableCameras,Resize(newSize));
 }
 
 

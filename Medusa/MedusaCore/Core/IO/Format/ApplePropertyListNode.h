@@ -8,14 +8,14 @@
 #include "Core/Memory/MemoryData.h"
 #include "Core/Collection/List.h"
 #include "Core/Collection/Dictionary.h"
-#include "Core/Utility/DateTime.h"
+#include "Core/Chrono/DateTime.h"
 #include "Core/Pattern/INonCopyable.h"
 
 MEDUSA_BEGIN;
 
 
 
-class ApplePropertyListNode:public INonCopyable<ApplePropertyListNode>
+class ApplePropertyListNode:public INonCopyable
 {
 public:
 	struct BinaryHeader

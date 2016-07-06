@@ -12,25 +12,21 @@ class RenderStateTreeCompositeNode :public BaseRenderStateTreeNode
 {
 	friend class RenderStateTreeLeafNode;
 public:
-	typedef List<BaseRenderStateTreeNode*> RenderStateTreeNodeList;
+	typedef List<Share<BaseRenderStateTreeNode>> RenderStateTreeNodeList;
 
-	RenderStateTreeCompositeNode(IRenderState* state = nullptr, RenderStateTreeCompositeNode* parent = nullptr);
+	RenderStateTreeCompositeNode(const Share<IRenderState>& state = nullptr, RenderStateTreeCompositeNode* parent = nullptr);
 	virtual ~RenderStateTreeCompositeNode(void);
-	virtual RenderStateTreeLeafNode* FindUniqueNode(const RenderStateSet& stateSet, RenderStateType type)override;
+	Share<RenderStateTreeLeafNode> FindUniqueNode(const RenderStateSet& stateSet, RenderStateType type);
 	bool IsEmpty()const;
 	bool IsSingle()const;
 
-	void Remove(BaseRenderStateTreeNode* node);
-
-	void Delete(BaseRenderStateTreeNode* node);
-
-
+	void Remove(const Share<BaseRenderStateTreeNode>& node);
 private:
-	BaseRenderStateTreeNode* FindNodeByState(IRenderState* state)const;
+	Share<BaseRenderStateTreeNode> FindNodeByState(const Share<IRenderState>& state)const;
 
 protected:
 	RenderStateTreeNodeList mNextStateNodes;
-	BaseRenderStateTreeNode* mNextNullStateNode;
+	Share<BaseRenderStateTreeNode> mNextNullStateNode;
 };
 
 MEDUSA_END;

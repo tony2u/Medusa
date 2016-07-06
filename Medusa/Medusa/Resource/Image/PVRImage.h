@@ -205,8 +205,8 @@ public:
 	MetaDataBlockMap* MetaDataBlocks() const { return mMetaDataBlocks.get(); }
 	PVRImageMetaDataBlock* GetMetaBlock(uint fourCC,uint key)const;
 
-	static PVRImage* CreateFromFile(const FileIdRef& fileId);
-	static PVRImage* CreateFromMemory(const FileIdRef& fileId, const FileEntry& fileEntry,MemoryData data);
+	static Share<PVRImage> CreateFromFile(const FileIdRef& fileId);
+	static Share<PVRImage> CreateFromMemory(const FileIdRef& fileId, const FileEntry& fileEntry,MemoryData data);
 	virtual uint GetTextureDataSize(uint mipLevel)const;
 
 private:

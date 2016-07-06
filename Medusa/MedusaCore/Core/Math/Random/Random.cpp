@@ -4,7 +4,6 @@
 #include "MedusaCorePreCompiled.h"
 #include "Core/Math/Random/Random.h"
 #include "Core/Memory/MemoryData.h"
-#include "Core/Profile/PerformanceCounter.h"
 
 MEDUSA_BEGIN;
 
@@ -12,12 +11,14 @@ MEDUSA_BEGIN;
 
 Random::Random(uint32 seed/*=0*/)
 {
-	mSeed = seed == 0 ? (int)PerformanceCounter::Ticks() : seed;
+	auto ticks = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+	mSeed = seed == 0 ? (int)ticks : seed;
 }
 
 void Random::SetSeedFromTick()
 {
-	mSeed = (int)PerformanceCounter::Ticks();
+	auto ticks = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+	mSeed = (int)ticks;
 }
 
 int Random::Rand()

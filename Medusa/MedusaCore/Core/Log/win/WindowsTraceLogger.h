@@ -11,13 +11,10 @@ class WindowsTraceLogger :public ILogger
 {
 public:
 	using ILogger::ILogger;
-	virtual ~WindowsTraceLogger(void);
 
 protected:
-	virtual void OutputLogString(StringRef inString,LogType logType=LogType::Info);
-	virtual void OutputLogString(WStringRef inString,LogType logType=LogType::Info);
-
-
+	virtual void Print(const Share<LogMessage>& message)override;
+	virtual void Print(const Share<WLogMessage>& message)override;
 };
 
 #endif

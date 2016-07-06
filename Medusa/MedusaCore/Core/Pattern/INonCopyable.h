@@ -3,21 +3,20 @@
 // license that can be found in the LICENSE file.
 #pragma  once
 #include "MedusaCorePreDeclares.h"
-#include "Core/Memory/MemoryData.h"
 
 MEDUSA_BEGIN;
 
-template<typename T>
 struct INonCopyable
 {
 	INonCopyable() = default;
 	~INonCopyable() = default;
 
-	INonCopyable(const T&) = delete;
-	T& operator=(const T&) = delete;
+private:
+	INonCopyable(const INonCopyable&) = delete;
+	INonCopyable& operator=(const INonCopyable&) = delete;
 
-	INonCopyable(const T&&) = delete;
-	T& operator=(const T&&) = delete;
+	//INonCopyable(INonCopyable&&) = delete;
+	//INonCopyable& operator=(INonCopyable&&) = delete;
 };
 
 MEDUSA_END;

@@ -5,13 +5,14 @@
 #include "MedusaPreDeclares.h"
 #include "IBehavior.h"
 #include "Game/AI/Predicate/IPredicate.h"
+#include "Core/Pattern/Share.h"
 
 MEDUSA_BEGIN;
 
 
 class IPredicateBehavior :public IBehavior
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_RTTI(IPredicateBehavior,IBehavior);
 public:
 	IPredicateBehavior(const IPredicate* predicate = nullptr);
 	~IPredicateBehavior(void);
@@ -19,13 +20,13 @@ public:
 	bool EvaluateBool(void* sender)const;
 	int Evaluate(void* sender)const;
 
-	const IPredicate* Predicate() const { return mPredicate; }
-	void SetPredicate(const IPredicate* val);
+	const Share<IPredicate>& Predicate() const { return mPredicate; }
+	void SetPredicate(const Share<IPredicate>& val) { mPredicate = val; }
 
 	virtual bool LoadFromXmlNode(const pugi::xml_node& node)override;
 
 protected:
-	const IPredicate* mPredicate;
+	Share<IPredicate> mPredicate;
 };
 
 MEDUSA_END;

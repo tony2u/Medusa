@@ -22,5 +22,4 @@ bool IComponent::Update(float dt)
 	return true;
 }
 
-MEDUSA_IMPLEMENT_RTTI_ROOT(IComponent);
 MEDUSA_END;

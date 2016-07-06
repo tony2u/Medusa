@@ -22,9 +22,8 @@ const IBehavior* IfBehavior::Behave(IBrainBody& brainBody, void* sender) const
 	if (predicate)
 	{
 		RETURN_NULL_IF_EMPTY(mItems);
-		FOR_EACH_COLLECTION(i, mItems)
+		for(auto item: mItems)
 		{
-			const IBehavior* item = *i;
 			const IBehavior* result = item->Behave(brainBody, sender);
 			RETURN_SELF_IF_NOT_NULL(result);
 		}
@@ -32,9 +31,8 @@ const IBehavior* IfBehavior::Behave(IBrainBody& brainBody, void* sender) const
 	else
 	{
 		RETURN_NULL_IF_EMPTY(mElseItems);
-		FOR_EACH_COLLECTION(i, mElseItems)
+		for (auto item : mElseItems)
 		{
-			const IBehavior* item = *i;
 			const IBehavior* result = item->Behave(brainBody, sender);
 			RETURN_SELF_IF_NOT_NULL(result);
 		}
@@ -48,9 +46,8 @@ const IBehavior* IfBehavior::ReceiveEvent(IBrainBody& brainBody, void* sender, I
 	if (predicate)
 	{
 		RETURN_NULL_IF_EMPTY(mItems);
-		FOR_EACH_COLLECTION(i, mItems)
+		for (auto item : mItems)
 		{
-			const IBehavior* item = *i;
 			const IBehavior* result = item->ReceiveEvent(brainBody, sender, e);
 			RETURN_SELF_IF_NOT_NULL(result);
 		}
@@ -58,9 +55,8 @@ const IBehavior* IfBehavior::ReceiveEvent(IBrainBody& brainBody, void* sender, I
 	else
 	{
 		RETURN_NULL_IF_EMPTY(mElseItems);
-		FOR_EACH_COLLECTION(i, mElseItems)
+		for (auto item : mElseItems)
 		{
-			const IBehavior* item = *i;
 			const IBehavior* result = item->ReceiveEvent(brainBody, sender, e);
 			RETURN_SELF_IF_NOT_NULL(result);
 		}
@@ -89,10 +85,8 @@ bool IfBehavior::LoadFromXmlNode(const pugi::xml_node& node)
 {
 	RETURN_FALSE_IF_FALSE(IPredicateBehavior::LoadFromXmlNode(node));
 
-	FOR_EACH_COLLECTION_STL(i, node.children())
+	for (const auto& child : node.children())
 	{
-		pugi::xml_node child = *i;
-
 		StringRef typeName = child.name();
 		IBehavior* behavior = BehaviorFactory::Instance().SmartCreate(typeName);
 		behavior->LoadFromXmlNode(child);
@@ -115,6 +109,5 @@ bool IfBehavior::LoadFromXmlNode(const pugi::xml_node& node)
 
 
 
-MEDUSA_IMPLEMENT_RTTI(IfBehavior, IPredicateBehavior);
-
+MEDUSA_IMPLEMENT_BEHAVIOR(IfBehavior);
 MEDUSA_END;

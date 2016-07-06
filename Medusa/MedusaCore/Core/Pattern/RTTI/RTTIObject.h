@@ -5,6 +5,9 @@
 
 #include "MedusaCorePreDeclares.h"
 #include "Core/Pattern/RTTI/RTTIClass.h"
+#include "Core/Pattern/RTTI/TRTTIClassRoot.h"
+#include "Core/Pattern/RTTI/TRTTIClass.h"
+
 
 /*
 The reason why we need to implement my own's RTTI instead of dynamic_cast is that performance!
@@ -93,7 +96,7 @@ public:
 		const RTTIClass* q = &rttiClass;
 		do
 		{
-			RETURN_TRUE_IF_EQUAL(p, q);
+			RETURN_TRUE_IF_EQUAL(*p, *q);
 			p = p->BaseClass();
 		} while (p != nullptr);
 		return false;
@@ -116,34 +119,24 @@ namespace RTTI
 	}
 }											
 
-#define MEDUSA_DECLARE_RTTI_ROOT	\
+#define MEDUSA_RTTI_ROOT(className)	\
 public:																				\
-	virtual const RTTIClass& Class()const override{ return mRTTIClass; }					\
-	virtual const StringRef& ClassName()const { return mRTTIClass.Name(); }			\
-	static const RTTIClass& ClassStatic() { return mRTTIClass; }					\
-	static const StringRef& ClassNameStatic() { return mRTTIClass.Name(); }			\
+	virtual const RTTIClass& Class()const override{ return mRTTIClass.This(); }					\
+	virtual const StringRef& ClassName()const { return mRTTIClass.This().Name(); }			\
+	static const RTTIClass& ClassStatic() { return mRTTIClass.This(); }					\
+	static const StringRef& ClassNameStatic() { return mRTTIClass.This().Name(); }			\
 private:																			\
-	const static RTTIClass mRTTIClass;
+	constexpr static TRTTIClassRoot<className> mRTTIClass{#className};
 
-#define MEDUSA_DECLARE_RTTI	\
+
+#define MEDUSA_RTTI(className,baseClassName)	\
 public:																				\
-	virtual const RTTIClass& Class()const override{ return mRTTIClass; }					\
-	virtual const StringRef& ClassName()const override{ return mRTTIClass.Name(); }			\
-	static const RTTIClass& ClassStatic() { return mRTTIClass; }					\
-	static const StringRef& ClassNameStatic() { return mRTTIClass.Name(); }			\
+	virtual const RTTIClass& Class()const override{ return mRTTIClass.This(); }					\
+	virtual const StringRef& ClassName()const override{ return mRTTIClass.This().Name(); }			\
+	static const RTTIClass& ClassStatic() { return mRTTIClass.This(); }					\
+	static const StringRef& ClassNameStatic() { return mRTTIClass.This().Name(); }			\
 private:																			\
-	const static RTTIClass mRTTIClass;
-
-#define MEDUSA_IMPLEMENT_RTTI(className,baseClassName) MEDUSA_WEAK_MULTIPLE_DEFINE const RTTIClass className::mRTTIClass=RTTIClass(#className,typeid(className),&(baseClassName::ClassStatic()));
-#define MEDUSA_IMPLEMENT_RTTI_ROOT(className) MEDUSA_WEAK_MULTIPLE_DEFINE const RTTIClass className::mRTTIClass=RTTIClass(#className,typeid(className),nullptr);
-
-#define MEDUSA_IMPLEMENT_RTTI_T1_B1(className,T1,baseClassName,B1) template<typename T1> MEDUSA_WEAK_MULTIPLE_DEFINE const RTTIClass className<T1>::mRTTIClass=RTTIClass(#className,typeid(className),&(baseClassName<B1>::ClassStatic()));
-#define MEDUSA_IMPLEMENT_RTTI_T1(className,T1,baseClassName) template<typename T1> MEDUSA_WEAK_MULTIPLE_DEFINE const RTTIClass className<T1>::mRTTIClass=RTTIClass(#className,typeid(className),&(baseClassName::ClassStatic()));
-#define MEDUSA_IMPLEMENT_RTTI_ROOT_T1(className,T1) template<typename T1> MEDUSA_WEAK_MULTIPLE_DEFINE const RTTIClass className<T1>::mRTTIClass=RTTIClass(#className,typeid(className),nullptr);
-
-
-#define MEDUSA_IMPLEMENT_RTTI_T2_B2(className,T1,T2,baseClassName,B1,B2) template<typename T1,typename T2> MEDUSA_WEAK_MULTIPLE_DEFINE const RTTIClass className<T1,T2>::mRTTIClass=RTTIClass(#className,typeid(className),&(baseClassName<B1,B2>::ClassStatic()));
-#define MEDUSA_IMPLEMENT_RTTI_ROOT_T2(className,T1,T2) template<typename T1,typename T2> MEDUSA_WEAK_MULTIPLE_DEFINE const RTTIClass className<T1,T2>::mRTTIClass=RTTIClass(#className,typeid(className),nullptr);
+	constexpr static TRTTIClass<className,baseClassName> mRTTIClass{#className};
 
 
 MEDUSA_END;

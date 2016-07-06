@@ -10,15 +10,13 @@ MEDUSA_BEGIN;
 class FileLogger :public ILogger
 {
 public:
-	FileLogger(StringRef filePath, StringRef name = StringRef::Empty,bool isLogHeader=true);
+	FileLogger(const StringRef& filePath);
 	virtual ~FileLogger(void);
 
 protected:
-	virtual void OutputLogString(StringRef inString,LogType logType=LogType::Info);
-	virtual void OutputLogString(WStringRef inString,LogType logType=LogType::Info);
-
+	virtual void Print(const Share<LogMessage>& message)override;
+	virtual void Print(const Share<WLogMessage>& message)override;
 private:
-	
 	FileStream mWriter;
 };
 

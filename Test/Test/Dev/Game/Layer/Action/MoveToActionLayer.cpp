@@ -28,5 +28,5 @@ void MoveToActionLayer::RestartSelfAction()
 	mSprite->RunAction(tweenAction);
 }
 
-MEDUSA_IMPLEMENT_LAYER(MoveToActionLayer, BaseActionLayer, StringRef::Empty, StringRef::Empty);
+MEDUSA_IMPLEMENT_NODE(MoveToActionLayer);
 

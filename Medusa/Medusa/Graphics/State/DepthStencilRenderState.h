@@ -7,12 +7,12 @@ MEDUSA_BEGIN;
 
 class DepthStencilRenderState :public IRenderState
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_RTTI(DepthStencilRenderState,IRenderState);
 public:
 	DepthStencilRenderState();
 	virtual ~DepthStencilRenderState();
 	virtual void Apply()const override;
-	virtual DepthStencilRenderState* Clone()const override;
+	Share<DepthStencilRenderState> Clone()const;
 	virtual void CopyFrom(const IRenderState& other)override;
 
 	virtual bool Equals(const IRenderState& state)const override;
@@ -72,7 +72,7 @@ public:
 	void SetStencilFunc(GraphicsFuncType func, int refVal, int readMask) { SetFrontStencilFunc(func, refVal, readMask); SetBackStencilFunc(func, refVal, readMask); }
 	void SetStencilOperation(GraphicsStencilOperation testFail, GraphicsStencilOperation testPassDepthFail, GraphicsStencilOperation testPassDepthPass) { SetFrontStencilOperation(testFail, testPassDepthFail, testPassDepthPass); SetBackStencilOperation(testFail, testPassDepthFail, testPassDepthPass); }
 
-	static DepthStencilRenderState* Current();
+	static Share<DepthStencilRenderState> Current();
 protected:
 	bool mDepthTestEnabled = false;
 	bool mDepthWritable = true;

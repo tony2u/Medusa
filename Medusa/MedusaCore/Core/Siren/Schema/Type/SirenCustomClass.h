@@ -41,6 +41,8 @@ public:
 	virtual SirenCustomClass* Clone() const override;
 
 	const SirenClassAttribute& Attribute() const { return mAttribute; }
+	SirenClassAttribute& MutableAttribute() { return mAttribute; }
+
 	virtual bool IsGenerate()const override {return mAttribute.IsGenerate();}
 	const HashSet<BaseSirenCustomType*>& IncludeTypes() const { return mIncludeTypes; }
 	virtual StringRef Directory()const override { return mAttribute.Directory(); }

@@ -42,9 +42,9 @@ PVRImage::PVRImage( const FileIdRef& fileId,const PVRImageHeader& header,MetaDat
 
 PVRImage::~PVRImage(void)
 {
-	FOR_EACH_COLLECTION(i,*mMetaDataBlocks)
+	for(auto i:*mMetaDataBlocks)
 	{
-		MetaDataBlockList* list=i->Value;
+		MetaDataBlockList* list=i.Value;
 		SAFE_DELETE_DICTIONARY_VALUE(*list);
 	}
 	SAFE_DELETE_DICTIONARY_VALUE(*mMetaDataBlocks);
@@ -73,7 +73,7 @@ PVRImageMetaDataBlock* PVRImage::GetMetaBlock( uint fourCC,uint key ) const
 	return nullptr;
 }
 
-PVRImage* PVRImage::CreateFromFile( const FileIdRef& fileId )
+Share<PVRImage> PVRImage::CreateFromFile( const FileIdRef& fileId )
 {
 	const auto* fileEntry = FileSystem::Instance().Find(fileId);
 	RETURN_NULL_IF_NULL(fileEntry);
@@ -82,7 +82,7 @@ PVRImage* PVRImage::CreateFromFile( const FileIdRef& fileId )
 	return CreateFromMemory(fileId, *fileEntry,data);
 }
 
-PVRImage* PVRImage::CreateFromMemory( const FileIdRef& fileId, const FileEntry& fileEntry,MemoryData data )
+Share<PVRImage> PVRImage::CreateFromMemory( const FileIdRef& fileId, const FileEntry& fileEntry,MemoryData data )
 {
 	if (data.IsNull())
 	{
@@ -100,17 +100,17 @@ PVRImage* PVRImage::CreateFromMemory( const FileIdRef& fileId, const FileEntry& 
 	}
 	else if(header->Version==PVRVersionIdentifier::ReversePVR3)
 	{
-		header->Flags=(PVRFlags)Utility::SwapUInt((uint)header->Flags);
-		header->PixelFormat=Utility::SwapUInt64(header->PixelFormat);
-		header->ColourSpace=(PVRColourSpace)Utility::SwapUInt((uint)header->ColourSpace);
-		header->ChannelType=(PVRChannelType)Utility::SwapUInt((uint)header->ChannelType);
-		header->Height=Utility::SwapUInt(header->Height);
-		header->Width=Utility::SwapUInt(header->Width);
-		header->Depth=Utility::SwapUInt(header->Depth);
-		header->SurfaceCount=Utility::SwapUInt(header->SurfaceCount);
-		header->FaceCount=Utility::SwapUInt(header->FaceCount);
-		header->MIPMapCount=Utility::SwapUInt(header->MIPMapCount);
-		header->MetaDataSize=Utility::SwapUInt(header->MetaDataSize);
+		header->Flags=(PVRFlags)BitConverter::SwapUInt((uint)header->Flags);
+		header->PixelFormat=BitConverter::SwapUInt64(header->PixelFormat);
+		header->ColourSpace=(PVRColourSpace)BitConverter::SwapUInt((uint)header->ColourSpace);
+		header->ChannelType=(PVRChannelType)BitConverter::SwapUInt((uint)header->ChannelType);
+		header->Height=BitConverter::SwapUInt(header->Height);
+		header->Width=BitConverter::SwapUInt(header->Width);
+		header->Depth=BitConverter::SwapUInt(header->Depth);
+		header->SurfaceCount=BitConverter::SwapUInt(header->SurfaceCount);
+		header->FaceCount=BitConverter::SwapUInt(header->FaceCount);
+		header->MIPMapCount=BitConverter::SwapUInt(header->MIPMapCount);
+		header->MetaDataSize=BitConverter::SwapUInt(header->MetaDataSize);
 		headerAndMetaSize=sizeof(PVRImageHeader)+header->MetaDataSize;
 
 
@@ -121,7 +121,7 @@ PVRImage* PVRImage::CreateFromMemory( const FileIdRef& fileId, const FileEntry& 
 			uint64 textureDataSize=header->GetTextureDataSize();
 			for (uint i=0;i<textureDataSize;i+=channelSize)
 			{
-				Utility::SwapBytes((byte*)textureData+i,channelSize);
+				BitConverter::SwapBytes((byte*)textureData+i,channelSize);
 			}
 		}
 	}

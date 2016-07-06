@@ -8,6 +8,7 @@
 #include "Geometry/Color4.h"
 #include "Core/IO/FileDefines.h"
 #include "Core/Memory/MemoryData.h"
+#include "Core/IO/FileId.h"
 
 MEDUSA_BEGIN;
 
@@ -17,8 +18,8 @@ public:
 	TiledImage();
 	~TiledImage();
 
-	StringRef Source() const { return mSource; }
-	void SetSource(const StringRef& val) { mSource = val; }
+	FileIdRef Source() const { return mSource; }
+	void SetSource(const FileIdRef& val) { mSource = val; }
 
 	const Size2I& Size() const { return mSize; }
 	void SetSize(Size2I val) { mSize = val; }
@@ -35,12 +36,12 @@ public:
 	bool Parse(const pugi::xml_node& node);
 
 	bool LoadTiledTexture(Size2I tileSize);
-	ITexture* LoadSeparateTexture()const;
+	Share<ITexture> LoadSeparateTexture()const;
 
 	TextureAtlasPage* TexturePage() const { return mTexturePage; }
 
 private:
-	HeapString mSource;
+	FileId mSource;
 	Size2I mSize;
 	Color4B mTransparentColor;
 
@@ -48,7 +49,7 @@ private:
 	MemoryData mEmbeddedImageData;
 	
 	TextureAtlasPage* mTexturePage=nullptr;
-
+	Share<TextureAtlas> mTextureAtlas;
 };
 
 MEDUSA_END;

@@ -3,9 +3,8 @@
 // license that can be found in the LICENSE file.
 #include "MedusaPreCompiled.h"
 #include "TruePredicate.h"
-
+#include "PredicateFactory.h"
 MEDUSA_BEGIN;
 
-MEDUSA_IMPLEMENT_RTTI(TruePredicate, IPredicate);
-
+MEDUSA_IMPLEMENT_PREDICATE(TruePredicate);
 MEDUSA_END;

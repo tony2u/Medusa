@@ -13,7 +13,7 @@ MEDUSA_BEGIN;
 
 class IView :public IInitializable, public RTTIObject,public DefaultRunnable
 {
-	MEDUSA_DECLARE_RTTI_ROOT;
+	MEDUSA_RTTI_ROOT(IView);
 
 public:
 	IView(StringRef name=StringRef::Empty);

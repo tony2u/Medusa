@@ -11,10 +11,10 @@
 #include "Core/Collection/Dictionary.h"
 #include "Core/Pattern/Singleton.h"
 
-#include "Core/IO/IFileLoadable.h"
+#include "Core/IO/IFileLoadSavable.h"
 MEDUSA_BEGIN;
 
-class RandomNameConfig :public Singleton<RandomNameConfig>, public IFileLoadable
+class RandomNameConfig :public Singleton<RandomNameConfig>, public IFileLoadSavable
 {
 	friend class Singleton < RandomNameConfig > ;
 public:

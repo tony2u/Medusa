@@ -9,9 +9,9 @@ MEDUSA_BEGIN;
 
 class IShape :public INode
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_RTTI(IShape,INode);
 public:
-	IShape(StringRef name=StringRef::Empty);
+	using INode::INode;
 	virtual ~IShape(void);
 	virtual bool Initialize()override;
 };

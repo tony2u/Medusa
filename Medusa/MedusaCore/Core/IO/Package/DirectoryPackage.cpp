@@ -88,27 +88,25 @@ bool DirectoryPackage::OnRemoveDirectory(DirectoryEntry& dir)
 	return Directory::RemoveDir(absolutePath);
 }
 
-const IStream* DirectoryPackage::OnReadFile(const FileEntry& file, FileDataType dataType /*= FileDataType::Binary*/) const
+Share<const IStream> DirectoryPackage::OnReadFile(const FileEntry& file, FileDataType dataType /*= FileDataType::Binary*/) const
 {
 	auto absolutePath = file.Path();
-	FileStream* fileStream = new FileStream(absolutePath, FileOpenMode::ReadOnly, dataType);
+	Share<FileStream> fileStream = new FileStream(absolutePath, FileOpenMode::ReadOnly, dataType);
 	if (!fileStream->IsOpen())
 	{
 		Log::FormatError("Cannot open file:{}", absolutePath);
-		SAFE_DELETE(fileStream);
 	}
 
 	return fileStream;
 }
 
-IStream* DirectoryPackage::OnWriteFile(FileEntry& file, FileOpenMode openMode /*= FileOpenMode::ReadOnly*/, FileDataType dataType /*= FileDataType::Binary*/)
+Share<IStream> DirectoryPackage::OnWriteFile(FileEntry& file, FileOpenMode openMode /*= FileOpenMode::ReadOnly*/, FileDataType dataType /*= FileDataType::Binary*/)
 {
 	auto absolutePath = file.Path();
-	FileStream* fileStream = new FileStream(absolutePath, openMode, dataType);
+	Share<FileStream> fileStream = new FileStream(absolutePath, openMode, dataType);
 	if (!fileStream->IsOpen())
 	{
 		Log::FormatError("Cannot open file:{}", absolutePath);
-		SAFE_DELETE(fileStream);
 	}
 	return fileStream;
 }

@@ -5,8 +5,7 @@
 #include "MedusaCorePreDeclares.h"
 #include "Core/Pattern/Singleton.h"
 #include "SirenAssembly.h"
-#include "Core/Siren/Schema/Type/SirenBuildinList.h"
-#include "Core/Siren/Schema/Type/SirenBuildinDictionary.h"
+#include "Core/Siren/Schema/Type/SirenBuildinType.h"
 #include "Core/Siren/Schema/Type/BaseSirenCustomType.h"
 
 MEDUSA_BEGIN;
@@ -68,7 +67,7 @@ protected:
 	SirenBuildinList mList;
 	SirenBuildinDictionary mDictionary;
 
-	BuildinTypeDictionary mBuildinClasses;	//weak
+	BuildinTypeDictionary mBuildinTypes;	//weak
 };
 
 MEDUSA_END;

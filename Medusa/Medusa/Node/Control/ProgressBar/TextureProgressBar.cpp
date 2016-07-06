@@ -8,13 +8,19 @@
 #include "Resource/Material/IMaterial.h"
 #include "Resource/Material/MaterialFactory.h"
 #include "Rendering/RenderingObjectFactory.h"
-
+#include "Node/NodeFactory.h"
 
 MEDUSA_BEGIN;
 
 
 TextureProgressBar::TextureProgressBar(StringRef name, ProgressType progressType, const FileIdRef& textureName, float percent/*=1.f*/)
 	:IProgressBar(name, progressType, percent), mTextureName(textureName)
+{
+
+}
+
+TextureProgressBar::TextureProgressBar(const StringRef& name /*= StringRef::Empty*/, const IEventArg& e /*= IEventArg::Empty*/)
+	:IProgressBar(name,e)
 {
 
 }
@@ -31,7 +37,7 @@ bool TextureProgressBar::Initialize()
 	RETURN_FALSE_IF_NULL(renderingObject);
 	SetRenderingObject(renderingObject);
 
-	TextureQuadMesh* mesh = (TextureQuadMesh*)renderingObject.Mesh();
+	auto mesh = renderingObject.Mesh().CastPtr<TextureQuadMesh>();
 
 	SetSize(mesh->Size());
 	mVertices = mesh->Vertices();
@@ -43,7 +49,7 @@ bool TextureProgressBar::Initialize()
 
 void TextureProgressBar::OnUpdateMesh(bool isProgressTypeChanged/*=false*/)
 {
-	TextureQuadMesh* mesh = (TextureQuadMesh*)mRenderingObject.Mesh();
+	auto mesh = mRenderingObject.Mesh().CastPtr<TextureQuadMesh>();
 
 	if (isProgressTypeChanged)
 	{
@@ -61,6 +67,6 @@ void TextureProgressBar::OnUpdateMesh(bool isProgressTypeChanged/*=false*/)
 
 }
 
-MEDUSA_IMPLEMENT_RTTI(TextureProgressBar, IProgressBar);
+MEDUSA_IMPLEMENT_NODE(TextureProgressBar);
 
 MEDUSA_END;

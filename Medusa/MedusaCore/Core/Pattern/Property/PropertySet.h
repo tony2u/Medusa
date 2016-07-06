@@ -7,7 +7,7 @@
 
 MEDUSA_BEGIN;
 
-template<typename TKey, typename TValue, typename TKeyHashCoder = DefaultHashCoder<TKey>, typename TValueHashCoder = DefaultHashCoder<TValue>, typename TKeyCompare = DefaultCompare<TKey>, typename TValueCompare = EqualCompare<TValue> >
+template<typename TKey, typename TValue, typename TKeyHashCoder = DefaultHashCoder, typename TValueHashCoder = DefaultHashCoder, typename TKeyCompare = DefaultCompare, typename TValueCompare = EqualCompare >
 class PropertySet :public Dictionary < TKey, TValue, TKeyHashCoder, TValueHashCoder, TKeyCompare, TValueCompare >
 {
 

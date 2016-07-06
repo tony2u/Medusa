@@ -10,40 +10,37 @@
 MEDUSA_BEGIN;
 
 
-PODLighTimeline::PODLighTimeline(PODLightTimelineModel* model, bool isRepeatForever, float beforeDelay /*= 0.f*/, float repeatDuration /*= 0.f*/, float afterDelay /*= 0.f*/, const StringRef& name /*= StringRef::Empty*/)
+PODLighTimeline::PODLighTimeline(const Share<PODLightTimelineModel>& model, bool isRepeatForever, float beforeDelay /*= 0.f*/, float repeatDuration /*= 0.f*/, float afterDelay /*= 0.f*/, const StringRef& name /*= StringRef::Empty*/)
 	: ITimeline(model, isRepeatForever, beforeDelay, repeatDuration, afterDelay, name)
 {
-	mLight = nullptr;
+	
 
 }
 
-PODLighTimeline::PODLighTimeline(PODLightTimelineModel* model, intp repeatCount, float beforeDelay /*= 0.f*/, float repeatDuration /*= 0.f*/, float afterDelay /*= 0.f*/, const StringRef& name /*= StringRef::Empty*/)
+PODLighTimeline::PODLighTimeline(const Share<PODLightTimelineModel>& model, intp repeatCount, float beforeDelay /*= 0.f*/, float repeatDuration /*= 0.f*/, float afterDelay /*= 0.f*/, const StringRef& name /*= StringRef::Empty*/)
 	: ITimeline(model, repeatCount, beforeDelay, repeatDuration, afterDelay, name)
 {
-	mLight = nullptr;
+
 
 }
 
 
 PODLighTimeline::~PODLighTimeline()
 {
-	SAFE_RELEASE(mLight);	
+	
 }
 
 bool PODLighTimeline::Start()
 {
 	RETURN_FALSE_IF_FALSE((ITimeline::Start()));
 
-
-	PODLightTimelineModel* ani=(PODLightTimelineModel*)mModel;
+	auto ani = mModel.CastPtr<PODLightTimelineModel>();
 	StringRef lightName=ani->LightName();
 	StringRef targetName=ani->TargetNodeName();
 
 	mLight=LightFactory::Instance().Find(lightName);
 	RETURN_FALSE_IF_NULL(mLight);
-	SAFE_RETAIN(mLight);
 
-	
 
 	return true;
 }
@@ -51,7 +48,7 @@ bool PODLighTimeline::Start()
 bool PODLighTimeline::OnUpdate(float prevElapsed,float dt, float blend /*= 1.f*/)
 {
 	//float frame=mElapsed*mAnimation->GetFPS();
-	//PODLightTimelineModel* ani=(PODLightTimelineModel*)mAnimation;
+	//auto ani=(*)mAnimation;
 
 	//if (mLightState!=nullptr)
 	//{

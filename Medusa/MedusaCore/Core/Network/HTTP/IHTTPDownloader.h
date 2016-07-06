@@ -3,8 +3,10 @@
 // license that can be found in the LICENSE file.
 #pragma once
 #include "MedusaCorePreDeclares.h"
+#ifdef MEDUSA_HTTP
+
 #include "Core/Pattern/Delegate.h"
-#include "Core/Command/EventArg/IEventArg.h"
+#include "Core/Event/EventArg/IEventArg.h"
 #include "Core/String/StringRef.h"
 #include "Core/String/HeapString.h"
 typedef void CURL;
@@ -41,3 +43,4 @@ protected:
 };
 
 MEDUSA_END;
+#endif

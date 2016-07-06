@@ -111,5 +111,12 @@ private:
 	ContainerType mItems;
 };
 
+//[PRE_DECLARE_BEGIN]
+typedef Event<void()> ActionEvent;
+typedef Event<void(void*)> ActionEventWithUserData;
+
+//[PRE_DECLARE_END]
+
+
 
 MEDUSA_END;

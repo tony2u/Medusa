@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 #include "MedusaPreCompiled.h"
 #include "FrameAutoStopWatch.h"
-#include "Core/Profile/StopWatch.h"
+#include "Core/Chrono/StopWatch.h"
 #include "Application/ApplicationStatics.h"
 
 MEDUSA_BEGIN;

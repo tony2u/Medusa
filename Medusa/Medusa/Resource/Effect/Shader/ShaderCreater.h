@@ -6,25 +6,20 @@
 #include "MedusaPreDeclares.h"
 #include "Core/Pattern/Object/MapObjectFactory.h"
 #include "Resource/Effect/Shader/IShader.h"
+#include "Core/Pattern/Singleton.h"
 
 MEDUSA_BEGIN;
 
-class ShaderCreater:public MapObjectFactory<StringRef,IShader*(const FileIdRef& fileId)>
+class ShaderCreater:public MapObjectFactory<StringRef,IShader*(const FileIdRef& fileId)>, public Singleton<ShaderCreater>
 {
+	ShaderCreater();
+	~ShaderCreater() {}
+	friend class Singleton<ShaderCreater>;
 public:
 	using MapObjectFactory<StringRef,IShader*(const FileIdRef& fileId)>::Create;
-private:
-	ShaderCreater();
-	~ShaderCreater(){}
-public:
-	static ShaderCreater& Instance()
-	{
-		static ShaderCreater creater;
-		return creater;
-	}
 
 	template<typename T>
-	IShader* Create(const FileIdRef& fileId)
+	Share<IShader> Create(const FileIdRef& fileId)
 	{
 		return Create(typename T::ClassNameStatic(), fileId);
 	}

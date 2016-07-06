@@ -8,13 +8,13 @@
 
 MEDUSA_BEGIN;
 
-ColorTimeline::ColorTimeline(ColorTimelineModel* model, bool isRepeatForever, float beforeDelay /*= 0.f*/, float repeatDuration /*= 0.f*/, float afterDelay /*= 0.f*/, const StringRef& name /*= StringRef::Empty*/)
+ColorTimeline::ColorTimeline(const Share<ColorTimelineModel>& model, bool isRepeatForever, float beforeDelay /*= 0.f*/, float repeatDuration /*= 0.f*/, float afterDelay /*= 0.f*/, const StringRef& name /*= StringRef::Empty*/)
 	: ITimeline(model, isRepeatForever, beforeDelay,repeatDuration,afterDelay,name)
 {
 
 }
 
-ColorTimeline::ColorTimeline(ColorTimelineModel* model, intp repeatCount, float beforeDelay /*= 0.f*/, float repeatDuration /*= 0.f*/, float afterDelay /*= 0.f*/, const StringRef& name /*= StringRef::Empty*/)
+ColorTimeline::ColorTimeline(const Share<ColorTimelineModel>& model, intp repeatCount, float beforeDelay /*= 0.f*/, float repeatDuration /*= 0.f*/, float afterDelay /*= 0.f*/, const StringRef& name /*= StringRef::Empty*/)
 	: ITimeline(model, repeatCount, beforeDelay, repeatDuration, afterDelay, name)
 {
 
@@ -27,7 +27,7 @@ ColorTimeline::~ColorTimeline()
 
 bool ColorTimeline::OnUpdate(float prevElapsed,float dt, float blend /*= 1.f*/)
 {
-	ColorTimelineModel* model = (ColorTimelineModel*)mModel;
+	auto model = mModel.CastPtr<ColorTimelineModel>();
 	Color4F color= model->GetColor(Elapsed())*blend;
 	INode* node = (INode*)mTarget;
 	node->SetColor(color);

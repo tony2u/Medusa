@@ -3,12 +3,9 @@
 // license that can be found in the LICENSE file.
 #include "MedusaPreCompiled.h"
 #include "DockPanel.h"
-
+#include "Node/NodeFactory.h"
 MEDUSA_BEGIN;
 
-DockPanel::DockPanel(StringRef name/*=StringRef::Empty*/):IPanel(name)
-{
-}
 
 DockPanel::~DockPanel(void)
 {
@@ -20,6 +17,6 @@ bool DockPanel::ArrangeChildren(const Rect2F& limitRect/*=Rect2F::Zero*/, NodeLa
 	return true;
 }
 
-MEDUSA_IMPLEMENT_RTTI(DockPanel, IPanel);
+MEDUSA_IMPLEMENT_NODE(DockPanel);
 
 MEDUSA_END;

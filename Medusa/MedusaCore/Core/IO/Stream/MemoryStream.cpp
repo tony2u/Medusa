@@ -129,7 +129,7 @@ bool MemoryStream::Seek(intp offset, SeekOrigin direction /*= SeekOrigin::Curren
 	size_t newPos = mPos;
 	switch (direction)
 	{
-	case SeekOrigin::Head:
+	case SeekOrigin::Begin:
 		newPos = (size_t)offset;
 		break;
 	case SeekOrigin::Current:
@@ -180,7 +180,7 @@ bool MemoryStream::Resize(size_t size)
 	//always to extend to bigger size
 	RETURN_FALSE_IF(mData.Size() >= size);
 	byte* buffer = mData.MutableData();
-	Memory::Realloc(buffer, size);
+	Memory::Realloc(buffer,mData.Size(),size);
 	mData.ForceSetData(buffer);
 	mData.ForceSetSize(size);
 	mData.ForceEnsureRefCount();	//maybe mData is empty before

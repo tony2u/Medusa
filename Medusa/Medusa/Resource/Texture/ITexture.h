@@ -10,6 +10,8 @@
 #include "Graphics/State/PixelStoreRenderState.h"
 #include "Resource/IResource.h"
 #include "Resource/ResourceNames.h"
+#include "Resource/Image/IImage.h"
+#include "Core/Pattern/Share.h"
 
 MEDUSA_BEGIN;
 
@@ -31,7 +33,7 @@ public:
 	virtual void Apply();
 	virtual void Restore();
 
-	virtual IImage* Image() const=0;
+	virtual Share<IImage> Image() const=0;
 	virtual bool IsBlend()const=0;
 	virtual Size2U Size() const=0;
 	virtual void ResetDefaultParameters()=0;
@@ -57,8 +59,8 @@ protected:
 protected:
 	HeapString mSamplerName;
 
-	SamplerRenderState* mSamplerState;
-	PixelStoreRenderState* mPixelStoreState;
+	Share<SamplerRenderState> mSamplerState;
+	Share<PixelStoreRenderState> mPixelStoreState;
 	bool mIsLoaded;
 };
 

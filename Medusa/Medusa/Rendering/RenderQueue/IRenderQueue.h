@@ -5,6 +5,7 @@
 #include "MedusaPreDeclares.h"
 #include "Rendering/RenderingTypes.h"
 #include "Core/Collection/List.h"
+#include "Core/Command/ICommand.h"
 
 MEDUSA_BEGIN;
 
@@ -17,7 +18,7 @@ public:
 	IRenderQueue();
 	virtual ~IRenderQueue(void);
 
-	void AddCommand(IRenderingCommand* command);
+	void AddCommand(const Share<IRenderingCommand>& command);
 public:
 	void Clear();
 	void AddNode(IRenderable* node);
@@ -29,11 +30,11 @@ public:
 	virtual void Update(RenderableChangedFlags changedFlag) = 0;
 
 public:
-	virtual IRenderTarget* RenderTarget() const = 0;
-	virtual void SetRenderTarget(IRenderTarget* val) = 0;
+	virtual const Share<IRenderTarget>& RenderTarget() const = 0;
+	virtual void SetRenderTarget(const Share<IRenderTarget>& val) = 0;
 
-	virtual Camera* GetCamera() const = 0;
-	virtual void SetCamera(Camera* val) = 0;
+	virtual const Share<Camera>& GetCamera() const = 0;
+	virtual void SetCamera(const Share<Camera>& val) = 0;
 
 protected:
 	virtual bool OnUpdateCommands(RenderingFlags renderingFlags = RenderingFlags::None);
@@ -45,7 +46,7 @@ protected:
 	List<IRenderable*> mNodes;
 	bool mIsNeedToSort;
 	bool mIsCommandChanged;
-	List<ICommand*> mCommands;
+	List<ShareCommand> mCommands;
 
 
 

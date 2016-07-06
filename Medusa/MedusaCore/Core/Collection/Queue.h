@@ -11,7 +11,7 @@ MEDUSA_BEGIN;
 
 
 
-template<typename T, class TCompare = EqualCompare<T> >
+template<typename T, class TCompare = EqualCompare >
 class Queue :public ICollection < T >
 {
 	typedef Queue<T, TCompare> SelfType;
@@ -504,15 +504,15 @@ private:
 	{
 		//always to extend to bigger size
 		RETURN_FALSE_IF(mSize >= size);
-		mSize = size;
 
 		if (mHead <= mTail)
 		{
-			Memory::Realloc(mItems, size);
+			Memory::Realloc(mItems, mSize, size);
+			mSize = size;
 		}
 		else
 		{
-
+			mSize = size;
 			T* tempItems = (T*)malloc(mSize*sizeof(T));
 			size_t lastCount = this->mCount - mHead;
 			Memory::SafeCopyShallow(tempItems, mSize*sizeof(T), mItems + mHead, lastCount);

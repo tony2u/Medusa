@@ -65,94 +65,103 @@ public:
 		return true;
 	}
 
-	template<typename TObject>
-	typename std::enable_if<std::is_floating_point<TObject>::value >::type OnValue(const TObject& obj)
+	virtual bool OnValue(const float& obj)override
 	{
 		this->Double(obj);
+		return true;
+	}
+	virtual bool OnValue(const double& obj)override
+	{
+		this->Double(obj);
+		return true;
 	}
 
-	template<typename TObject>
-	typename std::enable_if<std::is_same<TObject, bool>::value >::type OnValue(const TObject& obj)
+	virtual bool OnValue(const bool& obj)override
 	{
 		this->Bool(obj);
+		return true;
 	}
 
-	template<typename TObject>
-	typename std::enable_if<std::is_same<TObject, char>::value >::type OnValue(const TObject& obj)
+	virtual bool OnValue(const int8& obj)override
 	{
 		this->Int(obj);
+		return true;
 	}
 
-	template<typename TObject>
-	typename std::enable_if<std::is_same<TObject, short>::value >::type OnValue(const TObject& obj)
+	virtual bool OnValue(const char& obj)override
 	{
 		this->Int(obj);
+		return true;
 	}
 
-	template<typename TObject>
-	typename std::enable_if<std::is_same<TObject, int>::value >::type OnValue(const TObject& obj)
+	virtual bool OnValue(const int16& obj)override
 	{
 		this->Int(obj);
+		return true;
 	}
 
-	template<typename TObject>
-	typename std::enable_if<std::is_same<TObject, int64>::value >::type OnValue(const TObject& obj)
+	virtual bool OnValue(const int& obj)override
+	{
+		this->Int(obj);
+		return true;
+	}
+
+	virtual bool OnValue(const int64& obj)override
 	{
 		this->Int64(obj);
+		return true;
 	}
 
-	template<typename TObject>
-	typename std::enable_if<std::is_same<TObject, byte>::value >::type OnValue(const TObject& obj)
+	virtual bool OnValue(const uint8& obj)override
 	{
 		this->Uint(obj);
+		return true;
 	}
 
-	template<typename TObject>
-	typename std::enable_if<std::is_same<TObject, ushort>::value >::type OnValue(const TObject& obj)
+	virtual bool OnValue(const uint16& obj)override
 	{
 		this->Uint(obj);
+		return true;
 	}
 
-	template<typename TObject>
-	typename std::enable_if<std::is_same<TObject, uint>::value >::type OnValue(const TObject& obj)
+	virtual bool OnValue(const uint& obj)override
 	{
 		this->Uint(obj);
+		return true;
 	}
-	template<typename TObject>
-	typename std::enable_if<std::is_same<TObject, uint64>::value >::type OnValue(const TObject& obj)
+	virtual bool OnValue(const uint64& obj)override
 	{
 		this->Uint64(obj);
+		return true;
 	}
 
-	
-
-	template<typename TObject>
-	typename std::enable_if<std::is_same<TObject, HeapString>::value >::type OnValue(const TObject& obj)
+	virtual bool OnValue(const StringRef& obj)override
 	{
-		this->String(obj.c_str(), obj.Length());
+		this->String(obj.c_str(), (rapidjson::SizeType)obj.Length());
+		return true;
 	}
 
 
-	template<typename TObject>
-	typename std::enable_if<std::is_same<TObject, MemoryData>::value >::type OnValue(const TObject& obj)
+	virtual bool OnValue(const MemoryData& obj)override
 	{
 		Base91Encoder encoder;
 		MemoryData resultData=encoder.Code(obj);
-		this->String((const char*)resultData.Data(), resultData.Size());
+		this->String((const char*)resultData.Data(), (rapidjson::SizeType)resultData.Size());
+		return true;
 	}
 	
 	template<typename TObject, bool TWithHeader = true>
 	void OnField(const StringRef& name, ushort id, const TObject& obj)
 	{
 		OnFieldBegin(name, id, Siren::GetDataType<TObject>::Type);
-		SirenSchemaSerializer::Visit(*this, obj);
+		SirenSchemaSerializer<false>::Visit(*this, obj);
 		OnFieldEnd();
 	}
 
 	template<typename TObject>
 	void OnStruct(const TObject& obj)
 	{
-		SirenSchemaSerializer::Visit(*this, obj);
+		SirenSchemaSerializer<false>::Visit(*this, obj);
 	}
 private:
 	SirenJsonOutputStream mStream;

@@ -268,6 +268,7 @@ namespace Compile
 
 	template<> struct DefaultDigitWidth<bool> { constexpr static size_t value = 5 + 1; };	//for "true" and "false"
 	template<> struct DefaultDigitWidth<char> { constexpr static size_t value = 3 + 1; };
+	template<> struct DefaultDigitWidth<int8> { constexpr static size_t value = 3 + 1; };
 	template<> struct DefaultDigitWidth<byte> { constexpr static size_t value = 3 + 1; };
 	template<> struct DefaultDigitWidth<short> { constexpr static size_t value = 5 + 1; };
 	template<> struct DefaultDigitWidth<ushort> { constexpr static size_t value = 5 + 1; };

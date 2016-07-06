@@ -8,7 +8,7 @@
 
 class RectangleShapeLayer :public BaseCaseLayer
 {
-	MEDUSA_DECLARE_LAYER(RectangleShapeLayer);
+	MEDUSA_NODE(RectangleShapeLayer, BaseCaseLayer);
 public:
 	RectangleShapeLayer(StringRef name=StringRef::Empty,const IEventArg& e=IEventArg::Empty);
 	virtual ~RectangleShapeLayer(void);

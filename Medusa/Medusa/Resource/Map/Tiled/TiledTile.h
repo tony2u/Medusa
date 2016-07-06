@@ -7,6 +7,8 @@
 #include "Geometry/Quad.h"
 #include "Core/Collection/List.h"
 #include "TiledAnimationFrame.h"
+#include "Resource/Map/Tiled/TiledImage.h"
+#include "Core/Pattern/Share.h"
 
 /*
 Features:
@@ -61,7 +63,7 @@ private:
 	StringPropertySet mProperties;
 	Quad<int> mTerrains;
 	float mProbability;
-	TiledImage* mImage;	//if this tile has a separate image
+	TiledImage* mImage=nullptr;	//if this tile has a separate image
 	TiledObjectLayer* mObjectLayer;	//used to indicate collision or some else
 
 	uint mTotalDuration;

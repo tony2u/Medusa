@@ -9,13 +9,13 @@
 
 MEDUSA_BEGIN;
 
-RenderingObjectTimeline::RenderingObjectTimeline(RenderingObjectTimelineModel* model, bool isRepeatForever, float beforeDelay /*= 0.f*/, float repeatDuration /*= 0.f*/, float afterDelay /*= 0.f*/, const StringRef& name /*= StringRef::Empty*/)
+RenderingObjectTimeline::RenderingObjectTimeline(const Share<RenderingObjectTimelineModel>& model, bool isRepeatForever, float beforeDelay /*= 0.f*/, float repeatDuration /*= 0.f*/, float afterDelay /*= 0.f*/, const StringRef& name /*= StringRef::Empty*/)
 	: ITimeline(model, isRepeatForever, beforeDelay, repeatDuration, afterDelay, name)
 {
 
 }
 
-RenderingObjectTimeline::RenderingObjectTimeline(RenderingObjectTimelineModel* model, intp repeatCount, float beforeDelay /*= 0.f*/, float repeatDuration /*= 0.f*/, float afterDelay /*= 0.f*/, const StringRef& name /*= StringRef::Empty*/)
+RenderingObjectTimeline::RenderingObjectTimeline(const Share<RenderingObjectTimelineModel>& model, intp repeatCount, float beforeDelay /*= 0.f*/, float repeatDuration /*= 0.f*/, float afterDelay /*= 0.f*/, const StringRef& name /*= StringRef::Empty*/)
 	: ITimeline(model, repeatCount, beforeDelay, repeatDuration, afterDelay, name)
 {
 
@@ -30,7 +30,7 @@ RenderingObjectTimeline::~RenderingObjectTimeline()
 bool RenderingObjectTimeline::OnUpdate(float prevElapsed,float dt, float blend /*= 1.f*/)
 {
 	uint frame=CurrentFrameIndex();
-	RenderingObjectTimelineModel* model = (RenderingObjectTimelineModel*)mModel;
+	auto model = mModel.CastPtr<RenderingObjectTimelineModel>();
 	auto* obj= model->GetItemByIndex(frame);
 	INode* node = (INode*)mTarget;
 	node->SetRenderingObject(*obj);

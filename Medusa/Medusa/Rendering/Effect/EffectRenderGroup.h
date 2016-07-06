@@ -4,6 +4,8 @@
 #pragma  once
 #include "Rendering/IRenderGroup.h"
 #include "Core/Collection/List.h"
+#include "Resource/Effect/IEffect.h"
+#include "Core/Pattern/Share.h"
 
 MEDUSA_BEGIN;
 
@@ -13,8 +15,8 @@ public:
 	EffectRenderGroup();
 	virtual ~EffectRenderGroup();
 
-	const IEffect* Effect() const { return mEffect; }
-	void SetEffect(const IEffect* val);
+	const Share<IEffect>& Effect() const { return mEffect; }
+	void SetEffect(const Share<IEffect>& val) { mEffect = val; }
 public:
 	virtual bool Initialize()override;
 	virtual bool Uninitialize()override;
@@ -24,7 +26,7 @@ public:
 	virtual void Print(HeapString& ioStr, uint level)override;
 
 private:
-	const IEffect* mEffect;
+	Share<IEffect> mEffect;
 	
 	List<MaterialRenderGroup*> mGroups;
 };

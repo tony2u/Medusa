@@ -11,6 +11,8 @@
 #include "Rendering/Batch/BatchGroup.h"
 #include "Geometry/Segment.h"
 #include "Rendering/RenderingObject.h"
+#include "Core/String/HeapString.h"
+#include "Graphics/State/Tree/RenderStateTreeLeafNode.h"
 
 MEDUSA_BEGIN;
 
@@ -27,13 +29,14 @@ public:
 
 	bool HasValidRenderingObject()const;
 	const RenderingObject& GetRenderingObject() const { return mRenderingObject; }
+	RenderingObject& MutableRenderingObject() { return mRenderingObject; }
 	void SetRenderingObject(const RenderingObject& val);
 
-	IMesh* Mesh()const { return mRenderingObject.Mesh(); }
-	void SetMesh(IMesh* val);
+	const Share<IMesh>& Mesh()const { return mRenderingObject.Mesh(); }
+	void SetMesh(const Share<IMesh>& val);
 
-	IMaterial* Material() const { return mRenderingObject.Material(); }
-	void SetMaterial(IMaterial* val);
+	const Share<IMaterial>& Material() const { return mRenderingObject.Material(); }
+	void SetMaterial(const Share<IMaterial>& val);
 
 	uintp Id() const { return mId; }
 
@@ -65,7 +68,7 @@ public:
 
 	bool IsWorldRenderStateDirty()const;
 	const RenderStateSet& WorldRenderState() const { return mWorldRenderState.Value(); }
-	RenderStateTreeLeafNode* RenderStateTreeNode() const { return mRenderStateTreeNode; }
+	const Share<RenderStateTreeLeafNode>& RenderStateTreeNode() const { return mRenderStateTreeNode; }
 
 	bool IsClipToBound() const { return mIsClipToBound; }
 	void EnableClipToBound(bool val);
@@ -141,7 +144,7 @@ protected:
 	RenderableChangedFlags mChangedFlag; //used to generate render queue quicker
 
 	//Batch 
-	RenderStateTreeLeafNode* mRenderStateTreeNode=nullptr;
+	Share<RenderStateTreeLeafNode> mRenderStateTreeNode;
 	BatchGroup mBatchGroup;
 	IRenderBatch* mBatch=nullptr;
 	SegmentU mVertexSegment;

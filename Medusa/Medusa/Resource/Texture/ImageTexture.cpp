@@ -8,11 +8,11 @@
 
 MEDUSA_BEGIN;
 
-ImageTexture::ImageTexture(const FileIdRef& fileId,IImage* image,StringRef samplerName/*=ShaderSamplerNames::Texture*/,GraphicsTextureUnits unit/*=GraphicsTextureUnits::Texture0*/)
+ImageTexture::ImageTexture(const FileIdRef& fileId,const Share<IImage>& image,StringRef samplerName/*=ShaderSamplerNames::Texture*/,GraphicsTextureUnits unit/*=GraphicsTextureUnits::Texture0*/)
 	:ITexture(fileId,image->TextureType(),samplerName,unit),
 	mImage(image)
 {
-	SAFE_RETAIN(mImage);
+	
 }
 
 
@@ -24,7 +24,7 @@ ImageTexture::~ImageTexture(void)
 		mIsLoaded = false;
 	}
 
-	SAFE_RELEASE(mImage);
+	mImage = nullptr;
 }
 
 void ImageTexture::Upload()

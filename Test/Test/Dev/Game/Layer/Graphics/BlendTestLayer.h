@@ -49,7 +49,7 @@ STRONG_ENUM_CUSTOM_14(GraphicsBlendDestFuncHelper,
 
 class BlendTestLayer :public BaseCaseLayer
 {
-	MEDUSA_DECLARE_LAYER(BlendTestLayer);
+	MEDUSA_NODE(BlendTestLayer, BaseCaseLayer);
 public:
 	BlendTestLayer(StringRef name=StringRef::Empty,const IEventArg& e=IEventArg::Empty);
 	virtual ~BlendTestLayer(void);

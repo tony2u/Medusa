@@ -60,7 +60,6 @@ bool PODMaterial::Initialize( const List<HeapString>& textureNames )
 		}
 	}
 
-	SAFE_RETAIN(mEffect);
 	return true;
 }
 
@@ -72,7 +71,7 @@ bool PODMaterial::TryAddTexture(const List<HeapString>& textureNames,GraphicsTex
 		MEDUSA_ASSERT_FAILED("Index out of range");
 		return false;
 	}
-	ITexture* texture=TextureFactory::Instance().CreateFromFile(textureNames[index],samplerName);
+	auto texture=TextureFactory::Instance().CreateFromFile(textureNames[index],samplerName);
 	RETURN_FALSE_IF_NULL(texture);
 	texture->SetUnit(textureUnit);
 	AddTexture(texture);

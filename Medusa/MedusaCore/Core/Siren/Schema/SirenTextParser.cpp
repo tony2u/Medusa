@@ -282,6 +282,20 @@ bool SirenTextParser::Parse(StringRef& proto)
 				return false;
 			}
 		}
+		else if (token == StructKeyword)
+		{
+			std::unique_ptr<SirenCustomClass> type(new SirenCustomClass());
+			type->MutableAttribute().AddMode(SirenClassGenerateMode::Struct);
+			if (type->Parse(mAssembly, proto))
+			{
+				RETURN_FALSE_IF_FALSE(mAssembly.AddType(type.release()));
+			}
+			else
+			{
+				Log::Error("Failed to parse struct.");
+				return false;
+			}
+		}
 		else if (token == AttributeKeyword)
 		{
 			std::unique_ptr<SirenAttributeFunction> func(new SirenAttributeFunction());

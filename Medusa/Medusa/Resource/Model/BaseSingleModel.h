@@ -12,13 +12,14 @@ template<typename TMesh,typename TMaterial>
 class BaseSingleModel:public IModel
 {
 public:
-	BaseSingleModel(const FileIdRef& fileId):IModel(fileId),mMeshModelNode(fileId.Name),mMaterial(nullptr)
+	BaseSingleModel(const FileIdRef& fileId)
+		:IModel(fileId),mMeshModelNode(fileId.Name)
 	{
 		mMeshModelNode.SetParentModel(this);
 	}
 	virtual ~BaseSingleModel(void)
 	{
-		SAFE_RELEASE(mMaterial);
+		
 	}
 
 	virtual void UpdateWorldMatrixRecursively(const Matrix4& parentWorldMatrix=Matrix4::Identity)
@@ -44,7 +45,7 @@ public:
 	
 protected:
 	MeshModelNode<TMesh> mMeshModelNode;
-	TMaterial* mMaterial;
+	Share<TMaterial> mMaterial;
 };
 
 MEDUSA_END;

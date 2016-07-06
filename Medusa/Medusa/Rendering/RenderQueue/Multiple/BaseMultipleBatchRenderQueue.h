@@ -20,16 +20,16 @@ public:
 	typedef LinkedList<IRenderBatch*> BatchList;
 	typedef SwapValue<BatchList> DoubleBatchList;
 
-	BaseMultipleBatchRenderQueue(IRenderTarget* renderTarget = nullptr, Camera* camera = nullptr);
+	BaseMultipleBatchRenderQueue(const Share<IRenderTarget>& renderTarget=nullptr, const Share<Camera>& camera=nullptr);
 	~BaseMultipleBatchRenderQueue(void);
 public:
 	virtual void Update(RenderableChangedFlags changedFlag)override;
 public:
-	virtual IRenderTarget* RenderTarget() const override;
-	virtual void SetRenderTarget(IRenderTarget* val)override;
+	virtual const Share<IRenderTarget>& RenderTarget() const override;
+	virtual void SetRenderTarget(const Share<IRenderTarget>& val)override;
 
-	virtual Camera* GetCamera() const override;
-	virtual void SetCamera(Camera* val)override;
+	virtual const Share<Camera>& GetCamera() const override;
+	virtual void SetCamera(const Share<Camera>& val)override;
 protected:
 	virtual bool OnUpdateBatchList();
 	virtual bool OnUpdateRenderGroup();

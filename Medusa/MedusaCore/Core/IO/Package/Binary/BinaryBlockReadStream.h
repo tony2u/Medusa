@@ -12,7 +12,7 @@ class BinaryBlockReadStream :public BlockReadStream
 {
 	typedef List<const BinaryPackageBlockHeader*> BlockHeaderList;
 public:
-	BinaryBlockReadStream(const IStream& stream, const BinaryPackage& package, const FileEntry& fileEntry);
+	BinaryBlockReadStream(const Share<IStream>& stream, const BinaryPackage& package, const FileEntry& fileEntry);
 	virtual ~BinaryBlockReadStream(void);
 	virtual StreamType Type()const { return StreamType::BinaryBlockRead; }
 	BinaryBlockReadStream(const BinaryBlockReadStream&) = delete;

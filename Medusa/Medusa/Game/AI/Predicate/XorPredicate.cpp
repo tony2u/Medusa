@@ -3,6 +3,7 @@
 // license that can be found in the LICENSE file.
 #include "MedusaPreCompiled.h"
 #include "XorPredicate.h"
+#include "PredicateFactory.h"
 
 MEDUSA_BEGIN;
 
@@ -34,6 +35,5 @@ int XorPredicate::Evaluate(void* p) const
 	return result;
 }
 
-MEDUSA_IMPLEMENT_RTTI(XorPredicate, IPredicate);
-
+MEDUSA_IMPLEMENT_PREDICATE(XorPredicate);
 MEDUSA_END;

@@ -30,14 +30,14 @@ bool StateRenderGroup::Initialize()
 bool StateRenderGroup::Uninitialize()
 {
 	mRenderBatches.Clear();	//no need to recycle as it's owned outside
-	SAFE_RELEASE(mStateNode);
+	mStateNode = nullptr;
 
 	return true;
 }
 
-void StateRenderGroup::SetStateNode(RenderStateTreeLeafNode* val)
+void StateRenderGroup::SetStateNode(const Share<RenderStateTreeLeafNode>& val)
 {
-	SAFE_ASSIGN_REF(mStateNode, val);
+	mStateNode = val;
 }
 
 bool StateRenderGroup::Add(IRenderBatch* batch)
@@ -49,9 +49,8 @@ bool StateRenderGroup::Add(IRenderBatch* batch)
 void StateRenderGroup::Draw(IRenderQueue& renderQueue, RenderingFlags renderingFlags/*=RenderingFlags::None*/)
 {
 	RenderingContext::Instance().ApplyState(mStateNode);
-	FOR_EACH_COLLECTION(i, mRenderBatches)
+	for (auto batch : mRenderBatches)
 	{
-		IRenderBatch* batch = *i;
 		RenderingContext::Instance().ApplyBatch(batch);
 		RenderingContext::Instance().ValidateBeforeDraw();
 		batch->Draw(renderQueue,renderingFlags);
@@ -67,9 +66,8 @@ void StateRenderGroup::Print(HeapString& ioStr, uint level)
 {
 	ioStr.Append('\t', level);
 
-	FOR_EACH_COLLECTION(i, mRenderBatches)
+	for (auto batch : mRenderBatches)
 	{
-		IRenderBatch* batch = *i;
 		batch->Print(ioStr, level + 1);
 	}
 }

@@ -9,13 +9,14 @@
 #include "Core/Binding/Lua/Core_Binding.h"
 #endif
 
-#include "Core/Command/Processor/MainCommandProcessor.h"
-#include "Core/Command/Processor/ThreadCommandProcessor.h"
+#include "Core/Command/Executor/SyncCommandExecutor.h"
+#include "Core/Command/Executor/AsyncCommandExecutor.h"
 #include "Core/Script/ScriptEngine.h"
-#include "Core/Network/Message/MessageDispatcher.h"
+#include "Core/Event/EventBus.h"
 #include "Core/IO/FileSystem.h"
 #include "Core/Module/DelegateModule.h"
-#include "Core/Threading/ThreadPool.h"
+#include "Core/Module/SingletonModule.h"
+#include "Core/Threading/MainThreadPool.h"
 
 MEDUSA_BEGIN;
 
@@ -32,57 +33,53 @@ bool MedusaCoreModule::Initialize()
 	ScriptBinding::Register_Core();
 #endif
 
-	DelegateModule* module = nullptr;
+	Share<DelegateModule> module;
 
 	module = new DelegateModule("ThreadPool");
 	module->LoadHandler = [](IEventArg&)
 	{
-		ThreadPool::Instance().Initialize();
+		MainThreadPool::Instance().Initialize();
 		return true;
 	};
 
 	module->UnloadHandler = [](IEventArg&)
 	{
-		ThreadPool::Instance().Uninitialize();
+		MainThreadPool::Instance().Uninitialize();
 		return true;
 	};
 	AddPrevModule(module, false);
-	SAFE_RELEASE(module);
 
 	module = new DelegateModule("ThreadCommandProcessor");
 	module->LoadHandler = [](IEventArg&)
 	{
-		ThreadCommandProcessor::Instance().Start();
+		AsyncCommandExecutor::Instance().Start();
 		return true;
 	};
 	module->UnloadHandler = [](IEventArg&)
 	{
-		ThreadCommandProcessor::Instance().StopAndClear();
+		AsyncCommandExecutor::Instance().StopAndClear();
 		return true;
 	};
 	AddPrevModule(module,false);
-	SAFE_RELEASE(module);
 
 
-	module = new DelegateModule("Message");
+	module = new DelegateModule("EventDispatcher");
 	module->LoadHandler = [](IEventArg&)
 	{
-		MessageDispatcher::Instance().Initialize();
-		MessageDispatcher::Instance().Start();
+		EventBus::Instance().Initialize();
+		EventBus::Instance().Start();
 		return true;
 	};
 	module->UnloadHandler = [](IEventArg&)
 	{
-		MessageDispatcher::Instance().Uninitialize();
+		EventBus::Instance().Uninitialize();
 		return true;
 	};
 	AddPrevModule(module,false);
-	SAFE_RELEASE(module);
 
-
-	AddNextModule(FileSystem::InstancePtr());
+	AddNextModule(new SingletonModule<FileSystem>("FileSystem"));
 #ifdef MEDUSA_SCRIPT
-	AddNextModule(ScriptEngine::InstancePtr());
+	AddNextModule(new SingletonModule<ScriptEngine>("ScriptEngine"));
 #endif
 
 
@@ -92,12 +89,13 @@ bool MedusaCoreModule::Initialize()
 
 bool MedusaCoreModule::AfterUpdate(float dt)
 {
+	
 	return true;
 }
 
 bool MedusaCoreModule::BeforeUpdate(float dt)
 {
-	MainCommandProcessor::Instance().WaitForComplete();
+	SyncCommandExecutor::Instance().WaitForComplete();
 	return true;
 }
 
@@ -107,7 +105,7 @@ bool MedusaCoreModule::OnLoad(IEventArg& e /*= IEventArg::Empty*/)
 }
 bool MedusaCoreModule::OnUnload(IEventArg& e /*= IEventArg::Empty*/)
 {
-	MainCommandProcessor::Instance().Clear();
+	SyncCommandExecutor::Instance().Clear();
 
 	return true;
 }

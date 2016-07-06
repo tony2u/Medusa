@@ -21,7 +21,7 @@ public:
 		mDoc.ParseStream<rapidjson::kParseStopWhenDoneFlag>(mStream);
 		if (mDoc.HasParseError())
 		{
-			Log::FormatError("Json Parse error! offset %u - {}", (unsigned)mDoc.GetErrorOffset(), GetParseError_En(mDoc.GetParseError()));
+			Log::FormatError("Json Parse error! offset {} - {}", (unsigned)mDoc.GetErrorOffset(), GetParseError_En(mDoc.GetParseError()));
 			//throw exception
 		}
 		mJsonValues.Push(&mDoc);
@@ -34,28 +34,34 @@ public:
 		obj = (bool)currentJsonValue->GetBool();
 		return true;
 	}
-	virtual bool OnValue(char& obj) override 
+	virtual bool OnValue(char& obj) override
 	{
 		const rapidjson::Value* currentJsonValue = CurrentValue();
 		obj = (char)currentJsonValue->GetInt();
 		return true;
 	}
-	virtual bool OnValue(byte& obj) override 
+	virtual bool OnValue(int8& obj) override 
 	{
 		const rapidjson::Value* currentJsonValue = CurrentValue();
-		obj = (byte)currentJsonValue->GetUint();
+		obj = (int8)currentJsonValue->GetInt();
 		return true;
 	}
-	virtual bool OnValue(short& obj) override 
+	virtual bool OnValue(uint8& obj) override 
 	{
 		const rapidjson::Value* currentJsonValue = CurrentValue();
-		obj = (short)currentJsonValue->GetInt();
+		obj = (uint8)currentJsonValue->GetUint();
 		return true;
 	}
-	virtual bool OnValue(ushort& obj)override
+	virtual bool OnValue(int16& obj) override 
 	{
 		const rapidjson::Value* currentJsonValue = CurrentValue();
-		obj = (ushort)currentJsonValue->GetUint();
+		obj = (int16)currentJsonValue->GetInt();
+		return true;
+	}
+	virtual bool OnValue(uint16& obj)override
+	{
+		const rapidjson::Value* currentJsonValue = CurrentValue();
+		obj = (uint16)currentJsonValue->GetUint();
 		return true;
 	}
 	virtual bool OnValue(int32& obj) override

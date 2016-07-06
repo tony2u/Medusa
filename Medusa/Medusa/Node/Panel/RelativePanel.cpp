@@ -3,19 +3,16 @@
 // license that can be found in the LICENSE file.
 #include "MedusaPreCompiled.h"
 #include "RelativePanel.h"
-
+#include "Node/NodeFactory.h"
 MEDUSA_BEGIN;
 
-RelativePanel::RelativePanel(StringRef name/*=StringRef::Empty*/):IPanel(name)
-{
-}
 
 RelativePanel::~RelativePanel(void)
 {
 
 }
 
-MEDUSA_IMPLEMENT_RTTI(RelativePanel, IPanel);
+MEDUSA_IMPLEMENT_NODE(RelativePanel);
 
 
 MEDUSA_END;

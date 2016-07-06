@@ -12,7 +12,7 @@ class BinaryBlockWriteStream :public BlockWriteStream
 	typedef List<BinaryPackageBlockHeader*> BlockHeaderList;
 
 public:
-	BinaryBlockWriteStream(IStream& stream, BinaryPackage& package, FileEntry& fileEntry);
+	BinaryBlockWriteStream(const Share<IStream>& stream, BinaryPackage& package, FileEntry& fileEntry);
 	virtual ~BinaryBlockWriteStream(void);
 	virtual StreamType Type()const override{ return StreamType::BinaryBlockWrite; }
 	BinaryBlockWriteStream(const BinaryBlockWriteStream&) = delete;

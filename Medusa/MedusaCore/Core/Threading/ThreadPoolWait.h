@@ -24,11 +24,14 @@ public:
 	};
 private:
 	friend class ThreadPool;
-	ThreadPoolWait(const StringRef& name, ICommand* command, IWaitable* waitable, uint timeoutMilliseconds = (uint)-1);
+	ThreadPoolWait(ThreadPool* pool,const StringRef& name, const ShareCommand& command, IWaitable* waitable, uint timeoutMilliseconds = (uint)-1);
 	~ThreadPoolWait(void);
 public:
+	ThreadPool* Pool() const { return mPool; }
+	void SetPool(ThreadPool* val) { mPool = val; }
+
 	StringRef Name() const { return mName; }
-	ICommand* Command() const { return mCommand; }
+	const ShareCommand& Command() const { return mCommand; }
 
 	void Sumbit();
 	void Cancel();
@@ -36,12 +39,11 @@ public:
 
 	void Run(WaitResult result);
 	virtual bool OnExecute()override;
-private:
-	ThreadPoolWait(const ThreadPoolWait&);
-	ThreadPoolWait& operator=(const ThreadPoolWait&);
 protected:
+	ThreadPool* mPool = nullptr;
+
 	HeapString mName;
-	ICommand* mCommand;
+	ShareCommand mCommand;
 	IWaitable* mWaitable;
 
 	WaitResult mResult;

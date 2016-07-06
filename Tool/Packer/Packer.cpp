@@ -70,7 +70,7 @@ int _tmain(int argc, _TCHAR* argv[])
 {
 	Log::Initialize();
 	Log::AddLogger(new WindowsConsoleLogger());
-	Log::EnableLogHeader(false);
+	Log::EnableHeader(false);
 	Log::SetLevel(LogLevel::Info);
 
 	//http://docopt.org/

@@ -11,7 +11,7 @@ MEDUSA_BEGIN;
 class MultipleLineFontModel:public BaseFontModel
 {
 public:
-	MultipleLineFontModel(IFont* font,Alignment alignment=Alignment::LeftBottom,Size2U restrictSize=Size2U::Zero);
+	MultipleLineFontModel(const Share<IFont>& font,Alignment alignment=Alignment::LeftBottom,Size2U restrictSize=Size2U::Zero);
 	virtual ~MultipleLineFontModel(void);
 
 	virtual void SetText(StringRef text);

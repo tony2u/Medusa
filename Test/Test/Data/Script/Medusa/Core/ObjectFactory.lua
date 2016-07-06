@@ -29,3 +29,5 @@ function _M:Create(id, ...)
 		return item.new(...);
 	end
 end
+
+return _M;

@@ -268,7 +268,11 @@ namespace detail
 		{
 			if (old_type_index == sizeof...(Types))
 			{
+#pragma push_macro("new")
+#undef new
 				new (new_value) T(std::move(*reinterpret_cast<T*>(old_value)));
+#pragma pop_macro("new")
+
 			}
 			else
 			{
@@ -280,7 +284,11 @@ namespace detail
 		{
 			if (old_type_index == sizeof...(Types))
 			{
+#pragma push_macro("new")
+#undef new
 				new (new_value) T(*reinterpret_cast<const T*>(old_value));
+#pragma pop_macro("new")
+
 			}
 			else
 			{
@@ -639,7 +647,11 @@ public:
 		: type_index(sizeof...(Types)-1)
 	{
 		static_assert(std::is_default_constructible<first_type>::value, "First type in variant must be default constructible to allow default construction of variant");
+#pragma push_macro("new")
+#undef new
 		new (&data) first_type();
+#pragma pop_macro("new")
+
 	}
 
 	MEDUSA_FORCE_INLINE variant(detail::no_init) noexcept
@@ -651,7 +663,11 @@ public:
 		MEDUSA_FORCE_INLINE variant(T&& val) noexcept(std::is_nothrow_constructible<typename Traits::target_type, T&&>::value)
 		: type_index(Traits::index)
 	{
+#pragma push_macro("new")
+#undef new
 		new (&data) typename Traits::target_type(std::forward<T>(val));
+#pragma pop_macro("new")
+
 	}
 
 	MEDUSA_FORCE_INLINE variant(variant<Types...> const& old)
@@ -734,7 +750,11 @@ public:
 	{
 		helper_type::destroy(type_index, &data);
 		type_index = detail::invalid_value;
+#pragma push_macro("new")
+#undef new
 		new (&data) T(std::forward<Args>(args)...);
+#pragma pop_macro("new")
+
 		type_index = detail::direct_type<T, Types...>::index;
 		return *reinterpret_cast<T*>(&data);
 	}

@@ -4,10 +4,11 @@
 #pragma once
 
 #include "Core/Threading/Mutex.h"
+#include "Core/Pattern/INonCopyable.h"
 
 MEDUSA_BEGIN;
 
-class ScopedUnlock
+class ScopedUnlock:public INonCopyable
 {
 public:
 	typedef Mutex MutexType;
@@ -21,9 +22,6 @@ public:
 	{
 		mMutex.Unlock();
 	}
-private:
-	ScopedUnlock(const ScopedUnlock &);
-	ScopedUnlock& operator=(const ScopedUnlock &);
 private:
 	MutexType& mMutex;
 };

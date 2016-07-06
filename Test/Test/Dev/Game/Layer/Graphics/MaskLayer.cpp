@@ -36,7 +36,7 @@ bool MaskLayer::Initialize()
 	
 	mFrontSprite->MutableRenderState().EnableScissor(true);
 
-	//BlendRenderState* state= mFrontSprite->MutableRenderState().BlendState(); 
+	//auto state= mFrontSprite->MutableRenderState().BlendState(); 
 
 	//alpha = dest -src
 	//state->SetDestAlphaFunc(GraphicsBlendDestFunc::DestAlpha);
@@ -49,13 +49,13 @@ bool MaskLayer::Initialize()
 	//state->SetBlendRGBEquation(GraphicsBlendEquation::Add);
 
 
-	//IRenderPass* maskPass= RenderPassFactory::Instance().CreateRenderPass("MaskPass", VertexShaderFiles::Texture, "MaskTexture.fsh");
-	//IEffect* maskEffect=EffectFactory::Instance().CreateEffectSinglePass("MaskEffect", maskPass);
+	//auto maskPass= RenderPassFactory::Instance().CreateRenderPass("MaskPass", VertexShaderFiles::Texture, "MaskTexture.fsh");
+	//auto maskEffect=EffectFactory::Instance().CreateEffectSinglePass("MaskEffect", maskPass);
 	//mFrontSprite->Mesh()->SetEffect(maskEffect);
 	//mFrontSprite->Mesh()->SetEffect()
 	return true;
 }
 
 
-MEDUSA_IMPLEMENT_LAYER(MaskLayer, BaseCaseLayer, StringRef::Empty, StringRef::Empty);
+MEDUSA_IMPLEMENT_NODE(MaskLayer);
 

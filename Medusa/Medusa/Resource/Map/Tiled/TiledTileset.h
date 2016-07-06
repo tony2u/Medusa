@@ -10,12 +10,12 @@
 #include "TiledTile.h"
 #include "TiledTerrain.h"
 #include "Resource/IResource.h"
-#include "Core/IO/IFileLoadable.h"
+#include "Core/IO/IFileLoadSavable.h"
 
 
 MEDUSA_BEGIN;
 
-class TiledTileset : public IResource, public IFileLoadable
+class TiledTileset : public IResource, public IFileLoadSavable
 {
 public:
 	TiledTileset(const FileIdRef& fileId);
@@ -40,7 +40,7 @@ public:
 	Point2I TileOffset() const { return mTileOffset; }
 	void SetTileOffset(Point2I val) { mTileOffset = val; }
 
-	const TiledImage* Image() const { return mImage; }
+	TiledImage* Image() const { return mImage; }
 	void SetImage(TiledImage* val);
 
 	const StringPropertySet& Properties() const { return mProperties; }

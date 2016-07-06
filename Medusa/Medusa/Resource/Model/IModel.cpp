@@ -25,9 +25,9 @@ void IModel::CustomDraw( IRenderable* node,RenderingFlags renderingFlags/*=Rende
 {
 	/*FOR_EACH_COLLECTION(i,mMeshes)
 	{
-	BaseMesh* mesh=*i;
-	IMaterial* material= mesh->GetMaterial();
-	IEffect* effect=material->GetEffect();
+	auto mesh=*i;
+	auto material= mesh->GetMaterial();
+	auto effect=material->GetEffect();
 	RenderingItem renderingItem(node,mesh);
 	CustomDrawRenderBatch batch;
 	batch.Add(renderingItem);
@@ -36,7 +36,7 @@ void IModel::CustomDraw( IRenderable* node,RenderingFlags renderingFlags/*=Rende
 	EffectTechnique::PassCollectionType& renderPasses=technique->GetRenderPasses();
 	FOR_EACH_COLLECTION(i,renderPasses)
 	{
-	IRenderPass* renderPass=*i;
+	auto renderPass=*i;
 	RenderingContext::Instance().ApplyRenderPass(renderPass);
 	bool isContinue=renderPass->Draw(renderQueue, renderingFlags);
 	if (isContinue)
@@ -62,16 +62,16 @@ void IModel::BatchDraw( IRenderable* node,IRenderBatch* batch,RenderingFlags ren
 {
 	/*FOR_EACH_COLLECTION(i,mMeshes)
 	{
-	BaseMesh* mesh=*i;
-	IMaterial* material= mesh->GetMaterial();
-	IEffect* effect=material->GetEffect();
+	auto mesh=*i;
+	auto material= mesh->GetMaterial();
+	auto effect=material->GetEffect();
 	RenderingItem renderingItem(node,mesh);
 
 	EffectTechnique* technique=effect->GetCurrentTechniqueGroup()->GetCurrentTechnique();
 	EffectTechnique::PassCollectionType& renderPasses=technique->GetRenderPasses();
 	FOR_EACH_COLLECTION(i,renderPasses)
 	{
-	IRenderPass* renderPass=*i;
+	auto renderPass=*i;
 	RenderingContext::Instance().ApplyRenderPass(renderPass);
 	bool isContinue=renderPass->Draw(renderQueue, renderingFlags);
 	if (isContinue)

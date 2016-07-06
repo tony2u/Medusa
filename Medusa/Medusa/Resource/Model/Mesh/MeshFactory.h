@@ -24,28 +24,27 @@ public:
 	virtual bool Initialize();
 	virtual bool Uninitialize();
 public:
-	ShapeQuadMesh* CreateShapeQuadMesh(const Size2F& rectSize, const Color4F& color);
-	ShapeQuadMesh* CreateShapeQuadMesh(const Rect2F& rect, const Color4F& color);
+	Share<ShapeQuadMesh> CreateShapeQuadMesh(const Size2F& rectSize, const Color4F& color);
+	Share<ShapeQuadMesh> CreateShapeQuadMesh(const Rect2F& rect, const Color4F& color);
 
-	ShapeTriangleMesh* CreateShapeTriangleMesh(const Point3F& p1, const Point3F& p2, const Point3F& p3, const Color4F& color);
-	ShapeTriangleMesh* CreateShapeTriangleMesh(float width, float height, const Color4F& color);
-	ShapeGeneralMesh* CreateShapeCircleMesh(float radius,float precision, const Color4F& color);
+	Share<ShapeTriangleMesh> CreateShapeTriangleMesh(const Point3F& p1, const Point3F& p2, const Point3F& p3, const Color4F& color);
+	Share<ShapeTriangleMesh> CreateShapeTriangleMesh(float width, float height, const Color4F& color);
+	Share<ShapeGeneralMesh> CreateShapeCircleMesh(float radius,float precision, const Color4F& color);
+	Share<ShapeGeneralMesh> CreateLineMesh(const Point3F& from, const Point3F& to, const Color4F& color);
 
-
-
-	TextureQuadMesh* CreateTextureQuadMesh(const Size2F& textureSize, const Rect2F& textureRect = Rect2F::Zero, const Color4F& color = Color4F::White);
-	TextureQuadMesh* CreateTextureQuadMesh(const FileIdRef& textureName, const FileMapOrderItem& orderItem, const Rect2F& textureRect = Rect2F::Zero, const Color4F& color = Color4F::White);
-	TextureQuadMesh* CreateTextureQuadMesh(ITexture* texture, const Rect2F& textureRect = Rect2F::Zero, const Color4F& color = Color4F::White);
-
-
-	IMesh* CreateTextureAtlasRegionMesh(TextureAtlasRegion* region, const Color4F& color = Color4F::White);
+	Share<TextureQuadMesh> CreateTextureQuadMesh(const Size2F& textureSize, const Rect2F& textureRect = Rect2F::Zero, const Color4F& color = Color4F::White);
+	Share<TextureQuadMesh> CreateTextureQuadMesh(const FileIdRef& textureName, const FileMapOrderItem& orderItem, const Rect2F& textureRect = Rect2F::Zero, const Color4F& color = Color4F::White);
+	Share<TextureQuadMesh> CreateTextureQuadMesh(const Share<ITexture>& texture, const Rect2F& textureRect = Rect2F::Zero, const Color4F& color = Color4F::White);
 
 
+	Share<IMesh> CreateTextureAtlasRegionMesh(TextureAtlasRegion* region, const Color4F& color = Color4F::White);
 
-	TextureNineGridMesh* CreateTextureNineGridMesh(const Size2F& targetSize, const Size2F& textureSize, const ThicknessF& padding, const Rect2F& textureRect = Rect2F::Zero, RotateDirection rotation = RotateDirection::None, const Color4F& color = Color4F::White);
+
+
+	Share<TextureNineGridMesh> CreateTextureNineGridMesh(const Size2F& targetSize, const Size2F& textureSize, const ThicknessF& padding, const Rect2F& textureRect = Rect2F::Zero, RotateDirection rotation = RotateDirection::None, const Color4F& color = Color4F::White);
 	
 
-	TextureGeneralMesh* CreateTextureGeneralMesh(ITexture* texture, bool isStatic = false);
+	Share<TextureGeneralMesh> CreateTextureGeneralMesh(const Share<ITexture>& texture, bool isStatic = false);
 
 
 

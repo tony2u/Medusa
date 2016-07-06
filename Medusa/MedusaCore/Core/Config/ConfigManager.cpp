@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 #include "MedusaCorePreCompiled.h"
 #include "ConfigManager.h"
-#include "Core/IO/IFileLoadable.h"
+#include "Core/IO/IFileLoadSavable.h"
 
 MEDUSA_BEGIN;
 
@@ -17,7 +17,7 @@ ConfigManager::~ConfigManager(void)
 
 }
 
-void ConfigManager::Load(IFileLoadable* item)
+void ConfigManager::Load(IFileLoadSavable* item)
 {
 	mItems.Add(item);
 }
@@ -34,7 +34,7 @@ bool ConfigManager::Uninitialize()
 	RETURN_TRUE_IF_ZERO(count);
 	FOR_EACH_INT_END_BEGIN(i, count - 1, 0)
 	{
-		IFileLoadable* item = mItems[i];
+		IFileLoadSavable* item = mItems[i];
 		item->Unload();
 	}
 	return true;

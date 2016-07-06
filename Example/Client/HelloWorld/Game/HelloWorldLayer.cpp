@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 #include "HelloWorldLayer.h"
-#include "Core/Profile/ProfileSample.h"
+#include "Core/Chrono/ProfileSample.h"
 #include "Node/Panel/PanelFactory.h"
 
 
@@ -25,18 +25,18 @@ bool HelloWorldLayer::Initialize()
 	sprite->SetDock(DockPoint::MiddleCenter);
 	AddChild(sprite);*/
 	
-	RasterizerRenderState* state=this->MutableRenderState().AllocState<RasterizerRenderState>();
+	/*auto state=this->MutableRenderState().AllocState<RasterizerRenderState>();
 	state->SetCullMode(GraphicsFace::Back);
 	state->Enable(true);
 
-	DepthStencilRenderState* depthState = this->MutableRenderState().AllocState<DepthStencilRenderState>();
-	depthState->EnableDepthTest(true);
+	auto depthState = this->MutableRenderState().AllocState<DepthStencilRenderState>();
+	depthState->EnableDepthTest(true);*/
 	
 
-	auto* shape1 = NodeFactory::Instance().CreatePODSprite("Scene.pod");
-	//shape1->SetAnchor(0.5f, 0.5f);
-	//shape1->SetDock(DockPoint::MiddleCenter);
-	AddChild(shape1);
+	//auto* shape1 = NodeFactory::Instance().CreatePODSprite("Scene.pod");
+	////shape1->SetAnchor(0.5f, 0.5f);
+	////shape1->SetDock(DockPoint::MiddleCenter);
+	//AddChild(shape1);
 
 	return true;
 }
@@ -44,11 +44,11 @@ bool HelloWorldLayer::Initialize()
 
 bool HelloWorldLayer::OnEnter()
 {
-	auto winSize = ResolutionAdapter::Instance().WinSize();
-	auto* camera = CameraFactory::Instance().CreateFromModel("Camera01", "Scene.pod", winSize, false);
+	/*auto winSize = ResolutionAdapter::Instance().WinSize();
+	auto camera = CameraFactory::Instance().CreateFromModel("Camera01", "Scene.pod", winSize, false);
 	IScene* scene = (IScene*)mParent;
-	scene->SetCamera(camera);
+	scene->SetCamera(camera);*/
 	return true;
 }
 
-MEDUSA_IMPLEMENT_LAYER(HelloWorldLayer, ILayer, StringRef::Empty, StringRef::Empty);
+MEDUSA_IMPLEMENT_NODE(HelloWorldLayer);

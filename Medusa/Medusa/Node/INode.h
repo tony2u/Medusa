@@ -4,14 +4,11 @@
 #pragma once
 #include "MedusaPreDeclares.h"
 #include "Core/Pattern/Runnable/DefaultRunnable.h"
-
-#include "Core/Pattern/Ptr/LazyStrongPtr.h"
 #include "Core/Collection/SortedList.h"
 #include "Core/Collection/Dictionary.h"
 #include "Core/Action/BaseActionRunner.h"
 #include "Rendering/IRenderable.h"
 #include "Core/Pattern/Runnable/IRunnable.h"
-#include "Geometry/Rect2.h"
 #include "Core/Pattern/IClone.h"
 
 #include "Core/Pattern/RTTI/RTTIObject.h"
@@ -21,20 +18,54 @@
 
 #include "Node/NodeDefines.h"
 
-#include "Core/Command/EventArg/IEventArg.h"
+#include "Core/Event/EventArg/IEventArg.h"
 #include "Core/Collection/LinkedList.h"
 #include "Core/Pattern/Property/StringPropertySet.h"
+#include "Core/Pattern/StaticConstructor.h"
+#include "Core/IO/FileIdRef.h"
 
 MEDUSA_BEGIN;
 
-typedef SortedList<INode*, DefaultCompare<INode*>, CustomCompareForPointer<INode*> > NodeList;
-//typedef List<INode*,CustomCompareForPointer<INode> > NodeList;
+typedef SortedList<INode*, DefaultCompare, CustomCompareForPointer > NodeList;
 
 /*
 (RenderTarget,Priority,Effect,Material,RenderingStrategy) determined a batch together.
 
 */
 
+
+#define MEDUSA_NODE_ROOT(className) 													\
+		MEDUSA_RTTI_ROOT(className);\
+public:																				\
+	virtual const FileIdRef& EditorFileName()const{return FileIdRef::Empty;}									\
+	virtual const FileIdRef& ScriptFileName()const{return FileIdRef::Empty;}									
+
+
+#define MEDUSA_NODE(className,baseClassName) 													\
+		MEDUSA_RTTI(className,baseClassName);\
+public:																				\
+	virtual const FileIdRef& EditorFileName()const override{return FileIdRef::Empty;}									\
+	static const FileIdRef& EditorFileNameStatic(){return FileIdRef::Empty;}									\
+	virtual const FileIdRef& ScriptFileName()const override{return FileIdRef::Empty;}									\
+	static const FileIdRef& ScriptFileNameStatic(){return FileIdRef::Empty;}	\
+private:\
+const static StaticConstructor mStaticConstructor;
+
+
+#define MEDUSA_NODE_BIND(className,baseClassName,editorFile,scriptFile) 													\
+		MEDUSA_RTTI(className,baseClassName);\
+public:																				\
+	virtual const FileIdRef& EditorFileName()const override{return mEditorFileName;}									\
+	static const FileIdRef& EditorFileNameStatic(){return mEditorFileName;}									\
+	virtual const FileIdRef& ScriptFileName()const override{return mScriptFileName;}									\
+	static const FileIdRef& ScriptFileNameStatic(){return mScriptFileName;}									\
+private:																				\
+	constexpr static FileIdRef mEditorFileName{editorFile,StdString::StaticLength(editorFile),0};							\
+	constexpr static FileIdRef mScriptFileName{scriptFile,StdString::StaticLength(scriptFile),0};							\
+	const static StaticConstructor mStaticConstructor;		
+
+#define MEDUSA_IMPLEMENT_NODE(className) 																					 \
+	const StaticConstructor className::mStaticConstructor([]{NodeFactory::Instance().Register<className>(#className,className::EditorFileNameStatic(),className::ScriptFileNameStatic());});					 
 
 class INode :public IRenderable,
 	public IClone<INode*>,
@@ -45,7 +76,7 @@ class INode :public IRenderable,
 	public ILayoutable,
 	public IEntity
 {
-	MEDUSA_DECLARE_RTTI_ROOT;
+	MEDUSA_NODE_ROOT(INode);
 	friend class InputDispatcher;
 	friend class IScene;
 public:
@@ -261,8 +292,8 @@ public:
 
 #pragma region DataBind
 public:
-	IDataSource* DataSource() const { return mDataSource; }
-	virtual void SetDataSource(IDataSource* val);
+	const Share<IDataSource>& DataSource() const { return mDataSource; }
+	virtual void SetDataSource(const Share<IDataSource>& val);
 	void ReleaseDataSource();
 protected:
 	virtual void OnDataChanged(const IDataSource& dataSource);
@@ -277,9 +308,9 @@ public:
 #pragma region Script
 #ifdef MEDUSA_SCRIPT
 public:
-	bool TryAttachScriptObject(StringRef customName=StringRef::Empty);
+	bool TryAttachScriptObject(StringRef customName = StringRef::Empty);
 
-	ScriptObject AddScriptFile(const FileIdRef& file);
+	ScriptObject TryAddScriptFile(const FileIdRef& file);
 	void SetScriptObject(ScriptObject object);
 	ScriptObject GetScriptObject()const;
 #endif
@@ -308,7 +339,7 @@ protected:
 	bool mInputEnabled = true;	//just for self
 	bool mInputPassingEnabled = true;	//true means to need to check all children' input dispatcher recursively.
 
-	IDataSource* mDataSource = nullptr;
+	Share<IDataSource> mDataSource = nullptr;
 
 	//Debug
 	IShape* mDebugDrawShape = nullptr;
@@ -320,6 +351,8 @@ protected:
 
 	StringPropertySet mProperties;
 };
+
+
 
 
 MEDUSA_END;

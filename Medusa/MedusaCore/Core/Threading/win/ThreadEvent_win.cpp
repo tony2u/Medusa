@@ -69,7 +69,7 @@ bool ThreadEvent::TryWait()
 	return WaitForSingleObject(mEvent, 0) == WAIT_OBJECT_0;
 }
 
-bool ThreadEvent::WaitTimeout(long milliseconds)
+bool ThreadEvent::WaitFor(long milliseconds)
 {
 	return WaitForSingleObject(mEvent, milliseconds) == WAIT_OBJECT_0;
 }
@@ -80,9 +80,8 @@ bool ThreadEvent::WaitTimeout(long milliseconds)
 bool ThreadEvent::WaitForMultipleEvents(const List<ThreadEvent*>& events, bool waitAll, long milliseconds, int& outWaitIndex)
 {
 	List<HANDLE> handleList;
-	FOR_EACH_COLLECTION(i, events)
+	for (auto e : events)
 	{
-		ThreadEvent* e = *i;
 		handleList.Add(e->mEvent);
 	}
 

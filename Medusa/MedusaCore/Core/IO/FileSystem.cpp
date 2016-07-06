@@ -39,17 +39,6 @@ FileSystem::~FileSystem()
 
 bool FileSystem::Uninitialize()
 {
-	
-	return true;
-}
-
-bool FileSystem::OnLoad(IEventArg& e /*= IEventArg::Empty*/)
-{
-	return Initialize(mCoders, mCoderKey);
-}
-
-bool FileSystem::OnUnload(IEventArg& e /*= IEventArg::Empty*/)
-{
 	SAFE_DELETE_DICTIONARY_VALUE(mTagItems);
 	SAFE_DELETE_COLLECTION(mPackages);
 
@@ -61,7 +50,17 @@ bool FileSystem::OnUnload(IEventArg& e /*= IEventArg::Empty*/)
 	mCurrentTag = PublishTarget::MatchAll;
 	mSortedTagItems.Clear();
 	mValidTagList.Clear();
+	return true;
+}
 
+bool FileSystem::OnLoad(IEventArg& e /*= IEventArg::Empty*/)
+{
+	return Initialize(mCoders, mCoderKey);
+}
+
+bool FileSystem::OnUnload(IEventArg& e /*= IEventArg::Empty*/)
+{
+	Uninitialize();
 	return true;
 }
 
@@ -206,9 +205,9 @@ void FileSystem::ApplyTagHelper(const PublishTarget& tag)
 {
 	mCurrentTag = tag;
 	mValidTagList.Clear();
-	FOR_EACH_COLLECTION_STL(i, mSortedTagItems.STLItems())
+	for (const auto& i : mSortedTagItems.STLItems())
 	{
-		FileMapTagItem* tagItem = i->second;
+		FileMapTagItem* tagItem = i.second;
 		int diffScore = tagItem->UpdateDiffScore(tag);
 		if (diffScore != Math::IntMinValue)
 		{
@@ -247,9 +246,23 @@ FileEntry* FileSystem::Find(const FileIdRef& fileId)
 	return nullptr;
 }
 
+bool FileSystem::Exists(const FileIdRef& fileId) const
+{
+	if (fileId.IsPath())
+	{
+		std::unique_ptr<FileStream> steam(new FileStream());
+		HeapString path = System::Instance().GetWritablePath(fileId.Name);
+		RETURN_TRUE_IF(File::Exists(path));
+
+		path = System::Instance().GetReadonlyPath(fileId.Name);
+		return File::Exists(path);
+	}
+	return Find(fileId) != nullptr;
+}
+
 bool FileSystem::AssertExists(const FileIdRef& fileId) const
 {
-	if (Find(fileId) != nullptr)
+	if (Exists(fileId))
 	{
 		return true;
 	}
@@ -269,7 +282,7 @@ StringRef FileSystem::ExistsOr(const StringRef& fileId, const StringRef& optiona
 }
 
 
-const IStream* FileSystem::Read(const FileIdRef& fileId, FileDataType dataType /*= FileDataType::Binary*/) const
+Share<const IStream> FileSystem::Read(const FileIdRef& fileId, FileDataType dataType /*= FileDataType::Binary*/) const
 {
 	if (fileId.IsPath())
 	{
@@ -626,13 +639,41 @@ FileMapOrderItem* FileSystem::MapFileReference(const StringRef& fileName, FileEn
 	}
 
 	auto orderItem = tagItem->FindOrCreateOrderItem(fileId);
-	orderItem->AddFileEntry(targetFileEntry, region);
+	orderItem->AddFileEntry(targetFileEntry, fileName, region);
 
 	if (tryReload&&isTagChanged)
 	{
 		ApplyTagHelper(mCurrentTag);
 	}
 	return orderItem;
+}
+
+void FileSystem::UnmapFileReference(FileMapOrderItem* orderItem, FileEntry& targetFileEntry)
+{
+	orderItem->RemoveFileEntry(targetFileEntry);
+	if (!orderItem->IsValid())
+	{
+		//remove this file order
+		auto nameItem= orderItem->Parent();
+		nameItem->Remove(orderItem->Order());
+		delete orderItem;
+
+		if (nameItem->IsEmpty())
+		{
+			auto tagItem = nameItem->Parent();
+			tagItem->Remove(nameItem->Name());
+			delete nameItem;
+
+			if (tagItem->IsEmpty())
+			{
+				mTagItems.RemoveKey(tagItem->Tag());
+				mSortedTagItems.RemoveKey(tagItem->Tag());
+				mValidTagList.Remove(tagItem);
+				delete tagItem;
+			}
+		}
+
+	}
 }
 
 FileMapOrderItem* FileSystem::MapFile(FileEntry& fileEntry, bool tryReload/*=false*/)

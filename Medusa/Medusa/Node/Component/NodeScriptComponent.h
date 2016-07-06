@@ -13,14 +13,14 @@ MEDUSA_BEGIN;
 
 class NodeScriptComponent:public IScriptComponent
 {
-	MEDUSA_DECLARE_COMPONENT;
+	MEDUSA_DECLARE_COMPONENT(NodeScriptComponent,IScriptComponent);
 public:
 	NodeScriptComponent(const StringRef& name = StringRef::Empty, int priority = 0, void* userData = nullptr);
 	virtual ~NodeScriptComponent(void);
 
 public:
 	virtual bool Update(float dt)override;
-	virtual bool HandleEvent(InputEventType type, StringRef handlerName, INode* sender, IEventArg* e) override;
+	virtual bool HandleEvent(InputEventType type, StringRef handlerName, INode* sender, IEventArg* e);
 
 	virtual bool Enter()override;
 	virtual bool Exit()override;

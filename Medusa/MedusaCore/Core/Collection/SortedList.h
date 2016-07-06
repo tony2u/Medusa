@@ -12,7 +12,7 @@
 MEDUSA_BEGIN;
 
 
-template<typename T, typename TCompare = EqualCompare<T>, typename TSorter = DefaultCompare<T> >
+template<typename T, typename TCompare = EqualCompare, typename TSorter = DefaultCompare >
 class SortedList :public ISortedList < T >
 {
 	typedef SortedList<T, TCompare, TSorter> SelfType;
@@ -444,8 +444,8 @@ public:
 		else
 		{
 			RETURN_IF_EQUAL(mSize, this->mCount);
+			Memory::Realloc(this->mItems, mSize, this->mCount);
 			mSize = this->mCount;
-			Memory::Realloc(this->mItems, mSize);
 		}
 	}
 
@@ -455,8 +455,8 @@ private:
 		//always to extend to bigger size
 		RETURN_FALSE_IF(mSize >= size);
 
+		Memory::Realloc(this->mItems, mSize, size);
 		mSize = size;
-		Memory::Realloc(this->mItems, size);
 
 		return true;
 	}

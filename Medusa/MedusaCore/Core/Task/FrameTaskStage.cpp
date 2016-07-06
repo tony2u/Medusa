@@ -28,36 +28,32 @@ void FrameTaskStage::Clear()
 
 void FrameTaskStage::Update(float dt)
 {
-	FOR_EACH_COLLECTION(i, mTasks)
+	for(auto task: mTasks)
 	{
-		FrameTask* task = *i;
 		task->Update(dt);
 	}
 }
 
 void FrameTaskStage::Wait()
 {
-	FOR_EACH_COLLECTION(i, mTasks)
+	for (auto task : mTasks)
 	{
-		FrameTask* task = *i;
 		task->Wait();
 	}
 }
 
 void FrameTaskStage::ApplyOptionToAll(ExecuteOption option)
 {
-	FOR_EACH_COLLECTION(i, mTasks)
+	for (auto task : mTasks)
 	{
-		FrameTask* task = *i;
 		task->SetOption(option);
 	}
 }
 
 bool FrameTaskStage::Initialize()
 {
-	FOR_EACH_COLLECTION(i, mTasks)
+	for (auto task : mTasks)
 	{
-		FrameTask* task = *i;
 		task->Initialize();
 	}
 

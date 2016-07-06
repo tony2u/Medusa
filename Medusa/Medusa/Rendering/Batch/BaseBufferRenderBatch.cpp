@@ -5,7 +5,7 @@
 #include "Rendering/Batch/BaseBufferRenderBatch.h"
 #include "Resource/Model/IModel.h"
 #include "Rendering/IRenderable.h"
-#include "Core/Profile/ProfileSample.h"
+#include "Core/Chrono/ProfileSample.h"
 #include "Resource/Model/Mesh/IMesh.h"
 #include "Core/Log/Log.h"
 #include "Rendering/RenderingStatics.h"
@@ -96,7 +96,7 @@ void BaseBufferRenderBatch::RemoveNode(IRenderable* node)
 
 void BaseBufferRenderBatch::AddNodeToBuffer(uint& refVertexIndex, uint& refIndexIndex, IRenderable& node)
 {
-	IMesh* mesh = node.Mesh();
+	auto mesh = node.Mesh();
 	const Matrix4& newMatrix = node.WorldMatrix();
 
 	mesh->AddToVertexBufferObject(mVertexBufferObject, refVertexIndex,  newMatrix);
@@ -108,15 +108,15 @@ void BaseBufferRenderBatch::AddNodeToBuffer(uint& refVertexIndex, uint& refIndex
 	uintp vertexCount = mesh->VertexCount();
 	uintp indexCount = mesh->IndexCount();
 	node.SetBatch(this, refVertexIndex, (uint)vertexCount, refIndexIndex, (uint)indexCount);
-	refVertexIndex += vertexCount;
-	refIndexIndex += indexCount;
+	refVertexIndex += (uint)vertexCount;
+	refIndexIndex += (uint)indexCount;
 	RenderingStatics::Instance().IncreaseChangedNodeCount();
 
 }
 
 void BaseBufferRenderBatch::UpdateNodeToBuffer(uint& refVertexIndex, uint& refIndexIndex, IRenderable& node, RenderableChangedFlags changedFlags)
 {
-	IMesh* mesh = node.Mesh();
+	auto mesh = node.Mesh();
 	if (MEDUSA_FLAG_HAS(changedFlags,RenderableChangedFlags::NewVertex))
 	{
 		const Matrix4& newMatrix = node.WorldMatrix();
@@ -147,8 +147,8 @@ void BaseBufferRenderBatch::UpdateNodeToBuffer(uint& refVertexIndex, uint& refIn
 	uintp vertexCount = mesh->VertexCount();
 	uintp indexCount = mesh->IndexCount();
 	node.SetBatch(this, refVertexIndex, (uint)vertexCount, refIndexIndex, (uint)indexCount);
-	refVertexIndex += vertexCount;
-	refIndexIndex += indexCount;
+	refVertexIndex += (uint)vertexCount;
+	refIndexIndex += (uint)indexCount;
 	RenderingStatics::Instance().IncreaseChangedNodeCount();
 }
 
@@ -205,9 +205,8 @@ void BaseBufferRenderBatch::Print(HeapString& ioStr, uint level)
 			break;
 	}
 
-	FOR_EACH_COLLECTION(i, mNodes)
+	for (auto node : mNodes)
 	{
-		const IRenderable* node = *i;
 		ioStr.AppendFormat("{}:{}\t", node->Id(), node->Name().c_str());
 	}
 
@@ -217,9 +216,8 @@ void BaseBufferRenderBatch::Print(HeapString& ioStr, uint level)
 void BaseBufferRenderBatch::PrintNodes()const
 {
 	HeapString testStr;
-	FOR_EACH_COLLECTION(i, mNodes)
+	for (auto node : mNodes)
 	{
-		const IRenderable* node = *i;
 		testStr.AppendFormat("{},", node->Name().c_str());
 	}
 	Log::Info(testStr);
@@ -228,7 +226,7 @@ void BaseBufferRenderBatch::PrintNodes()const
 void BaseBufferRenderBatch::Apply()
 {
 	RETURN_IF_FALSE(RenderingContext::Instance().IsBatchStep());
-	BaseProgramRenderPass* pass = RenderingContext::Instance().ProgramRenderPass();
+	auto pass = RenderingContext::Instance().ProgramRenderPass();
 	//set model view matrix
 	ShaderAttribute* texCoords = pass->FindAttributeByIndex(ShaderAttributeIndex::TexCoordArray);
 	if (texCoords != nullptr)
@@ -264,7 +262,7 @@ void BaseBufferRenderBatch::Apply()
 void BaseBufferRenderBatch::Restore()
 {
 	mIndexBufferObject.Restore();
-	BaseProgramRenderPass* pass = RenderingContext::Instance().ProgramRenderPass();
+	auto pass = RenderingContext::Instance().ProgramRenderPass();
 
 	ShaderAttribute* normals = pass->FindAttributeByIndex(ShaderAttributeIndex::NormalArray);
 	if (normals != nullptr)

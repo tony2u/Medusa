@@ -86,5 +86,5 @@ void ParallaxScrollComponentLayer::OnKeyDown(INode* sender, KeyDownEventArg& e)
 	}
 }
 
-MEDUSA_IMPLEMENT_LAYER(ParallaxScrollComponentLayer, BaseCaseLayer, StringRef::Empty, StringRef::Empty);
+MEDUSA_IMPLEMENT_NODE(ParallaxScrollComponentLayer);
 

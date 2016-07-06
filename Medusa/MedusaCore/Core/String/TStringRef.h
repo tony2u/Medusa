@@ -19,17 +19,17 @@ class TStringRef
 {
 public:
 	template<size_t size>
-	TStringRef(const T(&str)[size])
+	constexpr TStringRef(const T(&str)[size])
 		:mBuffer(str), mLength(Math::UIntMaxValue)
 	{
 
 	}
-	TStringRef()
+	constexpr TStringRef()
 		:mBuffer(nullptr), mLength(0)
 	{
 
 	}
-	TStringRef(const T* inBuffer)
+	constexpr TStringRef(const T* inBuffer)
 		:mBuffer(inBuffer), mLength(Math::UIntMaxValue)
 	{
 	}
@@ -39,7 +39,7 @@ public:
 		mLength = str.length();
 	}
 
-	TStringRef(const T* inBuffer, size_t length)
+	constexpr TStringRef(const T* inBuffer, size_t length)
 		:mBuffer(inBuffer), mLength(length)
 	{
 	}
@@ -50,10 +50,7 @@ public:
 		mLength = data.LengthAsString();
 	}
 
-	~TStringRef(void)
-	{
-	}
-
+	~TStringRef(void) = default;
 	/*operator const T*()const	//should disable this to prevent 2 overloads have similar conversions
 	{
 	return mBuffer;
@@ -100,7 +97,7 @@ public:
 	TStringRef SubStringTo(size_t index, T nextChar)const
 	{
 		intp nextIndex = IndexOf(nextChar, index);
-		if (nextIndex<0)
+		if (nextIndex < 0)
 		{
 			return SubString(index);
 		}
@@ -167,6 +164,43 @@ public:
 	{
 		return !operator>(inString);
 	}
+
+public:
+	class ConstInterator	//[IGNORE_PRE_DECLARE]
+	{
+	public:
+		explicit ConstInterator(const T* cur) :mCurrent(cur) {}
+		T operator*()const { return *mCurrent; }
+		const T* operator->()const { return mCurrent; }
+		bool operator==(const ConstInterator& other)const { return mCurrent == other.mCurrent; }
+		bool operator!=(const ConstInterator& other)const { return mCurrent != other.mCurrent; }
+		ConstInterator& operator++() { ++mCurrent; return *this; }
+		ConstInterator operator++(int)const { return ConstInterator(mCurrent + 1); }
+		ConstInterator& operator--() { --mCurrent; return *this; }
+		ConstInterator operator--(int)const { return ConstInterator(mCurrent - 1); }
+	protected:
+		const T* mCurrent;
+	};
+
+	class Interator	//[IGNORE_PRE_DECLARE]
+	{
+	public:
+		explicit Interator(T* cur) :mCurrent(cur) {}
+		T operator*()const { return *mCurrent; }
+		T* operator->()const { return mCurrent; }
+		bool operator==(const Interator& other)const { return mCurrent == other.mCurrent; }
+		bool operator!=(const Interator& other)const { return mCurrent != other.mCurrent; }
+		Interator& operator++() { ++mCurrent; return *this; }
+		Interator operator++(int)const { return Interator(mCurrent + 1); }
+		Interator& operator--() { --mCurrent; return *this; }
+		Interator operator--(int)const { return Interator(mCurrent - 1); }
+	protected:
+		T* mCurrent;
+	};
+	ConstInterator begin()const { return ConstInterator(this->mBuffer); }
+	ConstInterator end()const { return ConstInterator(this->mBuffer + this->Length()); }
+	Interator begin() { return Interator(this->mBuffer); }
+	Interator end() { return Interator(this->mBuffer + this->Length()); }
 
 public:
 	int Compare(const TStringRef& inString)const
@@ -779,6 +813,7 @@ MEDUSA_WEAK_MULTIPLE_DEFINE const TStringRef<T> TStringRef<T>::Empty;
 typedef TStringRef<char> StringRef;
 typedef TStringRef<wchar_t> WStringRef;
 //[PRE_DECLARE_END]
+
 
 
 MEDUSA_END;

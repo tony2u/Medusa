@@ -25,7 +25,7 @@ TextLayouter::~TextLayouter()
 }
 
 
-bool TextLayouter::LayoutMultipleLineText(List<BaseFontMesh*>& outMeshes, List<TextureAtlasPage*>& outPages, Size2F& outSize,
+bool TextLayouter::LayoutMultipleLineText(List<Share<BaseFontMesh>>& outMeshes, List<TextureAtlasPage*>& outPages, Size2F& outSize,
 										  IFont& font,
 										  const WStringRef& text,
 										  Alignment alignment/*=Alignment::LeftBottom*/,
@@ -66,7 +66,7 @@ bool TextLayouter::LayoutMultipleLineText(List<BaseFontMesh*>& outMeshes, List<T
 }
 
 
-bool TextLayouter::LayoutSingleLineText(List<BaseFontMesh*>& outMeshes, List<TextureAtlasPage*>& outPages,
+bool TextLayouter::LayoutSingleLineText(List<Share<BaseFontMesh>>& outMeshes, List<TextureAtlasPage*>& outPages,
 										Size2F& outSize,
 										IFont& font,
 										const WStringRef& text,
@@ -314,15 +314,15 @@ bool TextLayouter::WordWrap(List<WHeapString>& outLines, List<float>& outLineWid
 		}
 	}
 
-	FOR_EACH_COLLECTION(i, outLineWidths)
+	for (auto i : outLineWidths)
 	{
-		outMaxWidth = Math::Max(outMaxWidth, *i);
+		outMaxWidth = Math::Max(outMaxWidth, i);
 	}
 
 	return !outLines.IsEmpty();
 }
 
-void TextLayouter::LayoutMultipleLineMesh(List<BaseFontMesh*>& outMeshes, List<TextureAtlasPage*>& outPages,
+void TextLayouter::LayoutMultipleLineMesh(List<Share<BaseFontMesh>>& outMeshes, List<TextureAtlasPage*>& outPages,
 										  IFont& font,
 										  const Size2F& imageSize,
 										  const List<float>& lineWidths,
@@ -422,7 +422,7 @@ void TextLayouter::LayoutMultipleLineMesh(List<BaseFontMesh*>& outMeshes, List<T
 
 
 
-void TextLayouter::LayoutSingleLineMesh(List<BaseFontMesh*>& outMeshes, List<TextureAtlasPage*>& outPages,
+void TextLayouter::LayoutSingleLineMesh(List<Share<BaseFontMesh>>& outMeshes, List<TextureAtlasPage*>& outPages,
 										IFont& font,
 										const Size2F& imageSize,
 										float lineWidth,
@@ -493,7 +493,7 @@ void TextLayouter::LayoutSingleLineMesh(List<BaseFontMesh*>& outMeshes, List<Tex
 }
 
 
-void TextLayouter::AddCharToMesh(List<BaseFontMesh*>& outMeshes, List<TextureAtlasPage*>& outPages, IFont& font, const FontChar& fontChar, const Point3F& origin, ILabel* label/*=nullptr*/, bool isStatic/*=false*/)
+void TextLayouter::AddCharToMesh(List<Share<BaseFontMesh>>& outMeshes, List<TextureAtlasPage*>& outPages, IFont& font, const FontChar& fontChar, const Point3F& origin, ILabel* label/*=nullptr*/, bool isStatic/*=false*/)
 {
 	RETURN_IF_NULL(fontChar.Region());
 
@@ -503,7 +503,7 @@ void TextLayouter::AddCharToMesh(List<BaseFontMesh*>& outMeshes, List<TextureAtl
 		return;
 	}
 
-	BaseFontMesh* mesh = nullptr;
+	Share<BaseFontMesh> mesh;
 	if (outMeshes.Count() == 1 && outPages.First() == page)
 	{
 		mesh = outMeshes.First();
@@ -767,7 +767,7 @@ bool TextLayouter::IsLineBreak(const WStringRef& text, uint index)
 	return isLineBreak;
 }
 
-bool TextLayouter::ReserveMesh(List<BaseFontMesh*>& outMeshes, const WStringRef& text)
+bool TextLayouter::ReserveMesh(List<Share<BaseFontMesh>>& outMeshes, const WStringRef& text)
 {
 	if (outMeshes.Count() == 1)
 	{
@@ -775,9 +775,8 @@ bool TextLayouter::ReserveMesh(List<BaseFontMesh*>& outMeshes, const WStringRef&
 		return true;
 	}
 
-	FOR_EACH_COLLECTION(i, outMeshes)
+	for (auto mesh : outMeshes)
 	{
-		BaseFontMesh* mesh = *i;
 		mesh->ReserveMesh((uint)text.Length());
 	}
 
@@ -785,7 +784,7 @@ bool TextLayouter::ReserveMesh(List<BaseFontMesh*>& outMeshes, const WStringRef&
 	return true;
 }
 
-bool TextLayouter::ShrinkMesh(List<BaseFontMesh*>& outMeshes)
+bool TextLayouter::ShrinkMesh(List<Share<BaseFontMesh>>& outMeshes)
 {
 	if (outMeshes.Count() == 1)
 	{
@@ -793,9 +792,8 @@ bool TextLayouter::ShrinkMesh(List<BaseFontMesh*>& outMeshes)
 		return true;
 	}
 
-	FOR_EACH_COLLECTION(i, outMeshes)
+	for (auto mesh : outMeshes)
 	{
-		BaseFontMesh* mesh = *i;
 		mesh->ShrinkMesh();
 	}
 

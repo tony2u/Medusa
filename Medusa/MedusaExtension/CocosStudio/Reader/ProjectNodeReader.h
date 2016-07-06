@@ -10,7 +10,7 @@ MEDUSA_COCOS_BEGIN;
 
 class ProjectNodeReader : public INodeReader
 {
-	MEDUSA_DECLARE_COCOS_READER;
+	MEDUSA_RTTI(ProjectNodeReader,INodeReader);
 public:
 	ProjectNodeReader() {};
 	virtual ~ProjectNodeReader() {};

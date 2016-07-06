@@ -16,6 +16,5 @@ BaseRenderView::~BaseRenderView(void)
 {
 }
 
-MEDUSA_IMPLEMENT_RTTI(BaseRenderView, IView);
 
 MEDUSA_END;

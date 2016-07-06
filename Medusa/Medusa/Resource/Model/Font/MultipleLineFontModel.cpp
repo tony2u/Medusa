@@ -10,7 +10,7 @@
 
 MEDUSA_BEGIN;
 
-MultipleLineFontModel::MultipleLineFontModel( IFont* font,Alignment alignment/*=Alignment::LeftBottom*/,Size2U restrictSize/*=Size2U::Zero*/)
+MultipleLineFontModel::MultipleLineFontModel( const Share<IFont>& font,Alignment alignment/*=Alignment::LeftBottom*/,Size2U restrictSize/*=Size2U::Zero*/)
 	:BaseFontModel(font,alignment,restrictSize)
 {
 }
@@ -40,7 +40,7 @@ void MultipleLineFontModel::SetText( WStringRef text )
 	RETURN_IF_EMPTY(mText);
 
 	Size2F outSize;
-	List<BaseFontMesh*> meshes;
+	List<Share<BaseFontMesh>> meshes;
 	List<TextureAtlasPage*> pages;
 
 	TextLayouter::LayoutMultipleLineText(meshes, pages, outSize,*mFont,mText,mAlignment,mRestrictSize);

@@ -9,8 +9,8 @@ MEDUSA_BEGIN;
 class ScaleTimeline:public ITimeline
 {
 public:
-	ScaleTimeline(ScaleTimelineModel* model, intp repeatCount, float beforeDelay = 0.f, float repeatDuration = 0.f, float afterDelay = 0.f, const StringRef& name = StringRef::Empty);
-	ScaleTimeline(ScaleTimelineModel* model, bool isRepeatForever, float beforeDelay = 0.f, float repeatDuration = 0.f, float afterDelay = 0.f, const StringRef& name = StringRef::Empty);
+	ScaleTimeline(const Share<ScaleTimelineModel>& model, intp repeatCount, float beforeDelay = 0.f, float repeatDuration = 0.f, float afterDelay = 0.f, const StringRef& name = StringRef::Empty);
+	ScaleTimeline(const Share<ScaleTimelineModel>& model, bool isRepeatForever, float beforeDelay = 0.f, float repeatDuration = 0.f, float afterDelay = 0.f, const StringRef& name = StringRef::Empty);
 
 	virtual ~ScaleTimeline();
 protected:

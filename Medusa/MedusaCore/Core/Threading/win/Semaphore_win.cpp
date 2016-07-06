@@ -58,7 +58,7 @@ bool Semaphore::TryWait()
 {
 	return WaitForSingleObject(mSem, 0) == WAIT_OBJECT_0;
 }
-bool Semaphore::WaitTimeout(long milliseconds)
+bool Semaphore::WaitFor(long milliseconds)
 {
 	return WaitForSingleObject(mSem, milliseconds) == WAIT_OBJECT_0;
 

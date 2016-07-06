@@ -20,7 +20,6 @@ RenderingContext::RenderingContext()
 {
 	mStep=RenderingStep::RenderTarget;
 
-	mRenderTarget=nullptr;
 	mCamera=nullptr;
 	mRenderPass=nullptr;
 	mMaterial=nullptr;
@@ -32,19 +31,12 @@ RenderingContext::RenderingContext()
 
 RenderingContext::~RenderingContext()
 {
-	SAFE_RELEASE(mRenderTarget);
-	SAFE_RELEASE(mCamera);
-
-	SAFE_RELEASE(mRenderPass);
-	SAFE_RELEASE(mMaterial);
-	SAFE_RELEASE(mEffect);
-
 	mBatch=nullptr;
 	mStateNode=nullptr;
 
 }
 
-void RenderingContext::ApplyRenderTargetAndCamera( IRenderTarget* val ,Camera* camera)
+void RenderingContext::ApplyRenderTargetAndCamera(const Share<IRenderTarget>& val , const Share<Camera>& camera)
 {
 	SetRenderTargetAndCamera(val,camera);
 	if (mRenderTarget!=nullptr)
@@ -54,7 +46,7 @@ void RenderingContext::ApplyRenderTargetAndCamera( IRenderTarget* val ,Camera* c
 }
 
 
-void RenderingContext::ApplyRenderPass( IRenderPass* val )
+void RenderingContext::ApplyRenderPass(const Share<IRenderPass>& val )
 {
 	SetRenderPass(val);
 	
@@ -66,7 +58,7 @@ void RenderingContext::ApplyRenderPass( IRenderPass* val )
 	}
 }
 
-void RenderingContext::ApplyMaterial(const  IMaterial* val )
+void RenderingContext::ApplyMaterial(const Share<IMaterial>& val )
 {
 	SetMaterial(val);
 
@@ -78,7 +70,7 @@ void RenderingContext::ApplyMaterial(const  IMaterial* val )
 }
 
 
-void RenderingContext::ApplyState(RenderStateTreeLeafNode* stateNode)
+void RenderingContext::ApplyState(const Share<RenderStateTreeLeafNode>& stateNode)
 {
 	SetState(stateNode);
 	stateNode->Apply();
@@ -175,31 +167,30 @@ void RenderingContext::UpdateShaderUniforms()
 	}
 }
 
-void RenderingContext::SetRenderTargetAndCamera( IRenderTarget* val ,Camera* camera)
+void RenderingContext::SetRenderTargetAndCamera(const Share<IRenderTarget>& val , const Share<Camera>& camera)
 {
 	mStep=RenderingStep::RenderTarget;
-	SAFE_ASSIGN_REF(mRenderTarget,val);
-	SAFE_ASSIGN_REF(mCamera,camera);
+	mRenderTarget = val;
+	mCamera = camera;
 
 }
 
-void RenderingContext::SetRenderPass( IRenderPass* val )
+void RenderingContext::SetRenderPass(const Share<IRenderPass>& val )
 {
 	mStep=RenderingStep::RenderPass;
-	SAFE_ASSIGN_REF(mRenderPass,val);
+	mRenderPass = val;
 }
 
-void RenderingContext::SetMaterial(const  IMaterial* val )
+void RenderingContext::SetMaterial(const Share<IMaterial>& val )
 {
 	mStep=RenderingStep::Material;
-	SAFE_ASSIGN_REF(mMaterial,val);
+	mMaterial = val;
 }
 
 
-void RenderingContext::SetState(RenderStateTreeLeafNode* stateNode)
+void RenderingContext::SetState(const Share<RenderStateTreeLeafNode>& stateNode)
 {
 	mStep=RenderingStep::State;
-	SAFE_ASSIGN_REF(mStateNode, stateNode);
 	mStateNode = stateNode;
 }
 
@@ -210,9 +201,9 @@ void RenderingContext::SetBatch( IRenderBatch* val )
 	mBatch = val;
 }
 
-void RenderingContext::SetEffect(const IEffect* val )
+void RenderingContext::SetEffect(const Share<IEffect>& val )
 {
-	SAFE_ASSIGN_REF(mEffect,val);
+	mEffect = val;
 }
 
 void RenderingContext::SetDrawMode(GraphicsDrawMode val)
@@ -225,20 +216,20 @@ void RenderingContext::SetDrawMode(GraphicsDrawMode val)
 void RenderingContext::ResetRenderTargetAndCamera()
 {
 	mStep=RenderingStep::RenderTarget;
-	SAFE_RELEASE(mRenderTarget);
-	SAFE_RELEASE(mCamera);
+	mRenderTarget = nullptr;
+	mCamera = nullptr;
 }
 
 void RenderingContext::ResetRenderPass()
 {
 	mStep=RenderingStep::RenderTarget;
-	SAFE_RELEASE(mRenderPass);
+	mRenderPass = nullptr;
 }
 
 void RenderingContext::ResetMaterial()
 {
 	mStep=RenderingStep::RenderPass;
-	SAFE_RELEASE(mMaterial);
+	mMaterial = nullptr;
 }
 
 void RenderingContext::ResetBatch()
@@ -254,7 +245,7 @@ void RenderingContext::ResetState()
 
 void RenderingContext::ResetEffect()
 {
-	SAFE_RELEASE(mEffect);
+	mEffect = nullptr;
 }
 
 void RenderingContext::ResetDrawMode()

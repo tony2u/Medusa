@@ -13,7 +13,7 @@ public:
 	PODLightModelNode(StringRef name);
 	virtual ~PODLightModelNode(void);
 	virtual GraphicsLightType LightType() const{return Type;}
-	virtual ILight* CreateLight()const;
+	virtual Share<ILight> CreateLight()const;
 
 public:
 

@@ -11,10 +11,10 @@ like StackPanel, but WrapPanel will expand line if full
 */
 class WrapPanel :public IPanel
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_NODE(WrapPanel,IPanel);
 
 public:
-	WrapPanel(StringRef name=StringRef::Empty);
+	WrapPanel(StringRef name=StringRef::Empty, const IEventArg& e = IEventArg::Empty);
 	virtual ~WrapPanel(void);
 	virtual PanelType GetPanelType()const override{return PanelType::Wrap;}
 	const Point2F& ItemOffset() const { return mItemOffset; }

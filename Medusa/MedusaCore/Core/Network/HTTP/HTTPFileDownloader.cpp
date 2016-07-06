@@ -2,10 +2,15 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 #include "MedusaCorePreCompiled.h"
+#ifdef MEDUSA_HTTP
+
 #include "Core/Network/HTTP/HTTPFileDownloader.h"
 #include "Core/Log/Log.h"
 #include "Core/IO/File.h"
 #include "Core/IO/FileSystem.h"
+#ifdef MEDUSA_WINDOWS
+#include <WinSock2.h>
+#endif
 #include "CoreLib/Common/curl/curl.h"
 
 MEDUSA_BEGIN;
@@ -91,3 +96,4 @@ size_t HTTPFileDownloader::WriteDataCallback( void *buffer, size_t size, size_t 
 }
 
 MEDUSA_END;
+#endif

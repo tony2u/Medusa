@@ -7,15 +7,15 @@
 #include "Core/Threading/ThreadPool.h"
 #include "Core/Threading/ThreadPoolWork.h"
 #include "Core/Command/SleepCommand.h"
-#include "Core/Command/Processor/MainCommandProcessor.h"
+#include "Core/Command/Executor/SyncCommandExecutor.h"
 
 
 MEDUSA_BEGIN;
 
-Task::Task(ICommand* command /*= nullptr*/, ExecuteOption option /*= TaskOption::Async*/)
+Task::Task(const ShareCommand& command /*= nullptr*/, ExecuteOption option /*= TaskOption::Async*/)
 	:mCommand(command), mPoolWork(nullptr), mOption(option)
 {
-	SAFE_RETAIN(mCommand);
+
 }
 
 Task::~Task(void)
@@ -28,18 +28,18 @@ bool Task::Uninitialize()
 {
 	if (mPoolWork != nullptr)
 	{
-		ThreadPool::Instance().DeleteWork(mPoolWork);
+		mPoolWork->Pool()->DeleteWork(mPoolWork);
 		mPoolWork = nullptr;
 	}
-	SAFE_RELEASE(mCommand);
+	mCommand = nullptr;
 	SAFE_DELETE_COLLECTION(mThenTasks);
 	return true;
 }
 
 
-void Task::SetCommand(ICommand* val)
+void Task::SetCommand(const ShareCommand& val)
 {
-	SAFE_ASSIGN_REF(mCommand, val);
+	mCommand = val;
 }
 
 
@@ -51,9 +51,8 @@ void Task::OnTaskExecute()
 	OnSelfExecute();
 
 	//start child tasks
-	FOR_EACH_COLLECTION(i, mThenTasks)
+	for(auto task:mThenTasks)
 	{
-		Task* task = *i;
 		task->Start();
 	}
 }
@@ -77,14 +76,21 @@ void Task::Start()
 		case ExecuteOption::Async:
 			if (mPoolWork == nullptr)
 			{
-				mPoolWork = ThreadPool::Instance().TrySumbitWork(Bind(&Task::OnTaskExecute,this));
+				if (mPool!=nullptr)
+				{
+					mPoolWork = mPool->TrySumbitWork(Bind(&Task::OnTaskExecute, this));
+				}
+				else
+				{
+					assert(false);	//TODO
+				}
 			}
 			mPoolWork->Sumbit();
 			break;
 		case ExecuteOption::Deferred:
 		{
-			Action0&& action = Bind(&Task::OnTaskExecute, this);
-			MainCommandProcessor::Instance().ReceiveAsync(action);
+			Action&& action = Bind(&Task::OnTaskExecute, this);
+			SyncCommandExecutor::Instance().ExecuteAsync(action);
 			break;
 		}
 	}
@@ -114,7 +120,7 @@ void Task::Then(Task* task)
 	mThenTasks.Add(task);
 }
 
-Task* Task::ContinueWith(ICommand* command)
+Task* Task::ContinueWith(const ShareCommand& command)
 {
 	Task* task = new Task(command, mOption);
 	Then(task);
@@ -124,14 +130,13 @@ Task* Task::ContinueWith(ICommand* command)
 
 void Task::WaitAll(const List<Task*>& tasks)
 {
-	FOR_EACH_COLLECTION(i, tasks)
+	for (auto task : tasks)
 	{
-		Task* task = *i;
 		task->Wait();
 	}
 }
 
-Task* Task::Run(ICommand* command, ExecuteOption option /*= TaskOption::Async*/)
+Task* Task::Run(const ShareCommand& command, ExecuteOption option /*= TaskOption::Async*/)
 {
 	Task* task = new Task(command, option);
 	task->Start();
@@ -149,7 +154,7 @@ Task* Task::YieldSelf(ExecuteOption option /*= TaskOption::Async*/)
 }
 
 
-Task* Task::WhenAll(const List<Task*>& tasks, ICommand* command, ExecuteOption option /*= TaskOption::Async*/)
+Task* Task::WhenAll(const List<Task*>& tasks, const ShareCommand& command, ExecuteOption option /*= TaskOption::Async*/)
 {
 	Task* task = new Task(command, option);
 	task->When(tasks);

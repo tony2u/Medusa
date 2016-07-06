@@ -24,5 +24,5 @@ ComponentFeatureLayer::~ComponentFeatureLayer(void)
 }
 
 
-MEDUSA_IMPLEMENT_LAYER(ComponentFeatureLayer, BaseFeatureLayer, StringRef::Empty, StringRef::Empty);
+MEDUSA_IMPLEMENT_NODE(ComponentFeatureLayer);
 

@@ -5,7 +5,7 @@
 #include "MedusaCorePreDeclares.h"
 #include "BaseSirenBinarySizeCounter.h"
 #include "Core/Siren/Code/SirenCoderType.h"
-#include "Core/Utility/Utility.h"
+#include "Core/System/BitConverter.h"
 #include "Core/Siren/Serialization/ISirenSizeCounter.h"
 
 MEDUSA_BEGIN;
@@ -16,21 +16,22 @@ public:
 	using BaseSirenBinarySizeCounter::BaseSirenBinarySizeCounter;
 
 
-	virtual bool OnValue(bool val) override{ mSize += sizeof(val); return true; }
-	virtual bool OnValue(char val) override { mSize += CountVariableUnsigned(Utility::EncodeZigZag(val)); return true; }
-	virtual bool OnValue(byte val) override { mSize += CountVariableUnsigned(val); return true; }
-	virtual bool OnValue(short val) override { mSize += CountVariableUnsigned(Utility::EncodeZigZag(val)); return true; }
-	virtual bool OnValue(ushort val) override { mSize += CountVariableUnsigned(val);  return true; }
-	virtual bool OnValue(int32 val) override { mSize += CountVariableUnsigned(Utility::EncodeZigZag(val)); return true; }
-	virtual bool OnValue(uint32 val)override { mSize += CountVariableUnsigned(val); return true; }
-	virtual bool OnValue(int64 val) override { mSize += CountVariableUnsigned(Utility::EncodeZigZag(val)); return true; }
-	virtual bool OnValue(uint64 val) override { mSize += CountVariableUnsigned(val); return true; }
-	virtual bool OnValue(float val)override { mSize += sizeof(val); return true; }
-	virtual bool OnValue(double val)override { mSize += sizeof(val);  return true; }
+	virtual bool OnValue(const bool& val) override{ mSize += sizeof(val); return true; }
+	virtual bool OnValue(const char& val) override { mSize += CountVariableUnsigned(BitConverter::EncodeZigZag(val)); return true; }
+	virtual bool OnValue(const int8& val) override { mSize += CountVariableUnsigned(BitConverter::EncodeZigZag(val)); return true; }
+	virtual bool OnValue(const uint8& val) override { mSize += CountVariableUnsigned(val); return true; }
+	virtual bool OnValue(const int16& val) override { mSize += CountVariableUnsigned(BitConverter::EncodeZigZag(val)); return true; }
+	virtual bool OnValue(const uint16& val) override { mSize += CountVariableUnsigned(val);  return true; }
+	virtual bool OnValue(const int32& val) override { mSize += CountVariableUnsigned(BitConverter::EncodeZigZag(val)); return true; }
+	virtual bool OnValue(const uint32& val)override { mSize += CountVariableUnsigned(val); return true; }
+	virtual bool OnValue(const int64& val) override { mSize += CountVariableUnsigned(BitConverter::EncodeZigZag(val)); return true; }
+	virtual bool OnValue(const uint64& val) override { mSize += CountVariableUnsigned(val); return true; }
+	virtual bool OnValue(const float& val)override { mSize += sizeof(val); return true; }
+	virtual bool OnValue(const double& val)override { mSize += sizeof(val);  return true; }
 	virtual bool OnValue(const StringRef& val)override 
 	{
-		mSize += CountVariableUnsigned(val.Length());
-		mSize += (uint32)val.Length();
+		mSize += CountVariableUnsigned(val.Length()+1);
+		mSize += (uint32)val.Length()+1;
 		return true; 
 	}
 	virtual bool OnValue(const MemoryData& val)override
@@ -89,20 +90,20 @@ public:
 	typename std::enable_if<TWithHeader>::type OnField(const char* name, ushort nameLength, ushort id, const TObject& obj)
 	{
 		OnFieldBegin(name, nameLength, id, Siren::GetDataType<TObject>::Type);
-		SirenSchemaSerializer::Visit(*this, obj);
+		SirenSchemaSerializer<false>::Visit(*this, obj);
 		OnFieldEnd();
 	}
 
 	template<typename TObject, bool TWithHeader = true>
 	typename std::enable_if<!TWithHeader>::type OnField(const char* name, ushort nameLength, ushort id, const TObject& obj)
 	{
-		SirenSchemaSerializer::Visit(*this, obj);
+		SirenSchemaSerializer<false>::Visit(*this, obj);
 	}
 
 	template<typename TObject>
 	void OnStruct(const TObject& obj)
 	{
-		SirenSchemaSerializer::Visit(*this, obj);
+		SirenSchemaSerializer<false>::Visit(*this, obj);
 	}
 };
 

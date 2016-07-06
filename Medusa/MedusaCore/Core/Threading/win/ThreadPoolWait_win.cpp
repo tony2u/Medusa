@@ -34,21 +34,19 @@ namespace ThreadingPrivate
 }
 
 
-ThreadPoolWait::ThreadPoolWait(const StringRef& name, ICommand* command, IWaitable* waitable, uint timeoutMilliseconds /*= (uint)-1*/)
+ThreadPoolWait::ThreadPoolWait(ThreadPool* pool, const StringRef& name, const ShareCommand& command, IWaitable* waitable, uint timeoutMilliseconds /*= (uint)-1*/)
 	:mName(name),
 	mCommand(command),
 	mWaitable(waitable),
 	mTimeout(timeoutMilliseconds),
 	mResult(WaitResult::Success)
 {
-	SAFE_RETAIN(command);
-	mWait = CreateThreadpoolWait(ThreadingPrivate::OnThreadpoolWaitCallback, this, &ThreadPool::Instance().mCallBackEnviron);
+	mWait = CreateThreadpoolWait(ThreadingPrivate::OnThreadpoolWaitCallback, this, &pool->mCallBackEnviron);
 
 }
 
 ThreadPoolWait::~ThreadPoolWait(void)
 {
-	SAFE_RELEASE(mCommand);
 
 	if (mWait != nullptr)
 	{

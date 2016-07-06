@@ -82,7 +82,9 @@ void TapGestureRecognizer::TouchesEnded( TouchEventArg& e )
 			{
 				if (MEDUSA_FLAG_HAS(mBehaviors,InputBehaviors::PlayAudio))
 				{
+#ifdef MEDUSA_AL
 					AudioEngine::Instance().PlayEffect(mAudioEffect.ToRef());
+#endif
 				}
 
 				SetState(InputState::Valid);

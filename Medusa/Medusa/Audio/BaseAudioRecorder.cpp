@@ -2,20 +2,21 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 #include "MedusaPreCompiled.h"
+#ifdef MEDUSA_AL
 #include "BaseAudioRecorder.h"
 #include "Audio/Device/AudioDevice.h"
 #include "Core/Log/Log.h"
 MEDUSA_BEGIN;
 
 
-BaseAudioRecorder::BaseAudioRecorder(uint sampleRate/* = 44100*/):
-mSampleRate        (sampleRate),
-mProcessingIntervalMilliseconds(100),
-mIsCapturing       (false)
+BaseAudioRecorder::BaseAudioRecorder(uint sampleRate/* = 44100*/) :
+	mSampleRate(sampleRate),
+	mProcessingIntervalMilliseconds(100),
+	mIsCapturing(false)
 {
-    
+
 	mThread.SetCallback(Bind(&BaseAudioRecorder::OnRecord, this));
-    mDeviceName = AudioDevice::Instance().GetDefaultCaptureDevice();
+	mDeviceName = AudioDevice::Instance().GetDefaultCaptureDevice();
 }
 
 
@@ -26,12 +27,12 @@ BaseAudioRecorder::~BaseAudioRecorder()
 
 bool BaseAudioRecorder::Start()
 {
-	if(AudioDevice::Instance().IsCaptureSupport())
+	if (AudioDevice::Instance().IsCaptureSupport())
 	{
 		Log::Error("Capture is not support on current device!");
 		return false;
 	}
-   
+
 	if (AudioDevice::Instance().IsCaptureOpen())
 	{
 		Log::Error("Trying to start audio capture, but another capture is already running");
@@ -39,48 +40,48 @@ bool BaseAudioRecorder::Start()
 	}
 
 	//capture one second buffer 16 bits mono samples
-	if(!AudioDevice::Instance().OpenCapureDevice(mDeviceName,mSampleRate,AudioFormat::Mono16,mSampleRate))
+	if (!AudioDevice::Instance().OpenCapureDevice(mDeviceName, mSampleRate, AudioFormat::Mono16, mSampleRate))
 	{
-		Log::FormatError("Failed to open the audio capture device with the name: {}",mDeviceName.c_str());
+		Log::FormatError("Failed to open the audio capture device with the name: {}", mDeviceName.c_str());
 		return false;
 	}
 
-    mTempSamples.Clear();
+	mTempSamples.Clear();
 
-    // Notify derived class
-    if (OnStart())
-    {
+	// Notify derived class
+	if (OnStart())
+	{
 		AudioDevice::Instance().StartCapture();
-        // Start the capture in a new thread, to avoid blocking the main thread
-        mIsCapturing = true;
+		// Start the capture in a new thread, to avoid blocking the main thread
+		mIsCapturing = true;
 		mThread.Start();
-        return true;
-    }
+		return true;
+	}
 
-    return false;
+	return false;
 }
 
 
 void BaseAudioRecorder::Stop()
 {
-    // Stop the capturing thread
-    mIsCapturing = false;
-    mThread.Join();
+	// Stop the capturing thread
+	mIsCapturing = false;
+	mThread.Join();
 
-    // Notify derived class
-    OnStop();
+	// Notify derived class
+	OnStop();
 }
 
 void BaseAudioRecorder::ProcessSamples()
 {
-	int samplesAvailable=AudioDevice::Instance().GetContextInteger(AudioContextIntegerName::CaptureSampleCount);
+	int samplesAvailable = AudioDevice::Instance().GetContextInteger(AudioContextIntegerName::CaptureSampleCount);
 	if (samplesAvailable > 0)
 	{
 		// Get the recorded samples
 		mTempSamples.ReserveSize(samplesAvailable);
 		AudioDevice::Instance().GetCapureSamples(samplesAvailable, mTempSamples.MutableItems());
 		mTempSamples.ForceSetCount(samplesAvailable);
-		MemoryShortData sampleData=MemoryShortData::FromStatic(mTempSamples.Items(),mTempSamples.Count());
+		MemoryShortData sampleData = MemoryShortData::FromStatic(mTempSamples.Items(), mTempSamples.Count());
 		// Forward them to the derived class
 		if (!OnProcessSamples(sampleData))
 		{
@@ -110,3 +111,4 @@ void BaseAudioRecorder::OnRecord(Thread& thread)
 }
 
 MEDUSA_END;
+#endif

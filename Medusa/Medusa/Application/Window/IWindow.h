@@ -13,7 +13,7 @@ MEDUSA_BEGIN;
 
 class IWindow :public IInitializable,public RTTIObject,public DefaultRunnable
 {
-	MEDUSA_DECLARE_RTTI_ROOT;
+	MEDUSA_RTTI_ROOT(IWindow);
 
 public:
 	IWindow(MedusaWindowHandle parentWindow,StringRef name=StringRef::Empty);

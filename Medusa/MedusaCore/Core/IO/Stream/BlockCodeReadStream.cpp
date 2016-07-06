@@ -10,7 +10,7 @@
 MEDUSA_BEGIN;
 
 
-BlockCodeReadStream::BlockCodeReadStream(const IStream& stream, uint32 blockSize, const CoderChain& coderChain,const FileEntry& fileEntry)
+BlockCodeReadStream::BlockCodeReadStream(const Share<const IStream>& stream, uint32 blockSize, const CoderChain& coderChain,const FileEntry& fileEntry)
 	: BlockReadStream(stream,blockSize),
 	mFileEntry(&fileEntry),
 	mCoderChain(&coderChain)

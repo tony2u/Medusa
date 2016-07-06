@@ -41,7 +41,7 @@
 #include "CoreLib/Common/rapidjson.h"
 
 #include "Core/Math/Math.h"
-#include "Core/Utility/Endian.h"
+#include "Core/System/BitConverter.h"
 
 MEDUSA_BEGIN;
 
@@ -73,11 +73,11 @@ SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonFile(const FileIdRef& skel
 		return nullptr;
 	}
 
-	TextureAtlas* atlas = TextureAtlasFactory::Instance().Create(atlasFileId, TextureAtlasType::Spine);
+	auto atlas = TextureAtlasFactory::Instance().Create(atlasFileId, TextureAtlasType::Spine);
 	return CreateFromJsonData(skeletonfileId, skeletonFileData, atlas);
 }
 
-SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& fileId, const MemoryData& skeletonFileData, TextureAtlas* atlas)
+SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& fileId, const MemoryData& skeletonFileData, const Share<TextureAtlas>& atlas)
 {
 	rapidjson::Document root;
 
@@ -100,10 +100,8 @@ SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& file
 
 	//bones
 	const rapidjson::Value& bonesArray = root["bones"];
-	FOR_EACH_COLLECTION_STL(i, bonesArray)
+	for (const auto& bone : bonesArray)
 	{
-		const rapidjson::Value& bone = *i;
-
 		const char* name = bone.GetString("name", nullptr);
 		const char* parentBoneName = bone.GetString("parent", nullptr);
 
@@ -134,7 +132,7 @@ SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& file
 		if (colorStr != nullptr)
 		{
 			uint val = StringParser::StringTo<uint32>(colorStr, 16);
-			val = Endian::ToLittle(val);//0x00ff04ff means rgba in spine,so we have to swap it
+			val = BitConverter::ToLittle(val);//0x00ff04ff means rgba in spine,so we have to swap it
 			color = Color4F(val);
 		}
 		boneModel->SetColor(color);
@@ -146,16 +144,15 @@ SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& file
 	const rapidjson::Value* ikArray = root.GetMember("ik");
 	if (ikArray != nullptr)
 	{
-		FOR_EACH_COLLECTION_STL(i, *ikArray)
+		for (const auto& ik : *ikArray)
 		{
-			const rapidjson::Value& ik = *i;
 			const char* name = ik.GetString("name", nullptr);
 			SkeletonIKModel* ikModel = new SkeletonIKModel(name);
 
 			const rapidjson::Value& boneArray = ik["bones"];
-			FOR_EACH_COLLECTION_STL(j, boneArray)
+			for (const auto& j : boneArray)
 			{
-				StringRef boneName = j->GetString();
+				StringRef boneName = j.GetString();
 				SkeletonBoneModel* boneModel = model->FindBone(boneName);
 				//add bone to ik
 				ikModel->AddBone(boneModel);
@@ -174,9 +171,8 @@ SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& file
 
 
 	const rapidjson::Value& slotArray = root["slots"];
-	FOR_EACH_COLLECTION_STL(i, slotArray)
+	for (const auto& slot : slotArray)
 	{
-		const rapidjson::Value& slot = *i;
 		const char* name = slot.GetString("name", nullptr);
 		const char* boneName = slot.GetString("bone", nullptr);
 		SkeletonBoneModel* bone = model->FindBone(boneName);
@@ -201,7 +197,7 @@ SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& file
 		if (colorStr != nullptr)
 		{
 			uint val = StringParser::StringTo<uint32>(colorStr, 16);
-			val = Endian::ToLittle(val);//0x00ff04ff means rgba in spine,so we have to swap it
+			val = BitConverter::ToLittle(val);//0x00ff04ff means rgba in spine,so we have to swap it
 			color = Color4F(val);
 		}
 		slotModel->SetColor(color);
@@ -294,7 +290,7 @@ SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& file
 							if (colorStr != nullptr)
 							{
 								uint val = StringParser::StringTo<uint32>(colorStr, 16);
-								val = Endian::ToLittle(val);//0x00ff04ff means rgba in spine,so we have to swap it
+								val = BitConverter::ToLittle(val);//0x00ff04ff means rgba in spine,so we have to swap it
 								color = Color4F(val);
 							}
 							attachemntModel->SetColor(color);
@@ -338,9 +334,9 @@ SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& file
 							if (itr != attachemnt.MemberEnd())
 							{
 								const rapidjson::Value& triangles = itr->value;
-								FOR_EACH_COLLECTION_STL(m, triangles)
+								for (const auto& m : triangles)
 								{
-									attachemntModel->AddIndex(m->GetUint());
+									attachemntModel->AddIndex(m.GetUint());
 								}
 							}
 
@@ -349,7 +345,7 @@ SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& file
 							if (colorStr != nullptr)
 							{
 								uint val = StringParser::StringTo<uint32>(colorStr, 16);
-								val = Endian::ToLittle(val);//0x00ff04ff means rgba in spine,so we have to swap it
+								val = BitConverter::ToLittle(val);//0x00ff04ff means rgba in spine,so we have to swap it
 								color = Color4F(val);
 							}
 							attachemntModel->SetColor(color);
@@ -411,9 +407,9 @@ SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& file
 							if (itr != attachemnt.MemberEnd())
 							{
 								const rapidjson::Value& triangles = itr->value;
-								FOR_EACH_COLLECTION_STL(m, triangles)
+								for (const auto& m : triangles)
 								{
-									attachemntModel->AddIndex(m->GetUint());
+									attachemntModel->AddIndex(m.GetUint());
 								}
 							}
 
@@ -422,7 +418,7 @@ SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& file
 							if (colorStr != nullptr)
 							{
 								uint val = StringParser::StringTo<uint32>(colorStr, 16);
-								val = Endian::ToLittle(val);//0x00ff04ff means rgba in spine,so we have to swap it
+								val = BitConverter::ToLittle(val);//0x00ff04ff means rgba in spine,so we have to swap it
 								color = Color4F(val);
 							}
 							attachemntModel->SetColor(color);
@@ -512,11 +508,10 @@ SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& file
 						StringRef timelineType = k->name.GetString();
 						if (timelineType == "color")
 						{
-							ColorTimelineModel* timelineModel = new ColorTimelineModel(FileIdRef::Empty);
+							Share<ColorTimelineModel> timelineModel = new ColorTimelineModel(FileIdRef::Empty);
 
-							FOR_EACH_COLLECTION_STL(m, timeline)
+							for (const auto& frame : timeline)
 							{
-								const rapidjson::Value& frame = *m;
 								float time = frame.Get("time", 0.f);
 
 								const char* colorStr = frame.GetString("color", nullptr);
@@ -524,7 +519,7 @@ SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& file
 								if (colorStr != nullptr)
 								{
 									uint val = StringParser::StringTo<uint32>(colorStr, 16);
-									val = Endian::ToLittle(val);//0x00ff04ff means rgba in spine,so we have to swap it
+									val = BitConverter::ToLittle(val);//0x00ff04ff means rgba in spine,so we have to swap it
 									color = Color4F(val);
 								}
 
@@ -535,11 +530,10 @@ SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& file
 						}
 						else if (timelineType == "attachment")
 						{
-							StringTimelineModel* timelineModel = new StringTimelineModel(FileIdRef::Empty);
+							Share<StringTimelineModel> timelineModel = new StringTimelineModel(FileIdRef::Empty);
 
-							FOR_EACH_COLLECTION_STL(m, timeline)
+							for (const auto& frame : timeline)
 							{
-								const rapidjson::Value& frame = *m;
 								float time = frame.Get("time", 0.f);
 								//if (timelineModel->FrameCount()==0&&!Math::IsZero(time))
 								//{
@@ -582,10 +576,9 @@ SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& file
 						StringRef timelineType = k->name.GetString();
 						if (timelineType == "rotate")
 						{
-							RotationTimelineModel* timelineModel = new RotationTimelineModel(FileIdRef::Empty);
-							FOR_EACH_COLLECTION_STL(m, timeline)
+							Share<RotationTimelineModel> timelineModel = new RotationTimelineModel(FileIdRef::Empty);
+							for (const auto& frame : timeline)
 							{
-								const rapidjson::Value& frame = *m;
 								float time = frame.Get("time", 0.f);
 								float angle = frame.Get("angle", 0.f);
 								Math::TweenType outTweenType;
@@ -601,10 +594,9 @@ SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& file
 						}
 						else if (timelineType == "scale")
 						{
-							ScaleTimelineModel* timelineModel = new ScaleTimelineModel(FileIdRef::Empty);
-							FOR_EACH_COLLECTION_STL(m, timeline)
+							Share<ScaleTimelineModel> timelineModel = new ScaleTimelineModel(FileIdRef::Empty);
+							for (const auto& frame : timeline)
 							{
-								const rapidjson::Value& frame = *m;
 								float time = frame.Get("time", 0.f);
 								Scale3F scale = Scale3F::One;
 								scale.X = frame.Get("x", 0.f);
@@ -621,10 +613,9 @@ SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& file
 						}
 						else if (timelineType == "translate")
 						{
-							TranslateTimelineModel* timelineModel = new TranslateTimelineModel(FileIdRef::Empty);
-							FOR_EACH_COLLECTION_STL(m, timeline)
+							Share<TranslateTimelineModel> timelineModel = new TranslateTimelineModel(FileIdRef::Empty);
+							for (const auto& frame : timeline)
 							{
-								const rapidjson::Value& frame = *m;
 								float time = frame.Get("time", 0.f);
 								Point3F pos = Point3F::Zero;
 								pos.X = frame.Get("x", 0.f);
@@ -659,10 +650,9 @@ SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& file
 					SkeletonIKModel* ikModel = model->FindIK(ikName);
 					const rapidjson::Value& timeline = j->value;
 
-					IKTimelineModel* timelineModel = new IKTimelineModel(FileIdRef::Empty);
-					FOR_EACH_COLLECTION_STL(k, timeline)
+					Share<IKTimelineModel> timelineModel = new IKTimelineModel(FileIdRef::Empty);
+					for (const auto& frame : timeline)
 					{
-						const rapidjson::Value& frame = *k;
 						float time = frame.Get("time", 0.f);
 						float mix = frame.Get("mix", 0.f);
 						bool isBendPositive = frame.Get("bendPositive", 1) == 1;
@@ -708,11 +698,10 @@ SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& file
 								return nullptr;
 							}
 
-							VertexTimelineModel* timelineModel = new VertexTimelineModel(FileIdRef::Empty);
+							Share<VertexTimelineModel> timelineModel = new VertexTimelineModel(FileIdRef::Empty);
 
-							FOR_EACH_COLLECTION_STL(n, timeline)
+							for (const auto& frame : timeline)
 							{
-								const rapidjson::Value& frame = *n;
 								float time = frame.Get("time", 0.f);
 								rapidjson::Value::ConstMemberIterator itr = frame.FindMember("vertices");
 								List<Point3F>& vertices = timelineModel->NewAddVertexList();
@@ -793,7 +782,7 @@ SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& file
 				uint drawOrderCount = drawOrderArray->Size();
 				if (drawOrderCount > 0)
 				{
-					DrawOrderTimelineModel* drawOrderTimelineModel = new DrawOrderTimelineModel(FileIdRef::Empty);
+					Share<DrawOrderTimelineModel> drawOrderTimelineModel = new DrawOrderTimelineModel(FileIdRef::Empty);
 					size_t slotCount = model->Slots().Count();
 					List<uint> setupDrawOrders;
 					FOR_EACH_SIZE(j, slotCount)
@@ -808,10 +797,8 @@ SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& file
 					drawOrderTimelineModel->AddDrawOrderFrame(0.f);
 				}
 
-
-				FOR_EACH_COLLECTION_STL(j, *drawOrderArray)
+				for (const auto& drawOrder : *drawOrderArray)
 				{
-					const rapidjson::Value& drawOrder = *j;
 					float time = drawOrder.Get("time", 0.f);
 					const rapidjson::Value* offsets = drawOrder.GetMember("offsets");
 
@@ -820,9 +807,8 @@ SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& file
 						List<uint>& drawOrders = drawOrderTimelineModel->NewDrawOrderList();
 						drawOrders = setupDrawOrders;
 
-						FOR_EACH_COLLECTION_STL(k, *offsets)
+						for (const auto& offset : *offsets)
 						{
-							const rapidjson::Value& offset = *k;
 							const char* slotName = offset.GetString("slot", "");
 							SkeletonSlotModel* slotModel = model->FindSlot(slotName);
 							intp orginalIndex = model->FindSlotIndex(slotModel);
@@ -846,10 +832,9 @@ SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& file
 			const rapidjson::Value* triggerArray = i->value.GetMember("events");
 			if (triggerArray != nullptr)
 			{
-				TriggerTimelineModel* triggerTimelineModel = new TriggerTimelineModel(FileIdRef::Empty);
-				FOR_EACH_COLLECTION_STL(j, *triggerArray)
+				Share<TriggerTimelineModel> triggerTimelineModel = new TriggerTimelineModel(FileIdRef::Empty);
+				for (const auto& frame : *triggerArray)
 				{
-					const rapidjson::Value& frame = *j;
 					float time = frame.Get("time", 0.f);
 
 					const char* name = frame.GetString("name", nullptr);
@@ -879,11 +864,11 @@ SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& file
 }
 
 
-TextureGeneralMesh* SpineSkeletonModel::CreateMesh(size_t atlasPageIndex/*=0*/)
+Share<TextureGeneralMesh> SpineSkeletonModel::CreateMesh(size_t atlasPageIndex/*=0*/)
 {
 	RETURN_NULL_IF_NULL(mAtlas);
 	TextureAtlasPage* page = mAtlas->GetPage(atlasPageIndex);
-	ITexture* texture = page->LoadTexture();
+	auto texture = page->LoadTexture();
 	RETURN_NULL_IF_NULL(texture);
 
 	return MeshFactory::Instance().CreateTextureGeneralMesh(texture);

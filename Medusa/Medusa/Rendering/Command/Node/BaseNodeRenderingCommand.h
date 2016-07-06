@@ -12,7 +12,7 @@ MEDUSA_BEGIN;
 class BaseNodeRenderingCommand :public IRenderingCommand
 {
 	
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_RTTI(BaseNodeRenderingCommand,IRenderingCommand);
 public:
 	BaseNodeRenderingCommand();
 	~BaseNodeRenderingCommand(void);

@@ -20,7 +20,7 @@ public:
 	virtual bool Initialize()override;
 	virtual bool Uninitialize()override;
 public:
-	TiledTileset* Create(const FileIdRef& fileId, ResourceShareType shareType = ResourceShareType::Share);
+	Share<TiledTileset> Create(const FileIdRef& fileId, ResourceShareType shareType = ResourceShareType::Share);
 private:
 
 };

@@ -1,6 +1,6 @@
 local _M = { }
 
-function _M.Push(obj, className, flags, ...)
+function _M.Push(selfScene, className, flags, ...)
 
 	className = className or "";
 	flags = flags or 0;
@@ -8,17 +8,17 @@ function _M.Push(obj, className, flags, ...)
 	local scriptObject = nil;
 
 	if type(className) == "table" then
-		return _M.PushEx(obj, "", "", className, flags, ...);
+		return _M.PushEx(selfScene, "", "", className, flags, ...);
 	else
 		if (FileSystem.ExistsLua(className)) then
-			return _M.PushEx(obj, "", "", className, flags, ...);
+			return _M.PushEx(selfScene, "", "", className, flags, ...);
 		end
 
-		return obj:PushName(className, flags);
+		return selfScene:PushName(className, flags);
 	end
 end
 
-function _M.PushEx(obj, className, editorFile, scriptFile, flags, ...)
+function _M.PushEx(selfScene, className, editorFile, scriptFile, flags, ...)
 	className = className or "";
 	editorFile = editorFile or "";
 	scriptFile = scriptFile or "";
@@ -38,12 +38,17 @@ function _M.PushEx(obj, className, editorFile, scriptFile, flags, ...)
 		end
 	end
 
-	className=scriptObject.className or className;
-	editorFile=scriptObject.editorFile or editorFile;
-	local native = ml.LayerFactory.Create(className, editorFile);
-	native:SetScriptObject(scriptObject);
-	obj:PushObject(native, flags);
+	local native=nil;
+	if scriptObject then
+		className=scriptObject.__className or className;
+		editorFile=scriptObject.__editorFile or editorFile;
+		local native = ml.LayerFactory.Create(className, editorFile,ml.NodeCreateFlags.BindScriptChildren);
+		native:SetScriptObject(scriptObject);
+	else
+		native = ml.LayerFactory.Create(className, editorFile,ml.NodeCreateFlags.BindScriptRecursively);
+	end
 
+	selfScene:PushObject(native, flags);
 	return native;
 end
 

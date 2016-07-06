@@ -24,20 +24,20 @@ void ParallaxComponent::SetPosition(const Point3F& val)
 	mPosition = val;
 	if (!mIsReverse)
 	{
-		FOR_EACH_COLLECTION(i, mItems)
+		for(auto i: mItems)
 		{
-			INode* node = i->Key;
-			const ParallaxInfo& info = i->Value;
+			INode* node = i.Key;
+			const ParallaxInfo& info = i.Value;
 			Point3F pos = info.Offset + info.Ratio*mPosition;
 			node->SetPosition(pos);
 		}
 	}
 	else
 	{
-		FOR_EACH_COLLECTION(i, mItems)
+		for (auto i : mItems)
 		{
-			INode* node = i->Key;
-			const ParallaxInfo& info = i->Value;
+			INode* node = i.Key;
+			const ParallaxInfo& info = i.Value;
 			Point3F pos = info.Offset + info.Ratio*mPosition - mPosition;
 			node->SetPosition(pos);
 		}

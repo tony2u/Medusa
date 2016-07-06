@@ -12,8 +12,7 @@ MEDUSA_BEGIN;
 
 class IWaitableCommand :public ICommand,public IWaitable
 {
-	MEDUSA_DECLARE_RTTI;
-
+	MEDUSA_RTTI(IWaitableCommand,ICommand);
 public:
 	IWaitableCommand();
 	virtual ~IWaitableCommand(void);

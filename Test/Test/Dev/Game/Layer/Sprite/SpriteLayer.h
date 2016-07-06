@@ -8,7 +8,7 @@
 
 class SpriteLayer :public BaseCaseLayer
 {
-	MEDUSA_DECLARE_LAYER(SpriteLayer);
+	MEDUSA_NODE(SpriteLayer, BaseCaseLayer);
 public:
 	SpriteLayer(StringRef name=StringRef::Empty,const IEventArg& e=IEventArg::Empty);
 	virtual ~SpriteLayer(void);

@@ -28,7 +28,7 @@ public:
 		List<const TNode*> neighbors;
 		while (!this->mOpenList.IsEmpty())
 		{
-			PathNodeType currentNode = this->mOpenList.Pop();
+			PathNodeType currentNode& = this->mOpenList.Pop();
 
 			if (currentNode.Current == &goal)
 			{
@@ -91,7 +91,7 @@ public:
 		List<const TNode*> neighbors;
 		while (!mOpenList.IsEmpty())
 		{
-			PathNodeType currentNode = mOpenList.Pop();
+			PathNodeType& currentNode = mOpenList.Pop();
 			if (currentNode.StartToCurrentCost == cost)
 			{
 				outValidNodes.Add(currentNode);
@@ -150,7 +150,7 @@ public:
 	}
 
 protected:
-	PriorityQueue < PathNodeType, EqualCompare<PathNodeType>, CustomCompare<PathNodeType> > mOpenList;
+	PriorityQueue < PathNodeType, EqualCompare, CustomCompare > mOpenList;
 	HashSet<PathNodeType> mCloseList;
 };
 

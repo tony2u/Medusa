@@ -22,10 +22,10 @@ public:
 	virtual bool Uninitialize();
 public:
 	RenderingObject CreateFromTexture(const FileIdRef& textureName, const Rect2F& textureRect = Rect2F::Zero, const Color4F& color = Color4F::White);
-	RenderingObject CreateFromTexture(ITexture* texture, const Rect2F& textureRect = Rect2F::Zero, const Color4F& color = Color4F::White);
+	RenderingObject CreateFromTexture(const Share<ITexture>& texture, const Rect2F& textureRect = Rect2F::Zero, const Color4F& color = Color4F::White);
 
 	RenderingObject CreateNineGridTexture(const Size2F& targetSize, const FileIdRef& textureName, const ThicknessF& padding, const Rect2F& textureRect = Rect2F::Zero);
-	RenderingObject CreateFromSingleTextureMaterial(IMaterial* material, const Rect2F& textureRect = Rect2F::Zero, const Color4F& color = Color4F::White);
+	RenderingObject CreateFromSingleTextureMaterial(const Share<IMaterial>& material, const Rect2F& textureRect = Rect2F::Zero, const Color4F& color = Color4F::White);
 
 	RenderingObject CreateFromTextureAtlasRegion(StringRef regionName, const FileIdRef& atlasFileId, TextureAtlasType fileFormat = TextureAtlasType::None);
 	RenderingObject CreateFromTextureAtlasRegion(TextureAtlasRegion* region, const Color4F& color = Color4F::White);

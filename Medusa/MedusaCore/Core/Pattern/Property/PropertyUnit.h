@@ -10,7 +10,7 @@
 #include "Core/Math/Math.h"
 MEDUSA_BEGIN;
 
-template<typename TIndex, typename T, size_t TSize, typename TCompare = DefaultCompare<T> >
+template<typename TIndex, typename T, size_t TSize, typename TCompare = DefaultCompare >
 class PropertyUnit
 {
 public:
@@ -152,10 +152,10 @@ public:
 	}
 	void Set(const DictionaryType& item)
 	{
-		FOR_EACH_COLLECTION(i, item)
+		for(auto i: item)
 		{
-			TIndex type = i->Key;
-			T val = i->Value;
+			TIndex type = i.Key;
+			T val = i.Value;
 			SetSingle(type, val);
 		}
 	}

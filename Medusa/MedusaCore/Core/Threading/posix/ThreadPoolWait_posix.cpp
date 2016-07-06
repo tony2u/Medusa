@@ -8,27 +8,28 @@
 
 MEDUSA_BEGIN;
 
-ThreadPoolWait::ThreadPoolWait(const StringRef& name, ICommand* command, IWaitable* waitable, uint timeoutMilliseconds /*= (uint)-1*/)
-	:mName(name),
+ThreadPoolWait::ThreadPoolWait(ThreadPool* pool, const StringRef& name, const ShareCommand& command, IWaitable* waitable, uint timeoutMilliseconds /*= (uint)-1*/)
+	:mPool(pool),
+	mName(name),
 	mCommand(command),
 	mWaitable(waitable),
 	mResult(WaitResult::Success),
 	mTimeout(timeoutMilliseconds)
 {
-	SAFE_RETAIN(command);
+	
 
 }
 
 ThreadPoolWait::~ThreadPoolWait(void)
 {
-	SAFE_RELEASE(mCommand);
+	
 	
 	mWaitable = nullptr;
 }
 
 void ThreadPoolWait::Sumbit()
 {
-	ThreadPool::Instance().Enqueue(this);
+	mPool->Enqueue(this);
 }
 
 void ThreadPoolWait::Wait(bool cancelPending /*= false*/)
@@ -36,7 +37,7 @@ void ThreadPoolWait::Wait(bool cancelPending /*= false*/)
 	if (cancelPending)
 	{
 		//find current pending work in thread pool
-		ThreadPool::Instance().CancelPendingCommands(this);
+		mPool->CancelPendingCommands(this);
 	}
 	mCompleteEvent.Wait();
 }
@@ -44,7 +45,7 @@ void ThreadPoolWait::Wait(bool cancelPending /*= false*/)
 void ThreadPoolWait::Cancel()
 {
 	mResult = WaitResult::Abandoned;
-	ThreadPool::Instance().CancelPendingCommands(this);
+	mPool->CancelPendingCommands(this);
 
 	if (mWaitable!=nullptr)
 	{
@@ -66,7 +67,7 @@ bool ThreadPoolWait::OnExecute()
 {
 	if (mWaitable!=nullptr)
 	{
-		bool isSuccess = mWaitable->WaitTimeout(mTimeout);
+		bool isSuccess = mWaitable->WaitFor(mTimeout);
 		if (mResult != WaitResult::Abandoned)
 		{
 			mResult = isSuccess ? WaitResult::Success : WaitResult::Timeout;

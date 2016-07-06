@@ -17,13 +17,13 @@ public:
 	virtual ~IMeshModelNode(void){}
 	virtual ModelNodeType Type() const{return ModelNodeType::Mesh;}
 
-	virtual const IMesh* BaseMeshPtr() const=0;
-	virtual IMesh* MutableBaseMeshPtr()=0;
+	virtual Share<const IMesh> BaseMeshPtr() const=0;
+	virtual Share<IMesh> MutableBaseMeshPtr()=0;
 
-	IMaterial* Material() const { return mMaterial; }
-	void SetMaterial(IMaterial* val) { SAFE_ASSIGN_REF(mMaterial,val); }
+	const Share<IMaterial>& Material() const { return mMaterial; }
+	void SetMaterial(const Share<IMaterial>& val) { mMaterial = val; }
 protected:
-	IMaterial* mMaterial=nullptr;
+	Share<IMaterial> mMaterial;
 	
 };
 

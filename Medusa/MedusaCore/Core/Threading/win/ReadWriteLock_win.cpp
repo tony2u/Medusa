@@ -4,7 +4,7 @@
 #include "MedusaCorePreCompiled.h"
 #ifndef MEDUSA_POSIX_THREADING
 #include "Core/Threading/ReadWriteLock.h"
-#include "Core/Profile/StopWatch.h"
+#include "Core/Chrono/StopWatch.h"
 #include "Core/Threading/Thread.h"
 
 MEDUSA_BEGIN;

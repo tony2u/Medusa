@@ -4,7 +4,7 @@
 #include "MedusaPreCompiled.h"
 #include "StateEventConnector.h"
 #include "Game/AI/Predicate/IPredicate.h"
-#include "Core/Command/EventArg/IEventArg.h"
+#include "Core/Event/EventArg/IEventArg.h"
 
 MEDUSA_BEGIN;
 

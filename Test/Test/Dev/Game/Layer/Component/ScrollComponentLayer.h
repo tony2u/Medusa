@@ -8,7 +8,7 @@
 
 class ScrollComponentLayer :public BaseCaseLayer
 {
-	MEDUSA_DECLARE_LAYER(ScrollComponentLayer);
+	MEDUSA_NODE(ScrollComponentLayer, BaseCaseLayer);
 public:
 	ScrollComponentLayer(StringRef name=StringRef::Empty,const IEventArg& e=IEventArg::Empty);
 	virtual ~ScrollComponentLayer(void);

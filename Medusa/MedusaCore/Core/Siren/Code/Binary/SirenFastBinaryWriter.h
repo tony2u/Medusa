@@ -5,7 +5,7 @@
 #include "MedusaCorePreDeclares.h"
 #include "BaseSirenBinaryWriter.h"
 #include "Core/Siren/Code/SirenCoderType.h"
-#include "Core/Utility/Utility.h"
+#include "Core/System/BitConverter.h"
 #include "SirenFastBinarySizeCounter.h"
 
 MEDUSA_BEGIN;
@@ -15,20 +15,21 @@ class SirenFastBinaryWriter : public BaseSirenBinaryWriter
 public:
 	using BaseSirenBinaryWriter::BaseSirenBinaryWriter;
 	
-	virtual bool OnValue(bool val) override { this->mStream.Write(val);  return true; }
-	virtual bool OnValue(char val)override { this->mStream.Write(val);  return true; }
-	virtual bool OnValue(byte val) override { this->mStream.Write(val);  return true; }
-	virtual bool OnValue(short val) override { this->mStream.Write(val);  return true; }
-	virtual bool OnValue(ushort val) override { this->mStream.Write(val);  return true; }
-	virtual bool OnValue(int32 val)override { this->mStream.Write(val);  return true; }
-	virtual bool OnValue(uint32 val)override { this->mStream.Write(val);  return true; }
-	virtual bool OnValue(int64 val) override { this->mStream.Write(val);  return true; }
-	virtual bool OnValue(uint64 val)override { this->mStream.Write(val);  return true; }
-	virtual bool OnValue(float val) override { this->mStream.Write(val); return true; }
-	virtual bool OnValue(double val) override { this->mStream.Write(val); return true; }
+	virtual bool OnValue(const bool& val) override { this->mStream.Write(val);  return true; }
+	virtual bool OnValue(const char& val)override { this->mStream.Write(val);  return true; }
+	virtual bool OnValue(const int8& val)override { this->mStream.Write(val);  return true; }
+	virtual bool OnValue(const uint8& val) override { this->mStream.Write(val);  return true; }
+	virtual bool OnValue(const int16& val) override { this->mStream.Write(val);  return true; }
+	virtual bool OnValue(const uint16& val) override { this->mStream.Write(val);  return true; }
+	virtual bool OnValue(const int32& val)override { this->mStream.Write(val);  return true; }
+	virtual bool OnValue(const uint32& val)override { this->mStream.Write(val);  return true; }
+	virtual bool OnValue(const int64& val) override { this->mStream.Write(val);  return true; }
+	virtual bool OnValue(const uint64& val)override { this->mStream.Write(val);  return true; }
+	virtual bool OnValue(const float& val) override { this->mStream.Write(val); return true; }
+	virtual bool OnValue(const double& val) override { this->mStream.Write(val); return true; }
 	virtual bool OnValue(const StringRef& val)override
 	{
-		this->mStream.Write((uint)val.Length());
+		this->mStream.Write((uint)val.Length()+1);
 		this->mStream.WriteString(val);
 
 		return true;
@@ -87,7 +88,7 @@ public:
 	template<typename TObject>
 	void OnStruct(const TObject& obj)
 	{
-		SirenSchemaSerializer::Visit(*this, obj);
+		SirenSchemaSerializer<false>::Visit(*this, obj);
 	}
 };
 

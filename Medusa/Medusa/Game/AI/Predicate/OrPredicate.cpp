@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 #include "MedusaPreCompiled.h"
 #include "OrPredicate.h"
-
+#include "PredicateFactory.h"
 MEDUSA_BEGIN;
 
 OrPredicate::OrPredicate(const IPredicate* left /*= nullptr*/, const IPredicate* right /*= nullptr*/)
@@ -22,9 +22,8 @@ OrPredicate::OrPredicate(const IPredicate* left /*= nullptr*/, const IPredicate*
 int OrPredicate::Evaluate(void* p) const
 {
 	RETURN_ZERO_IF_EMPTY(mItems);
-	FOR_EACH_COLLECTION(i, mItems)
+	for (auto item : mItems)
 	{
-		const IPredicate* item = *i;
 		int r = item->Evaluate(p);
 		if (r > 0)
 		{
@@ -35,6 +34,5 @@ int OrPredicate::Evaluate(void* p) const
 	return 0;
 }
 
-MEDUSA_IMPLEMENT_RTTI(OrPredicate, IPredicate);
-
+MEDUSA_IMPLEMENT_PREDICATE(OrPredicate);
 MEDUSA_END;

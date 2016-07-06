@@ -38,7 +38,6 @@ bool IBehavior::LoadFromXmlNode(const pugi::xml_node& node)
 
 
 
-MEDUSA_IMPLEMENT_RTTI_ROOT(IBehavior);
 
 
 MEDUSA_END;

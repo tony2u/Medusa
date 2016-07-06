@@ -12,7 +12,7 @@
 MEDUSA_BEGIN;
 
 
-BinaryBlockReadStream::BinaryBlockReadStream(const IStream& stream, const BinaryPackage& package, const FileEntry& fileEntry)
+BinaryBlockReadStream::BinaryBlockReadStream(const Share<IStream>& stream, const BinaryPackage& package, const FileEntry& fileEntry)
 	:BlockReadStream(stream, package.Header().BlockSize()),
 	mPackage(&package),
 	mFileEntry(&fileEntry)

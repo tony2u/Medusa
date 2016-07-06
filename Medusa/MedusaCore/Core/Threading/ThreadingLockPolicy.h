@@ -4,6 +4,7 @@
 #pragma once
 
 #include "Core/Threading/Mutex.h"
+#include "Core/Pattern/INonCopyable.h"
 
 MEDUSA_BEGIN;
 
@@ -12,16 +13,13 @@ template<typename THost>
 class NoThreadingLockPolicy
 {
 public:
-	class Lock
+	class Lock :public INonCopyable
 	{
 	public:
-		Lock(const THost&){}
-		Lock(const THost*){}
-		Lock(){}
-		~Lock(){}
-	private:
-		Lock(const Lock &);
-		Lock& operator=(const Lock &);
+		Lock(const THost&) {}
+		Lock(const THost*) {}
+		Lock() {}
+		~Lock() {}
 	};
 };
 
@@ -29,16 +27,13 @@ template<typename THost>
 class ClassThreadingLockPolicy
 {
 public:
-	class Lock
+	class Lock :public INonCopyable
 	{
 	public:
-		Lock(const THost&){mMutex.Lock();}
-		Lock(const THost*){mMutex.Lock();}
-		Lock(){mMutex.Lock();}
-		~Lock(){mMutex.Unlock();}
-	private:
-		Lock(const Lock &);
-		Lock& operator=(const Lock &);
+		Lock(const THost&) { mMutex.Lock(); }
+		Lock(const THost*) { mMutex.Lock(); }
+		Lock() { mMutex.Lock(); }
+		~Lock() { mMutex.Unlock(); }
 	};
 private:
 	static RecursiveMutex mMutex;
@@ -48,15 +43,13 @@ template<typename THost>
 class ObjectThreadingLockPolicy
 {
 public:
-	class Lock
+	class Lock :public INonCopyable
 	{
 	public:
-		Lock(const THost&){mMutex.Lock();}
-		Lock(const THost*){mMutex.Lock();}
-		~Lock(){mMutex.Unlock();}
+		Lock(const THost&) { mMutex.Lock(); }
+		Lock(const THost*) { mMutex.Lock(); }
+		~Lock() { mMutex.Unlock(); }
 	private:
-		Lock(const Lock &);
-		Lock& operator=(const Lock &);
 		RecursiveMutex mMutex;
 	};
 };

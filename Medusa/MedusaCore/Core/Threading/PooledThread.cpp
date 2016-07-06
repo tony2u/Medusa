@@ -8,8 +8,8 @@
 
 MEDUSA_BEGIN;
 
-PooledThread::PooledThread(const StringRef& name, CompleteDelegate completeDelegate, void* userData)
-	: mThread(name,nullptr,userData),
+PooledThread::PooledThread(const StringRef& name, CompleteDelegate completeDelegate, void* userData/*=nullptr*/)
+	: Thread(name,nullptr,userData),
 	mStartEvent(false,true),
 	mCommand(nullptr),
 	mCompleteDelegate(completeDelegate)
@@ -22,42 +22,35 @@ PooledThread::~PooledThread(void)
 }
 
 
-bool PooledThread::Initialize()
+bool PooledThread::OnBeforeJoin()
 {
-	mThread.SetCallback(Bind(&PooledThread::OnThredCallback,this));
+	PrepareToCancel();
+	mStartEvent.Set();
 	return true;
 }
-void PooledThread::Start()
-{
-	mThread.Start();
-}
 
-bool PooledThread::Uninitialize()
+void PooledThread::OnAfterJoin()
 {
-	Stop();
-
 	mStartEvent.Uninitialize();
 	mCompleteEvent.Uninitialize();
-
-	return true;
 }
 
-void PooledThread::OnThredCallback(Thread& thread)
+void PooledThread::OnRun()
 {
-	while (!thread.IsCancelled())
+	while (!IsCancelled())
 	{
 		mStartEvent.Wait();
-		if (thread.IsCancelled())
+		if (IsCancelled())
 		{
 			break;
 		}
-		OnRun();
+		OnRunCommands();
 
 		if (mCompleteDelegate)
 		{
 			if (!mCompleteDelegate(*this))
 			{
-				thread.SetThreadState(ThreadState::None);
+				SetThreadState(ThreadState::None);
 				mStartEvent.Reset();
 				return;
 			}
@@ -68,7 +61,7 @@ void PooledThread::OnThredCallback(Thread& thread)
 }
 
 
-void PooledThread::OnRun()
+void PooledThread::OnRunCommands()
 {
 	//no need to lock as it always run after start event
 	ScopedLock lock(mCommandMutex);
@@ -86,20 +79,13 @@ void PooledThread::WaitForComplete()
 	mCompleteEvent.Wait();
 }
 
-void PooledThread::Stop()
-{
-	mThread.PrepareToCancel();
-	mStartEvent.Set();
 
-	mThread.Join();
 
-}
-
-void PooledThread::Activate(ICommand* val)
+void PooledThread::Activate(const ShareCommand& val)
 {
 	{
 		ScopedLock lock(mCommandMutex);
-		SAFE_ASSIGN_REF(mCommand, val);
+		mCommand = val;
 	}
 	
 	mStartEvent.Set();

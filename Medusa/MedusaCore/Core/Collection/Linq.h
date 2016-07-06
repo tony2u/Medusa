@@ -61,10 +61,10 @@ public:
 	{
 		RETURN_TRUE_IF(first.IsEmpty() && second.IsEmpty());
 		RETURN_FALSE_IF_NOT_EQUAL(first.Count(), second.Count());
-		FOR_EACH_COLLECTION(i, first)
+		for (auto i : first)
 		{
-			const TKey& firstKey = i->Key;
-			const TValue& firstValue = i->Value;
+			const TKey& firstKey = i.Key;
+			const TValue& firstValue = i.Value;
 			typename Dictionary<TKey, TValue, TKeyHashCoder, TValueHashCoder, TKeyCompare, TValueCompare>::TValueConstPointerType secondValuePtr = second.TryGet(firstKey);
 			RETURN_FALSE_IF(secondValuePtr == nullptr || TValueCompare::Compare(firstValue, *secondValuePtr) != 0);
 		}

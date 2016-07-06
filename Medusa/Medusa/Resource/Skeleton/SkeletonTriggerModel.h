@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 #pragma once
 #include "Core/String/HeapString.h"
-#include "Core/Command/EventArg/TriggerEventArg.h"
+#include "Core/Event/EventArg/TriggerEventArg.h"
 
 MEDUSA_BEGIN;
 

@@ -7,7 +7,7 @@
 
 class ControlFeatureLayer :public BaseFeatureLayer
 {
-	MEDUSA_DECLARE_LAYER(ControlFeatureLayer);
+	MEDUSA_NODE(ControlFeatureLayer,BaseFeatureLayer);
 public:
 	ControlFeatureLayer(StringRef name=StringRef::Empty,const IEventArg& e=IEventArg::Empty);
 	virtual ~ControlFeatureLayer(void);

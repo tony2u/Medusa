@@ -14,7 +14,7 @@ TODO: add action binding(multiple key to one action)
 add axis binding
 */
 
-class InputDispatcher:public IInputHandler
+class InputDispatcher :public IInputHandler
 {
 public:
 	InputDispatcher(INode* node);
@@ -35,16 +35,17 @@ public:
 
 public:
 	TapGestureRecognizer* AddTapGestureRecognizer();
-	SwipeGestureRecognizer* AddSwipeGestureRecognizer(ScrollDirection direction = ScrollDirection::FreeFromCurrent,float minMovement=5.f,float minVelocity=30.f);
-	PanGestureRecognizer* AddPanGestureRecognizer(float minDistance=5.f);
+	SwipeGestureRecognizer* AddSwipeGestureRecognizer(ScrollDirection direction = ScrollDirection::FreeFromCurrent, float minMovement = 5.f, float minVelocity = 30.f);
+	PanGestureRecognizer* AddPanGestureRecognizer(float minDistance = 5.f);
+	DragGestureRecognizer* AddDragGestureRecognizer(float minDistance = 5.f);
+
 	PinchGestureRecognizer* AddPinchGestureRecognizer();
-	DoubleTapGestureRecognizer* AddDoubleTapGestureRecognizer(float maxDuration=0.25f);
+	DoubleTapGestureRecognizer* AddDoubleTapGestureRecognizer(float maxDuration = 0.25f);
 	IMEHandler* AddIMEHandler();
 	KeyboardHandler* AddKeyboardHandler();
+	StrokeGestureRecognizer* AddStrokeGestureRecognizer();
 
-
-
-	bool HasHandler()const{return !mHandlers.IsEmpty();}
+	bool HasHandler()const { return !mHandlers.IsEmpty(); }
 public:
 	void CancelOtherHandlers(IInputHandler* self);
 
@@ -52,42 +53,38 @@ public:
 	bool RemoveTapGestureHandler(TapDelegate handler);
 	bool RemoveAllTapGestureHandler();
 
-	SwipeGestureRecognizer* AddSwipeGestureHandler(SwipeSuccessDelegate handler,ScrollDirection direction = ScrollDirection::FreeFromCurrent,float minMovement=5.f,float minVelocity=30.f);
+	SwipeGestureRecognizer* AddSwipeGestureHandler(SwipeSuccessDelegate handler, ScrollDirection direction = ScrollDirection::FreeFromCurrent, float minMovement = 5.f, float minVelocity = 30.f);
 	bool RemoveSwipeGestureHandler(SwipeSuccessDelegate handler);
 	bool RemoveAllSwipeGestureHandler();
 
-	PanGestureRecognizer* AddPanGestureHandler(PanDelegate handler,float minDistance=5.f);
+	PanGestureRecognizer* AddPanGestureHandler(PanDelegate handler, float minDistance = 5.f);
 	bool RemovePanGestureHandler(PanDelegate handler);
 	bool RemoveAllPanGestureHandler();
+
+	DragGestureRecognizer* AddDragGestureHandler(DragBeganDelegate beganHandler, DragingDelegate dragingHandler, DragEndDelegate endHandler, float minDistance = 5.f);
+	bool RemoveAllDragGestureHandler();
 
 	PinchGestureRecognizer* AddPinchGestureHandler(PinchDelegate handler);
 	bool RemovePinchGestureHandler(PinchDelegate handler);
 	bool RemoveAllPinchGestureHandler();
 
 
-	DoubleTapGestureRecognizer* AddDoubleTapGestureHandler(TapDelegate tapHandler,DoubleTapDelegate doubleTapHandler,float maxDuration=0.25f);
-	bool RemoveDoubleTapGestureHandler(TapDelegate tapHandler,DoubleTapDelegate doubleTapHandler);
+	DoubleTapGestureRecognizer* AddDoubleTapGestureHandler(TapDelegate tapHandler, DoubleTapDelegate doubleTapHandler, float maxDuration = 0.25f);
+	bool RemoveDoubleTapGestureHandler(TapDelegate tapHandler, DoubleTapDelegate doubleTapHandler);
 	bool RemoveAllDoubleTapGestureHandler();
 
-	//bool RegisterLongPressGesture(LongPressGestureRecognizer target,float minPressDuration,float allowMovement,bool enableTouch=true);
-
-	/*bool RegisterTapGesture(const string& id,EventTarget target,bool enableTouch=true);
-
-	bool RegisterLongPressGesture(EventTarget target,float minPressDuration,float allowMovement,bool enableTouch=true);
-	bool RegisterLongPressGesture(const string& id,EventTarget target,float minPressDuration,float allowMovement,bool enableTouch=true);
 
 
-	bool RegisterDragGesture(EventTarget target, float minDistance=0, bool enableTouch=true);
-	bool RegisterDragGesture(const string& id, EventTarget target, float minDistance=0, bool enableTouch=true);
-
-	bool RegisterSwipeGesture(EventTarget target,Direction::GestureDirection_t direction,float minMoveDuration, float minMovement,float minVelocity,bool enableTouch=true);
-	bool RegisterSwipeGesture(const string& id,EventTarget target,Direction::GestureDirection_t direction,float minMoveDuration, float minMovement,float minVelocity,bool enableTouch=true);*/
-
-	IMEHandler* AddIMEHandler(CharInputDelegate charInputHandler,KeyDownDelegate keyDownHandler,KeyUpDelegate keyUpHandler);
+	IMEHandler* AddIMEHandler(CharInputDelegate charInputHandler, KeyDownDelegate keyDownHandler, KeyUpDelegate keyUpHandler);
 	bool RemoveAllIMEHandler();
 
 	KeyboardHandler* AddKeyboardHandler(KeyboardWillShowDelegate willShowHandler, KeyboardShowedDelegate showedHandler, KeyboardWillHideDelegate willHideHandler, KeyboardHidedDelegate hidedHandler);
 	bool RemoveAllKeyboardHandler();
+
+	StrokeGestureRecognizer* AddStrokeGestureRecognizer(StrokeDelegate onStroke, StrokeFailedDelegate onStrokeFailed = nullptr);
+	bool RemoveStrokeGestureHandler(StrokeDelegate handler);
+	bool RemoveAllStrokeGestureHandler();
+
 
 	INode* Node() const { return mNode; }
 
@@ -96,31 +93,33 @@ public:
 	void AddBehaviors(InputBehaviors val) { MEDUSA_FLAG_ADD(mBehaviors, val); }
 
 public:
-	void Bind(StringRef handlerName,const NodeInputDelegate& handler );
+	void Bind(StringRef handlerName, const NodeInputDelegate& handler);
 	NodeInputEvent& Bind(StringRef handlerName);
 
 	void Monitor(InputEventType type, StringRef handlerName);
 	List<HeapString>& Monitor(InputEventType type);
 	bool IsMonitoring()const;
 
-	bool FireEvent(InputEventType type,INode* node=nullptr,IEventArg* e=nullptr)const;
+	bool FireEvent(InputEventType type, INode* node = nullptr, IEventArg* e = nullptr)const;
+#ifdef MEDUSA_SCRIPT
 	bool FireScriptBinding(InputEventType type, INode* node = nullptr, IEventArg* e = nullptr)const;
-
+#endif
 private:
 	IInputHandler* FindFocusHandler()const;
 	IInputHandler* FindHandler(InputType type)const;
 
 	void IncreaseHandlerCount();
 	void DecreaseHandlerCount();
-	bool FireEventHelper(InputEventType type,StringRef handlerName, INode* node = nullptr, IEventArg* e = nullptr)const;
-	bool FireScriptBindingHelper(InputEventType type, StringRef handlerName,INode* node = nullptr, IEventArg* e = nullptr)const;
-
+	bool FireEventHelper(InputEventType type, StringRef handlerName, INode* node = nullptr, IEventArg* e = nullptr)const;
+#ifdef MEDUSA_SCRIPT
+	bool FireScriptBindingHelper(InputEventType type, StringRef handlerName, INode* node = nullptr, IEventArg* e = nullptr)const;
+#endif
 private:
-	INode* mNode=nullptr;
-	Array<IInputHandler*,(size_t)InputType::Count> mHandlers;
+	INode* mNode = nullptr;
+	Array<IInputHandler*, (size_t)InputType::Count> mHandlers;
 	InputBehaviors mBehaviors = InputBehaviors::None;	//used to override self behaviors
 
-	Dictionary<InputEventType, List<HeapString>,DefaultHashCoder<InputEventType>,NoHashCoder<List<HeapString>>,EqualCompare<InputEventType>,NoCompare<List<HeapString>>> mEventMonitors;
+	Dictionary<InputEventType, List<HeapString>, DefaultHashCoder, NoHashCoder, EqualCompare, NoCompare> mEventMonitors;
 	Dictionary<HeapString, NodeInputEvent> mEventBindings;
 
 };

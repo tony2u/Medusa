@@ -7,7 +7,7 @@ MEDUSA_BEGIN;
 
 enum class SeekOrigin
 {
-	Head = SEEK_SET,
+	Begin = SEEK_SET,
 	Current = SEEK_CUR,
 	End = SEEK_END
 };

@@ -7,7 +7,7 @@
 
 class FontFeatureLayer :public BaseFeatureLayer
 {
-	MEDUSA_DECLARE_LAYER(FontFeatureLayer);
+	MEDUSA_NODE(FontFeatureLayer,BaseFeatureLayer);
 public:
 	FontFeatureLayer(StringRef name=StringRef::Empty,const IEventArg& e=IEventArg::Empty);
 	virtual ~FontFeatureLayer(void);

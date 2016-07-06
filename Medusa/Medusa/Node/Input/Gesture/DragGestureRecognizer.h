@@ -14,7 +14,7 @@ class DragGestureRecognizer: public IGestureRecognizer
 {
     
 public:
-	DragGestureRecognizer(INode* node, float delta);
+	DragGestureRecognizer(INode* node, float minDistance);
 	virtual ~DragGestureRecognizer(void);
 	virtual InputType GetInputType() const{ return InputType::Drag; }
 

@@ -7,7 +7,7 @@
 
 class SpineAnimationLayer :public BaseCaseLayer
 {
-	MEDUSA_DECLARE_LAYER(SpineAnimationLayer);
+	MEDUSA_NODE(SpineAnimationLayer,BaseCaseLayer);
 public:
 	SpineAnimationLayer(StringRef name=StringRef::Empty,const IEventArg& e=IEventArg::Empty);
 	virtual ~SpineAnimationLayer(void);

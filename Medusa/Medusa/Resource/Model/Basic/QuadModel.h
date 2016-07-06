@@ -13,7 +13,7 @@ MEDUSA_BEGIN;
 class QuadModel:public BaseSingleTextureModel<TextureQuadMesh>
 {
 public:
-	QuadModel(const FileIdRef& fileId,IMaterial* material,const Rect2F& textureRect);
+	QuadModel(const FileIdRef& fileId, const Share<IMaterial>& material,const Rect2F& textureRect);
 	virtual ~QuadModel(void);
 public:
 	Rect2F& MutableTextureRect() { return mTextureRect; }

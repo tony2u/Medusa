@@ -24,8 +24,8 @@ public:
 	const TiledTileRef& Tile(int x, int y) const { return mTiles[y * mSize.Width + x]; }
 	TiledTileRef& MutableTile(int x, int y) { return mTiles[y * mSize.Width + x]; }
 
-	const TiledTileRef& Tile(int index)const { return mTiles[index]; }
-	TiledTileRef& MutableTile(int index) { return mTiles[index]; }
+	const TiledTileRef& Tile(size_t index)const { return mTiles[index]; }
+	TiledTileRef& MutableTile(size_t index) { return mTiles[index]; }
 
 	virtual ILayer* Instantiate(InstantiateMode mode = InstantiateMode::None)const override;
 

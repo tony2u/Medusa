@@ -5,6 +5,8 @@
 #include "Rendering/IRenderGroup.h"
 #include "Graphics/GraphicsTypes.h"
 #include "Core/Collection/List.h"
+#include "Graphics/State/Tree/RenderStateTreeLeafNode.h"
+#include "Core/Pattern/Share.h"
 
 MEDUSA_BEGIN;
 
@@ -14,8 +16,8 @@ public:
 	StateRenderGroup();
 	virtual ~StateRenderGroup();
 
-	RenderStateTreeLeafNode* StateNode() const { return mStateNode; }
-	void SetStateNode(RenderStateTreeLeafNode* val);
+	const Share<RenderStateTreeLeafNode>& StateNode() const { return mStateNode; }
+	void SetStateNode(const Share<RenderStateTreeLeafNode>& val);
 public:
 	virtual bool Initialize()override;
 	virtual bool Uninitialize()override;
@@ -24,7 +26,7 @@ public:
 	virtual void Draw(IRenderQueue& renderQueue, RenderingFlags renderingFlags = RenderingFlags::None)override;
 	virtual void Print(HeapString& ioStr, uint level)override;
 private:
-	RenderStateTreeLeafNode* mStateNode;
+	Share<RenderStateTreeLeafNode> mStateNode;
 	List<IRenderBatch*> mRenderBatches;
 };
 

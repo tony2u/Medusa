@@ -8,7 +8,7 @@
 
 MEDUSA_BEGIN;
 
-template<typename TKey,typename TValue,typename TSorter=DefaultCompare<TKey> >
+template<typename TKey,typename TValue,typename TSorter=DefaultCompare >
 class SortedDictionary:public IDictionary<TKey,TValue,std::pair<TKey,TValue>>
 {
 public:
@@ -71,9 +71,9 @@ public:
 	{
 		MEDUSA_ASSERT((size_t)arraySize>=mItems.size(),"arraySize should >= size");
 		size_t index=0;
-		FOR_EACH_COLLECTION_STL(i,mItems)
+		for (const auto& i : mItems)
 		{
-			outArray[index++]=KeyValuePairType(i->first,i->second);
+			outArray[index++]=KeyValuePairType(i.first,i.second);
 		}
 		return index;	
 	}
@@ -89,8 +89,14 @@ public:
 
 	virtual void Add(TParameterType val)
 	{
-		mItems.insert(val);
-		this->mCount=mItems.size();
+		std::pair<typename MapType::iterator, bool> ret = mItems.insert(val);
+		if (ret.second)
+		{
+			this->mCount = mItems.size();
+			return;
+		}
+		MEDUSA_ASSERT_FAILED("Duplicate add");
+
 	}
 
 	virtual bool TryAdd(TParameterType val)
@@ -121,9 +127,9 @@ public:
 	}
 	virtual bool ContainsValue(TValueParameterType value)const
 	{
-		FOR_EACH_COLLECTION_STL(i,mItems)
+		for (const auto& i : mItems)
 		{
-			if (i->second==value)
+			if (i.second==value)
 			{
 				return true;
 			}
@@ -193,11 +199,11 @@ public:
 
 	virtual TKeyPointerType TryGetKey(TValueParameterType value)
 	{
-		FOR_EACH_COLLECTION_STL(i,mItems)
+		for (const auto& i : mItems)
 		{
-			if (i->second==value)
+			if (i.second==value)
 			{
-				return (TKeyPointerType)&(i->first);
+				return (TKeyPointerType)&(i.first);
 			}
 		}
 		return nullptr;
@@ -205,11 +211,11 @@ public:
 
 	virtual TKeyConstPointerType TryGetKey(TValueParameterType value)const
 	{
-		FOR_EACH_COLLECTION_STL(i,mItems)
+		for (const auto& i : mItems)
 		{
-			if (i->second==value)
+			if (i.second==value)
 			{
-				return (TKeyConstPointerType)&(i->first);
+				return (TKeyConstPointerType)&(i.first);
 			}
 		}
 		return nullptr;
@@ -217,9 +223,10 @@ public:
 
 	virtual void Add(TKeyParameterType key,TValueParameterType value)
 	{
-		mItems.insert(KeyValuePairType(key,value));
-
-		this->mCount=mItems.size();
+		if (!TryAdd(key, value))
+		{
+			MEDUSA_ASSERT_FAILED("duplicate add");
+		}
 	}
 
 	virtual bool TryAdd(TKeyParameterType key,TValueParameterType value)
@@ -264,7 +271,7 @@ public:
 
 	virtual bool RemoveValue(TValueParameterType value)
 	{
-		FOR_EACH_COLLECTION_STL(i,mItems)
+		for (auto i=mItems.begin();i!=mItems.end();++i)
 		{
 			if (i->second==value)
 			{

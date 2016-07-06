@@ -33,7 +33,7 @@ public:
 
 		mRef.Rawset(LuaNames::Delete, &OnGC);
 
-		int hashCode = typeid(TClass).hash_code();
+		int hashCode =(int) typeid(TClass).hash_code();
 		LuaRef classTable= LuaRef::ClassTable(state);
 		classTable.Rawset(hashCode, mRef);	//set integer index
 		classTable.Rawset(this->mName, mRef);	//also set name index
@@ -55,7 +55,7 @@ public:
 	SelfType& InheritFrom()
 	{
 		LuaRef classes = LuaRef::ClassTable(mState);
-		LuaRef baseClass = classes.Rawget(typeid(TBase).hash_code(), mRef);
+		LuaRef baseClass = classes.Rawget((int)typeid(TBase).hash_code(), mRef);
 
 		if (baseClass != nullptr)
 		{

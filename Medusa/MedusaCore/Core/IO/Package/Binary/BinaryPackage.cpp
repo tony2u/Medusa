@@ -19,6 +19,7 @@ BinaryPackage::BinaryPackage(const StringRef& path, PackagePriority priority /*=
 	mRandom(Random::Global())
 {
 	mHeader.Reset();
+	mStream.Retain();
 }
 
 BinaryPackage::BinaryPackage(Random& random, const StringRef& path, PackagePriority priority /*= PackagePriority::Downloaded*/, uint version /*= 0*/)
@@ -26,6 +27,7 @@ BinaryPackage::BinaryPackage(Random& random, const StringRef& path, PackagePrior
 	mRandom(random)
 {
 	mHeader.Reset();
+	mStream.Retain();
 }
 
 
@@ -278,7 +280,7 @@ bool BinaryPackage::Compact()
 	mRootDir.EnumerateFiles([&firstFileEntries](FileEntry* fileEntry) {firstFileEntries.Add(fileEntry->FirstBlockId(), fileEntry); });
 
 	//find all free blocks
-	SortedList<BinaryPackageBlockHeader*, EqualCompare<BinaryPackageBlockHeader*>, CustomCompareForPointer<BinaryPackageBlockHeader*>> freeBlocks;
+	SortedList<BinaryPackageBlockHeader*, EqualCompare, CustomCompareForPointer> freeBlocks;
 	uint freeBlockId = firstFreeBlockId;
 	do
 	{
@@ -532,9 +534,9 @@ bool BinaryPackage::OnCopyFile(const FileEntry& from, FileEntry& to)
 	if (fromCoders != toCoders || !fromPackage->IsDataCompatiable(*toPackage))
 	{
 		//copy file with code
-		const IStream* readStream = from.Read();
+		Share<const IStream> readStream = from.Read();
 		toPackage->SaveFile(to, *readStream);
-		SAFE_RELEASE(readStream);
+		
 	}
 	else
 	{
@@ -606,24 +608,24 @@ bool BinaryPackage::OnRemoveDirectory(DirectoryEntry& dir)
 	return true;
 }
 
-const IStream* BinaryPackage::OnReadFile(const FileEntry& file, FileDataType dataType /*= FileDataType::Binary*/) const
+Share<const IStream> BinaryPackage::OnReadFile(const FileEntry& file, FileDataType dataType /*= FileDataType::Binary*/) const
 {
-	BinaryBlockReadStream* readStream = new BinaryBlockReadStream(mStream, *this, file);
+	Share<BinaryBlockReadStream> readStream = new BinaryBlockReadStream(&mStream, *this, file);
 	if (!readStream->IsOpen())
 	{
 		Log::FormatError("Cannot open file:{}", file.Path());
-		SAFE_DELETE(readStream);
+		readStream = nullptr;
 	}
 	return readStream;
 }
 
-IStream* BinaryPackage::OnWriteFile(FileEntry& file, FileOpenMode openMode /*= FileOpenMode::ReadOnly*/, FileDataType dataType /*= FileDataType::Binary*/)
+Share<IStream> BinaryPackage::OnWriteFile(FileEntry& file, FileOpenMode openMode /*= FileOpenMode::ReadOnly*/, FileDataType dataType /*= FileDataType::Binary*/)
 {
-	BinaryBlockWriteStream* readStream = new BinaryBlockWriteStream(mStream, *this, file);
+	Share<BinaryBlockWriteStream> readStream = new BinaryBlockWriteStream(&mStream, *this, file);
 	if (!readStream->IsOpen())
 	{
 		Log::FormatError("Cannot open file:{}", file.Path());
-		SAFE_DELETE(readStream);
+		readStream = nullptr;
 	}
 	return readStream;
 }

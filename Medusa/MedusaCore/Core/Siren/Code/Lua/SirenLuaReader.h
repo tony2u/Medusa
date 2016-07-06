@@ -22,9 +22,10 @@ public:
 
 	virtual bool OnValue(bool& obj) override{return OnValueHelper(obj);}
 	virtual bool OnValue(char& obj) override { return OnValueHelper(obj); }
-	virtual bool OnValue(byte& obj) override { return OnValueHelper(obj); }
-	virtual bool OnValue(short& obj) override { return OnValueHelper(obj); }
-	virtual bool OnValue(ushort& obj) override { return OnValueHelper(obj); }
+	virtual bool OnValue(int8& obj) override { return OnValueHelper(obj); }
+	virtual bool OnValue(uint8& obj) override { return OnValueHelper(obj); }
+	virtual bool OnValue(int16& obj) override { return OnValueHelper(obj); }
+	virtual bool OnValue(uint16& obj) override { return OnValueHelper(obj); }
 	virtual bool OnValue(int32& obj) override { return OnValueHelper(obj); }
 	virtual bool OnValue(uint32& obj) override { return OnValueHelper(obj); }
 	virtual bool OnValue(int64& obj) override { return OnValueHelper(obj); }

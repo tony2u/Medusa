@@ -5,291 +5,138 @@
 #include "Socket.h"
 #include "Core/IO/Stream/IStream.h"
 #include "Core/Log/Log.h"
+#include "Core/Memory/NetworkBuffer.h"
+
+#ifdef MEDUSA_WINDOWS
+#define _WINSOCKAPI_
+#include <WinSock2.h>
+#include <WS2tcpip.h>
+#pragma comment(lib,"wsock32.lib")		//add socket lib, or it'll be failed
+#endif
 
 MEDUSA_BEGIN;
 
-SocketError Socket::Send(const IStream& stream, int inControlFlag)
+
+
+bool Socket::InitializeAPI()
 {
-	if (mSocketType != SocketType::TCP)
+#ifdef MEDUSA_WINDOWS
+	static bool isInitialized = false;
+	if (!isInitialized)
 	{
-		return SocketError::Fault;
-	}
-
-	//inControlFlag:
-	//MSG_DONTROUTE			do not search route table
-	//MSG_OOB				receive or send outboard data
-	//MSG_PEEK				only peek data,not move data from system data buffer
-	//MSG_WAITALL			wait all data
-	MemoryData messageData = stream.ReadBeginToCurrent(DataReadingMode::DirectMove);
-	const char* tempCharBuffer = (const char*)messageData.Data();
-	size_t messageSize = *(size_t*)tempCharBuffer;
-	if (messageSize < 4)
-	{
-		Log::AssertFailedFormat("Invalid ISocket::Send message size:{} <4", messageSize);
-		return SocketError::Fault;
-	}
-
-	intp writtenDataSize = 0;
-	intp leftDataSize = messageData.Size();
-
-	SocketError result = SocketError::Success;
-	while (leftDataSize > 0)
-	{
-		writtenDataSize = send(mSocketDescriptor, tempCharBuffer, static_cast<int>(leftDataSize), inControlFlag);
-		if (writtenDataSize <= 0)
+		isInitialized = true;
+		WORD wVersionRequested;
+		WSADATA wsaData;
+		wVersionRequested = MAKEWORD(2, 2);
+		int err = WSAStartup(wVersionRequested, &wsaData);
+		if (err != 0)
 		{
-			result = SocketError::Fault;
-			break;
+			return false;
 		}
-		leftDataSize -= writtenDataSize;
-		tempCharBuffer += writtenDataSize;
+		atexit(Socket::UninitializeAPI);
+
 	}
 
-	if (leftDataSize <= 0)
-	{
-		result = SocketError::Success;
-	}
-	return result;
+#endif // WIN32
+	return true;
 }
 
-SocketError Socket::SendTo(const AddressInfo& address, const IStream& stream, int inControlFlag)
+void Socket::UninitializeAPI()
 {
-	if (mSocketType != SocketType::UDP)
-	{
-		return SocketError::Fault;
-	}
-	SocketError result = SocketError::Success;
-	MemoryData messageData = stream.ReadToEnd(DataReadingMode::DirectMove);
-
-	const char* tempCharBuffer = (const char*)messageData.Data();
-	intp writtenDataSize = 0;
-	intp leftDataSize = messageData.Size();
-	while (leftDataSize > 0)
-	{
-
-		writtenDataSize = sendto(mSocketDescriptor, tempCharBuffer, static_cast<int>(leftDataSize), inControlFlag, address.GenearlAddressPtr(), sizeof(sockaddr));
-		if (writtenDataSize <= 0)
-		{
-			result = SocketError::Fault;
-			break;
-		}
-		leftDataSize -= writtenDataSize;
-		tempCharBuffer += writtenDataSize;
-
-	}
-	if (leftDataSize <= 0)
-	{
-		result = SocketError::Success;
-	}
-	return result;
+#ifdef MEDUSA_WINDOWS
+	WSACleanup();
+#endif // WIN32
 }
 
-SocketError Socket::Receive(IStream& stream, int inControlFlag)
+
+Socket::Socket(SocketType socketType /*= SocketType::TCP*/)
+	:mSocketType(socketType)
 {
-	if (mSocketType != SocketType::TCP)
-	{
-		return SocketError::Fault;
-	}
-	//inControlFlag:
-	//MSG_DONTROUTE			do not search route table
-	//MSG_OOB				receive or send outboard data
-	//MSG_PEEK				only peek data,not move data from system data buffer
-	//MSG_WAITALL			wait all data
-	SocketError result;
-	const int tempBufferSize = 1024;
-	char tempBuffer[tempBufferSize];
-
-	while (true)
-	{
-		intp readDataSize = recv(mSocketDescriptor, tempBuffer, tempBufferSize, inControlFlag);
-
-		if (readDataSize < 0)
-		{
-			Log::FormatError("SocketError:read size:{}", (int)readDataSize);
-			result = SocketError::Fault;
-			break;
-		}
-		else if (readDataSize>0)
-		{
-			stream.WriteData(MemoryData::FromStatic((const byte*)tempBuffer, readDataSize));
-			/*if (checker(stream))
-			{
-				result = SocketError::Success;
-				break;
-			}*/
-
-		}
-		else
-		{
-			Log::FormatError("SocketError:read size:{}", (int)readDataSize);
-
-			result = SocketError::Fault;
-			break;
-		}
-	}
-
-
-	return result;
+	InitializeAPI();
 }
 
-SocketError Socket::ReceiveFrom(const AddressInfo& address, IStream& stream, int inControlFlag)
+Socket::Socket(const IPAddress& address, const IPProtocol& protocolInfo, SocketType socketType /*= SocketType::TCP*/)
+	: Socket(MedusaInvalidSocket, address, protocolInfo, socketType)
 {
-	if (mSocketType != SocketType::UDP)
-	{
-		return SocketError::Fault;
-	}
-	SocketError result;
-	const int tempBufferSize = 1024;
-	char tempBuffer[tempBufferSize];
 
-
-	int outFromDataSize = sizeof(sockaddr);
-
-	while (true)
-	{
-		intp readDataSize = recvfrom(mSocketDescriptor, tempBuffer, tempBufferSize, inControlFlag, address.GenearlAddressPtr(), (socklen_t*)&outFromDataSize);
-
-		if (readDataSize < 0)
-		{
-			result = SocketError::Fault;
-			break;
-		}
-		else if (readDataSize>0)
-		{
-			stream.WriteData(MemoryData::FromStatic((const byte*)tempBuffer, readDataSize));
-			/*if (checker(stream))
-			{
-				result = SocketError::Success;
-				break;
-			}*/
-		}
-		else
-		{
-			result = SocketError::Fault;
-			break;
-		}
-	}
-
-	return result;
 }
 
+Socket::Socket(SOCKET socket, const IPAddress& address, const IPProtocol& protocolInfo, SocketType socketType /*= SocketType::TCP*/)
+	: mSocketDescriptor(socket),
+	mAddress(address),
+	mProtocol(protocolInfo),
+	mSocketType(socketType)
+{
+	InitializeAPI();
+}
+
+Socket::~Socket()
+{
+	
+}
 
 void Socket::Close()
 {
-#ifdef WIN32
-	::closesocket(mSocketDescriptor);
+	if (mSocketDescriptor != MedusaInvalidSocket)
+	{
+#ifdef MEDUSA_WINDOWS
+		::closesocket(mSocketDescriptor);
 #else
-	::close(mSocketDescriptor);
-#endif // WIN32
-	mSocketDescriptor= (SOCKET)(~0);
+		::close(mSocketDescriptor);
+#endif // MEDUSA_WINDOWS
+		mSocketDescriptor = MedusaInvalidSocket;
+	}
 }
 
-bool Socket::ShutDown(SocketPipeType inControlFlag)
+bool Socket::ShutDown(ChannelPipeType inControlFlag)
 {
 	return shutdown(mSocketDescriptor, (int)inControlFlag) == 0;
 }
 
-bool Socket::InitializeAPI()
+
+void Socket::EnableAsync(bool isAsync)
 {
-#ifdef WIN32
-	WORD wVersionRequested;
-	WSADATA wsaData;
-	wVersionRequested = MAKEWORD(2, 2);
-	int err = WSAStartup(wVersionRequested, &wsaData);
-	if (err != 0)
-	{
-		return false;
-	}
-#endif // WIN32
-	return true;
-}
-
-bool Socket::UninitializeAPI()
-{
-#ifdef WIN32
-	WSACleanup();
-#endif // WIN32
-
-	return true;
-}
-
-
-const char* Socket::GetProtocolName() const
-{
-	if (mSocketType == SocketType::TCP)
-	{
-		return "tcp";
-	}
-	else if (mSocketType == SocketType::UDP)
-	{
-		return "udp";
-	}
-	return nullptr;
-}
-
-SocketProtocolType Socket::GetProtocolType(SocketType socketType)
-{
-	if (socketType == SocketType::TCP)
-	{
-		return SocketProtocolType::TCP;
-	}
-	else if (socketType == SocketType::UDP)
-	{
-		return SocketProtocolType::UDP;
-	}
-	return SocketProtocolType::TCP;
-}
-
-bool Socket::CreateSocket()
-{
-	if (mSocketDescriptor!= (SOCKET)(~0))
-	{
-		Close();
-	}
-
-	mSocketDescriptor = socket((int)mAddress.AddressFamily(), (int)mSocketType, (int)GetProtocolType(mSocketType));
-	if (mSocketDescriptor <= 0)
-	{
-		mSocketDescriptor = (SOCKET)(~0);
-		return false;
-	}
-	return true;
-}
-
-int Socket::GetError()
-{
-#ifdef WIN32
-	return WSAGetLastError();
+	unsigned long   ul = isAsync ? 1 : 0;
+#ifdef MEDUSA_IOS
+	fcntl(mSocketDescriptor, F_SETFL, O_NONBLOCK);
 #else
-	return 0;
-#endif 
+	ioctlsocket(mSocketDescriptor, FIONBIO, &ul);
+#endif
 }
 
-bool Socket::Bind()
+void Socket::EnableKeepAlive(bool val)
 {
-	int result = ::bind(mSocketDescriptor, mAddress.GenearlAddressPtr(), sizeof(sockaddr));
-	return result >= 0;
+	int optval = val ? 1 : 0;
+	::setsockopt(mSocketDescriptor, SOL_SOCKET, SO_KEEPALIVE, (const char*)&optval, static_cast<socklen_t>(sizeof optval));
 }
 
-Socket* Socket::Accept()
+void Socket::EnableReusePort(bool val)
 {
-	sockaddr socketAddress;
-	int len = sizeof(sockaddr);
-	SOCKET clientSocketDescriptor = ::accept(mSocketDescriptor, &socketAddress, (socklen_t*)&len);
-
-	if (clientSocketDescriptor <= 0)
+#ifdef SO_REUSEPORT
+	int optval = val ? 1 : 0;
+	int ret = ::setsockopt(mSocketDescriptor, SOL_SOCKET, SO_REUSEPORT, (const char*)&optval, static_cast<socklen_t>(sizeof optval));
+	if (ret < 0 && val)
 	{
-
-		//int errorCode= GetError();
-		return nullptr;
+		Log::AssertFailed("SO_REUSEPORT failed.");
 	}
+#endif
+}
 
-	return new Socket(clientSocketDescriptor, socketAddress);
+void Socket::EnableReuseAddress(bool val)
+{
+	int optval = val ? 1 : 0;
+	::setsockopt(mSocketDescriptor, SOL_SOCKET, SO_REUSEADDR, (const char*)&optval, static_cast<socklen_t>(sizeof optval));
+}
+
+void Socket::EnableTcpNoDelay(bool val)
+{
+	int optval = val ? 1 : 0;
+	::setsockopt(mSocketDescriptor, IPPROTO_TCP, TCP_NODELAY, (const char*)&optval, static_cast<socklen_t>(sizeof optval));
 }
 
 void Socket::SetSendTimeout(int milliSeconds)
 {
-#ifdef WIN32
+#ifdef MEDUSA_WINDOWS
 	setsockopt(mSocketDescriptor, SOL_SOCKET, SO_SNDTIMEO, (char *)&milliSeconds, sizeof(int));
 #else
 	struct timeval timeout = { milliSeconds * 1000,0 };
@@ -299,12 +146,155 @@ void Socket::SetSendTimeout(int milliSeconds)
 
 void Socket::SetReceiveTimeout(int milliSeconds)
 {
-#ifdef WIN32
+#ifdef MEDUSA_WINDOWS
 	setsockopt(mSocketDescriptor, SOL_SOCKET, SO_RCVTIMEO, (char *)&milliSeconds, sizeof(int));
 #else
 	struct timeval timeout = { milliSeconds * 1000,0 };
 	setsockopt(mSocketDescriptor, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout, sizeof(struct timeval));
 #endif 
+}
+
+void Socket::SetSendBufferSize(uint val)
+{
+	setsockopt(mSocketDescriptor, SOL_SOCKET, SO_SNDBUF, (char *)&val, sizeof(val));
+}
+
+void Socket::SetReceiveBufferSize(uint val)
+{
+	setsockopt(mSocketDescriptor, SOL_SOCKET, SO_RCVBUF, (char *)&val, sizeof(val));
+}
+
+uint Socket::GetSendBufferSize() const
+{
+	uint val;
+	int len = sizeof(val);
+	getsockopt(mSocketDescriptor, SOL_SOCKET, SO_SNDBUF, (char *)&val, &len);
+	return val;
+}
+
+
+uint Socket::GetReceiveBufferSize() const
+{
+	uint val;
+	int len = sizeof(val);
+	getsockopt(mSocketDescriptor, SOL_SOCKET, SO_RCVBUF, (char *)&val, &len);
+	return val;
+}
+
+bool Socket::CreateSocket()
+{
+	if (mSocketDescriptor != MedusaInvalidSocket)
+	{
+		Close();
+	}
+
+	mSocketDescriptor = socket((int)mAddress.Family(), (int)mSocketType, (int)IPProtocol::GetProtocolType(mSocketType));
+	if (mSocketDescriptor <= 0)
+	{
+		mSocketDescriptor = MedusaInvalidSocket;
+		return false;
+	}
+	else if (mSocketDescriptor == MedusaInvalidSocket)
+	{
+		int err = GetError();
+		char errBuffer[1024];
+		strerror_s(errBuffer, err);
+		Log::FormatError("Failed to CreateSocket. {}", errBuffer);
+		return false;
+	}
+
+	return true;
+}
+
+int Socket::GetError()const
+{
+#ifdef MEDUSA_WINDOWS
+	return WSAGetLastError();
+#else
+	int error;
+	int length = sizeof(error);
+	//have to get more specific result
+	if (getsockopt(mSocketDescriptor, SOL_SOCKET, SO_ERROR, (char*)&error, &length) < 0)	//if success, it'll return 0
+	{
+		return errno;
+	}
+	return error;
+#endif 
+}
+
+int Socket::GetSocketError(SOCKET sock /*= MedusaInvalidSocket*/)
+{
+	if (sock != MedusaInvalidSocket)
+	{
+		int error;
+		int length = sizeof(error);
+		//have to get more specific result
+		if (getsockopt(sock, SOL_SOCKET, SO_ERROR, (char*)&error, &length) == 0)	//if success, it'll return 0
+		{
+			return error;
+		}
+	}
+
+#ifdef MEDUSA_WINDOWS
+	return WSAGetLastError();
+#else
+	return errno;
+#endif
+
+}
+
+IPAddress Socket::LocalAddress() const
+{
+	return IPAddress::Local(mSocketDescriptor);
+}
+
+IPAddress Socket::RemoteAddress() const
+{
+	return IPAddress::Remote(mSocketDescriptor);
+}
+
+
+bool Socket::IsSelfConnected() const
+{
+	IPAddress local = LocalAddress();
+	IPAddress remote = RemoteAddress();
+	if (local.Family() == SocketAddressFamily::IP)
+	{
+		return local.Port() == remote.Port() && Memory::Equals(&local.IP().sin_addr, &remote.IP().sin_addr,1);
+	}
+	else if (local.Family() == SocketAddressFamily::IP6)
+	{
+		return local.Port() == remote.Port() && Memory::Equals(&local.IP6().sin6_addr, &remote.IP6().sin6_addr,1);
+	}
+	return false;
+}
+
+bool Socket::Bind()
+{
+	int result = ::bind(mSocketDescriptor, mAddress.GenearlPtr(), sizeof(sockaddr));
+	return result >= 0;
+}
+
+bool Socket::Accept(Socket& outSocket)
+{
+	IPAddress address;
+	sockaddr socketAddress;
+	int len = sizeof(sockaddr);
+	SOCKET clientSocketDescriptor = ::accept(mSocketDescriptor, &socketAddress, (socklen_t*)&len);
+
+	if (clientSocketDescriptor <= 0)
+	{
+		//int errorCode= GetError();
+		return nullptr;
+	}
+	address.SetGenearlAddress(socketAddress);
+
+	outSocket.SetType(mSocketType);
+	outSocket.SetSocketDescriptor(clientSocketDescriptor);
+	outSocket.SetAddress(address);
+	outSocket.SetProtocol(mProtocol);
+	outSocket.EnableAsync(true);
+	return true;
 }
 
 bool Socket::Listen(unsigned int inQueueLength /*= 5*/)
@@ -317,9 +307,9 @@ bool Socket::Listen(unsigned int inQueueLength /*= 5*/)
 	return false;
 }
 
-SocketError Socket::Select(SocketEventFlags& outFlags, SocketEventFlags flags, uint millisecondsTimeout /*= 0*/)
+ChannelEventResult Socket::Select(ChannelEventFlags& outFlags, ChannelEventFlags flags, uint32_t millisecondsTimeout /*= 0*/)
 {
-	outFlags = SocketEventFlags::None;
+	outFlags = ChannelEventFlags::None;
 
 	timeval tval;
 	const timeval* timeoutPtr = nullptr;
@@ -330,55 +320,55 @@ SocketError Socket::Select(SocketEventFlags& outFlags, SocketEventFlags flags, u
 		timeoutPtr = &tval;
 	}
 
-	if (MEDUSA_FLAG_HAS(flags, SocketEventFlags::Read))
+	if (MEDUSA_FLAG_HAS(flags, ChannelEventFlags::Read))
 	{
 		fd_set readSet;
 		FD_ZERO(&readSet);
 		FD_SET(mSocketDescriptor, &readSet);
 
-		if (MEDUSA_FLAG_HAS(flags, SocketEventFlags::Write))
+		if (MEDUSA_FLAG_HAS(flags, ChannelEventFlags::Write))
 		{
 			fd_set writeSet;
 			FD_ZERO(&writeSet);
 			FD_SET(mSocketDescriptor, &writeSet);
 
 			int selectResult = ::select((int)mSocketDescriptor + 1, &readSet, &writeSet, nullptr, timeoutPtr);	//>0 :count -1:error 0:timeout
-			RETURN_OBJECT_IF(selectResult == 0, SocketError::Timeout);
-			RETURN_OBJECT_IF(selectResult < 0, SocketError::Fault);
+			RETURN_OBJECT_IF(selectResult == 0, ChannelEventResult::Timeout);
+			RETURN_OBJECT_IF(selectResult < 0, ChannelEventResult::Fault);
 
 			if (FD_ISSET(mSocketDescriptor, &writeSet))
 			{
-				MEDUSA_FLAG_ADD(outFlags, SocketEventFlags::Write);
+				MEDUSA_FLAG_ADD(outFlags, ChannelEventFlags::Write);
 			}
 
 		}
 		else
 		{
 			int selectResult = ::select((int)mSocketDescriptor + 1, &readSet, nullptr, nullptr, timeoutPtr);	//>0 :count -1:error 0:timeout
-			RETURN_OBJECT_IF(selectResult == 0, SocketError::Timeout);
-			RETURN_OBJECT_IF(selectResult < 0, SocketError::Fault);
+			RETURN_OBJECT_IF(selectResult == 0, ChannelEventResult::Timeout);
+			RETURN_OBJECT_IF(selectResult < 0, ChannelEventResult::Fault);
 		}
 
 		if (FD_ISSET(mSocketDescriptor, &readSet))
 		{
-			MEDUSA_FLAG_ADD(outFlags, SocketEventFlags::Read);
+			MEDUSA_FLAG_ADD(outFlags, ChannelEventFlags::Read);
 		}
 	}
 	else
 	{
-		if (MEDUSA_FLAG_HAS(flags, SocketEventFlags::Write))
+		if (MEDUSA_FLAG_HAS(flags, ChannelEventFlags::Write))
 		{
 			fd_set writeSet;
 			FD_ZERO(&writeSet);
 			FD_SET(mSocketDescriptor, &writeSet);
 
 			int selectResult = ::select((int)mSocketDescriptor + 1, nullptr, &writeSet, nullptr, timeoutPtr);	//>0 :count -1:error 0:timeout
-			RETURN_OBJECT_IF(selectResult == 0, SocketError::Timeout);
-			RETURN_OBJECT_IF(selectResult < 0, SocketError::Fault);
+			RETURN_OBJECT_IF(selectResult == 0, ChannelEventResult::Timeout);
+			RETURN_OBJECT_IF(selectResult < 0, ChannelEventResult::Fault);
 
 			if (FD_ISSET(mSocketDescriptor, &writeSet))
 			{
-				MEDUSA_FLAG_ADD(outFlags, SocketEventFlags::Write);
+				MEDUSA_FLAG_ADD(outFlags, ChannelEventFlags::Write);
 			}
 
 		}
@@ -389,82 +379,197 @@ SocketError Socket::Select(SocketEventFlags& outFlags, SocketEventFlags flags, u
 	//have to get more specific result
 	if (getsockopt(mSocketDescriptor, SOL_SOCKET, SO_ERROR, (char*)&error, &length) < 0)	//if success, it'll return 0
 	{
-		return SocketError::Fault;
+		return ChannelEventResult::Fault;
 	}
 
-	return SocketError::Success;
+	return ChannelEventResult::Success;
 }
 
-int Socket::Connect()
+ChannelEventResult Socket::Connect()
 {
-	int connectState = ::connect(mSocketDescriptor, mAddress.GenearlAddressPtr(), sizeof(sockaddr));
-	return connectState;
-}
-
-SocketError Socket::ConnectAsync(uint millisecondsTimeout /*= 0*/)
-{
-	int connectState = ::connect(mSocketDescriptor, mAddress.GenearlAddressPtr(), sizeof(sockaddr));	//0:success, !=0: error
+	int connectState = ::connect(mSocketDescriptor, mAddress.GenearlPtr(), sizeof(sockaddr_in));
 	if (connectState == 0)	//connected!
 	{
-		return SocketError::Success;
+		return ChannelEventResult::Success;
 	}
 
-	if (errno != EINPROGRESS)	//connect failed immediately, maybe some other errors
+	int err = GetError();
+	switch (err)
 	{
-		return SocketError::Fault;
+	case EINPROGRESS:
+	case EINTR:
+	case EISCONN:
+	case EWOULDBLOCK:
+		return ChannelEventResult::InProgress;
+	case EAGAIN:
+	case EADDRINUSE:
+	case EADDRNOTAVAIL:
+	case ECONNREFUSED:
+	case ENETUNREACH:
+		return ChannelEventResult::Retry;
+	case EACCES:
+	case EPERM:
+	case EAFNOSUPPORT:
+	case EALREADY:
+	case EBADF:
+	case EFAULT:
+	case ENOTSOCK:
+	default:
+		return ChannelEventResult::Fault;
+		break;
 	}
 
-	SocketEventFlags outFlags;
-	SocketError selectError = Select(outFlags, SocketEventFlags::ReadWrite, millisecondsTimeout);
-	if (selectError==SocketError::Timeout)
-	{
-		return SocketError::Timeout;
-	}
-	if (selectError == SocketError::Fault)
-	{
-		return SocketError::InProgress;
-	}
-
-	if (outFlags==SocketEventFlags::Write)
-	{
-		return SocketError::Success;
-	}
-
-	return SocketError::Fault;
-	
 }
 
-bool Socket::ParseAddress(StringRef inHostName, ushort port, SocketType socketType, AddressInfo& outAddress, ProtocolInfo& outProtocolInfo)
+ChannelEventResult Socket::ConnectAsync(uint32_t millisecondsTimeout /*= 0*/)
 {
-	RETURN_FALSE_IF_EMPTY(inHostName);
-	outAddress.SetPortID(htons(port));
-
-	//get ip address from host name, allow dotted decimal notation
-	HostInfo hostInfo = HostInfo::GetHost(inHostName);
-	if (hostInfo.IsValid())
+	int connectState = ::connect(mSocketDescriptor, mAddress.GenearlPtr(), sizeof(sockaddr));	//0:success, !=0: error
+	if (connectState == 0)	//connected!
 	{
-		sockaddr_in temp;
-		memcpy(&temp.sin_addr, hostInfo.FirstHostAddress(),sizeof(temp.sin_addr));
-		outAddress.SetAddress(temp.sin_addr);
+		return ChannelEventResult::Success;
+	}
+
+	int err = GetError();
+	if (err != EWOULDBLOCK&&err != EINPROGRESS)	//connect failed immediately, maybe some other errors
+	{
+		return ChannelEventResult::Fault;
+	}
+
+
+	ChannelEventFlags outFlags;
+	ChannelEventResult selectError = Select(outFlags, ChannelEventFlags::ReadWrite, millisecondsTimeout);
+	if (selectError == ChannelEventResult::Timeout)
+	{
+		return ChannelEventResult::Timeout;
+	}
+	if (selectError == ChannelEventResult::Fault)
+	{
+		return ChannelEventResult::InProgress;
+	}
+
+	if (outFlags == ChannelEventFlags::Write)
+	{
+		return ChannelEventResult::Success;
+	}
+
+	return ChannelEventResult::Fault;
+
+}
+
+
+
+ChannelEventResult Socket::SendAsync(int& outWriteSize, const byte* buffer, int bufferSize, int flags /*= 0*/)
+{
+	int writtenDataSize = ::send(mSocketDescriptor, (const char*)buffer, bufferSize, flags);
+	if (writtenDataSize < 0)
+	{
+		if (errno == EINTR)
+			return ChannelEventResult::Interrupt;
+
+		if (errno == EAGAIN)
+		{
+			return ChannelEventResult::InProgress;
+		}
+
+		return ChannelEventResult::Fault;
+	}
+	else if (writtenDataSize == 0)
+	{
+		int error=GetError();
+		Log::FormatError("Read error:{}", error);
+		return ChannelEventResult::Fault;
 	}
 	else
 	{
-		in_addr sAddr; // IPv4地址结构体
-		int r = inet_pton((int)SocketAddressFamily::TCPIP, inHostName.c_str(), &sAddr);
-		if (r>0)
+		outWriteSize = writtenDataSize;
+		return ChannelEventResult::Success;
+	}
+}
+
+ChannelEventResult Socket::SendAsync(NetworkBuffer& buffer, int flags /*= 0*/)
+{
+	while (buffer.ReadableCount() > 0)
+	{
+		int writtenDataSize = 0;
+		auto socketError = SendAsync(writtenDataSize, buffer.ReadBegin(), (int)buffer.ReadableCount());
+		if (socketError == ChannelEventResult::Success)
 		{
-			outAddress.SetAddress(sAddr);
+			buffer.Retrieve(writtenDataSize);
+		}
+		else
+		{
+			return socketError;
 		}
 	}
 
-	outProtocolInfo = ProtocolInfo::GetProtocol(GetProtocolType(socketType));
-	return true;
+	return ChannelEventResult::Success;
 }
 
-void Socket::EnableAsync(bool isAsync)
+ChannelEventResult Socket::ReceiveAsync(int& outReadSize, byte* outBuffer, int bufferSize, int flags /*= 0*/)
 {
-	unsigned long   ul = isAsync ? 1 : 0;
-	ioctlsocket(mSocketDescriptor, FIONBIO, &ul);
+	outReadSize = 0;
+	int readDataSize = ::recv(mSocketDescriptor, (char*)outBuffer, bufferSize, flags);
+
+	if (readDataSize < 0)
+	{
+		int err = GetError();
+		if (err == EAGAIN)
+		{
+			return ChannelEventResult::InProgress;
+		}
+		else if (err == EWOULDBLOCK)
+		{
+			// No more data to read right now.
+			return ChannelEventResult::InProgress;
+		}
+		else
+		{
+			return ChannelEventResult::Fault;
+		}
+	}
+	else if (readDataSize == 0)
+	{
+		//socket has been closed
+		int error = GetError();
+		Log::FormatError("Read error:{}", error);
+
+		int socketError= GetSocketError(mSocketDescriptor);
+		Log::FormatError("Read socket error:{}", socketError);
+
+		return ChannelEventResult::ConnectFault;
+	}
+	else
+	{
+		//read success
+		outReadSize = readDataSize;
+		return ChannelEventResult::Success;
+	}
+
+}
+
+ChannelEventResult Socket::ReceiveAsync(NetworkBuffer& outBuffer, int flags /*= 0*/)
+{
+	while (true)
+	{
+		int outReadSize = 0;
+		outBuffer.TryAdjust();
+		size_t writableSize = outBuffer.WritableCount();
+		auto socketError = ReceiveAsync(outReadSize, outBuffer.WriteBegin(), (int)writableSize);
+		if (socketError == ChannelEventResult::Success)
+		{
+			outBuffer.HasWritten(outReadSize);	//read all data
+			return ChannelEventResult::Success;
+		}
+		else if(socketError==ChannelEventResult::InProgress)
+		{
+			return socketError;
+		}
+		else
+		{
+			return socketError;
+		}
+	}
+	return ChannelEventResult::Success;
 
 }
 

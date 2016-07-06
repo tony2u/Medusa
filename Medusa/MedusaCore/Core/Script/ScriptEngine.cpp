@@ -5,7 +5,7 @@
 #ifdef MEDUSA_SCRIPT
 
 #include "ScriptEngine.h"
-#include "Core/Command/EventArg/UserDataEventArg.h"
+#include "Core/Event/EventArg/UserDataEventArg.h"
 #include "Core/IO/FileId.h"
 #include "Core/IO/FileSystem.h"
 MEDUSA_BEGIN;
@@ -18,7 +18,7 @@ ScriptEngine::ScriptEngine()
 
 ScriptEngine::~ScriptEngine(void)
 {
-
+	Uninitialize();
 }
 
 bool ScriptEngine::Initialize()
@@ -50,6 +50,7 @@ bool ScriptEngine::OnLoad(IEventArg& e /*= IEventArg::Empty*/)
 
 bool ScriptEngine::OnUnload(IEventArg& e /*= IEventArg::Empty*/)
 {
+	Uninitialize();
 	return true;
 }
 

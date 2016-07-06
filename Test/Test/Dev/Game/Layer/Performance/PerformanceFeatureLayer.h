@@ -7,7 +7,7 @@
 
 class PerformanceFeatureLayer :public BaseFeatureLayer
 {
-	MEDUSA_DECLARE_LAYER(PerformanceFeatureLayer);
+	MEDUSA_NODE(PerformanceFeatureLayer,BaseFeatureLayer);
 public:
 	PerformanceFeatureLayer(StringRef name=StringRef::Empty,const IEventArg& e=IEventArg::Empty);
 	virtual ~PerformanceFeatureLayer(void);

@@ -6,25 +6,21 @@
 #include "MedusaPreDeclares.h"
 #include "Core/Pattern/Object/MapObjectFactory.h"
 #include "Resource/Effect/Pass/IRenderPass.h"
+#include "Core/Pattern/Singleton.h"
+#include "Core/Pattern/Share.h"
+#include "Resource/Effect/Shader/IShader.h"
 
 MEDUSA_BEGIN;
 
-class RenderPassCreater:public MapObjectFactory<StringRef,IRenderPass*(const FileIdRef& fileId,IShader* vertexShader,IShader* pixelShader,int index)>
+class RenderPassCreater:public MapObjectFactory<StringRef, IRenderPass*(const FileIdRef& fileId, const Share<IShader>& vertexShader, const Share<IShader>& pixelShader,int index)>, public Singleton<RenderPassCreater>
 {
-public:
-	using MapObjectFactory<StringRef,IRenderPass*(const FileIdRef& fileId,IShader* vertexShader,IShader* pixelShader,int index)>::Create;
-private:
 	RenderPassCreater();
-	~RenderPassCreater(){}
+	~RenderPassCreater() {}
+	friend class Singleton<RenderPassCreater>;
 public:
-	static RenderPassCreater& Instance()
-	{
-		static RenderPassCreater creater;
-		return creater;
-	}
-
+	using MapObjectFactory<StringRef, IRenderPass*(const FileIdRef& fileId, const Share<IShader>& vertexShader, const Share<IShader>& pixelShader,int index)>::Create;
 	template<typename T>
-	IRenderPass* Create(const FileIdRef& fileId,IShader* vertexShader,IShader* pixelShader,int index=0)
+	Share<IRenderPass> Create(const FileIdRef& fileId, const Share<IShader>& vertexShader, const Share<IShader>& pixelShader,int index=0)
 	{
 		return Create(typename T::ClassNameStatic(),fileId,vertexShader,pixelShader,index);
 	}

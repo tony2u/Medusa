@@ -32,21 +32,21 @@ bool TimelineFactory::Uninitialize()
 
 RenderingObjectTimeline* TimelineFactory::CreateRenderingObjectTimelineFromTextures(const StringRef& modelName, const StringRef& textureNamePattern, float fps /*= 24.f*/, bool isRepeatForever /*= false*/)
 {
-	RenderingObjectTimelineModel* model = TimelineModelFactory::Instance().CreateRenderingObjectFromTextures(modelName, textureNamePattern, fps);
+	auto model = TimelineModelFactory::Instance().CreateRenderingObjectFromTextures(modelName, textureNamePattern, fps);
 	RenderingObjectTimeline* ani = new RenderingObjectTimeline(model, isRepeatForever);
 	return ani;
 }
 
 RenderingObjectTimeline* TimelineFactory::CreateRenderingObjectTimelineFromSingleTexture(const StringRef& modelName, const FileIdRef& textureName, uint coloumn, uint row/*=1*/, float fps/*=24.f*/, bool isRepeatForever /*= false*/)
 {
-	RenderingObjectTimelineModel* model = TimelineModelFactory::Instance().CreateRenderingObjectFromSingleTexture(modelName, textureName, coloumn, row, fps);
+	auto model = TimelineModelFactory::Instance().CreateRenderingObjectFromSingleTexture(modelName, textureName, coloumn, row, fps);
 	RenderingObjectTimeline* ani = new RenderingObjectTimeline(model, isRepeatForever);
 	return ani;
 }
 
 RenderingObjectTimeline* TimelineFactory::CreateRenderingObjectTimelineFromTextureAtlas(const FileIdRef& atlasFileId, const StringRef& regionPattern, TextureAtlasType fileFormat /*= TextureAtlasFileFormat::Spine*/,  const Color4F& color /*= Color4F::White*/, float fps /*= 24.f*/, bool isRepeatForever /*= false*/)
 {
-	RenderingObjectTimelineModel* model = TimelineModelFactory::Instance().CreateRenderingObjectFromTextureAtlas(atlasFileId.Name, atlasFileId, regionPattern,fileFormat, color, fps);
+	auto model = TimelineModelFactory::Instance().CreateRenderingObjectFromTextureAtlas(atlasFileId.Name, atlasFileId, regionPattern,fileFormat, color, fps);
 	RenderingObjectTimeline* ani = new RenderingObjectTimeline(model, isRepeatForever);
 	return ani;
 }

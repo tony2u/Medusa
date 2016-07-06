@@ -11,7 +11,7 @@
 MEDUSA_BEGIN;
 
 
-TextureAtlasPage* CocosTextureAtlas::OnCreatePage(const FileIdRef& fileId, const IStream& stream)
+TextureAtlasPage* CocosTextureAtlas::OnCreatePage(FileEntry& fileEntry, const FileIdRef& fileId, const IStream& stream)
 {
 	ApplePropertyListReader reader;
 	auto data = stream.ReadToEnd();
@@ -21,7 +21,7 @@ TextureAtlasPage* CocosTextureAtlas::OnCreatePage(const FileIdRef& fileId, const
 		Log::AssertFailedFormat("Invalid plist:{}", fileId);
 		return nullptr;
 	}
-	std::unique_ptr<TextureAtlasPage> page(new TextureAtlasPage(0));
+	std::unique_ptr<TextureAtlasPage> page(new TextureAtlasPage(0,&fileEntry));
 	page->SetTexcoordUpSide(false);
 
 
@@ -33,8 +33,8 @@ TextureAtlasPage* CocosTextureAtlas::OnCreatePage(const FileIdRef& fileId, const
 	auto sizeStr = metadata.ToString("size");
 	auto size = ToSize(sizeStr);
 	auto textureFileName = metadata.ToString("textureFileName");
-	textureFileName = Path::GetFileName(textureFileName);
-	page->SetTextureFileId(textureFileName);
+	auto textureFileId = FileId::ParseFrom(textureFileName);
+	page->SetTextureFileId(textureFileId);
 	page->SetPremultiplyAlpha(premultiplyAlpha);
 	page->SetPageSize(size);
 
@@ -56,21 +56,26 @@ TextureAtlasPage* CocosTextureAtlas::OnCreatePage(const FileIdRef& fileId, const
 		if (format == 2 || format == 1)	//from cocostudio
 		{
 			Rect2U rect = ToRect(frame.ToString("frame"));
-			Point2U offset = ToPoint(frame.ToString("offset"));
+			Point2I offset = ToPoint(frame.ToString("offset"));
 			bool isRotated = frame.ToBool("rotated");
 			Size2U sourceSize = ToSize(frame.ToString("sourceSize"));
 
 			region->SetRotate(isRotated);
 			region->SetTextureRect(rect);
 			region->SetOriginalSize(sourceSize);
-			region->SetOffset(offset);
+
+			//cocos offset is from picture center, so we have to transform to left-bottom
+			Point2U realOffset;
+			realOffset.X = sourceSize.Width / 2 + offset.X - rect.Width() / 2;
+			realOffset.Y = sourceSize.Height / 2 - offset.Y - rect.Height() / 2;
+			region->SetOffset(realOffset);
 		}
 		else if (format == 3)	//from texture packer
 		{
 			//max rect 
 			//can support polygon 
 			Size2U spriteSize = ToSize(frame.ToString("spriteSize"));
-			Point2U spriteOffset = ToPoint(frame.ToString("spriteOffset"));
+			Point2I spriteOffset = ToPoint(frame.ToString("spriteOffset"));
 			Size2U spriteSourceSize = ToSize(frame.ToString("spriteSourceSize"));
 			Rect2U textureRect = ToRect(frame.ToString("textureRect"));
 			textureRect.Size = spriteSize;	//cocos not use this
@@ -79,7 +84,12 @@ TextureAtlasPage* CocosTextureAtlas::OnCreatePage(const FileIdRef& fileId, const
 			region->SetRotate(textureRotated);
 			region->SetTextureRect(textureRect);
 			region->SetOriginalSize(spriteSourceSize);
-			region->SetOffset(spriteOffset);
+
+			//cocos offset is from picture center, so we have to transform to left-bottom
+			Point2U realOffset;
+			realOffset.X = spriteSize.Width / 2 + spriteOffset.X - textureRect.Width() / 2;
+			realOffset.Y = spriteSize.Height / 2 - spriteOffset.Y - textureRect.Height() / 2;
+			region->SetOffset(realOffset);
 
 			auto* verticesNode = frame.Find("vertices");
 			if (verticesNode != nullptr)
@@ -89,7 +99,7 @@ TextureAtlasPage* CocosTextureAtlas::OnCreatePage(const FileIdRef& fileId, const
 				auto verticesUV = ToUIntList(frame.ToString("verticesUV"));
 				auto triangles = ToUIntList(frame.ToString("triangles"));
 
-				uint vertexCount = vertices.Count() / 2;
+				uint vertexCount = (uint)vertices.Count() / 2;
 				FOR_EACH_SIZE(i, vertexCount)
 				{
 					auto& newVertex = region->MutableVertices().NewAdd();

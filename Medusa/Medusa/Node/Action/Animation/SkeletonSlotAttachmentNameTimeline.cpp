@@ -10,7 +10,7 @@
 
 MEDUSA_BEGIN;
 
-SkeletonSlotAttachmentNameTimeline::SkeletonSlotAttachmentNameTimeline(StringTimelineModel* model, bool isRepeatForever /*= false*/)
+SkeletonSlotAttachmentNameTimeline::SkeletonSlotAttachmentNameTimeline(const Share<StringTimelineModel>& model, bool isRepeatForever /*= false*/)
 	:ITimeline(model, isRepeatForever)
 {
 }
@@ -37,7 +37,7 @@ bool SkeletonSlotAttachmentNameTimeline::Initialize(void* target)
 
 bool SkeletonSlotAttachmentNameTimeline::OnUpdate(float prevElapsed, float dt, float blend /*= 1.f*/)
 {
-	StringTimelineModel* model = (StringTimelineModel*)mModel;
+	auto model = mModel.CastPtr<StringTimelineModel>();
 	SkeletonSlot* slot = (SkeletonSlot*)mTarget;
 
 	StringRef slotName= slot->Name();

@@ -6,11 +6,11 @@
 #include "Resource/Model/Mesh/Fixed/TextureNineGridMesh.h"
 #include "Resource/Material/IMaterial.h"
 #include "Resource/Texture/ITexture.h"
-
+#include "Node/NodeFactory.h"
 MEDUSA_BEGIN;
 
-NineGridSprite::NineGridSprite(StringRef name/*=StringRef::Empty*/)
-	:INode(name),
+NineGridSprite::NineGridSprite(StringRef name/*=StringRef::Empty*/, const IEventArg& e /*= IEventArg::Empty*/)
+	:INode(name,e),
 	mTexturePadding(ThicknessF::Zero)
 {
 	SetSizeToContent(SizeToContent::WidthAndHeight);
@@ -35,7 +35,6 @@ void NineGridSprite::EnableNineGrid(bool val)
 void NineGridSprite::OnMoveableDirty(MoveableChangedFlags changedFlags)
 {
 	INode::OnMoveableDirty(changedFlags);
-
 	if (MEDUSA_FLAG_HAS(changedFlags,MoveableChangedFlags::SizeChanged))
 	{
 		OnUpdateMesh();
@@ -44,13 +43,13 @@ void NineGridSprite::OnMoveableDirty(MoveableChangedFlags changedFlags)
 
 void NineGridSprite::OnUpdateMesh()
 {
-	TextureNineGridMesh* mesh=(TextureNineGridMesh*)mRenderingObject.Mesh();
+	auto mesh=mRenderingObject.Mesh().CastPtr<TextureNineGridMesh>();
 	RETURN_IF_NULL(mesh);
 	mesh->UpdateToNewTargetSize(mSize.To2D());
 	
 }
 
-MEDUSA_IMPLEMENT_RTTI(NineGridSprite, INode);
+MEDUSA_IMPLEMENT_NODE(NineGridSprite);
 
 
 MEDUSA_END;

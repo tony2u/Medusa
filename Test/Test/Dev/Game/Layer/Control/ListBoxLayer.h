@@ -7,7 +7,7 @@
 
 class ListBoxLayer :public BaseCaseLayer
 {
-	MEDUSA_DECLARE_LAYER(ListBoxLayer);
+	MEDUSA_NODE(ListBoxLayer, BaseCaseLayer);
 public:
 	ListBoxLayer(StringRef name=StringRef::Empty,const IEventArg& e=IEventArg::Empty);
 	virtual ~ListBoxLayer(void);

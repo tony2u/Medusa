@@ -21,7 +21,7 @@ PODLightModelNode::~PODLightModelNode(void)
 {
 }
 
-ILight* PODLightModelNode::CreateLight() const
+Share<ILight> PODLightModelNode::CreateLight() const
 {
 	switch (Type)
 	{
@@ -33,7 +33,7 @@ ILight* PODLightModelNode::CreateLight() const
 		break;
 	case GraphicsLightType::Spot:
 		{
-			SpotLight* light= new SpotLight(mName);
+			Share<SpotLight> light= new SpotLight(mName);
 			light->SetCutoff(FalloffAngle);
 			light->SetExponent(FalloffExponent);
 			light->SetConstantAttenuation(ConstantAttenuation);

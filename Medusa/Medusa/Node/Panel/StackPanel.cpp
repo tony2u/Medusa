@@ -3,11 +3,11 @@
 // license that can be found in the LICENSE file.
 #include "MedusaPreCompiled.h"
 #include "StackPanel.h"
-
+#include "Node/NodeFactory.h"
 MEDUSA_BEGIN;
 
-StackPanel::StackPanel(StringRef name/*=StringRef::Empty*/)
-	:IPanel(name),
+StackPanel::StackPanel(StringRef name/*=StringRef::Empty*/, const IEventArg& e /*= IEventArg::Empty*/)
+	:IPanel(name,e),
 	mItemFixedSize(Size2F::Zero)
 {
 }
@@ -22,6 +22,6 @@ bool StackPanel::ArrangeChildren(const Rect2F& limitRect/*=Rect2F::Zero*/, NodeL
 	return true;
 }
 
-MEDUSA_IMPLEMENT_RTTI(StackPanel, IPanel);
+MEDUSA_IMPLEMENT_NODE(StackPanel);
 
 MEDUSA_END;

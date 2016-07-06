@@ -8,7 +8,7 @@
 
 class TTFLayer :public BaseCaseLayer
 {
-	MEDUSA_DECLARE_LAYER(TTFLayer);
+	MEDUSA_NODE(TTFLayer, BaseCaseLayer);
 public:
 	TTFLayer(StringRef name=StringRef::Empty,const IEventArg& e=IEventArg::Empty);
 	virtual ~TTFLayer(void);

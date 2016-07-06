@@ -9,8 +9,9 @@ MEDUSA_BEGIN;
 
 class BaseMultipleLineEditBox :public IEditBox
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_RTTI(BaseMultipleLineEditBox,IEditBox);
 public:
+	BaseMultipleLineEditBox(const StringRef& name = StringRef::Empty, const IEventArg& e = IEventArg::Empty);
 	BaseMultipleLineEditBox(StringRef name, const Size2F& size, const FontId& fontId, WStringRef text = WStringRef::Empty, Alignment alignment = Alignment::LeftBottom);
 	virtual ~BaseMultipleLineEditBox(void);
 };

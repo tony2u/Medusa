@@ -9,10 +9,11 @@ MEDUSA_BEGIN;
 
 class StackPanel :public IPanel
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_NODE(StackPanel,IPanel);
 
 public:
-	StackPanel(StringRef name=StringRef::Empty);
+
+	StackPanel(StringRef name=StringRef::Empty, const IEventArg& e = IEventArg::Empty);
 	virtual ~StackPanel(void);
 	virtual PanelType GetPanelType()const override{return PanelType::Stack;}
 protected:

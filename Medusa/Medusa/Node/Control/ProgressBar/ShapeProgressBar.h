@@ -9,9 +9,10 @@ MEDUSA_BEGIN;
 
 class ShapeProgressBar :public IProgressBar
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_NODE(ShapeProgressBar,IProgressBar);
 
 public:
+	ShapeProgressBar(const StringRef& name = StringRef::Empty, const IEventArg& e = IEventArg::Empty);
 	ShapeProgressBar(StringRef name, ProgressType progressType, const Size2F& size, const Color4F& color, float percent=1.f);
 	virtual ~ShapeProgressBar(void);
 	virtual bool Initialize()override;

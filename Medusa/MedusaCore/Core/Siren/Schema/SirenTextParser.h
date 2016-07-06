@@ -13,6 +13,7 @@ class SirenTextParser
 public:
 	constexpr static char* EnumKeyword{ "enum" };
 	constexpr static char* ClassKeyword{ "class" };
+	constexpr static char* StructKeyword{ "struct" };
 	constexpr static char* IncludeKeyword{ "include" };
 	constexpr static char* AttributeKeyword{ "attribute" };
 public:
@@ -24,8 +25,8 @@ public:
 	bool ParseStream(IStream& steam);
 	bool ParseFile(const FileIdRef& fileId);
 
-	bool Parse(HeapString& text)override;
-	bool Parse(StringRef& text)override;
+	bool Parse(HeapString& text);
+	bool Parse(StringRef& text);
 public:
 	static StringRef ReadToken(StringRef& refProto);
 	static StringRef ReadTypeName(StringRef& refProto);

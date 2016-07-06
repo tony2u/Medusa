@@ -9,9 +9,18 @@
 
 MEDUSA_BEGIN;
 
+
+#define MEDUSA_DECLARE_COMPONENT(className,baseClassName) 				   \
+	MEDUSA_RTTI(className,baseClassName);	\
+private:													   \
+	const static StaticConstructor mStaticConstructor;		   
+
+#define MEDUSA_IMPLEMENT_COMPONENT(className,baseClassName) 																 \
+	const StaticConstructor className::mStaticConstructor([]{ComponentFactory::Instance().Register<className>(#className);});						
+
 class IComponent :public RTTIObject, public DefaultRunnable
 {
-	MEDUSA_DECLARE_RTTI_ROOT;
+	MEDUSA_RTTI_ROOT(IComponent);
 public:
 	IComponent(const StringRef& name = StringRef::Empty, int priority = 0, void* userData = nullptr);
 	virtual ~IComponent() {}
@@ -46,20 +55,6 @@ protected:
 
 };
 
-#define MEDUSA_DECLARE_COMPONENT 				   \
-	MEDUSA_DECLARE_RTTI;	\
-private:													   \
-	const static StaticConstructor mStaticConstructor;		   \
-	static void RegisterComponent();
-
-#define MEDUSA_IMPLEMENT_COMPONENT(className,baseClassName) 																 \
-	MEDUSA_IMPLEMENT_RTTI(className,baseClassName);\
-	const StaticConstructor className::mStaticConstructor(RegisterComponent);						 \
-	void className::RegisterComponent(){ComponentFactory::Instance().Register<className>(#className);}		
-
-#define MEDUSA_IMPLEMENT_COMPONENT_ROOT(className) 																 \
-	MEDUSA_IMPLEMENT_RTTI_ROOT(className);\
-	const StaticConstructor className::mStaticConstructor(RegisterComponent);						 \
-	void className::RegisterComponent(){ComponentFactory::Instance().Register<className>(#className);}		
+	
 
 MEDUSA_END;

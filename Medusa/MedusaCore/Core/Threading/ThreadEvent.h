@@ -8,11 +8,12 @@
 #include "Core/Threading/IWaitable.h"
 #include "Core/Threading/posix/ThreadEventImp_posix.h"
 #include "Core/Threading/win/ThreadEventImp_win.h"
+#include "Core/Pattern/INonCopyable.h"
 
 
 MEDUSA_BEGIN;
 
-class ThreadEvent :public ThreadEventImp, public IWaitable
+class ThreadEvent :public ThreadEventImp, public IWaitable,public INonCopyable
 {
 public:
 	ThreadEvent(bool autoReset = true, bool isSet = false, bool isInitializeNow = true);
@@ -27,7 +28,7 @@ public:
 	bool IsSet()const;
 	virtual bool Wait()override;
 	virtual bool TryWait()override;
-	virtual bool WaitTimeout(long milliseconds)override;
+	virtual bool WaitFor(long milliseconds)override;
 
 #ifdef MEDUSA_THREADING_MULTIPLE_WAIT
 	static bool WaitForMultipleEvents(const List<ThreadEvent*>& events, bool waitAll, long milliseconds,int& outWaitIndex);
@@ -36,10 +37,6 @@ public:
 #ifndef MEDUSA_POSIX_THREADING
 	virtual ThreadNativeHandle NativeHandle()const override { return mEvent; }
 #endif
-private:
-	ThreadEvent(const ThreadEvent &);
-	ThreadEvent& operator=(const ThreadEvent &);
-private:
 };
 
 

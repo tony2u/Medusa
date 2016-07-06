@@ -77,7 +77,7 @@ public:
 		float WorldSine; // sine of world angle
 	};
 	
-	static void CalculateWorldBone(List<Bone,NoCompare<Bone>>& bones);
+	static void CalculateWorldBone(List<Bone,NoCompare>& bones);
 
 
 	/************************************
@@ -96,7 +96,7 @@ public:
 	until a valid solution is found (or until an iteration limit is met).
 	http://www.ryanjuckett.com/programming/cyclic-coordinate-descent-in-2d/
 	************************************/
-	static CCDResult CyclicCoordinateDescent(List<Bone, NoCompare<Bone>>& bones, float targetX, float targetY, float arrivalDistance);
+	static CCDResult CyclicCoordinateDescent(List<Bone, NoCompare>& bones, float targetX, float targetY, float arrivalDistance);
 	
 };
 

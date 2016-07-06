@@ -20,9 +20,9 @@ PODCameraModelNode::~PODCameraModelNode(void)
 {
 }
 
-Camera* PODCameraModelNode::CreateCamera(const Size2F& winSize) const
+Share<Camera> PODCameraModelNode::CreateCamera(const Size2F& winSize) const
 {
-	Camera* camera = new Camera(mName);
+	Share<Camera> camera = new Camera(mName);
 	
 	camera->ResetDefault(winSize, false);
 	camera->SetFovY(FOV);

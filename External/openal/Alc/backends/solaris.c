@@ -22,6 +22,7 @@
 
 #include <sys/ioctl.h>
 #include <sys/types.h>
+#include <sys/time.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <stdlib.h>
@@ -64,7 +65,7 @@ static ALCboolean ALCsolarisBackend_start(ALCsolarisBackend *self);
 static void ALCsolarisBackend_stop(ALCsolarisBackend *self);
 static DECLARE_FORWARD2(ALCsolarisBackend, ALCbackend, ALCenum, captureSamples, void*, ALCuint)
 static DECLARE_FORWARD(ALCsolarisBackend, ALCbackend, ALCuint, availableSamples)
-static DECLARE_FORWARD(ALCsolarisBackend, ALCbackend, ALint64, getLatency)
+static DECLARE_FORWARD(ALCsolarisBackend, ALCbackend, ClockLatency, getClockLatency)
 static DECLARE_FORWARD(ALCsolarisBackend, ALCbackend, void, lock)
 static DECLARE_FORWARD(ALCsolarisBackend, ALCbackend, void, unlock)
 DECLARE_DEFAULT_ALLOCATORS(ALCsolarisBackend)
@@ -294,7 +295,7 @@ ALCbackendFactory *ALCsolarisBackendFactory_getFactory(void)
 
 static ALCboolean ALCsolarisBackendFactory_init(ALCsolarisBackendFactory* UNUSED(self))
 {
-    ConfigValueStr("solaris", "device", &solaris_driver);
+    ConfigValueStr(NULL, "solaris", "device", &solaris_driver);
     return ALC_TRUE;
 }
 

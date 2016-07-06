@@ -2,10 +2,13 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 #pragma once
+#include "MedusaPreDeclares.h"
+#ifdef MEDUSA_AL
 #include "Audio/IAudioSource.h"
 #include "Core/Collection/List.h"
 #include "Core/Threading/Thread.h"
 #include "Core/Memory/MemoryData.h"
+#include "Resource/Audio/IAudio.h"
 
 MEDUSA_BEGIN;
 
@@ -48,7 +51,7 @@ protected:
 	uint mChannelCount;
 	uint mSampleRate;
 
-	List<IAudio*> mBuffers;
+	List<Share<IAudio>> mBuffers;
 	size_t mEndBufferIndex;
 	size_t mSamplesProcessedCount;
 
@@ -60,3 +63,4 @@ protected:
 
 
 MEDUSA_END;
+#endif

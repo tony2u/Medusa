@@ -7,7 +7,7 @@
 #include "Geometry/Rotation3.h"
 #include "Geometry/Scale3.h"
 #include "Geometry/Moveable/BoneMoveable.h"
-
+#include "Core/Collection/List.h"
 MEDUSA_BEGIN;
 
 

@@ -33,34 +33,35 @@ bool MaterialFactory::Uninitialize()
 	return true;
 }
 
-IMaterial* MaterialFactory::CreateSingleTexture(const FileIdRef& textureFileId, ResourceShareType shareType /*= ResourceShareType::Share*/)
+Share<IMaterial> MaterialFactory::CreateSingleTexture(const FileIdRef& textureFileId, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
 	RETURN_NULL_IF_FALSE(textureFileId.IsValid());
-	IMaterial* result = nullptr;
+	Share<IMaterial> result = nullptr;
 	if (shareType!=ResourceShareType::None)
 	{
 		result = Find(textureFileId);
 		RETURN_SELF_IF_NOT_NULL(result);
 	}
 	
-	ITexture* texture = TextureFactory::Instance().CreateFromFile(textureFileId, ShaderSamplerNames::Texture);
-	IEffect* effect = EffectFactory::Instance().CreateSinglePassDefault(RenderPassNames::Texture);
+	auto texture = TextureFactory::Instance().CreateFromFile(textureFileId, ShaderSamplerNames::Texture);
+	auto effect = EffectFactory::Instance().CreateSinglePassDefault(RenderPassNames::Texture);
 	result = new IMaterial(texture, effect, GraphicsDrawMode::Triangles, textureFileId);
 
 	Add(result, shareType);
 	return result;
 }
-IMaterial* MaterialFactory::CreateSingleTexture(ITexture* texture, ResourceShareType shareType /*= ResourceShareType::Share*/)
+
+Share<IMaterial> MaterialFactory::CreateSingleTexture(const Share<ITexture>& texture, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
 	RETURN_NULL_IF_NULL(texture);
-	IMaterial* result = nullptr;
+	Share<IMaterial> result = nullptr;
 	if (shareType != ResourceShareType::None)
 	{
 		result = Find(texture->GetFileId());
 		RETURN_SELF_IF_NOT_NULL(result);
 	}
 
-	IEffect* effect = EffectFactory::Instance().CreateSinglePassDefault(RenderPassNames::Texture);
+	auto effect = EffectFactory::Instance().CreateSinglePassDefault(RenderPassNames::Texture);
 	result = new IMaterial(texture, effect, GraphicsDrawMode::Triangles, texture->GetFileId());
 
 	Add(result, shareType);
@@ -68,9 +69,9 @@ IMaterial* MaterialFactory::CreateSingleTexture(ITexture* texture, ResourceShare
 }
 
 
-IMaterial* MaterialFactory::CreateCustom(const FileIdRef& fileId, ITexture* texture, IEffect* effect, GraphicsDrawMode drawMode, ResourceShareType shareType /*= ResourceShareType::Share*/)
+Share<IMaterial> MaterialFactory::CreateCustom(const FileIdRef& fileId, const Share<ITexture>& texture, const Share<IEffect>& effect, GraphicsDrawMode drawMode, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
-	IMaterial* result = nullptr;
+	Share<IMaterial> result = nullptr;
 	if (shareType != ResourceShareType::None)
 	{
 		result = Find(fileId);
@@ -83,9 +84,9 @@ IMaterial* MaterialFactory::CreateCustom(const FileIdRef& fileId, ITexture* text
 }
 
 
-IMaterial* MaterialFactory::CreateEmpty(const FileIdRef& fileId, ResourceShareType shareType /*= ResourceShareType::Share*/)
+Share<IMaterial> MaterialFactory::CreateEmpty(const FileIdRef& fileId, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
-	IMaterial* result = nullptr;
+	Share<IMaterial> result = nullptr;
 	if (shareType != ResourceShareType::None)
 	{
 		result = Find(fileId);
@@ -97,16 +98,16 @@ IMaterial* MaterialFactory::CreateEmpty(const FileIdRef& fileId, ResourceShareTy
 	return result;
 }
 
-IMaterial* MaterialFactory::CreateShape(const FileIdRef& fileId, ResourceShareType shareType /*= ResourceShareType::Share*/)
+Share<IMaterial> MaterialFactory::CreateShape(const FileIdRef& fileId, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
-	IMaterial* result = nullptr;
+	Share<IMaterial> result = nullptr;
 	if (shareType != ResourceShareType::None)
 	{
 		result = Find(fileId);
 		RETURN_SELF_IF_NOT_NULL(result);
 	}
 
-	IEffect* effect = EffectFactory::Instance().CreateSinglePassDefault(RenderPassNames::Shape);
+	auto effect = EffectFactory::Instance().CreateSinglePassDefault(RenderPassNames::Shape);
 	result = new IMaterial(nullptr, effect, GraphicsDrawMode::Triangles, fileId);
 
 	Add(result, shareType);
@@ -114,7 +115,7 @@ IMaterial* MaterialFactory::CreateShape(const FileIdRef& fileId, ResourceShareTy
 }
 
 
-bool MaterialFactory::CreateTextures(SortedDictionary<uint, IMaterial*>& outMaterials, const StringRef& textureNamePattern)
+bool MaterialFactory::CreateTextures(SortedDictionary<uint, Share<IMaterial>>& outMaterials, const StringRef& textureNamePattern)
 {
 	List<const FileMapOrderItem*> outOrderItems;
 	if (!FileSystem::Instance().TryGetOrderItems(textureNamePattern, outOrderItems))
@@ -124,8 +125,8 @@ bool MaterialFactory::CreateTextures(SortedDictionary<uint, IMaterial*>& outMate
 
 	for (const FileMapOrderItem* orderItem : outOrderItems)
 	{
-		ITexture* texture = TextureFactory::Instance().CreateFromOrderItem(FileIdRef(textureNamePattern, orderItem->Order()), *orderItem, ShaderSamplerNames::Texture);
-		IMaterial* material = CreateSingleTexture(texture);
+		auto texture = TextureFactory::Instance().CreateFromOrderItem(FileIdRef(textureNamePattern, orderItem->Order()), *orderItem, ShaderSamplerNames::Texture);
+		auto material = CreateSingleTexture(texture);
 		outMaterials.Add(orderItem->Order(),material);
 	}
 

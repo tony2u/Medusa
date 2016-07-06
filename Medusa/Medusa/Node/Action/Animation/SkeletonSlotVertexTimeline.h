@@ -9,7 +9,7 @@ MEDUSA_BEGIN;
 class SkeletonSlotVertexTimeline:public ITimeline
 {
 public:
-	SkeletonSlotVertexTimeline(VertexTimelineModel* model, ISkeletonAttachmentModel* attachmentModel,bool isRepeatForever = false);
+	SkeletonSlotVertexTimeline(const Share<VertexTimelineModel>& model, ISkeletonAttachmentModel* attachmentModel,bool isRepeatForever = false);
 	virtual ~SkeletonSlotVertexTimeline();
 	virtual bool Initialize(void* target)override;
 protected:

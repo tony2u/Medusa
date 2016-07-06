@@ -89,13 +89,13 @@ Thread::~Thread(void)
 }
 
 
-void Thread::SetPriority(ThreadPriority::ThreadPriority_t val)
+void Thread::SetPriority(ThreadPriority val)
 {
 	RETURN_IF_EQUAL(mPriority, val);
 	mPriority = val;
 	if (mThread != nullptr)
 	{
-		SetThreadPriority(mThread, val);
+		SetThreadPriority(mThread, (int)val);
 	}
 }
 
@@ -114,14 +114,15 @@ bool Thread::IsThreadEqual(ThreadHandle thread1, ThreadHandle thread2)
 	return thread1 == thread2;
 }
 
+bool Thread::IsThreadEqual(ThreadId thread1, ThreadId thread2)
+{
+	return thread1 == thread2;
+}
+
 
 void Thread::Sleep(long milliSeconds)
 {
 	::Sleep(milliSeconds);
-}
-void Thread::YieldSelf()
-{
-	Sleep(0);
 }
 
 bool Thread::Start()
@@ -131,8 +132,10 @@ bool Thread::Start()
 		return true;
 	}
 
+	RETURN_TRUE_IF_FALSE(OnBeforeStart());
+
 #ifdef _DLL
-	mThread = CreateThread(nullptr, 0, OnThreadCallback, this, 0, &mThreadId);
+	mThread = CreateThread(nullptr, 0, OnThreadCallback, this, 0, (LPDWORD)&mThreadId);
 #else
 	mThread = (HANDLE)_beginthreadex(nullptr, 0, OnThreadCallback, this, 0, (uint*)&mThreadId);
 #endif
@@ -140,9 +143,10 @@ bool Thread::Start()
 	{
 		if (mPriority != ThreadPriority::Normal)
 		{
-			SetThreadPriority(mThread, mPriority);
+			SetThreadPriority(mThread, (int)mPriority);
 		}
 		mThreadState = ThreadState::Running;
+		OnAfterStart();
 		return true;
 	}
 
@@ -152,11 +156,14 @@ bool Thread::Start()
 bool Thread::Join()
 {
 	RETURN_TRUE_IF_FALSE(mThreadState == ThreadState::Running);
+	RETURN_TRUE_IF_FALSE(OnBeforeJoin());
+
 	mThreadState = ThreadState::Cancelled;
 
 	if (WaitForSingleObject(mThread, INFINITE) == WAIT_OBJECT_0)
 	{
 		mThreadState = ThreadState::None;
+		OnAfterJoin();
 		return true;
 	}
 

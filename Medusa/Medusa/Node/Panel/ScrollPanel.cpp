@@ -14,10 +14,10 @@
 #include "Node/NodeFactory.h"
 #include "Node/Action/Basic/FadeBySpeedAction.h"
 #include "Geometry/Scroll/SpringScrollMathModel.h"
-
+#include "Node/NodeFactory.h"
 MEDUSA_BEGIN;
 
-ScrollPanel::ScrollPanel(StringRef name/*=StringRef::Empty*/, ScrollDirection direction /*=ScrollDirection::FreeFromCurrent*/)
+ScrollPanel::ScrollPanel(StringRef name, ScrollDirection direction )
 	:IPanel(name),
 	mScrollBarColor(Color4F::Silver)
 {
@@ -32,6 +32,13 @@ ScrollPanel::ScrollPanel(StringRef name/*=StringRef::Empty*/, ScrollDirection di
 	mScrollModel = new SpringScrollMathModel(direction);
 }
 
+ScrollPanel::ScrollPanel(StringRef name /*= StringRef::Empty*/, const IEventArg& e /*= IEventArg::Empty*/)
+	:IPanel(name,e),
+	mScrollBarColor(Color4F::Silver)
+{
+	EnableClipToBound(true);
+}
+
 ScrollPanel::~ScrollPanel(void)
 {
 	SAFE_DELETE(mScrollModel);
@@ -39,9 +46,8 @@ ScrollPanel::~ScrollPanel(void)
 
 bool ScrollPanel::ArrangeChildren(const Rect2F& limitRect/*=Rect2F::Zero*/, NodeLayoutArrangeFlags arrangeFlags/*=NodeLayoutArrangeFlags::None*/)
 {
-	FOR_EACH_COLLECTION(i, mNodes)
+	for (auto child : mNodes)
 	{
-		INode* child = *i;
 		CONTINUE_IF(mManagedNodes.Contains(child));
 		child->ArrangeRecursively(limitRect, arrangeFlags);
 	}
@@ -150,9 +156,8 @@ void ScrollPanel::OnMoveChildren()
 {
 	Point3F movement = mScrollModel->Movement();
 	mScrollModel->ApplyMovement();
-	FOR_EACH_COLLECTION(i, mNodes)
+	for (auto child : mNodes)
 	{
-		INode* child = *i;
 		CONTINUE_IF(mManagedNodes.Contains(child));
 		child->Move(movement);
 	}
@@ -166,9 +171,8 @@ void ScrollPanel::OnInitializeTargetBoundingBox()
 	if (mNodes.Count() > mManagedNodes.Count())
 	{
 		//try to optimize this
-		FOR_EACH_COLLECTION(i, mNodes)
+		for (auto child : mNodes)
 		{
-			INode* child = *i;
 			CONTINUE_IF(mManagedNodes.Contains(child));
 			Rect2F boundingBox = child->GetBoundingBox().To2D();
 			targetBoundingBox.Union(boundingBox);
@@ -406,7 +410,7 @@ bool ScrollPanel::IsSensitiveToChildLayoutChanged(const ILayoutable& sender, Nod
 
 
 
-MEDUSA_IMPLEMENT_RTTI(ScrollPanel, IPanel);
+MEDUSA_IMPLEMENT_NODE(ScrollPanel);
 
 
 MEDUSA_END;

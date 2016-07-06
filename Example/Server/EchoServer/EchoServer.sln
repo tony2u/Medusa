@@ -1,0 +1,44 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25123.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EchoServer", "EchoServer.vcxproj", "{ED314AEE-2283-40FE-88C4-EF72A50B964F}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MedusaCore", "..\..\..\Medusa\MedusaCore\MedusaCore.vcxitems", "{45D41ACC-2C3C-43D2-BC10-02AA73FFC7C7}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MedusaCore.Win", "..\..\..\Medusa\MedusaCore\win\MedusaCore.Win.vcxproj", "{D3EEDD4F-019E-4A8A-9AAB-2B28E858AD04}"
+EndProject
+Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		..\..\..\Medusa\MedusaCore\MedusaCore.vcxitems*{d3eedd4f-019e-4a8a-9aab-2b28e858ad04}*SharedItemsImports = 4
+		..\..\..\Medusa\MedusaCore\MedusaCore.vcxitems*{45d41acc-2c3c-43d2-bc10-02aa73ffc7c7}*SharedItemsImports = 9
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{ED314AEE-2283-40FE-88C4-EF72A50B964F}.Debug|x64.ActiveCfg = Debug|x64
+		{ED314AEE-2283-40FE-88C4-EF72A50B964F}.Debug|x64.Build.0 = Debug|x64
+		{ED314AEE-2283-40FE-88C4-EF72A50B964F}.Debug|x86.ActiveCfg = Debug|Win32
+		{ED314AEE-2283-40FE-88C4-EF72A50B964F}.Debug|x86.Build.0 = Debug|Win32
+		{ED314AEE-2283-40FE-88C4-EF72A50B964F}.Release|x64.ActiveCfg = Release|x64
+		{ED314AEE-2283-40FE-88C4-EF72A50B964F}.Release|x64.Build.0 = Release|x64
+		{ED314AEE-2283-40FE-88C4-EF72A50B964F}.Release|x86.ActiveCfg = Release|Win32
+		{ED314AEE-2283-40FE-88C4-EF72A50B964F}.Release|x86.Build.0 = Release|Win32
+		{D3EEDD4F-019E-4A8A-9AAB-2B28E858AD04}.Debug|x64.ActiveCfg = Debug|x64
+		{D3EEDD4F-019E-4A8A-9AAB-2B28E858AD04}.Debug|x64.Build.0 = Debug|x64
+		{D3EEDD4F-019E-4A8A-9AAB-2B28E858AD04}.Debug|x86.ActiveCfg = Debug|Win32
+		{D3EEDD4F-019E-4A8A-9AAB-2B28E858AD04}.Debug|x86.Build.0 = Debug|Win32
+		{D3EEDD4F-019E-4A8A-9AAB-2B28E858AD04}.Release|x64.ActiveCfg = Release|x64
+		{D3EEDD4F-019E-4A8A-9AAB-2B28E858AD04}.Release|x64.Build.0 = Release|x64
+		{D3EEDD4F-019E-4A8A-9AAB-2B28E858AD04}.Release|x86.ActiveCfg = Release|Win32
+		{D3EEDD4F-019E-4A8A-9AAB-2B28E858AD04}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

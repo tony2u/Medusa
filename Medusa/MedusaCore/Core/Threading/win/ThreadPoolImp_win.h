@@ -7,6 +7,10 @@
 
 #include "Core/Threading/ThreadingDefines.h"
 
+#include <threadpoolapiset.h>
+#pragma comment(lib,"Ws2_32.lib")		//have to include this or it will failed
+#pragma comment(lib,"Wldap32.lib")		//have to include this or it will failed
+
 MEDUSA_BEGIN;
 
 

@@ -4,7 +4,7 @@
 #pragma  once
 #include "MedusaCorePreDeclares.h"
 #include "Core/Siren/SirenHeader.h"
-#include "Core/IO/IFileLoadable.h"
+#include "Core/IO/IFileLoadSavable.h"
 #include "Core/Siren/Code/SirenCoderType.h"
 #include "Siren.h"
 #include "Core/IO/FileInfo.h"
@@ -12,7 +12,7 @@
 MEDUSA_BEGIN;
 
 template<typename T>
-class ISirenConfig :public IFileLoadable
+class ISirenConfig :public IFileLoadSavable
 {
 public:
 	virtual bool LoadFromData(const FileIdRef& fileId, const MemoryData& data, uint format = (uint)-1)override
@@ -27,13 +27,24 @@ protected:
 		FileType fileType = FileInfo::ExtractType(path);
 		switch (fileType)
 		{
-			case FileType::json:
-				return (uint)SirenCoderType::Json;
-			default:
-				return (uint)SirenCoderType::Compact;
+		case FileType::json:
+			return (uint)SirenCoderType::Json;
+		default:
+			return (uint)SirenCoderType::Compact;
 		}
 	}
 	virtual bool OnLoaded() { return true; }
+	virtual bool OnSave(const StringRef& path, IStream& stream, uint format = (uint)-1)
+	{
+		SirenCoderType protocol = (SirenCoderType)format;
+		auto data = Siren::Serialize(((T&)*this), protocol);
+		if (data!=nullptr)
+		{
+			stream.WriteData(data);
+			return true;
+		}
+		return false;
+	}
 };
 
 MEDUSA_END;

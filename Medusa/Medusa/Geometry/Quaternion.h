@@ -9,7 +9,7 @@
 #include "Geometry/Point3.h"
 #include "Geometry/Point4.h"
 #include "Core/Math/Math.h"
-#include "Core/Utility/Utility.h"
+#include "Core/System/BitConverter.h"
 
 
 

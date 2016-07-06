@@ -3,12 +3,9 @@
 // license that can be found in the LICENSE file.
 #include "MedusaPreCompiled.h"
 #include "GridPanel.h"
-
+#include "Node/NodeFactory.h"
 MEDUSA_BEGIN;
 
-GridPanel::GridPanel(StringRef name/*=StringRef::Empty*/):IPanel(name)
-{
-}
 
 GridPanel::~GridPanel(void)
 {
@@ -20,6 +17,6 @@ bool GridPanel::ArrangeChildren(const Rect2F& limitRect/*=Rect2F::Zero*/, NodeLa
 	return true;
 }
 
-MEDUSA_IMPLEMENT_RTTI(GridPanel, IPanel);
+MEDUSA_IMPLEMENT_NODE(GridPanel);
 
 MEDUSA_END;

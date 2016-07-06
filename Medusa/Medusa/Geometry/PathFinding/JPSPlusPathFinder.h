@@ -77,7 +77,7 @@ struct JPSPlusPathFinder :public IPathFinder<GridMap<GridCell>,GridCell,void*>
 
 	bool mOnlySaveJumpPoints;
 	PriorityDictionary<int, const Cell*> mOpenList;
-	List<PathNode, NoCompare<PathNode>> mPathNodes;
+	List<PathNode, NoCompare> mPathNodes;
 
 	const static uint MaxDirection = 7;
 	const static Point2I mDirectionVectors[8];

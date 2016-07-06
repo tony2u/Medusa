@@ -4,12 +4,13 @@
 #include "MedusaPreCompiled.h"
 #include "WrapPanel.h"
 #include "Graphics/ResolutionAdapter.h"
-
+#include "Node/NodeFactory.h"
 MEDUSA_BEGIN;
 
-WrapPanel::WrapPanel(StringRef name/*=StringRef::Empty*/)
-	:IPanel(name),
-	mItemFixedSize(Size2F::Zero), mItemOffset(Point2F::Zero)
+WrapPanel::WrapPanel(StringRef name/*=StringRef::Empty*/, const IEventArg& e /*= IEventArg::Empty*/)
+	:IPanel(name,e),
+	mItemFixedSize(Size2F::Zero), 
+	mItemOffset(Point2F::Zero)
 {
 	mSize = ResolutionAdapter::Instance().WinSize();
 	//SetStretch(Stretch::Fill);
@@ -39,10 +40,8 @@ bool WrapPanel::ArrangeChildren(const Rect2F& limitRect/*=Rect2F::Zero*/, NodeLa
 		origin.X = leftRect.Left();
 		origin.Y = leftRect.Top();
 
-		FOR_EACH_COLLECTION(i, mNodes)
+		for(auto child: mNodes)
 		{
-			INode* child = *i;
-
 			itemRect.Size = hasFixedSize ? mItemFixedSize : child->MeasuredSize();
 
 			origin.Y = Math::Min(origin.Y, leftRect.Top() - itemRect.Size.Height);
@@ -67,9 +66,8 @@ bool WrapPanel::ArrangeChildren(const Rect2F& limitRect/*=Rect2F::Zero*/, NodeLa
 		origin.X = leftRect.Left();
 		origin.Y = leftRect.Top();
 
-		FOR_EACH_COLLECTION(i, mNodes)
+		for (auto child : mNodes)
 		{
-			INode* child = *i;
 			itemRect.Size = hasFixedSize ? mItemFixedSize : child->MeasuredSize();
 
 			origin.Y -= itemRect.Size.Height;
@@ -99,6 +97,6 @@ bool WrapPanel::ArrangeChildren(const Rect2F& limitRect/*=Rect2F::Zero*/, NodeLa
 	return true;
 }
 
-MEDUSA_IMPLEMENT_RTTI(WrapPanel, IPanel);
+MEDUSA_IMPLEMENT_NODE(WrapPanel);
 
 MEDUSA_END;

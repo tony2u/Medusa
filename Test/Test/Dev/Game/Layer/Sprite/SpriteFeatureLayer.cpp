@@ -21,5 +21,5 @@ SpriteFeatureLayer::~SpriteFeatureLayer(void)
 }
 
 
-MEDUSA_IMPLEMENT_LAYER(SpriteFeatureLayer, BaseFeatureLayer, StringRef::Empty, StringRef::Empty);
+MEDUSA_IMPLEMENT_NODE(SpriteFeatureLayer);
 

@@ -74,7 +74,4 @@ bool IWindow::Resume()
 }
 
 
-
-MEDUSA_IMPLEMENT_RTTI_ROOT(IWindow);
-
 MEDUSA_END;

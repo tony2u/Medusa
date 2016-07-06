@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{6369B11A-4C39-484B-834A-C97D342B949A}</ItemsProjectGuid>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Message\LoginMessage.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Proto\LoginRequest.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Proto\LoginResponse.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Message\LoginMessage.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Proto\LoginRequest.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Proto\LoginResponse.h" />
+  </ItemGroup>
+</Project>

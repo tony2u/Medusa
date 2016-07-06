@@ -3,8 +3,9 @@
 #include "Geometry/Color4.h"
 #include "Geometry/Size3.h"
 #include "Node/INode.h"
-#include "CocosStudio/CSParseBinary_generated.h"
 #include "Application/Settings/ApplicationSettings.h"
+#include "CocosStudio/CSParseBinary_generated.h"
+
 MEDUSA_COCOS_BEGIN;
 
 void INodeReader::SetPropsWithFlatBuffers(INode* node, const flatbuffers::Table* nodeOptions, NodeCreateFlags flags /*= NodeCreateFlags::None*/)
@@ -114,7 +115,6 @@ void INodeReader::SetPropsWithFlatBuffers(INode* node, const flatbuffers::Table*
 	TryBindScript(node, flags);
 }
 
-
 void INodeReader::SetPropsWithJson(INode* node, const rapidjson::Value& nodeTree, NodeCreateFlags flags /*= NodeCreateFlags::None*/)
 {
 	StringRef name = nodeTree.GetString("Name", nullptr);
@@ -125,9 +125,6 @@ void INodeReader::SetPropsWithJson(INode* node, const rapidjson::Value& nodeTree
 
 	bool isVisible = nodeTree.Get("VisibleForFrame", true);
 	node->SetVisible(isVisible);
-
-
-
 
 	//int actionTag = jsonNode.Get("ActionTag", 0);
 
@@ -385,6 +382,12 @@ void INodeReader::TryBindScript(INode* node, NodeCreateFlags flags /*= NodeCreat
 					customScript = StringRef::Empty;
 				}
 			}
+
+			if (customScript.IsEmpty())
+			{
+				customScript = node->ScriptFileName().Name;
+			}
+
 			node->TryAttachScriptObject(customScript);
 		}
 		
@@ -392,5 +395,6 @@ void INodeReader::TryBindScript(INode* node, NodeCreateFlags flags /*= NodeCreat
 
 #endif
 }
+
 
 MEDUSA_COCOS_END;

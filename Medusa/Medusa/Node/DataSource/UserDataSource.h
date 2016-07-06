@@ -8,7 +8,7 @@ MEDUSA_BEGIN;
 template<typename T>
 class UserDataSource:public IDataSource
 {
-	MEDUSA_DECLARE_RTTI;
+	
 public:
 	UserDataSource(T data):IDataSource(),mData(data){}
 	UserDataSource():IDataSource(){}

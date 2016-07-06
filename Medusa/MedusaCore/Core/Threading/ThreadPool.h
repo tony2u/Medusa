@@ -3,7 +3,6 @@
 // license that can be found in the LICENSE file.
 #pragma once
 #include "MedusaCorePreDeclares.h"
-#include "Core/Pattern/Singleton.h"
 #include "Core/Threading/ThreadingDefines.h"
 #include "Core/Pattern/Delegate.h"
 #include "Core/Collection/HashSet.h"
@@ -13,34 +12,43 @@
 #include "Core/Threading/win/ThreadPoolImp_win.h"
 #include "Core/Threading/posix/ThreadPoolImp_posix.h"
 
+#include "ThreadPoolWork.h"
+#include "ThreadPoolWait.h"
+#include "ThreadPoolTimer.h"
+
+
 MEDUSA_BEGIN;
 
 
-class ThreadPool :public Singleton<ThreadPool>, protected ThreadPoolImp
+class ThreadPool :protected ThreadPoolImp
 {
-	friend class Singleton < ThreadPool > ;
 	friend class ThreadPoolWork;
 	friend class ThreadPoolTimer;
 	friend class ThreadPoolWait;
 
+	using WorkType = Share<ThreadPoolWork>;
+	using TimerType = Share<ThreadPoolTimer>;
+	using WaitType = Share<ThreadPoolWait>;
+
+public:
 	ThreadPool();
-	~ThreadPool(void);
+	virtual ~ThreadPool(void);
 public:
 	bool Initialize(uint minCount = ThreadPool::MinCount, uint maxCount = ThreadPool::MaxCount, bool autoManaged = true);
 	void Uninitialize();
 #pragma region Work
 public:
-	ThreadPoolWork* TrySumbitWork(Action0 action);
-	ThreadPoolWork* TrySumbitWork(Action1 action, void* userData);
+	WorkType TrySumbitWork(Action action);
+	WorkType TrySumbitWork(ActionWithUserData action, void* userData);
 
-	ThreadPoolWork* CreateWork(const StringRef& name, ICommand* command);
-	ThreadPoolWork* CreateWork(ICommand* command);
+	WorkType CreateWork(const StringRef& name, const ShareCommand& command);
+	WorkType CreateWork(const ShareCommand& command);
 
-	ThreadPoolWork* FindWork(const StringRef& name)const;
+	WorkType FindWork(const StringRef& name)const;
 
-	void SubmitWork(ThreadPoolWork& work);
-	void WaitWork(ThreadPoolWork& work, bool cancelPending = false);
-	void DeleteWork(ThreadPoolWork* work);
+	void SubmitWork(const WorkType& work);
+	void WaitWork(const WorkType& work, bool cancelPending = false);
+	void DeleteWork(const WorkType& work);
 
 	void SubmitWork(const StringRef& name);
 	void WaitWork(const StringRef& name, bool cancelPending = false);
@@ -50,14 +58,14 @@ public:
 #pragma endregion Work
 #pragma region Timer
 public:
-	ThreadPoolTimer* CreateTimer(const StringRef& name, ICommand* command, uint delay = 0, uint repeatCount = 0, uint repeatInterval = 0, uint repeatIntervalRange = 0);
-	ThreadPoolTimer* CreateTimer(ICommand* command, uint delay = 0, uint repeatCount = 0, uint repeatInterval = 0, uint repeatIntervalRange = 0);
+	TimerType CreateTimer(const StringRef& name, const ShareCommand& command, uint delay = 0, uint repeatCount = 0, uint repeatInterval = 0, uint repeatIntervalRange = 0);
+	TimerType CreateTimer(const ShareCommand& command, uint delay = 0, uint repeatCount = 0, uint repeatInterval = 0, uint repeatIntervalRange = 0);
 
-	ThreadPoolTimer* FindTimer(const StringRef& name)const;
+	TimerType FindTimer(const StringRef& name)const;
 
-	void SubmitTimer( ThreadPoolTimer& timer);
-	void WaitTimer( ThreadPoolTimer& timer, bool cancelPending = false);
-	void DeleteTimer(ThreadPoolTimer* timer);
+	void SubmitTimer( const TimerType& timer);
+	void WaitTimer(const TimerType& timer, bool cancelPending = false);
+	void DeleteTimer(const TimerType& timer);
 
 	void SubmitTimer(const StringRef& name);
 	void WaitTimer(const StringRef& name, bool cancelPending = false);
@@ -68,14 +76,14 @@ public:
 #pragma endregion Timer
 #pragma region Wait
 public:
-	ThreadPoolWait* CreateWait(const StringRef& name, ICommand* command, IWaitable* waitable);
-	ThreadPoolWait* CreateWait(ICommand* command, IWaitable* waitable);
+	WaitType CreateWait(const StringRef& name, const ShareCommand& command, IWaitable* waitable);
+	WaitType CreateWait(const ShareCommand& command, IWaitable* waitable);
 
-	ThreadPoolWait* FindWait(const StringRef& name)const;
+	WaitType FindWait(const StringRef& name)const;
 
-	void SubmitWait( ThreadPoolWait& wait);
-	void WaitWait( ThreadPoolWait& wait, bool cancelPending = false);
-	void DeleteWait(ThreadPoolWait* wait);
+	void SubmitWait(const WaitType& wait);
+	void WaitWait(const WaitType& wait, bool cancelPending = false);
+	void DeleteWait(const WaitType& wait);
 
 	void SubmitWait(const StringRef& name);
 	void WaitWait(const StringRef& name, bool cancelPending = false);
@@ -90,15 +98,15 @@ public:
 	void ClearAll();
 
 protected:
-	Dictionary<HeapString, ThreadPoolWork*> mNamedWorks;
-	HashSet<ThreadPoolWork*> mUnnamedWorks;
+	Dictionary<HeapString, Share<ThreadPoolWork>> mNamedWorks;
+	HashSet<Share<ThreadPoolWork>> mUnnamedWorks;
 
 
-	Dictionary<HeapString, ThreadPoolTimer*> mNamedTimers;
-	HashSet<ThreadPoolTimer*> mUnnamedTimers;
+	Dictionary<HeapString, Share<ThreadPoolTimer>> mNamedTimers;
+	HashSet<Share<ThreadPoolTimer>> mUnnamedTimers;
 
-	Dictionary<HeapString, ThreadPoolWait*> mNamedWaits;
-	HashSet<ThreadPoolWait*> mUnnamedWaits;
+	Dictionary<HeapString, Share<ThreadPoolWait>> mNamedWaits;
+	HashSet<Share<ThreadPoolWait>> mUnnamedWaits;
 };
 
 

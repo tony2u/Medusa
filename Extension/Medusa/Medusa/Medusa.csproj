@@ -1,0 +1,130 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{CEA8819D-B41B-4EAD-BDF3-6438D691A55C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Medusa</RootNamespace>
+    <AssemblyName>Medusa</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Coder\7zip\Common\CommandLineParser.cs" />
+    <Compile Include="Coder\7zip\Common\CRC.cs" />
+    <Compile Include="Coder\7zip\Common\InBuffer.cs" />
+    <Compile Include="Coder\7zip\Common\OutBuffer.cs" />
+    <Compile Include="Coder\7zip\Compress\LZMA\LzmaBase.cs" />
+    <Compile Include="Coder\7zip\Compress\LZMA\LzmaDecoder.cs" />
+    <Compile Include="Coder\7zip\Compress\LZMA\LzmaEncoder.cs" />
+    <Compile Include="Coder\7zip\Compress\LZ\IMatchFinder.cs" />
+    <Compile Include="Coder\7zip\Compress\LZ\LzBinTree.cs" />
+    <Compile Include="Coder\7zip\Compress\LZ\LzInWindow.cs" />
+    <Compile Include="Coder\7zip\Compress\LZ\LzOutWindow.cs" />
+    <Compile Include="Coder\7zip\Compress\RangeCoder\RangeCoder.cs" />
+    <Compile Include="Coder\7zip\Compress\RangeCoder\RangeCoderBit.cs" />
+    <Compile Include="Coder\7zip\Compress\RangeCoder\RangeCoderBitTree.cs" />
+    <Compile Include="Coder\7zip\ICoder.cs" />
+    <Compile Include="Coder\BaseCoder.cs" />
+    <Compile Include="Coder\ICoder.cs" />
+    <Compile Include="Coder\LZMA\LZMACoder.cs" />
+    <Compile Include="Coder\LZMA\LZMADecoder.cs" />
+    <Compile Include="Coder\LZMA\LZMAEncoder.cs" />
+    <Compile Include="Coder\XOR\XORCoder.cs" />
+    <Compile Include="Coder\XOR\XORDecoder.cs" />
+    <Compile Include="Coder\XOR\XOREncoder.cs" />
+    <Compile Include="Coder\XXTEA.cs" />
+    <Compile Include="Common\DllImporter.cs" />
+    <Compile Include="Common\IniSection.cs" />
+    <Compile Include="Common\MySortedList.cs" />
+    <Compile Include="Common\SharedTool.cs" />
+    <Compile Include="Common\StreamHelper.cs" />
+    <Compile Include="Common\StringPropertySet.cs" />
+    <Compile Include="Common\SystemTool.cs" />
+    <Compile Include="Log\Logger.cs" />
+    <Compile Include="Network\Message\BaseRequestResponseMessage.cs" />
+    <Compile Include="Network\Message\BaseRequestMessage.cs" />
+    <Compile Include="Network\Message\HeartbeatMessage.cs" />
+    <Compile Include="Network\Message\MessageFactory.cs" />
+    <Compile Include="Network\Message\BaseMessage.cs" />
+    <Compile Include="Network\Message\MessageIdAttribute.cs" />
+    <Compile Include="Network\Message\MessageEventArgs.cs" />
+    <Compile Include="Network\Service\TcpClientEventArgs.cs" />
+    <Compile Include="Network\Service\TcpClientDataEventArgs.cs" />
+    <Compile Include="Network\Service\TcpClientMessageService.cs" />
+    <Compile Include="Network\Message\IMessage.cs" />
+    <Compile Include="Network\NetworkBuffer.cs" />
+    <Compile Include="Network\Service\TcpClientExceptionEventArgs.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Siren\Code\BaseProtocolReader.cs" />
+    <Compile Include="Siren\Code\BaseProtocolWriter.cs" />
+    <Compile Include="Siren\Code\Binary\BaseBinaryReader.cs" />
+    <Compile Include="Siren\Code\Binary\BaseBinaryWriter.cs" />
+    <Compile Include="Siren\Code\Binary\CompactBinaryReader.cs" />
+    <Compile Include="Siren\Code\Binary\CompactBinaryWriter.cs" />
+    <Compile Include="Siren\IO\Base91.cs" />
+    <Compile Include="Siren\IO\IInputStream.cs" />
+    <Compile Include="Siren\IO\InputMemoryStream.cs" />
+    <Compile Include="Siren\IO\IntegerHelper.cs" />
+    <Compile Include="Siren\IO\IOutputStream.cs" />
+    <Compile Include="Siren\IO\OutputMemoryStream.cs" />
+    <Compile Include="Siren\Schema\BaseSirenAttribute.cs" />
+    <Compile Include="Siren\Schema\SirenAssemblyAttribute.cs" />
+    <Compile Include="Siren\Schema\SirenClassAttribute.cs" />
+    <Compile Include="Siren\Schema\SirenFieldAttribute.cs" />
+    <Compile Include="Siren\Schema\SirenEnumAttribute.cs" />
+    <Compile Include="Siren\Schema\SirenField.cs" />
+    <Compile Include="Siren\SirenAssembly.cs" />
+    <Compile Include="Siren\SirenMachine.cs" />
+    <Compile Include="Siren\Schema\BaseSirenCustomType.cs" />
+    <Compile Include="Siren\Schema\SirenBuildinType.cs" />
+    <Compile Include="Siren\Schema\SirenCustomClass.cs" />
+    <Compile Include="Siren\Schema\SirenCustomEnum.cs" />
+    <Compile Include="Siren\Schema\SirenType.cs" />
+    <Compile Include="Siren\Schema\SirenTypeId.cs" />
+    <Compile Include="Siren\Deserializer.cs" />
+    <Compile Include="Siren\Serializer.cs" />
+    <Compile Include="UI\FlagsEnumConverter.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Network\Socket\" />
+    <Folder Include="Siren\Reflection\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

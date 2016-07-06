@@ -16,6 +16,5 @@ IRenderingCommand::~IRenderingCommand(void)
 	
 }
 
-MEDUSA_IMPLEMENT_RTTI(IRenderingCommand, ICommand);
 
 MEDUSA_END;

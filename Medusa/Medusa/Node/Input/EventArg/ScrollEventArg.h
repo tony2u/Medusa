@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 #pragma once
-#include "Core/Command/EventArg/IEventArg.h"
+#include "Core/Event/EventArg/IEventArg.h"
 
 
 
@@ -11,7 +11,7 @@ MEDUSA_BEGIN;
 class ScrollEventArg:public IEventArg
 {
 	
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_RTTI(ScrollEventArg,IEventArg);
 public:
 	ScrollEventArg(int pos,size_t status):mScrollPos(pos),mStatus(status){}
 	virtual ~ScrollEventArg(void){}

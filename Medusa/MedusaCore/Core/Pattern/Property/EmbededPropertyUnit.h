@@ -180,10 +180,10 @@ public:
 	}
 	void Set(const DictionaryType& item)
 	{
-		FOR_EACH_COLLECTION(i, item)
+		for (auto i : item)
 		{
-			uint type = i->Key;
-			T val = i->Value;
+			uint type = i.Key;
+			T val = i.Value;
 			SetSingle(type, val);
 		}
 	}

@@ -84,7 +84,7 @@ private:
 private:
 	Size2U mBinSize;
 
-	List<Skyline,NoCompare<Skyline> > mLines;
+	List<Skyline,NoCompare > mLines;
 
 	uint mUsedSurfaceArea;
 

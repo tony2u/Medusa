@@ -4,7 +4,7 @@
 #include "MedusaPreCompiled.h"
 #include "Base3DScene.h"
 #include "Resource/Camera/CameraFactory.h"
-#include "Node/Scene/SceneFactory.h"
+#include "Node/NodeFactory.h"
 
 MEDUSA_BEGIN;
 
@@ -25,6 +25,6 @@ bool Base3DScene::Initialize()
 	return true;
 }
 
-MEDUSA_IMPLEMENT_SCENE(Base3DScene, IScene,StringRef::Empty, StringRef::Empty);
+MEDUSA_IMPLEMENT_NODE(Base3DScene);
 
 MEDUSA_END;

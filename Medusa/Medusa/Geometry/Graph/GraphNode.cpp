@@ -34,13 +34,13 @@ void GraphNode::RemoveEdge(GraphEdge* edge)
 {
 	if (edge->To()==this)
 	{
-		mInEdges.RemoveUnordered(edge);
+		mInEdges.RemoveSwap(edge);
 	}
 	else
 	{
-		mOutEdges.RemoveUnordered(edge);
+		mOutEdges.RemoveSwap(edge);
 	}
-	mEdges.RemoveUnordered(edge);
+	mEdges.RemoveSwap(edge);
 }
 
 

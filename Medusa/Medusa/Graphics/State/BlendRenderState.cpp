@@ -52,9 +52,9 @@ void BlendRenderState::CopyFrom(const IRenderState& other)
 	mBlendColor = val.mBlendColor;
 }
 
-BlendRenderState* BlendRenderState::Clone() const
+Share<BlendRenderState> BlendRenderState::Clone() const
 {
-	BlendRenderState* state = new BlendRenderState();
+	Share<BlendRenderState> state = new BlendRenderState();
 	state->CopyFrom(*this);
 	return state;
 }
@@ -74,11 +74,11 @@ bool BlendRenderState::Equals(const IRenderState& state) const
 		mSrcRGBFunc == val.SrcRGBFunc();
 }
 
-BlendRenderState* BlendRenderState::Current()
+Share<BlendRenderState> BlendRenderState::Current()
 {
 	IRender& render = Render::Instance();
 
-	BlendRenderState* blendState = new BlendRenderState();
+	Share<BlendRenderState> blendState = new BlendRenderState();
 	blendState->Enable(render.IsFeatureEnabled(GraphicsFeatures::Blend));
 	blendState->SetSrcRGBFunc((GraphicsBlendSrcFunc)render.GetInteger(GraphicsIntegerName::BlendSrcRGBFunc));
 	blendState->SetSrcAlphaFunc((GraphicsBlendSrcFunc)render.GetInteger(GraphicsIntegerName::BlendSrcAlphaFunc));
@@ -94,11 +94,11 @@ BlendRenderState* BlendRenderState::Current()
 
 }
 
-BlendRenderState* BlendRenderState::Default()
+Share<BlendRenderState> BlendRenderState::Default()
 {
 	IRender& render = Render::Instance();
 
-	BlendRenderState* blendState = new BlendRenderState();
+	Share<BlendRenderState> blendState = new BlendRenderState();
 	blendState->Enable(render.IsFeatureEnabled(GraphicsFeatures::Blend));
 
 	return blendState;
@@ -215,7 +215,6 @@ intp BlendRenderState::HashCode() const
 
 
 
-MEDUSA_IMPLEMENT_RTTI(BlendRenderState, IRenderState);
 
 
 MEDUSA_END;

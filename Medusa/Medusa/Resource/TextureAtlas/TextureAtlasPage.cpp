@@ -12,16 +12,18 @@
 
 MEDUSA_BEGIN;
 
-TextureAtlasPage::TextureAtlasPage(const FileIdRef& textureFileId)
+TextureAtlasPage::TextureAtlasPage(const FileIdRef& textureFileId, FileEntry* fileEntry/*=nullptr*/)
 	:mTextureFileId(textureFileId),
-	mPageSize(Size2U::Zero)
+	mPageSize(Size2U::Zero),
+	mFileEntry(fileEntry)
 {
 
 }
 
-TextureAtlasPage::TextureAtlasPage(int id)
+TextureAtlasPage::TextureAtlasPage(int id, FileEntry* fileEntry/*=nullptr*/)
 	:mId(id),
-	mPageSize(Size2U::Zero)
+	mPageSize(Size2U::Zero),
+	mFileEntry(fileEntry)
 {
 
 }
@@ -29,7 +31,16 @@ TextureAtlasPage::TextureAtlasPage(int id)
 
 TextureAtlasPage::~TextureAtlasPage()
 {
-	SAFE_RELEASE(mTexture);
+	if (mFileEntry!=nullptr)
+	{
+		for (auto* region : mRegions)
+		{
+			region->UnmapToFileSystem(*mFileEntry);
+		}
+		mFileEntry = nullptr;
+	}
+	
+
 	SAFE_DELETE_COLLECTION(mRegions);
 }
 
@@ -42,19 +53,22 @@ void TextureAtlasPage::AddRegion(TextureAtlasRegion* region)
 	{
 		mAtlas->TryAddRegion(region);
 	}
+
+	if (mFileEntry!=nullptr)
+	{
+		region->MapToFileSystem(*mFileEntry);
+	}
 }
 
-ITexture* TextureAtlasPage::LoadTexture()
+const Share<ITexture>& TextureAtlasPage::LoadTexture()
 {
 	RETURN_SELF_IF_NOT_NULL(mTexture);
 	mTexture = TextureFactory::Instance().CreateFromFile(mTextureFileId.ToRef());
 	if (mTexture == nullptr)
 	{
 		Log::AssertFailedFormat("Cannot load texture:{}-{}", mTextureFileId.Name.c_str(), (uint)mTextureFileId.Order);
-		return nullptr;
+		return mTexture;
 	}
-
-	SAFE_RETAIN(mTexture);
 
 	mTexture->SetMagFilter(mMagFilter);
 	mTexture->SetMinFilter(mMinFilter);
@@ -62,18 +76,17 @@ ITexture* TextureAtlasPage::LoadTexture()
 	mTexture->SetWrapT(mWrapT);
 
 	mPageSize = mTexture->Size();
-	FOR_EACH_COLLECTION(i, mRegions)
+	for (auto region : mRegions)
 	{
-		TextureAtlasRegion* region = *i;
 		region->UpdateMesh(mPageSize);
 	}
 
 	return mTexture;
 }
 
-void TextureAtlasPage::SetTexture(ITexture* val)
+void TextureAtlasPage::SetTexture(const Share<ITexture>& val)
 {
-	SAFE_ASSIGN_REF(mTexture, val);
+	mTexture = val;
 	SetPageSize(mTexture->Size());
 
 }
@@ -105,9 +118,8 @@ void TextureAtlasPage::SetPageSize(const Size2U& val)
 	mPageSize = val;
 
 	//update all mesh texcoord
-	FOR_EACH_COLLECTION(i, mRegions)
+	for (auto region : mRegions)
 	{
-		TextureAtlasRegion* region = *i;
 		region->UpdateMesh(mPageSize);
 	}
 

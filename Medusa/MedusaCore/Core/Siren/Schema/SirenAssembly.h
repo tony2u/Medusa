@@ -4,7 +4,7 @@
 #pragma once
 #include "MedusaCorePreDeclares.h"
 #include "Core/Siren/Schema/Type/ISirenType.h"
-#include "Core/IO/IFileLoadable.h"
+#include "Core/IO/IFileLoadSavable.h"
 #include "Core/Collection/Dictionary.h"
 #include "Core/IO/Stream/IStreamable.h"
 #include "Core/Collection/HashSet.h"
@@ -12,7 +12,7 @@
 MEDUSA_BEGIN;
 
 
-class SirenAssembly :public IFileLoadable, public IStreamable
+class SirenAssembly :public IFileLoadSavable, public IStreamable
 {
 public:
 	SirenAssembly(const StringRef& name = StringRef::Empty);

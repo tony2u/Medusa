@@ -2,6 +2,8 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 #pragma once
+#include "MedusaPreDeclares.h"
+#ifdef MEDUSA_JPEG
 #include "Graphics/Render/Render.h"
 #include "Resource/Image/RGBAImage.h"
 
@@ -15,10 +17,11 @@ public:
 public:
 	virtual ImageFileType ImageType()const{return ImageFileType::jpeg;}
 
-	static JpegImage* CreateFromFile(const FileIdRef& fileId);
-	static JpegImage* CreateFromMemory(const FileIdRef& fileId, const FileEntry& fileEntry,MemoryData data);
+	static Share<JpegImage> CreateFromFile(const FileIdRef& fileId);
+	static Share<JpegImage> CreateFromMemory(const FileIdRef& fileId, const FileEntry& fileEntry, MemoryData data);
 	bool SaveToFile(StringRef filePath)const;
 
 };
 
 MEDUSA_END;
+#endif

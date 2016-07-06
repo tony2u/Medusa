@@ -7,7 +7,7 @@
 
 class SpriteFeatureLayer :public BaseFeatureLayer
 {
-	MEDUSA_DECLARE_LAYER(SpriteFeatureLayer);
+	MEDUSA_NODE(SpriteFeatureLayer,BaseFeatureLayer);
 public:
 	SpriteFeatureLayer(StringRef name=StringRef::Empty,const IEventArg& e=IEventArg::Empty);
 	virtual ~SpriteFeatureLayer(void);

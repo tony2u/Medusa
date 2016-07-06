@@ -6,6 +6,7 @@
 #include "Core/String/HeapString.h"
 #include "Core/String/StackString.h"
 #include "Core/String/StringParser.h"
+#include "Core/Log/Log.h"
 
 
 MEDUSA_BEGIN;
@@ -14,27 +15,24 @@ MEDUSA_BEGIN;
 void DeprecationManager::AddDeprecateFunction( const char* funcName,const char* comment,const char* fileName,const char* lineName )
 {
 	mDeprecatedFunction[funcName]=comment;
-	//char txt[1024];
-	HeapString str;
 
-	str.Format("==>Deprecated:{}\t{}\t{}\t{}\n",funcName,comment,fileName,lineName);
-	MEDUSA_TRACE(str.c_str());
+	Log::FormatInfo("==>Deprecated:{}\t{}\t{}\t{}\n",funcName,comment,fileName,lineName);
 }
 
 DeprecationManager::~DeprecationManager()
 {
-	MEDUSA_TRACE( "*************************************************************\n" );
-	MEDUSA_TRACE( "WARNING. You are using the following deprecated functions:\n" );
+	Log::Info( "*************************************************************\n" );
+	Log::Info( "WARNING. You are using the following deprecated functions:\n" );
 
 	HeapString str;
-	FOR_EACH_COLLECTION_STL(i,mDeprecatedFunction)
+	for (const auto& i : mDeprecatedFunction)
 	{
-		const char* funcName=i->first;
-		const char* comment=i->second;
+		const char* funcName=i.first;
+		const char* comment=i.second;
 		str.Format("==>Deprecated:{}\t{}\n",funcName,comment);
-		MEDUSA_TRACE (str.c_str());
+		Log::Info(str);
 	}
-	MEDUSA_TRACE( "*************************************************************\n" );
+	Log::Info( "*************************************************************\n" );
 	mDeprecatedFunction.clear();
 }
 

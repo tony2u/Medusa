@@ -13,6 +13,8 @@ class ISharableWithName :public ISharable < TIsAtomic >
 {
 public:
 	ISharableWithName(const StringRef& name = StringRef::Empty) :mName(name) {}
+	ISharableWithName(HeapString&& name) :mName(name) {}
+
 	virtual ~ISharableWithName(void) {}
 
 	StringRef Name() const { return mName; }

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "win", "win", "{EAC460BF-9B7F-49F0-9ABB-852DDB76662A}"
 EndProject
@@ -9,11 +9,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "android", "android", "{50A1
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ios", "ios", "{51CE13A5-0420-49F5-982C-45151CE74CB8}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "openal.Android", "android\openal.vcxproj", "{6C5AA792-610D-42F6-A1F8-21EA87B7F446}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "openal", "android\openal.vcxproj", "{6C5AA792-610D-42F6-A1F8-21EA87B7F446}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "openal.IOS", "ios\openal.vcxproj", "{E88A294B-94AD-4DD2-BF0E-13262DEC53D4}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "openal", "ios\openal.vcxproj", "{E88A294B-94AD-4DD2-BF0E-13262DEC53D4}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "openal", "win\openal.vcxproj", "{A569B5A2-F368-470D-9709-FDD0F2CF0FAF}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "openal", "win\openal.vcxproj", "{CBBA26D1-B34B-410D-A1DF-BC2FE56C33A5}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -46,15 +46,16 @@ Global
 		{E88A294B-94AD-4DD2-BF0E-13262DEC53D4}.Release|x64.ActiveCfg = Release|x86
 		{E88A294B-94AD-4DD2-BF0E-13262DEC53D4}.Release|x86.ActiveCfg = Release|x86
 		{E88A294B-94AD-4DD2-BF0E-13262DEC53D4}.Release|x86.Build.0 = Release|x86
-		{A569B5A2-F368-470D-9709-FDD0F2CF0FAF}.Debug|ARM.ActiveCfg = Debug|Win32
-		{A569B5A2-F368-470D-9709-FDD0F2CF0FAF}.Debug|x64.ActiveCfg = Debug|x64
-		{A569B5A2-F368-470D-9709-FDD0F2CF0FAF}.Debug|x64.Build.0 = Debug|x64
-		{A569B5A2-F368-470D-9709-FDD0F2CF0FAF}.Debug|x86.ActiveCfg = Debug|Win32
-		{A569B5A2-F368-470D-9709-FDD0F2CF0FAF}.Release|ARM.ActiveCfg = Release|Win32
-		{A569B5A2-F368-470D-9709-FDD0F2CF0FAF}.Release|x64.ActiveCfg = Release|x64
-		{A569B5A2-F368-470D-9709-FDD0F2CF0FAF}.Release|x64.Build.0 = Release|x64
-		{A569B5A2-F368-470D-9709-FDD0F2CF0FAF}.Release|x86.ActiveCfg = Release|Win32
-		{A569B5A2-F368-470D-9709-FDD0F2CF0FAF}.Release|x86.Build.0 = Release|Win32
+		{CBBA26D1-B34B-410D-A1DF-BC2FE56C33A5}.Debug|ARM.ActiveCfg = Debug|Win32
+		{CBBA26D1-B34B-410D-A1DF-BC2FE56C33A5}.Debug|x64.ActiveCfg = Debug|x64
+		{CBBA26D1-B34B-410D-A1DF-BC2FE56C33A5}.Debug|x64.Build.0 = Debug|x64
+		{CBBA26D1-B34B-410D-A1DF-BC2FE56C33A5}.Debug|x86.ActiveCfg = Debug|Win32
+		{CBBA26D1-B34B-410D-A1DF-BC2FE56C33A5}.Debug|x86.Build.0 = Debug|Win32
+		{CBBA26D1-B34B-410D-A1DF-BC2FE56C33A5}.Release|ARM.ActiveCfg = Release|Win32
+		{CBBA26D1-B34B-410D-A1DF-BC2FE56C33A5}.Release|x64.ActiveCfg = Release|x64
+		{CBBA26D1-B34B-410D-A1DF-BC2FE56C33A5}.Release|x64.Build.0 = Release|x64
+		{CBBA26D1-B34B-410D-A1DF-BC2FE56C33A5}.Release|x86.ActiveCfg = Release|Win32
+		{CBBA26D1-B34B-410D-A1DF-BC2FE56C33A5}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -62,6 +63,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{6C5AA792-610D-42F6-A1F8-21EA87B7F446} = {50A1E1B9-60F6-461D-8F0F-D74615B42AA6}
 		{E88A294B-94AD-4DD2-BF0E-13262DEC53D4} = {51CE13A5-0420-49F5-982C-45151CE74CB8}
-		{A569B5A2-F368-470D-9709-FDD0F2CF0FAF} = {EAC460BF-9B7F-49F0-9ABB-852DDB76662A}
+		{CBBA26D1-B34B-410D-A1DF-BC2FE56C33A5} = {EAC460BF-9B7F-49F0-9ABB-852DDB76662A}
 	EndGlobalSection
 EndGlobal

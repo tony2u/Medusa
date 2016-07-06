@@ -8,6 +8,7 @@
 #include "Geometry/Point3.h"
 #include "Geometry/Point4.h"
 #include "GeometryDefines.h"
+#include "Core/Memory/Memory.h"
 
 MEDUSA_BEGIN;
 

@@ -5,7 +5,7 @@
 #include "WinEGLView.h"
 #include "Application/Window/win/WinWindow.h"
 #include "Graphics/ResolutionAdapter.h"
-#include "Core/Profile/ProfileSample.h"
+#include "Core/Chrono/ProfileSample.h"
 #include "Graphics/Render/Render.h"
 #include "Graphics/GraphicsContext.h"
 #include "Rendering/RenderEngine.h"
@@ -432,7 +432,6 @@ void WinEGLView::CreateSurface()
 	MEDUSA_ASSERT_FALSE(GetEGLError(), "");
 }
 
-MEDUSA_IMPLEMENT_RTTI(WinEGLView, BaseRenderView);
 
 MEDUSA_END;
 

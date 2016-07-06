@@ -6,13 +6,6 @@
 
 MEDUSA_BEGIN;
 
-
-
-UIRenderQueue::UIRenderQueue(IRenderTarget* renderTarget/*=nullptr*/, Camera* camera/*=nullptr*/)
-	:BaseMultipleBatchRenderQueue(renderTarget, camera)
-{
-}
-
 UIRenderQueue::~UIRenderQueue(void)
 {
 }

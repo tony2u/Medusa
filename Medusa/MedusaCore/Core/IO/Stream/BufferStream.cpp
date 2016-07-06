@@ -9,31 +9,28 @@
 MEDUSA_BEGIN;
 
 
-BufferStream::BufferStream(IStream& stream, uint bufferSize)
-	: mSourceStream(&stream),
+BufferStream::BufferStream(const Share<IStream>& stream, uint bufferSize)
+	: mSourceStream(stream),
 	mIsSourceReadonly(false),
 	mBuffer(bufferSize, false)
 {
-	SAFE_RETAIN(mSourceStream);
 	mPrevOperation = StreamDataOperation::None;
 }
 
-BufferStream::BufferStream(const IStream& stream, uint bufferSize)
-	: mSourceStream((IStream*)&stream),
+BufferStream::BufferStream(const Share<const IStream>& stream, uint bufferSize)
+	: mSourceStream(stream.CastPtr<IStream>()),
 	mIsSourceReadonly(true),
 	mBuffer(bufferSize, false)
 {
-	SAFE_RETAIN(mSourceStream);
 	mPrevOperation = StreamDataOperation::None;
 }
 
 BufferStream::BufferStream(BufferStream&& other)
-	:mSourceStream(nullptr),
+	:mSourceStream(std::move(other.mSourceStream)),
 	mIsSourceReadonly(other.mIsSourceReadonly),
 	mBuffer(std::move(other.mBuffer)),
 	mPrevOperation(other.mPrevOperation)
 {
-	SAFE_MOVE_REF(mSourceStream, other.mSourceStream);
 	other.mPrevOperation = StreamDataOperation::None;
 
 }
@@ -43,7 +40,7 @@ BufferStream& BufferStream::operator=(BufferStream&& other)
 	if (this != &other)
 	{
 		Close();
-		SAFE_MOVE_REF(mSourceStream, other.mSourceStream);
+		mSourceStream = std::move(other.mSourceStream);
 		mIsSourceReadonly = other.mIsSourceReadonly;
 		mBuffer = std::move(other.mBuffer);
 		mPrevOperation = other.mPrevOperation;
@@ -152,8 +149,7 @@ bool BufferStream::Flush()
 
 bool BufferStream::Close()
 {
-	SAFE_RELEASE(mSourceStream);
-
+	mSourceStream = nullptr;
 	mBuffer.Close();
 	mBufferLength = 0;
 

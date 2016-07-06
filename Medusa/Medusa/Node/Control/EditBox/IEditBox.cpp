@@ -24,19 +24,18 @@
 MEDUSA_BEGIN;
 
 
-IEditBox::IEditBox(StringRef name, const Size2F& size, const FontId& fontId, WStringRef text /*= WStringRef::Empty*/, Alignment alignment /*= Alignment::LeftBottom*/)
-	:INode(name),
+
+IEditBox::IEditBox(const StringRef& name /*= StringRef::Empty*/, const IEventArg& e /*= IEventArg::Empty*/)
+	:INode(name,e),
 	mCursorColor(Color4F::White)
 {
-	mSize = size;
-
 	EnableClipToBound(true);
 	PanGestureRecognizer* panGestureRecognizer = MutableInput().AddPanGestureHandler(Bind(&IEditBox::OnPan, this), 1.f);
 	panGestureRecognizer->OnBegin += Bind(&IEditBox::OnPanBegin, this);
 	panGestureRecognizer->OnEnd += Bind(&IEditBox::OnPanEnd, this);
 
-	MutableInput().AddIMEHandler(Bind(&IEditBox::OnCharInput, this), Bind(&IEditBox::OnKeyDown, this), Bind( &IEditBox::OnKeyUp, this));
-	TapGestureRecognizer* tapGestureRecognizer=MutableInput().AddTapGestureHandler(Bind( &IEditBox::OnTap, this));
+	MutableInput().AddIMEHandler(Bind(&IEditBox::OnCharInput, this), Bind(&IEditBox::OnKeyDown, this), Bind(&IEditBox::OnKeyUp, this));
+	TapGestureRecognizer* tapGestureRecognizer = MutableInput().AddTapGestureHandler(Bind(&IEditBox::OnTap, this));
 	tapGestureRecognizer->OnTapFailed += Bind(&IEditBox::OnTapFailed, this);
 }
 
@@ -153,7 +152,6 @@ void IEditBox::SetPlaceHolderColor(const Color4F& val)
 	mPlaceHolderLabel->SetColor(val);
 }
 
-
 void IEditBox::SetBackgroundSprite(NineGridSprite* val)
 {
 	RETURN_IF_EQUAL(mBackgroundSprite, val);
@@ -197,7 +195,7 @@ void IEditBox::SetCursorWidth(float val)
 
 	if (mCursorSprite != nullptr)
 	{
-		ShapeQuadMesh* mesh = (ShapeQuadMesh*)mCursorSprite->Mesh();
+		auto mesh = mCursorSprite->Mesh().CastPtr<ShapeQuadMesh>();
 		mesh->SetVertexBySize(Size2F(mCursorWidth, (float)mTextLabel->GetFontId().Size()));
 	}
 }
@@ -232,6 +230,13 @@ void IEditBox::OnTapFailed(INode* sender)
 
 }
 
+
+void IEditBox::OnMoveableDirty(MoveableChangedFlags changedFlags)
+{
+	mTextLabel->SetSize(mSize);
+	mPlaceHolderLabel->SetSize(mSize);
+	IRenderable::OnMoveableDirty(changedFlags);
+}
 
 void IEditBox::OnPanBegin(INode* sender, PanBeginGestureEventArg& e)
 {
@@ -355,6 +360,6 @@ void IEditBox::OnUpdateCursor()
 	}
 }
 
-MEDUSA_IMPLEMENT_RTTI(IEditBox, INode);
+
 
 MEDUSA_END;

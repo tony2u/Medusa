@@ -11,9 +11,9 @@ MEDUSA_BEGIN;
 
 class IEditBox :public INode
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_RTTI(IEditBox,INode);
 public:
-	IEditBox(StringRef name, const Size2F& size, const FontId& fontId, WStringRef text = WStringRef::Empty, Alignment alignment = Alignment::LeftBottom);
+	IEditBox(const StringRef& name = StringRef::Empty, const IEventArg& e = IEventArg::Empty);
 	virtual ~IEditBox(void);
 public:
 	InputMode GetInputMode() const { return mInputMode; }
@@ -84,7 +84,7 @@ protected:
 	virtual void OnTap(INode* sender, TapGestureEventArg& e);
 	virtual void OnTapFailed(INode* sender);
 
-
+	virtual void OnMoveableDirty(MoveableChangedFlags changedFlags);
 
 	virtual void OnUpdateStatus();
 	virtual void OnUpdateCursor();

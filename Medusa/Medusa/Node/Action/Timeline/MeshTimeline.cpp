@@ -9,13 +9,13 @@
 
 MEDUSA_BEGIN;
 
-MeshTimeline::MeshTimeline(MeshTimelineModel* model, bool isRepeatForever, float beforeDelay /*= 0.f*/, float repeatDuration /*= 0.f*/, float afterDelay /*= 0.f*/, const StringRef& name /*= StringRef::Empty*/)
+MeshTimeline::MeshTimeline(const Share<MeshTimelineModel>& model, bool isRepeatForever, float beforeDelay /*= 0.f*/, float repeatDuration /*= 0.f*/, float afterDelay /*= 0.f*/, const StringRef& name /*= StringRef::Empty*/)
 	: ITimeline(model, isRepeatForever, beforeDelay, repeatDuration, afterDelay, name)
 {
 
 }
 
-MeshTimeline::MeshTimeline(MeshTimelineModel* model, intp repeatCount, float beforeDelay /*= 0.f*/, float repeatDuration /*= 0.f*/, float afterDelay /*= 0.f*/, const StringRef& name /*= StringRef::Empty*/)
+MeshTimeline::MeshTimeline(const Share<MeshTimelineModel>& model, intp repeatCount, float beforeDelay /*= 0.f*/, float repeatDuration /*= 0.f*/, float afterDelay /*= 0.f*/, const StringRef& name /*= StringRef::Empty*/)
 	: ITimeline(model, repeatCount, beforeDelay, repeatDuration, afterDelay, name)
 {
 
@@ -30,8 +30,8 @@ MeshTimeline::~MeshTimeline()
 bool MeshTimeline::OnUpdate(float prevElapsed,float dt, float blend /*= 1.f*/)
 {
 	uint frame=CurrentFrameIndex();
-	MeshTimelineModel* model = (MeshTimelineModel*)mModel;
-	IMesh* mesh = model->GetMeshByIndex(frame);
+	auto model = mModel.CastPtr<MeshTimelineModel>();
+	auto mesh = model->GetMeshByIndex(frame);
 	INode* node = (INode*)mTarget;
 	node->SetMesh(mesh);
 

@@ -27,19 +27,19 @@ public:
 
 
 public:
-	void SetExtension(IModule* val) { mExtension = val; }
+	void SetExtension(const ShareModule& val) { mExtension = val; }
 	
-	IGame* Game() const { return mGame; }
-	IWindow* Window()const { return mEngine.Window(); }
+	IGame* Game() const { return mGame.Ptr(); }
+	IWindow* Window()const { return mEngine->Window(); }
 	void RegisterGame(Delegate<IGame*()> val);
 
 
-	float FrameInterval()const { return mFrameInterval; }
-	void SetFrameInterval(float val);
+	float FrameIntervalSeconds()const { return mFrameIntervalSeconds; }
+	void SetFrameIntervalSeconds(float val);
 
 	uint64 FrameCount() const { return mFrameCount; }
 	double TimeStamp() const { return mTimeStamp; }
-	float FPS()const { return 1.f / mFrameInterval; }
+	float FPS()const { return 1.f / mFrameIntervalSeconds; }
 
 	bool IsInMainThread()const;
 public:
@@ -67,20 +67,20 @@ protected:
 	virtual bool OnReload(IEventArg& e = IEventArg::Empty) override;
 
 private:
-	IGame* mGame=nullptr;
-	MedusaCoreModule mCore;
-	MedusaModule mEngine;
-	IModule* mExtension = nullptr;
+	Share<IGame> mGame;
+	Share<MedusaCoreModule> mCore;
+	Share<MedusaModule> mEngine;
+	ShareModule mExtension;
 
 	Delegate<IGame*()> mCreateGameCallback;
 
-	float mFrameInterval;
-	float mFrameIntervalRestore;
+	float mFrameIntervalSeconds;
+	float mFrameIntervalSecondsRestore;
 
 	double mTimeStamp;
 	uint64 mFrameCount;
 
-	ThreadHandle mMainThread;
+	ThreadId mMainThread;
 
 	bool mIsInitialized;
 	

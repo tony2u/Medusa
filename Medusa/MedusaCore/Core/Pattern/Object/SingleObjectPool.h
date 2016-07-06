@@ -7,7 +7,7 @@
 #include "Core/Collection/List.h"
 
 MEDUSA_BEGIN;
-template <typename TObject, typename TObjectCompare = DefaultCompare<TObject>, typename TObjectNewer = DefaultNewer<TObject>>
+template <typename TObject, typename TObjectCompare = DefaultCompare, typename TObjectNewer = DefaultNewer<TObject>>
 class SingleObjectPool
 {
 public:

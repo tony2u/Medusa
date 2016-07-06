@@ -13,7 +13,7 @@ MEDUSA_BEGIN;
 
 class IEntity
 {
-	typedef SortedList < IComponent*,DefaultCompare<IComponent*>,CustomCompareForPointer<IComponent*> > ComponentList;
+	typedef SortedList < IComponent*,DefaultCompare,CustomCompareForPointer > ComponentList;
 public:
 	IEntity();
 	virtual ~IEntity();

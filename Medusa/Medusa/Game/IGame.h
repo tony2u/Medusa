@@ -36,11 +36,9 @@ protected:
 
 #define MEDUSA_DECLARE_GAME() 													\
 private:																				\
-	const static StaticConstructor mStaticConstructor;							\
-	static void RegisterSelfToApplication();
+	const static StaticConstructor mStaticConstructor;							
 
 #define MEDUSA_IMPLEMENT_GAME(className) 																					 \
-	const StaticConstructor className::mStaticConstructor(RegisterSelfToApplication);					 \
-	void className::RegisterSelfToApplication(){Application::Instance().RegisterGame(DefaultNewer<className*>::New);}
+	const StaticConstructor className::mStaticConstructor([]{Application::Instance().RegisterGame(DefaultNewer<className*>::New);});					 
 
 MEDUSA_END;

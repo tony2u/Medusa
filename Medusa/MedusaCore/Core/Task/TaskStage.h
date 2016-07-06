@@ -16,7 +16,6 @@ public:
 	TaskStage();
 	~TaskStage(void);
 
-
 	void Register(Task* task);
 	void Clear();
 

@@ -5,7 +5,7 @@
 #include "WinGLView.h"
 #include "Application/Window/win/WinWindow.h"
 #include "Graphics/ResolutionAdapter.h"
-#include "Core/Profile/ProfileSample.h"
+#include "Core/Chrono/ProfileSample.h"
 #include "Graphics/Render/Render.h"
 #include "Core/Log/Log.h"
 #include "Core/String/StringParser.h"
@@ -217,7 +217,6 @@ bool WinGLView::SetupGLEW()
 }
 
 
-MEDUSA_IMPLEMENT_RTTI(WinGLView, BaseRenderView);
 
 MEDUSA_END;
 #endif

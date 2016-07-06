@@ -151,10 +151,10 @@ bool SirenObjectSerializer::Visit(const SirenObject& obj, const SirenBuildinBlob
 bool SirenObjectSerializer::Visit(const SirenObject& obj, const SirenBuildinList& type, const ISirenType& valueType)
 {
 	const auto& items = obj.GetList();
-	uint count = items.Count();
+	uint count = (uint)items.Count();
 	mWriter.OnListBegin((byte)valueType.Id().ToInt(), count);
 
-	FOR_EACH_SIZE(i, count)
+	FOR_EACH_UINT32(i, count)
 	{
 		mWriter.OnListItemBegin(i);
 		Serialize(items[i], valueType);

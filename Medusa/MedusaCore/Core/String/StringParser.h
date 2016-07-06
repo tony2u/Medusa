@@ -326,9 +326,8 @@ namespace StringParser
 	{
 		outResult.Clear();
 		size_t count = strings.Count();
-		FOR_EACH_COLLECTION(i, strings)
+		for(auto& str: strings)
 		{
-			const TStringRef<T>& str = *i;
 			outResult.Append(str);
 			if (i != count - 1)
 			{

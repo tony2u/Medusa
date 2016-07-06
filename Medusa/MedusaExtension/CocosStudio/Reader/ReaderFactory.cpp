@@ -11,7 +11,17 @@
 #include "SpriteReader.h"
 #include "TextReader.h"
 #include "ImageViewReader.h"
-
+#include "NodeReader.h"
+#include "SingleNodeReader.h"
+#include "TextBMFontReader.h"
+#include "TextAtlasReader.h"
+#include "LoadingBarReader.h"
+#include "TextFieldReader.h"
+#include "TmxMapReader.h"
+#include "PanelReader.h"
+#include "ScrollViewReader.h"
+#include "PageViewReader.h"
+#include "ListViewReader.h"
 
 
 MEDUSA_COCOS_BEGIN;
@@ -26,7 +36,17 @@ ReaderFactory::ReaderFactory()
 	Register<SpriteReader>();
 	Register<TextReader>();
 	Register<ImageViewReader>();
-
+	Register<NodeReader>();
+	Register<SingleNodeReader>();
+	Register<TextBMFontReader>();
+	Register<TextAtlasReader>();
+	Register<LoadingBarReader>();
+	Register<TextFieldReader>();
+	Register<TmxMapReader>();
+	Register<PanelReader>();
+	Register<ScrollViewReader>();
+	Register<PageViewReader>();
+	Register<ListViewReader>();
 }
 
 INodeReader* ReaderFactory::AssertCreate(StringRef name) 

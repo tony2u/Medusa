@@ -23,11 +23,11 @@ public:
 	void RegisterRenderPassDescription(StringRef name, const FileIdRef& vertexShaderFile, const FileIdRef& pixelShaderFile,int index=0,const List<HeapString>* defines=nullptr);
 	bool UnregisterRenderPassDescription(StringRef name);
 
-	IRenderPass* CreateRenderPass(const FileIdRef& fileId, const FileIdRef& vertexShaderFile, const FileIdRef& pixelShaderFile,int index=0,const List<HeapString>* defines=nullptr,ResourceShareType shareType = ResourceShareType::Share);
-	IRenderPass* CreateRenderPass(const FileIdRef& fileId,IShader* vertexShader,IShader* pixelShader,int index=0,ResourceShareType shareType = ResourceShareType::Share);
-	IRenderPass* CreateRenderPass(const RenderPassDescription& description,const List<HeapString>* defines=nullptr,ResourceShareType shareType = ResourceShareType::Share);
-	IRenderPass* CreateRenderPass(const FileIdRef& fileId,const List<HeapString>* defines=nullptr,ResourceShareType shareType = ResourceShareType::Share);
-	IRenderPass* CreateCustomRenderPass(ResourceShareType shareType = ResourceShareType::Share);
+	Share<IRenderPass> CreateRenderPass(const FileIdRef& fileId, const FileIdRef& vertexShaderFile, const FileIdRef& pixelShaderFile,int index=0,const List<HeapString>* defines=nullptr,ResourceShareType shareType = ResourceShareType::Share);
+	Share<IRenderPass> CreateRenderPass(const FileIdRef& fileId,const Share<IShader>& vertexShader, const Share<IShader>& pixelShader,int index=0,ResourceShareType shareType = ResourceShareType::Share);
+	Share<IRenderPass> CreateRenderPass(const RenderPassDescription& description,const List<HeapString>* defines=nullptr,ResourceShareType shareType = ResourceShareType::Share);
+	Share<IRenderPass> CreateRenderPass(const FileIdRef& fileId,const List<HeapString>* defines=nullptr,ResourceShareType shareType = ResourceShareType::Share);
+	Share<IRenderPass> CreateCustomRenderPass(ResourceShareType shareType = ResourceShareType::Share);
 private:
 	Dictionary<StringRef,RenderPassDescription*> mRenderPassDescriptions;
 

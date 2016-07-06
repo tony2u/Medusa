@@ -30,7 +30,7 @@ IFont::~IFont(void)
 {
 	SAFE_DELETE_DICTIONARY_VALUE(mChars);
 	SAFE_DELETE_DICTIONARY_VALUE(mKernings);
-	SAFE_RELEASE(mAtlas);
+	
 }
 
 void IFont::AddChar(FontChar* fontChar)
@@ -87,9 +87,9 @@ bool IFont::HasSinglePage() const
 }
 
 
-void IFont::SetAtlas(TextureAtlas* val)
+void IFont::SetAtlas(const Share<TextureAtlas>& val)
 {
-	SAFE_ASSIGN_REF(mAtlas, val);
+	mAtlas = val;
 }
 
 //const char* IFont::mASCIIChars = "\"!#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~¡¢£¤¥¦§¨©ª«¬­®¯°±²³´µ¶·¸¹º»¼½¾¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþ ";

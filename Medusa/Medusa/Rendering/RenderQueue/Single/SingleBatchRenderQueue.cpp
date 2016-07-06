@@ -7,12 +7,6 @@
 MEDUSA_BEGIN;
 
 
-
-SingleBatchRenderQueue::SingleBatchRenderQueue(IRenderTarget* renderTarget/*=nullptr*/, Camera* camera/*=nullptr*/, RenderingStrategy strategy /*= RenderingStrategy::MultipleDynamicBatch*/)
-	:BaseSingleBatchRenderQueue(renderTarget, camera,strategy)
-{
-}
-
 SingleBatchRenderQueue::~SingleBatchRenderQueue(void)
 {
 }

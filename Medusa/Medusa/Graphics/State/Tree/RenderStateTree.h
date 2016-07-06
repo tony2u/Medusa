@@ -5,6 +5,7 @@
 #include "MedusaPreDeclares.h"
 #include "Core/Pattern/Singleton.h"
 #include "Core/Pattern/IInitializable.h"
+#include "Core/Pattern/Share.h"
 
 MEDUSA_BEGIN;
 
@@ -17,15 +18,15 @@ public:
 	virtual bool Initialize() override;
 	virtual bool Uninitialize() override;
 public:
-	RenderStateTreeLeafNode* FindUniqueNode(const RenderStateSet& state);
-	void Release(RenderStateTreeLeafNode* node);
+	Share<RenderStateTreeLeafNode> FindUniqueNode(const RenderStateSet& state);
+	void Release(const Share<RenderStateTreeLeafNode>& node);
 	uint MinId()const;
 	uint CalcuateId(const RenderStateTreeLeafNode& node)const;
-	RenderStateTreeLeafNode* EmptyNode() const { return mEmptyNode; }
+	const Share<RenderStateTreeLeafNode>& EmptyNode() const { return mEmptyNode; }
 
 public:
-	RenderStateTreeCompositeNode* mRoot;
-	RenderStateTreeLeafNode* mEmptyNode;
+	Share<RenderStateTreeCompositeNode> mRoot;
+	Share<RenderStateTreeLeafNode> mEmptyNode;
 };
 
 MEDUSA_END;

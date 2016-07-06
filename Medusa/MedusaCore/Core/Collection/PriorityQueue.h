@@ -10,7 +10,7 @@
 MEDUSA_BEGIN;
 
 
-template<typename T, class TCompare = EqualCompare<T>, class TSorter = DefaultCompare<T>>
+template<typename T, class TCompare = EqualCompare, class TSorter = DefaultCompare>
 class PriorityQueue :public ICollection < T >
 {
 	typedef PriorityQueue<T, TCompare, TSorter> SelfType;
@@ -250,11 +250,20 @@ public:
 		HeapifyUp(this->mCount - 1);
 	}
 
-	TReferenceType Pop()
+	void Pop()
 	{
 		MEDUSA_ASSERT_NOT_EMPTY(mItems, "Empty");
 		std::swap(mItems[0], mItems[this->mCount - 1]);
-		TReferenceType last = mItems.Last();
+		mItems.RemoveLast();
+		this->mCount = mItems.Count();
+		HeapifyDown(0);
+	}
+
+	T PopOr(TParameterType val)
+	{
+		MEDUSA_ASSERT_NOT_EMPTY(mItems, "Empty");
+		std::swap(mItems[0], mItems[this->mCount - 1]);
+		T last = mItems.Last();
 		mItems.RemoveLast();
 		this->mCount = mItems.Count();
 		HeapifyDown(0);
@@ -266,21 +275,17 @@ public:
 		return mItems.First();
 	}
 
-	TReferenceType PopOr(TParameterType val)
+	T TopOr(TConstReturnType val)const
 	{
 		if (mItems.IsEmpty())
 		{
 			return val;
 		}
-		return Pop();
+		return mItems.First();
 	}
 
-	TReferenceType TopOr(TParameterType val)const
+	TReturnType MutableTop()const
 	{
-		if (mItems.IsEmpty())
-		{
-			return val;
-		}
 		return mItems.First();
 	}
 

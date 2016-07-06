@@ -10,7 +10,7 @@
 #include "Resource/RenderTarget/DefaultRenderTarget.h"
 
 #include "Graphics/ResolutionAdapter.h"
-#include "Core/Profile/ProfileSample.h"
+#include "Core/Chrono/ProfileSample.h"
 
 #include "Resource/Effect/EffectTechniqueGroup.h"
 #include "Resource/Effect/EffectTechnique.h"
@@ -18,7 +18,7 @@
 
 #include "Resource/RenderTarget/RenderTargetFactory.h"
 #include "Core/Log/Log.h"
-#include "Core/Profile/StopWatch.h"
+#include "Core/Chrono/StopWatch.h"
 #include "Rendering/Command/IRenderingCommand.h"
 #include "Rendering/RenderDevice.h"
 
@@ -57,7 +57,7 @@ bool RenderEngine::UninitializeBeforeWindow()
 	EffectRenderGroupPool::Instance().Clear();
 	MaterialRenderGroupPool::Instance().Clear();
 	StateRenderGroupPool::Instance().Clear();
-	BatchPool::Instance().Clear();
+	BatchPool::Instance().Uninitialize();
 
 	return true;
 }

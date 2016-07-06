@@ -1,12 +1,28 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="DebugLib|Win32">
+      <Configuration>DebugLib</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="DebugLib|x64">
+      <Configuration>DebugLib</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="ReleaseLib|Win32">
+      <Configuration>ReleaseLib</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="ReleaseLib|x64">
+      <Configuration>ReleaseLib</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
@@ -17,6 +33,11 @@
       <Configuration>Release</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\MedusaCore\win\MedusaCore.Win.vcxproj">
+      <Project>{d3eedd4f-019e-4a8a-9aab-2b28e858ad04}</Project>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{E1F3E1C5-4B32-4CA6-B982-165AA7E3C428}</ProjectGuid>
@@ -36,8 +57,19 @@
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
- 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugLib|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugLib|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
@@ -50,7 +82,21 @@
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseLib|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseLib|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -66,15 +112,25 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugLib|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
- 
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugLib|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseLib|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseLib|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
@@ -82,17 +138,31 @@
     <LinkIncremental>true</LinkIncremental>
     <TargetName>Medusa</TargetName>
   </PropertyGroup>
- 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugLib|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <TargetName>Medusa</TargetName>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <TargetName>Medusa</TargetName>
   </PropertyGroup>
- 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugLib|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <TargetName>Medusa</TargetName>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <TargetName>Medusa</TargetName>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseLib|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <TargetName>Medusa</TargetName>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <TargetName>Medusa</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseLib|x64'">
     <LinkIncremental>false</LinkIncremental>
     <TargetName>Medusa</TargetName>
   </PropertyGroup>
@@ -102,7 +172,7 @@
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\;..\Lib\Common\OGLES;..\Lib\Common\freetype;..\Lib\Common;..\..\MedusaCore;..\..\MedusaCore\CoreLib\Common;..\..\MedusaCore\CoreLib\win\zlib;..\..\MedusaCore\CoreLib\Common\zip;..\..\MedusaCore\CoreLib\Common\angelscript\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\;..\Lib\Common\OGLES;..\Lib\Common\freetype;..\Lib\Common;..\..\MedusaCore;..\..\MedusaCore\CoreLib\Common;..\..\MedusaCore\CoreLib\win\zlib;..\..\MedusaCore\CoreLib\Common\zip;..\..\MedusaCore\CoreLib\win\mysql;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4099;4221;4006;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
@@ -133,15 +203,51 @@ xcopy /Y /Q "$(ProjectDir)..\Lib\Bin\win\x86\*.pdb" "$(OutDir)"</Command>
       </Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
-  
-   
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugLib|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;MEDUSA_DISABLE_HTTP;MEDUSA_DISABLE_LZMA;MEDUSA_DISABLE_LZ4;MEDUSA_DISABLE_UNZIP;MEDUSA_DISABLE_ZLIB;MEDUSA_DISABLE_SCRIPT;MEDUSA_DISABLE_SQL;MEDUSA_DISABLE_AL;MEDUSA_DISABLE_FREETYPE;MEDUSA_DISABLE_JPEG;MEDUSA_DISABLE_PNG;MEDUSA_DISABLE_OGG;MEDUSA_DISABLE_GL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\;..\Lib\Common;..\..\MedusaCore;..\..\MedusaCore\CoreLib\Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4099;4221;4006;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
+      <MinimalRebuild>false</MinimalRebuild>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <PrecompiledHeaderFile>MedusaPreCompiled.h</PrecompiledHeaderFile>
+      <BrowseInformation>false</BrowseInformation>
+      <PreprocessToFile>false</PreprocessToFile>
+      <ObjectFileName>$(IntDir)%(Directory)</ObjectFileName>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+    </ClCompile>
+    <Lib>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
+    </Lib>
+    <Lib>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\Lib\Bin\win\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions> /ignore:4221  /ignore:4006 %(AdditionalOptions)</AdditionalOptions>
+    </Lib>
+    <Bscmake>
+      <PreserveSbr>true</PreserveSbr>
+    </Bscmake>
+    <PostBuildEvent>
+      <Command>xcopy /Y /Q "$(ProjectDir)..\Lib\Bin\win\x86\*.dll" "$(OutDir)"
+xcopy /Y /Q "$(ProjectDir)..\Lib\Bin\win\x86\*.pdb" "$(OutDir)"</Command>
+    </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>
+      </Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\;..\Lib\Common\OGLES;..\Lib\Common\freetype;..\Lib\Common;..\..\MedusaCore;..\..\MedusaCore\CoreLib\Common;..\..\MedusaCore\CoreLib\win\zlib;..\..\MedusaCore\CoreLib\Common\zip;..\..\MedusaCore\CoreLib\Common\angelscript\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\;..\Lib\Common\OGLES;..\Lib\Common\freetype;..\Lib\Common;..\..\MedusaCore;..\..\MedusaCore\CoreLib\Common;..\..\MedusaCore\CoreLib\win\zlib;..\..\MedusaCore\CoreLib\Common\zip;..\..\MedusaCore\CoreLib\win\mysql;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4099;4221;4006;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <ProgramDataBaseFileName>$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
@@ -178,8 +284,51 @@ xcopy /Y /Q "$(ProjectDir)..\Lib\Bin\win\x64\*.pdb" "$(OutDir)"</Command>
       <PreserveSbr>true</PreserveSbr>
     </Bscmake>
   </ItemDefinitionGroup>
-  
-   
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugLib|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;MEDUSA_DISABLE_HTTP;MEDUSA_DISABLE_LZMA;MEDUSA_DISABLE_LZ4;MEDUSA_DISABLE_UNZIP;MEDUSA_DISABLE_ZLIB;MEDUSA_DISABLE_SCRIPT;MEDUSA_DISABLE_SQL;MEDUSA_DISABLE_VLD;MEDUSA_DISABLE_AL;MEDUSA_DISABLE_FREETYPE;MEDUSA_DISABLE_JPEG;MEDUSA_DISABLE_PNG;MEDUSA_DISABLE_OGG;MEDUSA_DISABLE_GL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\;..\Lib\Common;..\..\MedusaCore;..\..\MedusaCore\CoreLib\Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4099;4221;4006;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <ProgramDataBaseFileName>$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
+      <MinimalRebuild>false</MinimalRebuild>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <PrecompiledHeaderFile>MedusaPreCompiled.h</PrecompiledHeaderFile>
+      <BrowseInformation>false</BrowseInformation>
+      <PreprocessToFile>false</PreprocessToFile>
+      <ObjectFileName>$(IntDir)%(Directory)</ObjectFileName>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+    <PreLinkEvent>
+      <Command>
+      </Command>
+    </PreLinkEvent>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
+    <Lib>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
+    </Lib>
+    <Lib>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\Lib\Bin\win\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions> /ignore:4221  /ignore:4006 %(AdditionalOptions)</AdditionalOptions>
+    </Lib>
+    <Bscmake>
+      <PreserveSbr>true</PreserveSbr>
+    </Bscmake>
+  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -188,7 +337,7 @@ xcopy /Y /Q "$(ProjectDir)..\Lib\Bin\win\x64\*.pdb" "$(OutDir)"</Command>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\;..\Lib\Common\OGLES;..\Lib\Common\freetype;..\Lib\Common;..\..\MedusaCore;..\..\MedusaCore\CoreLib\Common;..\..\MedusaCore\CoreLib\win\zlib;..\..\MedusaCore\CoreLib\Common\zip;..\..\MedusaCore\CoreLib\Common\angelscript\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\;..\Lib\Common\OGLES;..\Lib\Common\freetype;..\Lib\Common;..\..\MedusaCore;..\..\MedusaCore\CoreLib\Common;..\..\MedusaCore\CoreLib\win\zlib;..\..\MedusaCore\CoreLib\Common\zip;..\..\MedusaCore\CoreLib\win\mysql;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4099;4221;4006;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <ObjectFileName>$(IntDir)%(Directory)</ObjectFileName>
@@ -197,6 +346,33 @@ xcopy /Y /Q "$(ProjectDir)..\Lib\Bin\win\x64\*.pdb" "$(OutDir)"</Command>
     </ClCompile>
     <Lib>
       <AdditionalDependencies>libEGL.lib;libGLESv2.lib;freetype.lib;jpeg.lib;ogg.lib;openal.lib;png.lib</AdditionalDependencies>
+    </Lib>
+    <Lib>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\Lib\Bin\win\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions> /ignore:4221  /ignore:4006 %(AdditionalOptions)</AdditionalOptions>
+    </Lib>
+    <PostBuildEvent>
+      <Command>xcopy /Y /Q "$(ProjectDir)..\Lib\Bin\win\x86\*.dll" "$(OutDir)"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseLib|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;MEDUSA_DISABLE_HTTP;MEDUSA_DISABLE_LZMA;MEDUSA_DISABLE_LZ4;MEDUSA_DISABLE_UNZIP;MEDUSA_DISABLE_ZLIB;MEDUSA_DISABLE_SCRIPT;MEDUSA_DISABLE_SQL;MEDUSA_DISABLE_AL;MEDUSA_DISABLE_FREETYPE;MEDUSA_DISABLE_JPEG;MEDUSA_DISABLE_PNG;MEDUSA_DISABLE_OGG;MEDUSA_DISABLE_GL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\;..\Lib\Common\OGLES;..\Lib\Common\freetype;..\Lib\Common;..\..\MedusaCore;..\..\MedusaCore\CoreLib\Common;..\..\MedusaCore\CoreLib\win\zlib;..\..\MedusaCore\CoreLib\Common\zip;..\..\MedusaCore\CoreLib\win\mysql;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4099;4221;4006;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <ObjectFileName>$(IntDir)%(Directory)</ObjectFileName>
+      <PrecompiledHeaderFile>MedusaPreCompiled.h</PrecompiledHeaderFile>
+      <ProgramDataBaseFileName>$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
+    </ClCompile>
+    <Lib>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
     </Lib>
     <Lib>
       <AdditionalLibraryDirectories>$(ProjectDir)..\Lib\Bin\win\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -217,7 +393,7 @@ xcopy /Y /Q "$(ProjectDir)..\Lib\Bin\win\x64\*.pdb" "$(OutDir)"</Command>
       <PrecompiledHeaderFile>MedusaPreCompiled.h</PrecompiledHeaderFile>
       <ObjectFileName>$(IntDir)%(Directory)</ObjectFileName>
       <ProgramDataBaseFileName>$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>..\;..\Lib\Common\OGLES;..\Lib\Common\freetype;..\Lib\Common;..\..\MedusaCore;..\..\MedusaCore\CoreLib\Common;..\..\MedusaCore\CoreLib\win\zlib;..\..\MedusaCore\CoreLib\Common\zip;..\..\MedusaCore\CoreLib\Common\angelscript\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\;..\Lib\Common\OGLES;..\Lib\Common\freetype;..\Lib\Common;..\..\MedusaCore;..\..\MedusaCore\CoreLib\Common;..\..\MedusaCore\CoreLib\win\zlib;..\..\MedusaCore\CoreLib\Common\zip;..\..\MedusaCore\CoreLib\win\mysql;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -231,6 +407,35 @@ xcopy /Y /Q "$(ProjectDir)..\Lib\Bin\win\x64\*.pdb" "$(OutDir)"</Command>
     </Lib>
     <PostBuildEvent>
       <Command>xcopy /Y /Q "$(ProjectDir)..\Lib\Bin\win\x64\*.dll" "$(OutDir)"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseLib|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;MEDUSA_DISABLE_HTTP;MEDUSA_DISABLE_LZMA;MEDUSA_DISABLE_LZ4;MEDUSA_DISABLE_UNZIP;MEDUSA_DISABLE_ZLIB;MEDUSA_DISABLE_SCRIPT;MEDUSA_DISABLE_VLD;MEDUSA_DISABLE_SQL;MEDUSA_DISABLE_AL;MEDUSA_DISABLE_FREETYPE;MEDUSA_DISABLE_JPEG;MEDUSA_DISABLE_PNG;MEDUSA_DISABLE_OGG;MEDUSA_DISABLE_GL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeaderFile>MedusaPreCompiled.h</PrecompiledHeaderFile>
+      <ObjectFileName>$(IntDir)%(Directory)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
+      <AdditionalIncludeDirectories>..\;..\Lib\Common\OGLES;..\Lib\Common\freetype;..\Lib\Common;..\..\MedusaCore;..\..\MedusaCore\CoreLib\Common;..\..\MedusaCore\CoreLib\win\zlib;..\..\MedusaCore\CoreLib\Common\zip;..\..\MedusaCore\CoreLib\win\mysql;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <Lib>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\Lib\Bin\win\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
+    <PostBuildEvent>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

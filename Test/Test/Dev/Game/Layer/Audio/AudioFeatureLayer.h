@@ -8,7 +8,7 @@
 
 class AudioFeatureLayer :public BaseFeatureLayer
 {
-	MEDUSA_DECLARE_LAYER(AudioFeatureLayer);
+	MEDUSA_NODE(AudioFeatureLayer, BaseFeatureLayer);
 public:
 	AudioFeatureLayer(StringRef name=StringRef::Empty,const IEventArg& e=IEventArg::Empty);
 	virtual ~AudioFeatureLayer(void);

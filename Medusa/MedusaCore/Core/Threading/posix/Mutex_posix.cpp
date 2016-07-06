@@ -5,17 +5,16 @@
 #ifdef MEDUSA_POSIX_THREADING
 
 #include "Core/Threading/Mutex.h"
-#include "Core/Profile/PerformanceCounter.h"
+#include "Core/Chrono/DateTime.h"
 
 #if defined(MEDUSA_IOS)
-#include "Core/Profile/StopWatch.h"
+#include "Core/Chrono/StopWatch.h"
 #include "Core/Threading/Thread.h"
 #endif
 
 MEDUSA_BEGIN;
 
 Mutex::Mutex(bool isRecursive /*= true*/, bool isInitializeNow /*= true*/)
-	:mIsInitialized(false)
 {
 	if (isInitializeNow)
 	{
@@ -54,17 +53,12 @@ void Mutex::Lock()
 }
 
 
-bool Mutex::LockTimeout(long milliseconds)
-{
-	return TryLockTimeout(milliseconds);
-}
-
 bool Mutex::TryLock()
 {
 	return ::pthread_mutex_trylock(&mMutex) == 0;
 }
 
-bool Mutex::TryLockTimeout(long milliseconds)
+bool Mutex::TryLockFor(long milliseconds)
 {
 #if (defined(MEDUSA_ANDROID) && __ANDROID_API__<=19)
 	return pthread_mutex_lock_timeout_np(&mMutex, milliseconds);
@@ -80,7 +74,7 @@ bool Mutex::TryLockTimeout(long milliseconds)
     } while (watch.ElapsedMilliseconds() < milliseconds);
     return false;
 #else
-	struct timespec abstime = PerformanceCounter::ToAbsoluteTime(milliseconds);
+	struct timespec abstime = DateTime::ToAbsoluteTime(milliseconds);
 	return pthread_mutex_timedlock(&mMutex, &abstime) == 0;
 #endif
 }

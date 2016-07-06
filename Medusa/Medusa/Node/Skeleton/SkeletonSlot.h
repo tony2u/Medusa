@@ -11,8 +11,10 @@ MEDUSA_BEGIN;
 
 class SkeletonSlot :public INode
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_NODE(SkeletonSlot,INode);
 public:
+	SkeletonSlot(const StringRef& name = StringRef::Empty, const IEventArg& e = IEventArg::Empty);
+
 	SkeletonSlot(ISkeleton* skeleton, SkeletonSlotModel* model);
 	virtual ~SkeletonSlot();
 

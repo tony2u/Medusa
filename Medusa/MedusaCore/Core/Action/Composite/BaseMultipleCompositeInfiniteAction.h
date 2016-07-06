@@ -23,9 +23,8 @@ public:
 			return true;
 		}
 
-		FOR_EACH_COLLECTION(i, mInnerActions)
+		for (auto currentAction : mInnerActions)
 		{
-			IAction* currentAction = *i;
 			currentAction->Reset();
 		}
 
@@ -36,9 +35,8 @@ public:
 	{
 		RETURN_FALSE_IF_FALSE(BaseInfiniteAction::Initialize(target));
 		bool isSuccess = true;
-		FOR_EACH_COLLECTION(i, mInnerActions)
+		for (auto currentAction : mInnerActions)
 		{
-			IAction* currentAction = *i;
 			if (!currentAction->Initialize(target))
 			{
 				isSuccess = false;
@@ -50,18 +48,16 @@ public:
 	}
 	virtual IAction* FindActionByTagRecursively(int tag)const override
 	{
-		FOR_EACH_COLLECTION(i, mInnerActions)
+		for (auto action : mInnerActions)
 		{
-			IAction* action = *i;
 			if (action->Tag() == tag)
 			{
 				return action;
 			}
 		}
 
-		FOR_EACH_COLLECTION(i, mInnerActions)
+		for (auto action : mInnerActions)
 		{
-			IAction* action = *i;
 			IAction* result = action->FindActionByTagRecursively(tag);
 			RETURN_SELF_IF_NOT_NULL(result);
 		}
@@ -71,18 +67,16 @@ public:
 	virtual IAction* FindActionByNameRecursively(const StringRef& name) const override
 	{
 		RETURN_NULL_IF_EMPTY(name);
-		FOR_EACH_COLLECTION(i, mInnerActions)
+		for (auto action : mInnerActions)
 		{
-			IAction* action = *i;
 			if (action->Name() == name)
 			{
 				return action;
 			}
 		}
 
-		FOR_EACH_COLLECTION(i, mInnerActions)
+		for (auto action : mInnerActions)
 		{
-			IAction* action = *i;
 			IAction* result = action->FindActionByNameRecursively(name);
 			RETURN_SELF_IF_NOT_NULL(result);
 		}

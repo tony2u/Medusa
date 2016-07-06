@@ -16,11 +16,12 @@ enum class ScrollBarVisibility
 };
 
 class ScrollPanel :public IPanel
-{
-	
-	MEDUSA_DECLARE_RTTI;
+{	
+	MEDUSA_NODE(ScrollPanel,IPanel);
 public:
-	ScrollPanel(StringRef name = StringRef::Empty, ScrollDirection direction = ScrollDirection::FreeFromCurrent);
+	ScrollPanel(StringRef name = StringRef::Empty, const IEventArg& e = IEventArg::Empty);
+
+	ScrollPanel(StringRef name , ScrollDirection direction );
 	virtual ~ScrollPanel(void);
 	virtual PanelType GetPanelType()const override{return PanelType::Scroll;}
 public:

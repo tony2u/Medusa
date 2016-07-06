@@ -22,7 +22,7 @@ multiple column
 */
 class ListBox :public ScrollPanel
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_NODE(ListBox,ScrollPanel);
 public:
 	typedef Delegate<void (ListBox& sender,const ListBoxItem& item)> ItemSelectedDelegate;
 	typedef Delegate<void (ListBox& sender,const ListBoxItem& item)> ItemUnselectedDelegate;
@@ -36,12 +36,13 @@ public:
 	ItemSelectedEvent OnItemSelected;
 	ItemClickedEvent OnItemClicked;
 public:
-	ListBox(StringRef name = StringRef::Empty, ScrollDirection direction = ScrollDirection::VerticalFromTop);
+	ListBox(StringRef name = StringRef::Empty, const IEventArg& e = IEventArg::Empty);
+	ListBox(StringRef name, ScrollDirection direction);
 	virtual ~ListBox(void);
 	virtual bool Initialize() override;
 public:
 	virtual void SetScrollDirection(ScrollDirection direction)override;
-	virtual void SetDataSource(IDataSource* dataSource)override;
+	virtual void SetDataSource(const Share<IDataSource>& dataSource)override;
 
 	virtual void ScrollToIndex(uint index);
 	virtual void ScrollByIndex(int index);
@@ -77,11 +78,11 @@ protected:
 	const ListBoxItem* GetSelectedItem(Point2F pos)const;
 protected:
 	List<ListBoxItem> mItems;
-	const ListBoxItem* mSelectedItem;
+	const ListBoxItem* mSelectedItem=nullptr;
 
 	Queue<INode*> mSingleTypeItemCache;	//node cache for single type
 	Dictionary<uint,Queue<INode*>* > mMultipleTypeItemCache;	//node cache for multiple type
-	bool mCacheEnabed;
+	bool mCacheEnabed=false;
 
 };
 

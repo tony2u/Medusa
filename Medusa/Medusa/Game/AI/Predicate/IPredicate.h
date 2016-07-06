@@ -11,7 +11,7 @@ MEDUSA_BEGIN;
 
 struct IPredicate :public ISharableSingleThread, public RTTIObject
 {
-	MEDUSA_DECLARE_RTTI_ROOT;
+	MEDUSA_RTTI_ROOT(IPredicate);
 public:
 	bool EvaluateBool(void* p)const { return Evaluate(p) > 0; }
 	virtual int Evaluate(void* p)const = 0;
@@ -33,15 +33,12 @@ protected:
 	List<const IPredicate*> mItems;
 };
 
-#define MEDUSA_DECLARE_PREDICATE 													\
-		MEDUSA_DECLARE_RTTI;\
+#define MEDUSA_DECLARE_PREDICATE(className,baseClassName)  													\
+		MEDUSA_RTTI(className,baseClassName);\
 private:																				\
-	const static StaticConstructor mStaticConstructor;							\
-	static void SelfRegisterStaticCallback();
+	const static StaticConstructor mStaticConstructor;							
 
-#define MEDUSA_IMPLEMENT_PREDICATE(className,baseClassName) 																					 \
-	MEDUSA_IMPLEMENT_RTTI(className,baseClassName);\
-	const StaticConstructor className::mStaticConstructor(SelfRegisterStaticCallback);					 \
-	void className::SelfRegisterStaticCallback(){PredicateFactory::Instance().Register<className>(#className);}
+#define MEDUSA_IMPLEMENT_PREDICATE(className) 																					 \
+	const StaticConstructor className::mStaticConstructor([]{PredicateFactory::Instance().Register<className>(#className);});					 
 
 MEDUSA_END;

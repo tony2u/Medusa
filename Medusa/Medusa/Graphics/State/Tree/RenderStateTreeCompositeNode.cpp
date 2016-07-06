@@ -9,7 +9,7 @@
 
 MEDUSA_BEGIN;
 
-RenderStateTreeCompositeNode::RenderStateTreeCompositeNode(IRenderState* state /*= nullptr*/, RenderStateTreeCompositeNode* parent /*= nullptr*/)
+RenderStateTreeCompositeNode::RenderStateTreeCompositeNode(const Share<IRenderState>& state /*= nullptr*/, RenderStateTreeCompositeNode* parent /*= nullptr*/)
 	:BaseRenderStateTreeNode(state, parent)
 {
 	mNextNullStateNode = nullptr;
@@ -17,17 +17,17 @@ RenderStateTreeCompositeNode::RenderStateTreeCompositeNode(IRenderState* state /
 
 RenderStateTreeCompositeNode::~RenderStateTreeCompositeNode(void)
 {
-	SAFE_DELETE(mNextNullStateNode);
-	SAFE_DELETE_COLLECTION(mNextStateNodes);
+	mNextNullStateNode = nullptr;
+	mNextStateNodes.Clear();
 }
 
-RenderStateTreeLeafNode* RenderStateTreeCompositeNode::FindUniqueNode(const RenderStateSet& stateSet, RenderStateType type)
+Share<RenderStateTreeLeafNode> RenderStateTreeCompositeNode::FindUniqueNode(const RenderStateSet& stateSet, RenderStateType type)
 {
 	RenderStateType lastType = (RenderStateType)(1<<((uint32)RenderStateType::Count - 1));
 	RenderStateType nextType = (RenderStateType)((uint32)type <<1);
 	bool isMiddle = type < lastType;
 
-	IRenderState* state = stateSet.GetState(type);
+	auto state = stateSet.GetState(type);
 
 	if (isMiddle)
 	{
@@ -37,11 +37,13 @@ RenderStateTreeLeafNode* RenderStateTreeCompositeNode::FindUniqueNode(const Rend
 			{
 				mNextNullStateNode = new RenderStateTreeCompositeNode(nullptr, this);
 			}
-			return mNextNullStateNode->FindUniqueNode(stateSet, nextType);
+
+			auto nextNode = mNextNullStateNode.CastPtr<RenderStateTreeCompositeNode>();
+			return nextNode->FindUniqueNode(stateSet, nextType);
 		}
 		else
 		{
-			RenderStateTreeCompositeNode* nextNode = (RenderStateTreeCompositeNode*)FindNodeByState(state);
+			auto nextNode = FindNodeByState(state).CastPtr<RenderStateTreeCompositeNode>();
 			if (nextNode == nullptr)
 			{
 				nextNode = new RenderStateTreeCompositeNode(state, this);
@@ -58,11 +60,11 @@ RenderStateTreeLeafNode* RenderStateTreeCompositeNode::FindUniqueNode(const Rend
 			{
 				mNextNullStateNode = new RenderStateTreeLeafNode(nullptr, this);
 			}
-			return (RenderStateTreeLeafNode*)mNextNullStateNode;
+			return mNextNullStateNode.CastPtr<RenderStateTreeLeafNode>();
 		}
 		else
 		{
-			RenderStateTreeLeafNode* nextNode = (RenderStateTreeLeafNode*)FindNodeByState(state);
+			auto nextNode = FindNodeByState(state).CastPtr<RenderStateTreeLeafNode>();
 			if (nextNode == nullptr)
 			{
 				nextNode = new RenderStateTreeLeafNode(state, this);
@@ -74,12 +76,11 @@ RenderStateTreeLeafNode* RenderStateTreeCompositeNode::FindUniqueNode(const Rend
 	}
 }
 
-BaseRenderStateTreeNode* RenderStateTreeCompositeNode::FindNodeByState(IRenderState* state) const
+Share<BaseRenderStateTreeNode> RenderStateTreeCompositeNode::FindNodeByState(const Share<IRenderState>& state) const
 {
-	FOR_EACH_COLLECTION(i, mNextStateNodes)
+	for(auto curStateNode: mNextStateNodes)
 	{
-		BaseRenderStateTreeNode* curStateNode = *i;
-		IRenderState* curState = curStateNode->State();
+		auto curState = curStateNode->State();
 		if (curState == state || (curState != nullptr&&curState->Equals(*state)))
 		{
 			return curStateNode;
@@ -88,7 +89,7 @@ BaseRenderStateTreeNode* RenderStateTreeCompositeNode::FindNodeByState(IRenderSt
 	return nullptr;
 }
 
-void RenderStateTreeCompositeNode::Remove(BaseRenderStateTreeNode* node)
+void RenderStateTreeCompositeNode::Remove(const Share<BaseRenderStateTreeNode>& node)
 {
 	if (mNextNullStateNode == node)
 	{
@@ -98,12 +99,6 @@ void RenderStateTreeCompositeNode::Remove(BaseRenderStateTreeNode* node)
 	{
 		mNextStateNodes.Remove(node);
 	}
-}
-
-void RenderStateTreeCompositeNode::Delete(BaseRenderStateTreeNode* node)
-{
-	Remove(node);
-	SAFE_DELETE(node);
 }
 
 bool RenderStateTreeCompositeNode::IsEmpty() const

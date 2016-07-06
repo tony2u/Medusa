@@ -12,7 +12,7 @@ class ListGraphicsBuffer :public IGraphicsBuffer
 {
 public:
 	typedef T ItemType;
-	typedef List<T, NoCompare<T> > ListType;
+	typedef List<T, NoCompare> ListType;
 	const static uint32 SizeLimit = TSizeLimit;
 	using IGraphicsBuffer::LoadBufferData;
 public:

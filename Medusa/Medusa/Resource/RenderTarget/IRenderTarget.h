@@ -45,7 +45,7 @@ public:
 protected:
 	Rect2I mViewPort;
 	Color4F mClearColor;
-	RenderTargetRenderState* mRenderTargetRenderState;
+	Share<RenderTargetRenderState> mRenderTargetRenderState;
 };
 
 

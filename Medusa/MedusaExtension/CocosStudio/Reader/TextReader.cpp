@@ -9,13 +9,15 @@
 #include "Core/IO/FileSystem.h"
 #include "ReaderFactory.h"
 #include "CocosStudio/CSParseBinary_generated.h"
+#include "Resource/Font/FontFactory.h"
+
 MEDUSA_COCOS_BEGIN;
 
 INode* TextReader::CreateNodeWithFlatBuffers(INodeEditor& editor, const flatbuffers::Table* projectNodeOptions, const StringRef& className, NodeCreateFlags flags /*= NodeCreateFlags::None*/)
 {
 	auto options = (flatbuffers::TextOptions*)projectNodeOptions;
 	FontId fontId;
-	fontId.Name = FileSystem::Instance().ExistsOr(StringRef(options->fontName()->c_str()), StringRef("arial.ttf"));	//如果没有字体则切换为默认字体
+	fontId.Name = FontFactory::Instance().ExistsOrDefault(StringRef(options->fontName()->c_str()));	//如果没有字体则切换为默认字体
 	fontId.SetSize(options->fontSize());
 	Color4F fontColor(options->widgetOptions()->color()->r(), options->widgetOptions()->color()->g(), options->widgetOptions()->color()->b(), options->widgetOptions()->alpha());
 	fontId.SetColor(fontColor);
@@ -33,18 +35,19 @@ INode* TextReader::CreateNodeWithFlatBuffers(INodeEditor& editor, const flatbuff
 	ILabel* label = NodeFactory::Instance().CreateSingleLineLabel(fontId, options->text()->c_str());
 	label->SetAlignment((Alignment)(options->vAlignment() * 3 + options->hAlignment()));
 
-	SetPropsWithFlatBuffers(label, (flatbuffers::Table*) options->widgetOptions(), flags);
 	label->SetColor(Color4F::White);	//reset default,use node color as font color
+	SetPropsWithFlatBuffers(label, (flatbuffers::Table*) options->widgetOptions(), flags);
 	return label;
 }
 
 
 INode* TextReader::CreateNodeWithJson(INodeEditor& editor, const rapidjson::Value& nodeTree, const StringRef& className /*= StringRef::Empty*/, NodeCreateFlags flags /*= NodeCreateFlags::None*/)
 {
-	const rapidjson::Value& fileDataNode = nodeTree["FontResource"];
-	StringRef path = fileDataNode.GetString("Path", nullptr);
+	const rapidjson::Value* fontResourceNode = nodeTree.GetMember("FontResource");
+	StringRef path = fontResourceNode != nullptr ? fontResourceNode->GetString("Path", nullptr) : StringRef::Empty;
+
 	FontId fontId;
-	fontId.Name = FileSystem::Instance().ExistsOr(path, StringRef("arial.ttf"));	//如果没有字体则切换为默认字体
+	fontId.Name = FontFactory::Instance().ExistsOrDefault(path);	//如果没有字体则切换为默认字体
 	fontId.SetSize(nodeTree.Get("FontSize", 0));
 	StringRef hAlignment = nodeTree.GetString("HorizontalAlignmentType", "");
 	StringRef vAlignment = nodeTree.GetString("VerticalAlignmentType", "");
@@ -77,11 +80,11 @@ INode* TextReader::CreateNodeWithJson(INodeEditor& editor, const rapidjson::Valu
 	*/
 
 	StringRef text = nodeTree.GetString("LabelText", "");
-
-	ILabel* label = NodeFactory::Instance().CreateSingleLineLabel(fontId, text);
+	ILabel* label = NodeFactory::Instance().CreateSingleLineLabel(fontId, StringParser::ToW(text));
 	label->SetAlignment(align);
-	SetPropsWithJson(label, nodeTree, flags);
+	
 	label->SetColor(Color4F::White);	//reset default,use node color as font color
+	SetPropsWithJson(label, nodeTree, flags);
 	return label;
 
 }
@@ -118,7 +121,5 @@ Alignment TextReader::GetAlignment(StringRef hAlignmentStr, StringRef vAlignment
 
 	return (Alignment)(hAlignment * 3 + vAlignment);
 }
-
-MEDUSA_IMPLEMENT_COCOS_READER(TextReader);
 
 MEDUSA_COCOS_END;

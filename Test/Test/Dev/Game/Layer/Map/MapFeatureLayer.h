@@ -7,7 +7,7 @@
 
 class MapFeatureLayer :public BaseFeatureLayer
 {
-	MEDUSA_DECLARE_LAYER(MapFeatureLayer);
+	MEDUSA_NODE(MapFeatureLayer,BaseFeatureLayer);
 public:
 	MapFeatureLayer(StringRef name=StringRef::Empty,const IEventArg& e=IEventArg::Empty);
 	virtual ~MapFeatureLayer(void);

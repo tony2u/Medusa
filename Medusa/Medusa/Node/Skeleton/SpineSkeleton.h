@@ -8,8 +8,12 @@ MEDUSA_BEGIN;
 
 class SpineSkeleton :public ISkeleton
 {
+
+	MEDUSA_NODE(SpineSkeleton, ISkeleton);
 public:
-	SpineSkeleton(StringRef name,SpineSkeletonModel* model);
+	SpineSkeleton(const StringRef& name = StringRef::Empty, const IEventArg& e = IEventArg::Empty);
+
+	SpineSkeleton(StringRef name,const Share<SpineSkeletonModel>& model);
 	virtual ~SpineSkeleton();
 	
 

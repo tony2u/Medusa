@@ -9,7 +9,7 @@ MEDUSA_BEGIN;
 
 struct AndPredicate :public IPredicate
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_DECLARE_PREDICATE(AndPredicate,IPredicate);
 public:
 	AndPredicate(const IPredicate* left = nullptr, const IPredicate* right = nullptr);
 	virtual int Evaluate(void* p)const override;

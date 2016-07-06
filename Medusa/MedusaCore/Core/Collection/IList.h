@@ -111,32 +111,32 @@ public:
 	}
 
 #pragma region Unordered
-	inline bool RemoveFirstUnordered(TParameterType val) { if (this->mCount > 0) { return RemoveFirstUnordered(0, this->mCount, val); } }
-	inline void RemoveFirstUnordered() { if (this->mCount > 0) { RemoveAtUnordered(0); } }
-	inline bool RemoveFirstUnordered(size_t srcBegin, size_t srcEnd, TParameterType val)
+	inline bool RemoveFirstSwap(TParameterType val) { if (this->mCount > 0) { return RemoveFirstSwap(0, this->mCount, val); } }
+	inline void RemoveFirstSwap() { if (this->mCount > 0) { RemoveAtSwap(0); } }
+	inline bool RemoveFirstSwap(size_t srcBegin, size_t srcEnd, TParameterType val)
 	{
 		intp index = IndexOf(srcBegin, srcEnd, val);
 		if (index >= 0)
 		{
-			RemoveAtUnordered(index);
+			RemoveAtSwap(index);
 			return true;
 		}
 		return false;
 	}
 
-	inline bool RemoveLastUnordered(TParameterType val) { if (this->mCount > 0) { return RemoveLastUnordered(0, this->mCount, val); }return false; }
-	inline bool RemoveLastUnordered(size_t srcBegin, size_t srcEnd, TParameterType val)
+	inline bool RemoveLastSwap(TParameterType val) { if (this->mCount > 0) { return RemoveLastSwap(0, this->mCount, val); }return false; }
+	inline bool RemoveLastSwap(size_t srcBegin, size_t srcEnd, TParameterType val)
 	{
 		intp index = LastIndexOf(srcBegin, srcEnd, val);
 		if (index >= 0)
 		{
-			RemoveAtUnordered(index);
+			RemoveAtSwap(index);
 			return true;
 		}
 
 		return false;
 	}
-	inline void RemoveAllUnordered(TParameterType val) { if (this->mCount > 0) { RemoveAllUnordered(0, this->mCount, val); } }
+	inline void RemoveAllSwap(TParameterType val) { if (this->mCount > 0) { RemoveAllSwap(0, this->mCount, val); } }
 #pragma endregion Unordered
 
 
@@ -168,10 +168,10 @@ public:
 	virtual void Sort() = 0;
 
 #pragma region Unordered
-	virtual void RemoveAtUnordered(size_t index) = 0;
-	virtual void RemoveRangeUnordered(size_t index, size_t count) = 0;
-	virtual void RemoveAllUnordered(size_t srcBegin, size_t srcEnd, TParameterType val) = 0;
-	virtual bool RemoveUnordered(TParameterType val) = 0;
+	virtual void RemoveAtSwap(size_t index) = 0;
+	virtual void RemoveRangeSwap(size_t index, size_t count) = 0;
+	virtual void RemoveAllSwap(size_t srcBegin, size_t srcEnd, TParameterType val) = 0;
+	virtual bool RemoveSwap(TParameterType val) = 0;
 #pragma endregion Unordered
 
 protected:

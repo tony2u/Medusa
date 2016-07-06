@@ -60,9 +60,8 @@ void SkeletonBone::Apply(bool forceUpdateWorldMatrix /*= false*/)
 	{
 		//const Matrix& matrix = WorldMatrix();
 		//update slot
-		FOR_EACH_COLLECTION(i, mSlots)
+		for (auto slot : mSlots)
 		{
-			INode* slot = *i;
 			slot->SetPosition(mWorldPosition);
 			slot->SetScale(mWorldScale);
 			slot->SetRotation(mWorldRotation);
@@ -74,9 +73,8 @@ void SkeletonBone::Apply(bool forceUpdateWorldMatrix /*= false*/)
 
 
 	//update bones
-	FOR_EACH_COLLECTION(i, mBones)
+	for (auto bone : mBones)
 	{
-		SkeletonBone* bone = *i;
 		bone->Apply(forceUpdateWorldMatrix);
 	}
 

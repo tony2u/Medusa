@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 #include "MedusaPreCompiled.h"
 #include "AndPredicate.h"
-
+#include "PredicateFactory.h"
 MEDUSA_BEGIN;
 
 
@@ -24,15 +24,13 @@ AndPredicate::AndPredicate(const IPredicate* left /*= nullptr*/, const IPredicat
 int AndPredicate::Evaluate(void* p) const
 {
 	RETURN_ZERO_IF_EMPTY(mItems);
-	FOR_EACH_COLLECTION(i, mItems)
+	for (auto item : mItems)
 	{
-		const IPredicate* item = *i;
 		RETURN_ZERO_IF_ZERO(item->Evaluate(p));
 	}
 
 	return 1;
 }
 
-MEDUSA_IMPLEMENT_RTTI(AndPredicate, IPredicate);
-
+MEDUSA_IMPLEMENT_PREDICATE(AndPredicate);
 MEDUSA_END;

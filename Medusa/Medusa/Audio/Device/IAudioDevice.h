@@ -3,6 +3,7 @@
 // license that can be found in the LICENSE file.
 #pragma once
 #include "MedusaPreDeclares.h"
+#ifdef MEDUSA_AL
 #include "Core/Pattern/IInitializable.h"
 #include "Core/Collection/Dictionary.h"
 #include "Audio/AudioTypes.h"
@@ -223,3 +224,5 @@ protected:
 };
 
 MEDUSA_END;
+
+#endif

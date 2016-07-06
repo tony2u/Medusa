@@ -21,23 +21,23 @@ IEntity::~IEntity()
 
 void IEntity::ResetAllComponents()
 {
-	FOR_EACH_ITEM_TO(mComponents, Reset());
+	FOR_EACH_TO(mComponents, Reset());
 }
 
 void IEntity::RestartAllComponents()
 {
-	FOR_EACH_ITEM_TO(mComponents, Restart());
+	FOR_EACH_TO(mComponents, Restart());
 }
 void IEntity::ResumeAllComponents()
 {
-	FOR_EACH_ITEM_TO(mComponents, Resume());
+	FOR_EACH_TO(mComponents, Resume());
 }
 
 
 
 void IEntity::PauseAllComponents()
 {
-	FOR_EACH_ITEM_TO(mComponents, Pause());
+	FOR_EACH_TO(mComponents, Pause());
 }
 
 
@@ -64,9 +64,8 @@ void IEntity::StartAllComponents()
 void IEntity::StopAllComponents()
 {
 	RETURN_IF_EMPTY(mComponents);
-	FOR_EACH_COLLECTION(i, mComponents)
+	for (auto item : mComponents)
 	{
-		IComponent* item = *i;
 		item->Stop();
 		delete item;
 	}
@@ -162,9 +161,8 @@ bool IEntity::UpdateComponents(float dt)
 
 IComponent* IEntity::FindComponent(const StringRef& name)const
 {
-	FOR_EACH_COLLECTION(i, mComponents)
+	for (auto component : mComponents)
 	{
-		IComponent* component = *i;
 		if (component->Name() == name)
 		{
 			return component;

@@ -25,7 +25,6 @@ KeyUpEventArg::KeyUpEventArg(uint keyData,uint status)
 	*/
 }
 
-MEDUSA_IMPLEMENT_RTTI(KeyUpEventArg,BaseKeyEventArg);
 
 
 MEDUSA_END;

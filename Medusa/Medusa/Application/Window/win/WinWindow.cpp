@@ -147,7 +147,8 @@ bool WinWindow::Start()
 
 	HACCEL hAccelTable = nullptr;
 
-	mPrev= PerformanceCounter::Ticks();
+	mWatch.Start();
+
 
 	while (1)
 	{
@@ -156,14 +157,14 @@ bool WinWindow::Start()
 			if (IsRunning())
 			{
 				// Get current time tick.
-				mNow= PerformanceCounter::Ticks();
-
-				float dt = (float)PerformanceCounter::Instance().ToMilliseconds(mNow - mPrev)*1000.f;
+				//mNow= PerformanceCounter::Ticks();
+				mWatch.Shot();
+				float dt = mWatch.ElapsedSeconds();
 
 				// If it's the time to draw next frame, draw it, else sleep a while.
-				if (dt >= Application::Instance().FrameInterval())
+				if (dt >= Application::Instance().FrameIntervalSeconds())
 				{
-					mPrev = mNow;
+					mWatch.Go();
 					if (!Application::Instance().UpdateAndDraw(dt))
 					{
 						break;
@@ -182,7 +183,7 @@ bool WinWindow::Start()
 			{
 				Sleep(0);	//not active
 			}
-			
+
 		}
 		else
 		{
@@ -208,22 +209,22 @@ bool WinWindow::Start()
 bool WinWindow::Stop()
 {
 	RETURN_FALSE_IF_FALSE(IWindow::Stop());
-	mPrev = mNow;
+	mWatch.Reset();
 	return true;
 }
 
 bool WinWindow::Pause()
 {
 	RETURN_FALSE_IF_FALSE(IWindow::Pause());
-	mPrev = mNow;
+	mWatch.Reset();
+
 	return true;
 }
 
 bool WinWindow::Resume()
 {
 	RETURN_FALSE_IF_FALSE(IWindow::Resume());
-	mNow = PerformanceCounter::Ticks();
-	mPrev = mNow;
+	mWatch.Start();
 	return true;
 }
 
@@ -297,12 +298,11 @@ void WinWindow::OnResize(const Size2F& newSize)
 	title.AppendFormat(L"{}    {}*{}", windowName.c_str(), (int)newSize.Width, (int)newSize.Height);
 	SetWindowText(mWindowHandle, title.c_str());
 
-	FOR_EACH_COLLECTION(i, mViews)
+	for (auto view : mViews)
 	{
-		IView* view = *i;
 		view->Resize(newSize);
 	}
-	FOR_EACH_ITEM_TO(mViews, Resize(newSize));
+	FOR_EACH_TO(mViews, Resize(newSize));
 	ResolutionAdapter::Instance().SetWinSize(newSize);
 }
 
@@ -515,7 +515,6 @@ LRESULT WinWindow::WndProc(UINT message, WPARAM wParam, LPARAM lParam)
 	return 0;
 }
 
-MEDUSA_IMPLEMENT_RTTI(WinWindow, IWindow);
 
 MEDUSA_END;
 

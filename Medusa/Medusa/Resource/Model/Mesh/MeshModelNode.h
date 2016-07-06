@@ -18,8 +18,8 @@ public:
 	}
 	virtual ~MeshModelNode(void){}
 
-	virtual const IMesh* BaseMeshPtr() const { return &mMesh; }
-	virtual IMesh* MutableBaseMeshPtr() { return &mMesh; }
+	virtual Share<const IMesh> BaseMeshPtr() const { return Share<const IMesh>(&mMesh); }
+	virtual Share<IMesh> MutableBaseMeshPtr() { return Share<IMesh>(&mMesh); }
 
 	const TMesh& Mesh() const { return mMesh; }
 	TMesh& MutableMesh()  { return mMesh; }

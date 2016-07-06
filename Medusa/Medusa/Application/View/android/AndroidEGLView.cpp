@@ -52,7 +52,6 @@ void AndroidEGLView::Resize(const Size2F& newSize)
 	
 }
 
-MEDUSA_IMPLEMENT_RTTI(AndroidEGLView, BaseRenderView);
 
 MEDUSA_END;
 

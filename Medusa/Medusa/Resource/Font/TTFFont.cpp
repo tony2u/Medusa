@@ -2,6 +2,8 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 #include "MedusaPreCompiled.h"
+#ifdef MEDUSA_FREETYPE
+
 #include "TTFFont.h"
 #include "Core/IO/FileSystem.h"
 #include "Core/Memory/MemoryData.h"
@@ -45,19 +47,19 @@ bool TTFFont::UninitializeLibrary()
 	return true;
 }
 
-TTFFont* TTFFont::CreateFromFile(const FontId& fontId)
+Share<TTFFont> TTFFont::CreateFromFile(const FontId& fontId)
 {
 	auto data = FileSystem::Instance().ReadAllData(fontId);
 	return CreateFromData(fontId, data);
 }
 
 
-TTFFont* TTFFont::CreateFromData(const FontId& fontId, const MemoryData& data)
+Share<TTFFont> TTFFont::CreateFromData(const FontId& fontId, const MemoryData& data)
 {
-	TTFFont* font = new TTFFont(fontId);
+	Share<TTFFont> font = new TTFFont(fontId);
 	if (!font->Initialize(data))
 	{
-		SAFE_DELETE(font);
+		font = nullptr;
 	}
 
 	return font;
@@ -496,7 +498,7 @@ const FontChar* TTFFont::OnLoadChar(wchar_t c)
 				}
 				fontChar->SetRegion(region);
 
-
+				SAFE_FREE(bmp.buffer);
 			} while (0);
 
 			if (originalBitmapGlyph != nullptr)
@@ -563,7 +565,7 @@ TextureAtlasRegion* TTFFont::AddGlyphImage(wchar_t c, PixelType destPixelType, c
 	auto& pages = mAtlas->Pages();
 	for (auto* page : pages)
 	{
-		DynamicAtlasRGBAImage* image = (DynamicAtlasRGBAImage*)page->GetTexture()->Image();
+		auto image = page->GetTexture()->Image().CastPtr<DynamicAtlasRGBAImage>();
 		if (image->AddImageRect(size, pitch, imageData, srcPixelType, outRect, true, GraphicsPixelConvertMode::Normal))
 		{
 			page->SetPageSize(image->Size());
@@ -581,8 +583,8 @@ TextureAtlasRegion* TTFFont::AddGlyphImage(wchar_t c, PixelType destPixelType, c
 	imageFileId.Name.AppendFormat("@{}", mAtlas->PageCount());
 
 	//at this time all current material is full, add a new image
-	DynamicAtlasRGBAImage* image = new DynamicAtlasRGBAImage(imageFileId, mInitialImageSize, mMaxImageSize, destPixelType, false);
-	ImageTexture* texture = new ImageTexture(imageFileId, image, ShaderSamplerNames::Texture, GraphicsTextureUnits::Texture0);
+	Share<DynamicAtlasRGBAImage> image = new DynamicAtlasRGBAImage(imageFileId, mInitialImageSize, mMaxImageSize, destPixelType, false);
+	Share<ImageTexture> texture = new ImageTexture(imageFileId, image, ShaderSamplerNames::Texture, GraphicsTextureUnits::Texture0);
 	texture->ResetDefaultParameters();
 
 	TextureAtlasPage* page = new TextureAtlasPage(mAtlas->PageCount());
@@ -610,3 +612,4 @@ FT_Library TTFFont::mLibrary = nullptr;
 
 MEDUSA_END;
 
+#endif

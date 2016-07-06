@@ -7,7 +7,7 @@
 
 MEDUSA_BEGIN;
 
-template<typename TKey, typename TValue, typename TKeyHashCoder = DefaultHashCoder<TKey>, typename TValueHashCoder = DefaultHashCoder<TValue>, typename TKeyCompare = EqualCompare<TKey>, typename TValueCompare = EqualCompare<TValue> >
+template<typename TKey, typename TValue, typename TKeyHashCoder = DefaultHashCoder, typename TValueHashCoder = DefaultHashCoder, typename TKeyCompare = EqualCompare, typename TValueCompare = EqualCompare >
 class Dictionary :public IDictionary < TKey, TValue, KeyValuePair<TKey, TValue, TKeyHashCoder, TValueHashCoder> >
 {
 public:
@@ -60,9 +60,9 @@ public:
 		mSize = 0;
 		Resize(dict.Count());
 
-		FOR_EACH_COLLECTION(i, dict)
+		for (const auto& i : dict)
 		{
-			Add(i->Key, i->Value);
+			Add(i.Key, i.Value);
 		}
 
 	}
@@ -70,9 +70,9 @@ public:
 	Dictionary& operator=(const Dictionary& dict)
 	{
 		Clear();
-		FOR_EACH_COLLECTION(i, dict)
+		for (const auto& i : dict)
 		{
-			Add(i->Key, i->Value);
+			Add(i.Key, i.Value);
 		}
 		return *this;
 	}
@@ -435,11 +435,6 @@ public:
 	}
 	virtual void Clear()
 	{
-		mFreeList = -1;
-		mAddedCount = 0;
-		mFreeCount = 0;
-		this->mCount = 0;
-
 		Memory::Set(mBuckets, (char)-1, mSize);
 		//destroy all valid objects
 		uint index = 0;
@@ -451,6 +446,11 @@ public:
 			}
 			index++;
 		}
+
+		mFreeList = -1;
+		mAddedCount = 0;
+		mFreeCount = 0;
+		this->mCount = 0;
 	}
 
 	virtual bool ContainsKey(TKeyParameterType key)const
@@ -1020,9 +1020,9 @@ private:
 	void Resize(size_t newSize)
 	{
 		RETURN_IF(mSize >= newSize);
-		Memory::Realloc(mBuckets, newSize);
+		Memory::Realloc(mBuckets, mSize, newSize);
 		Memory::Set(mBuckets, (char)-1, newSize);
-		Memory::Realloc(mEntries, newSize);
+		Memory::Realloc(mEntries, mSize, newSize);
 
 
 		for (size_t i = 0; i < mAddedCount; i++)

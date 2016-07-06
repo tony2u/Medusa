@@ -15,17 +15,17 @@ public:
 	virtual ~MeshTimelineModel(void);
 
 	bool InitializeWithSingleTexture(const FileIdRef& textureName, uint coloumn, uint row, float fps = 24.f);
-	bool InitializeWithMeshes(SortedDictionary<uint, TextureQuadMesh*>& meshes, float fps = 24.f);
+	bool InitializeWithMeshes(SortedDictionary<uint, Share<TextureQuadMesh>>& meshes, float fps = 24.f);
 
-	void AddMesh(float time, IMesh* mesh);
-	void AddMeshWithInterval(float frameInterval,IMesh* mesh);
+	void AddMesh(float time, const Share<IMesh>& mesh);
+	void AddMeshWithInterval(float frameInterval, const Share<IMesh>& mesh);
 
 
-	virtual IMesh* GetMeshByIndex(uint frame)const;
-	virtual IMesh* GetMeshByTime(float time)const;
+	virtual Share<IMesh> GetMeshByIndex(uint frame)const;
+	virtual Share<IMesh> GetMeshByTime(float time)const;
 
 protected:
-	List<IMesh*> mMeshes;
+	List<Share<IMesh>> mMeshes;
 };
 
 MEDUSA_END;

@@ -25,34 +25,34 @@ SirenMachine::SirenMachine()
 	mList("List"),
 	mDictionary("Dictionary")
 {
-	mBuildinClasses.Add(mBool.Name(), &mBool);
-	mBuildinClasses.Add(mInt8.Name(), &mInt8);
-	mBuildinClasses.Add(mUInt8.Name(), &mUInt8);
-	mBuildinClasses.Add(mInt16.Name(), &mInt16);
-	mBuildinClasses.Add(mUInt16.Name(), &mUInt16);
-	mBuildinClasses.Add(mInt32.Name(), &mInt32);
-	mBuildinClasses.Add(mUInt32.Name(), &mUInt32);
-	mBuildinClasses.Add(mInt64.Name(), &mInt64);
-	mBuildinClasses.Add(mUInt64.Name(), &mUInt64);
-	mBuildinClasses.Add(mFloat.Name(), &mFloat);
-	mBuildinClasses.Add(mDouble.Name(), &mDouble);
-	mBuildinClasses.Add(mString.Name(), &mString);
-	mBuildinClasses.Add(mBlob.Name(), &mBlob);
-	mBuildinClasses.Add(mList.Name(), &mList);
-	mBuildinClasses.Add(mDictionary.Name(), &mDictionary);
+	mBuildinTypes.Add(mBool.Name(), &mBool);
+	mBuildinTypes.Add(mInt8.Name(), &mInt8);
+	mBuildinTypes.Add(mUInt8.Name(), &mUInt8);
+	mBuildinTypes.Add(mInt16.Name(), &mInt16);
+	mBuildinTypes.Add(mUInt16.Name(), &mUInt16);
+	mBuildinTypes.Add(mInt32.Name(), &mInt32);
+	mBuildinTypes.Add(mUInt32.Name(), &mUInt32);
+	mBuildinTypes.Add(mInt64.Name(), &mInt64);
+	mBuildinTypes.Add(mUInt64.Name(), &mUInt64);
+	mBuildinTypes.Add(mFloat.Name(), &mFloat);
+	mBuildinTypes.Add(mDouble.Name(), &mDouble);
+	mBuildinTypes.Add(mString.Name(), &mString);
+	mBuildinTypes.Add(mBlob.Name(), &mBlob);
+	mBuildinTypes.Add(mList.Name(), &mList);
+	mBuildinTypes.Add(mDictionary.Name(), &mDictionary);
 
 	//alias
-	mBuildinClasses.Add("int8", &mInt8);
-	mBuildinClasses.Add("uint8", &mUInt8);
-	mBuildinClasses.Add("int16", &mInt16);
-	mBuildinClasses.Add("uint16", &mUInt16);
-	mBuildinClasses.Add("int32", &mInt32);
-	mBuildinClasses.Add("uint32", &mUInt32);
+	mBuildinTypes.Add("int8", &mInt8);
+	mBuildinTypes.Add("uint8", &mUInt8);
+	mBuildinTypes.Add("int16", &mInt16);
+	mBuildinTypes.Add("uint16", &mUInt16);
+	mBuildinTypes.Add("int32", &mInt32);
+	mBuildinTypes.Add("uint32", &mUInt32);
 
-	mBuildinClasses.Add("long", &mInt64);
-	mBuildinClasses.Add("ulong", &mUInt64);
-	mBuildinClasses.Add("string", &mString);
-	mBuildinClasses.Add("blob", &mBlob);
+	mBuildinTypes.Add("long", &mInt64);
+	mBuildinTypes.Add("ulong", &mUInt64);
+	mBuildinTypes.Add("string", &mString);
+	mBuildinTypes.Add("blob", &mBlob);
 
 }
 
@@ -117,7 +117,7 @@ SirenAssembly* SirenMachine::LoadAssembly(const FileIdRef& fileId)
 
 const SirenBuildinType* SirenMachine::FindBuildinType(const StringRef& name) const
 {
-	return mBuildinClasses.GetOptional(name, nullptr);
+	return mBuildinTypes.GetOptional(name, nullptr);
 }
 
 const BaseSirenCustomType* SirenMachine::FindCustomType(const StringRef& name) const

@@ -26,14 +26,14 @@ public:
 
 	Matrix4& GetModelMatrix() { return mModelMatrix; }
 
-	const IEffect* Effect() const { return mEffect; }
-	void SetEffect(const IEffect* val);
+	const Share<IEffect>& Effect() const { return mEffect; }
+	void SetEffect(const Share<IEffect>& val);
 
-	const IMaterial* Material() const { return mMaterial; }
-	void SetMaterial(const IMaterial* val);
+	const Share<IMaterial>& Material() const { return mMaterial; }
+	void SetMaterial(const Share<IMaterial>& val);
 
-	RenderStateTreeLeafNode* StateTreeNode() const { return mStateTreeNode; }
-	void SetStateTreeNode(RenderStateTreeLeafNode* val);
+	const Share<RenderStateTreeLeafNode>& StateTreeNode() const { return mStateTreeNode; }
+	void SetStateTreeNode(const Share<RenderStateTreeLeafNode>& val);
 
 	GraphicsDrawMode DrawMode() const { return mDrawMode; }
 	void SetDrawMode(GraphicsDrawMode val) { mDrawMode = val; }
@@ -69,9 +69,9 @@ protected:
 
 	bool mIsFreezed;
 
-	const IEffect* mEffect;
-	const IMaterial* mMaterial;
-	RenderStateTreeLeafNode* mStateTreeNode;
+	Share<IEffect> mEffect;
+	Share<IMaterial> mMaterial;
+	Share<RenderStateTreeLeafNode> mStateTreeNode;
 	GraphicsDrawMode mDrawMode;
 	uint64 mRecycleFrameCount;
 	

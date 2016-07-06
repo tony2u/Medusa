@@ -5,7 +5,7 @@
 #include "MedusaPreDeclares.h"
 #include "Resource/Model/IModelNode.h"
 #include "Graphics/GraphicsTypes.h"
-
+#include "Resource/Light/ILight.h"
 MEDUSA_BEGIN;
 
 
@@ -17,7 +17,7 @@ public:
 	virtual ~BaseLightModelNode(void);
 	virtual ModelNodeType Type() const{return ModelNodeType::Light;}
 	virtual GraphicsLightType LightType() const=0;
-	virtual ILight* CreateLight()const{return nullptr;}
+	virtual Share<ILight> CreateLight()const{return nullptr;}
 };
 
 MEDUSA_END;

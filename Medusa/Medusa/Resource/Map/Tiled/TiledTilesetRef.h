@@ -4,6 +4,8 @@
 #pragma once
 #include "MedusaPreDeclares.h"
 #include "Core/String/HeapString.h"
+#include "Core/Pattern/ISharable.h"
+#include "TiledTileset.h"
 
 MEDUSA_BEGIN;
 
@@ -21,13 +23,13 @@ public:
 	StringRef Name() const { return mName; }
 	void SetName(const StringRef& val) { mName = val; }
 
-	const TiledTileset* Tileset() const { return mTileset; }
-	void SetTileset(const TiledTileset* val);
+	const Share<TiledTileset>& Tileset() const { return mTileset; }
+	void SetTileset(const Share<TiledTileset>& val);
 private:
 	uint mFirstGlobalId=0;
 	HeapString mName;
 
-	const TiledTileset* mTileset=nullptr;
+	Share<TiledTileset> mTileset=nullptr;
 	
 
 };

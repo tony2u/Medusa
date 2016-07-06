@@ -9,8 +9,8 @@
 MEDUSA_BEGIN;
 
 
-SpanStream::SpanStream(IStream& stream, uintp limitBegin/*= 0*/, uintp limitSize/*=0*/)
-	:mSourceStream(&stream), mIsSourceReadonly(false),mLimitBegin(limitBegin), mLimitSize(limitSize)
+SpanStream::SpanStream(const Share<IStream>& stream, uintp limitBegin/*= 0*/, uintp limitSize/*=0*/)
+	:mSourceStream(stream), mIsSourceReadonly(false),mLimitBegin(limitBegin), mLimitSize(limitSize)
 {
 	MEDUSA_ASSERT_LESS_EQUAL(mLimitBegin, mSourceStream->Length(), "Invalid limitBegin");
 
@@ -19,11 +19,10 @@ SpanStream::SpanStream(IStream& stream, uintp limitBegin/*= 0*/, uintp limitSize
 		MEDUSA_ASSERT_LESS_EQUAL(mLimitBegin + mLimitSize, mSourceStream->Length(), "Invalid limitSize");
 	}
 
-	SAFE_RETAIN(mSourceStream);
 }
 
-SpanStream::SpanStream(const IStream& stream, uintp limitBegin/*= 0*/, uintp limitSize/*=0*/)
-	:mSourceStream((IStream*)&stream), mIsSourceReadonly(true),mLimitBegin(limitBegin), mLimitSize(limitSize)
+SpanStream::SpanStream(const Share<const IStream>& stream, uintp limitBegin/*= 0*/, uintp limitSize/*=0*/)
+	:mSourceStream(stream.CastPtr<IStream>()), mIsSourceReadonly(true),mLimitBegin(limitBegin), mLimitSize(limitSize)
 {
 	MEDUSA_ASSERT_LESS_EQUAL(mLimitBegin, mSourceStream->Length(), "Invalid limitBegin");
 
@@ -31,18 +30,15 @@ SpanStream::SpanStream(const IStream& stream, uintp limitBegin/*= 0*/, uintp lim
 	{
 		MEDUSA_ASSERT_LESS_EQUAL(mLimitBegin + mLimitSize, mSourceStream->Length(), "Invalid limitSize");
 	}
-
-	SAFE_RETAIN(mSourceStream);
 }
 
 
 SpanStream::SpanStream(SpanStream&& other)
-	:mSourceStream(nullptr), 
+	:mSourceStream(std::move(other.mSourceStream)), 
 	mIsSourceReadonly(other.mIsSourceReadonly),
 	mLimitBegin(other.mLimitBegin),
 	mLimitSize(other.mLimitSize)
 {
-	SAFE_MOVE_REF(mSourceStream, other.mSourceStream);
 	other.mLimitBegin = 0;
 	other.mLimitSize = 0;
 }
@@ -52,7 +48,7 @@ SpanStream& SpanStream::operator=(SpanStream&& other)
 	if (this != &other)
 	{
 		Close();
-		SAFE_MOVE_REF(mSourceStream, other.mSourceStream);
+		mSourceStream = std::move(other.mSourceStream);
 		mIsSourceReadonly = other.mIsSourceReadonly;
 		mLimitBegin = other.mLimitBegin;
 		mLimitSize = other.mLimitSize;
@@ -120,7 +116,7 @@ bool SpanStream::Flush()
 
 bool SpanStream::Close()
 {
-	SAFE_RELEASE(mSourceStream);
+	mSourceStream = nullptr;
 
 	mSourceStream = nullptr;
 	mLimitBegin = 0;
@@ -139,7 +135,7 @@ bool SpanStream::Seek(intp offset, SeekOrigin direction /*= SeekOrigin::Current*
 	{
 		switch (direction)
 		{
-		case SeekOrigin::Head:
+		case SeekOrigin::Begin:
 			pos = (intp)mLimitBegin + offset;
 			break;
 		case SeekOrigin::Current:
@@ -156,7 +152,7 @@ bool SpanStream::Seek(intp offset, SeekOrigin direction /*= SeekOrigin::Current*
 	{
 		switch (direction)
 		{
-		case SeekOrigin::Head:
+		case SeekOrigin::Begin:
 			pos = (intp)mLimitBegin + offset;
 			break;
 		case SeekOrigin::Current:
@@ -171,7 +167,7 @@ bool SpanStream::Seek(intp offset, SeekOrigin direction /*= SeekOrigin::Current*
 	}
 
 
-	RETURN_FALSE_IF_FALSE(mSourceStream->Seek(pos, SeekOrigin::Head));
+	RETURN_FALSE_IF_FALSE(mSourceStream->Seek(pos, SeekOrigin::Begin));
 	if (!IsSourcePosValid())
 	{
 		//roll back

@@ -6,23 +6,18 @@
 #include "Core/Pattern/Object/MapObjectFactory.h"
 #include "Core/Coder/ICoder.h"
 #include "Core/Coder/CoderType.h"
+#include "Core/Pattern/Singleton.h"
 
 MEDUSA_BEGIN;
 
-class CoderFactory :public MapObjectFactory<CoderType, ICoder*(const IEventArg&), DefaultHashCoder<CoderType>>
+class CoderFactory :public MapObjectFactory<CoderType, ICoder*(const IEventArg&), DefaultHashCoder>,public Singleton<CoderFactory>
 {
-public:
-	using MapObjectFactory<CoderType, ICoder*(const IEventArg&), DefaultHashCoder<CoderType>>::Create;
-private:
 	CoderFactory();
-	~CoderFactory(){}
+	~CoderFactory() {}
+	friend class Singleton<CoderFactory>;
 public:
-	static CoderFactory& Instance()
-	{
-		static CoderFactory factory;
-		return factory;
-	}
-
+	using MapObjectFactory<CoderType, ICoder*(const IEventArg&), DefaultHashCoder>::Create;
+public:
 	static CoderType ParseCoderType(const StringRef& str);
 	static bool RequireKey(CoderType coderType);
 

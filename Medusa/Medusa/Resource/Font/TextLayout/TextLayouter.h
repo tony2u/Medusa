@@ -8,6 +8,7 @@
 #include "Geometry/Scale2.h"
 #include "Core/String/StringRef.h"
 #include "Core/String/HeapString.h"
+#include "Resource/Model/Mesh/Font/BaseFontMesh.h"
 
 MEDUSA_BEGIN;
 
@@ -24,9 +25,9 @@ public:
 	static Size2F GetSingleLineSize(IFont& font, const WStringRef& text);
 	static Size2F GetMultipleLineSize(IFont& font, const WStringRef& text, const Size2F& restrictSize = Size2F::Zero);
 
-	static bool LayoutMultipleLineText(List<BaseFontMesh*>& outMeshes, List<TextureAtlasPage*>& outPages, Size2F& outSize,
+	static bool LayoutMultipleLineText(List<Share<BaseFontMesh>>& outMeshes, List<TextureAtlasPage*>& outPages, Size2F& outSize,
 									   IFont& font, const WStringRef& text, Alignment alignment = Alignment::LeftBottom, const Size2F& restrictSize = Size2F::Zero, ILabel* label = nullptr, bool isStatic = false);
-	static bool LayoutSingleLineText(List<BaseFontMesh*>& outMeshes, List<TextureAtlasPage*>& outPages, Size2F& outSize,
+	static bool LayoutSingleLineText(List<Share<BaseFontMesh>>& outMeshes, List<TextureAtlasPage*>& outPages, Size2F& outSize,
 									 IFont& font, const WStringRef& text, Alignment alignment = Alignment::LeftBottom, const Size2F& restrictSize = Size2F::Zero, ILabel* label = nullptr, bool isStatic = false);
 private:
 	static Size2F GetMultipleLineSizeHelper(IFont& font, const WStringRef& text);
@@ -45,18 +46,18 @@ private:
 	static const FontChar* GetChar(IFont& font, wchar_t c);
 
 
-	static void AddCharToMesh(List<BaseFontMesh*>& outMeshes, List<TextureAtlasPage*>& outPages,IFont& font, const FontChar& fontChar, const Point3F& origin, ILabel* label = nullptr, bool isStatic = false);
+	static void AddCharToMesh(List<Share<BaseFontMesh>>& outMeshes, List<TextureAtlasPage*>& outPages,IFont& font, const FontChar& fontChar, const Point3F& origin, ILabel* label = nullptr, bool isStatic = false);
 
-	static void LayoutMultipleLineMesh(List<BaseFontMesh*>& outMeshes, List<TextureAtlasPage*>& outPages,
+	static void LayoutMultipleLineMesh(List<Share<BaseFontMesh>>& outMeshes, List<TextureAtlasPage*>& outPages,
 									   IFont& font, const Size2F& imageSize, const List<float>& lineWidths, const List<WHeapString>& lines, Alignment alignment, const Size2F& restrictSize, ILabel* label = nullptr, bool isStatic = false);
 
-	static void LayoutSingleLineMesh(List<BaseFontMesh*>& outMeshes, List<TextureAtlasPage*>& outPages,
+	static void LayoutSingleLineMesh(List<Share<BaseFontMesh>>& outMeshes, List<TextureAtlasPage*>& outPages,
 									 IFont& font, const Size2F& imageSize, float lineWidth, const WStringRef& line, Alignment alignment, const Size2F& restrictSize, ILabel* label = nullptr, bool isStatic = false);
 
 	static Point2F GetPenOrigin(uint lineIndex, uint lineCount, float lineWidth, float lineHeight, Alignment alignment, const Size2F& restrictSize);
 
-	static bool ReserveMesh(List<BaseFontMesh*>& outMeshes, const WStringRef& text);
-	static bool ShrinkMesh(List<BaseFontMesh*>& outMeshes);
+	static bool ReserveMesh(List<Share<BaseFontMesh>>& outMeshes, const WStringRef& text);
+	static bool ShrinkMesh(List<Share<BaseFontMesh>>& outMeshes);
 
 
 };

@@ -35,5 +35,5 @@ bool SingleTextureFrameAnimationLayer::Initialize()
 
 
 
-MEDUSA_IMPLEMENT_LAYER(SingleTextureFrameAnimationLayer, BaseCaseLayer, StringRef::Empty, StringRef::Empty);
+MEDUSA_IMPLEMENT_NODE(SingleTextureFrameAnimationLayer);
 

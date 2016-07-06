@@ -32,6 +32,11 @@ IRenderBatch* BatchNewerById::New(RenderingStrategy id)
 }
 
 
+BatchPool::~BatchPool()
+{
+	
+}
+
 bool BatchPool::Initialize()
 {
 	return true;
@@ -39,6 +44,8 @@ bool BatchPool::Initialize()
 
 bool BatchPool::Uninitialize()
 {
+	mRecycledNodes.Clear();	//weak ptr
+	Clear();
 	return true;
 }
 
@@ -51,7 +58,7 @@ IRenderBatch* BatchPool::Create(IRenderable* node)
 	batch->SetDrawMode(node->Material()->DrawMode());
 	batch->SetStateTreeNode(node->RenderStateTreeNode());
 	batch->SetGroup(node->GetBatchGroup());
-	mRecycledNodes.Remove(batch);
+	mRecycledNodes.Delete(batch);
 	return batch;
 }
 
@@ -76,7 +83,7 @@ void BatchPool::Update(float dt)
 		if (frameCount - batch->RecycleFrameCount() >= mRecycleFrameDuration)
 		{
 			batch->ReleaseBuffer();
-			i = mRecycledNodes.Remove(i);
+			i = mRecycledNodes.Delete(i);
 		}
 		else
 		{

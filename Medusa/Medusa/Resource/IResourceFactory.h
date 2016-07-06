@@ -12,9 +12,11 @@ template<typename TKey,typename TValue>
 class IResourceFactory :public IResourceManageable
 {
 public:
+	using ItemType = Share<TValue>;
+public:
 	virtual bool Remove(const TKey& fileId){return false;}
-	virtual TValue Find(const TKey& fileId)const{return nullptr;}
-	virtual bool Add(TValue val, ResourceShareType shareType = ResourceShareType::Share) { return false; }
+	virtual ItemType Find(const TKey& fileId)const{return nullptr;}
+	virtual bool Add(const ItemType& val, ResourceShareType shareType = ResourceShareType::Share) { return false; }
 
 
 };

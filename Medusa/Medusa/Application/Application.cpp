@@ -10,7 +10,7 @@
 #include "Application/Compat/AppCompatibilityModule.h"
 #include "Application/Window/IWindow.h"
 #include "Application/Settings/ApplicationSettings.h"
-
+#include "Core/Module/SingletonModule.h"
 
 MEDUSA_BEGIN;
 
@@ -20,20 +20,20 @@ Application::Application()
 {
 	mTimeStamp = 0.f;
 	mFrameCount = 0;
-	mFrameInterval = MEDUSA_FRAME_INTERVAL;
-	mFrameIntervalRestore = mFrameInterval;
+	mFrameIntervalSeconds = MEDUSA_FRAME_INTERVAL;
+	mFrameIntervalSecondsRestore = mFrameIntervalSeconds;
 	mIsInitialized = false;
 
-	mCore.Retain();	//prevent release
-	mEngine.Retain();	//prevent release
-
+	mCore = new MedusaCoreModule();
+	mEngine = new MedusaModule();
 }
 
 
 Application::~Application(void)
 {
-	
-
+	mGame = nullptr;
+	mEngine = nullptr;
+	mCore = nullptr;
 }
 void Application::RegisterGame(Delegate<IGame*()> val)
 {
@@ -48,25 +48,22 @@ bool Application::Initialize()
 	if (mCreateGameCallback != nullptr)
 	{
 		mGame = mCreateGameCallback();
-		SAFE_RETAIN(mGame);
 	}
 
-	Log::AssertNotNullFormat(mGame, "Cannot create game,forget to set new game callback?");
+	Log::AssertFormat(mGame!=nullptr, "Cannot create game,forget to set new game callback?");
 
-	AddPrevModule(&mCore);
+	AddPrevModule(mCore);
 
-	AddPrevModule(ApplicationSettings::InstancePtr());
+	AddPrevModule(new SingletonModule<ApplicationSettings>("ApplicationSettings"));
 	AddPrevModule(new AppCompatibilityModule(), false);
-	AddPrevModule(&mEngine);
+	AddPrevModule(mEngine);
 
 	if (mExtension!=nullptr)
 	{
 		AddPrevModule(mExtension);
-		mExtension->Release();
 	}
 
 	AddNextModule(mGame);
-	mGame->Release();
 
 
 	return true;
@@ -76,13 +73,16 @@ bool Application::Initialize()
 bool Application::Uninitialize()
 {
 	ClearModules();
+	mGame = nullptr;
+	mEngine = nullptr;
+	mCore = nullptr;
 	return true;
 }
 
 bool Application::OnBeforeLoad(IEventArg& e /*= IEventArg::Empty*/)
 {
 	Log::Initialize();
-	mMainThread = Thread::Current();
+	mMainThread = Thread::CurrentId();
 
 	return true;
 }
@@ -105,9 +105,9 @@ bool Application::OnAfterLoad(IEventArg& e /*= IEventArg::Empty*/)
 	HeapString versionStr = resultTag.Version.ToString();
 	HeapString deviceStr = resultTag.Device.ToString();
 	HeapString languageStr = resultTag.Language.ToString();
-	Log::FormatInfo("Version:{}", versionStr.c_str());
-	Log::FormatInfo("Device:{}", deviceStr.c_str());
-	Log::FormatInfo("Language:{}", languageStr.c_str());
+	Log::FormatInfo("Version:{}", versionStr);
+	Log::FormatInfo("Device:{}", deviceStr);
+	Log::FormatInfo("Language:{}", languageStr);
 	auto winSize = ApplicationSettings::Instance().ResultWinSize();
 	Log::FormatInfo("WinSize:{},{}", (uint)winSize.Width, (uint)winSize.Height);
 	return true;
@@ -137,7 +137,7 @@ bool Application::UpdateAndDraw(float dt)
 #ifdef MEDUSA_DEBUG
 	if (dt > 0.2f)
 	{
-		dt = mFrameInterval;
+		dt = mFrameIntervalSeconds;
 	}
 #endif
 
@@ -147,41 +147,42 @@ bool Application::UpdateAndDraw(float dt)
 	Update(dt);
 	Draw(dt);
 
+	Log::Update(dt);
 	return true;
 }
 
 bool Application::Update(float dt)
 {
 	//order is import
-	mCore.BeforeUpdate(dt);
-	mEngine.BeforeUpdate(dt);
+	mCore->BeforeUpdate(dt);
+	mEngine->BeforeUpdate(dt);
 
 	mGame->Update(dt);
 
-	mCore.AfterUpdate(dt);
-	mEngine.AfterUpdate(dt);
+	mEngine->AfterUpdate(dt);
+	mCore->AfterUpdate(dt);
 
 	return true;
 }
 
 void Application::Draw(float dt)
 {
-	mEngine.BeforeDraw(dt);
+	mEngine->BeforeDraw(dt);
 	ApplicationStatics::Instance().Update(dt);
 	ApplicationStatics::Instance().Draw(dt);
 	ApplicationStatics::Instance().Reset();
-	mEngine.AfterDraw(dt);
+	mEngine->AfterDraw(dt);
 }
 
 bool Application::Step()
 {
-	return Update(mFrameInterval);
+	return Update(mFrameIntervalSeconds);
 }
 
 bool Application::Run()
 {
 	RETURN_FALSE_IF_FALSE(mGame->Start());
-	mEngine.Window()->Start();
+	mEngine->Window()->Start();
 	return true;
 
 }
@@ -189,7 +190,7 @@ bool Application::Run()
 bool Application::Start()
 {
 	RETURN_FALSE_IF_FALSE(mGame->Start());
-	mEngine.Window()->Start();
+	mEngine->Window()->Start();
 	return true;
 
 }
@@ -197,7 +198,7 @@ bool Application::Start()
 bool Application::Pause()
 {
 	RETURN_FALSE_IF_FALSE(mGame->Pause());
-	mEngine.Window()->Pause();
+	mEngine->Window()->Pause();
 
 	return true;
 }
@@ -205,7 +206,7 @@ bool Application::Pause()
 bool Application::Resume()
 {
 	RETURN_FALSE_IF_FALSE(mGame->Resume());
-	mEngine.Window()->Resume();
+	mEngine->Window()->Resume();
 
 	return true;
 }
@@ -214,7 +215,7 @@ bool Application::Resume()
 bool Application::Stop()
 {
 	RETURN_FALSE_IF_FALSE(mGame->Stop());
-	mEngine.Window()->Stop();
+	mEngine->Window()->Stop();
 
 	return true;
 }
@@ -222,13 +223,13 @@ bool Application::Stop()
 
 void Application::Sleep()
 {
-	mFrameIntervalRestore = mFrameInterval;
-	mFrameInterval = 1.f;
+	mFrameIntervalSecondsRestore = mFrameIntervalSeconds;
+	mFrameIntervalSeconds = 1.f;
 }
 
 void Application::Wakeup()
 {
-	mFrameInterval = mFrameIntervalRestore;
+	mFrameIntervalSeconds = mFrameIntervalSecondsRestore;
 	//Redraw();
 }
 
@@ -237,22 +238,22 @@ void Application::ReceiveMemoryWarning()
 
 }
 
-void Application::SetFrameInterval(float val)
+void Application::SetFrameIntervalSeconds(float val)
 {
-	mFrameInterval = val;
-	mFrameIntervalRestore = val;
+	mFrameIntervalSeconds = val;
+	mFrameIntervalSecondsRestore = val;
 }
 
 bool Application::IsInMainThread() const
 {
-	return Thread::IsThreadEqual(mMainThread, Thread::Current());
+	return Thread::IsCurrent(mMainThread);
 }
 
 void Application::Redraw()
 {
 	if (mIsInitialized)
 	{
-		UpdateAndDraw(mFrameInterval);
+		UpdateAndDraw(mFrameIntervalSeconds);
 	}
 }
 

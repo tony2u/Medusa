@@ -1,7 +1,4 @@
-// Copyright (c) 2015 fjz13. All rights reserved.
-// Use of this source code is governed by a MIT-style
-// license that can be found in the LICENSE file.
-using System.Reflection;
+﻿using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -13,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("CodeAnalyzer")]
-[assembly: AssemblyCopyright("Copyright ?  2013")]
+[assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -23,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("9ab6ca0f-aa57-42d4-be5b-9589757582b8")]
+[assembly: Guid("ab73a108-6f03-4011-a1b5-31c1fdb50552")]
 
 // Version information for an assembly consists of the following four values:
 //

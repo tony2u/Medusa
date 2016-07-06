@@ -10,14 +10,14 @@ MEDUSA_BEGIN;
 
 class ScissorRenderState:public IRenderState
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_RTTI(ScissorRenderState,IRenderState);
 
 public:
 	ScissorRenderState(const Rect2F& scissorBox = Rect2F::Zero, bool isScissorEnabled = false);
 	virtual ~ScissorRenderState();
 	virtual void Apply()const override;
 
-	virtual ScissorRenderState* Clone()const override;
+	Share<ScissorRenderState> Clone()const;
 	virtual void CopyFrom(const IRenderState& other)override;
 
 	virtual bool Equals(const IRenderState& state)const override;
@@ -32,9 +32,9 @@ public:
 
 	void Tansform(const Matrix4& matrix);
 
-	static ScissorRenderState* Current();
+	static Share<ScissorRenderState> Current();
 	virtual intp HashCode() const override;
-	virtual void UpdateWorldState(const IRenderState* selfRenderState, const IRenderState* parentRenderState, const Matrix4& selfWorldMatrix);
+	virtual void UpdateWorldState(const Share<IRenderState>& selfRenderState, const Share<IRenderState>& parentRenderState, const Matrix4& selfWorldMatrix);
 
 protected:
 	Rect2F mScissorBox;	// in window coordinates

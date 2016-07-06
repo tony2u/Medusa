@@ -2,10 +2,16 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 #include "MedusaCorePreCompiled.h"
+#ifdef MEDUSA_HTTP
+
 #include "Core/Network/HTTP/HTTPMemoryDownloader.h"
 #include "Core/Log/Log.h"
 #include "Core/Hash/MD5.h"
 #include "Core/IO/Stream/FileStream.h"
+#ifdef MEDUSA_WINDOWS
+#include <WinSock2.h>
+#endif
+
 #include "CoreLib/Common/curl/curl.h"
 
 MEDUSA_BEGIN;
@@ -84,3 +90,4 @@ size_t HTTPMemoryDownloader::WriteDataCallback( void *buffer, size_t size, size_
 	return total;
 }
 MEDUSA_END;
+#endif

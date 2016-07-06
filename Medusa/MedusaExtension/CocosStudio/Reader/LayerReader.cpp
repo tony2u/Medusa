@@ -1,10 +1,10 @@
 #include "MedusaExtensionPreCompiled.h"
 #include "LayerReader.h"
-#include "Node/Layer/LayerFactory.h"
 #include "Node/Layer/NormalLayer.h"
 #include "ReaderFactory.h"
 #include "CocosStudio/CSParseBinary_generated.h"
 #include "Application/Settings/ApplicationSettings.h"
+#include "Node/NodeFactory.h"
 
 MEDUSA_COCOS_BEGIN;
 
@@ -13,11 +13,11 @@ INode* LayerReader::CreateNodeWithFlatBuffers(INodeEditor& editor, const flatbuf
 	ILayer* node = nullptr;
 	if (className.IsEmpty())
 	{
-		node = LayerFactory::Instance().Create<NormalLayer>(IEventArg::Empty,flags);
+		node = NodeFactory::Instance().Create<NormalLayer>(IEventArg::Empty,flags);
 	}
 	else
 	{
-		node = LayerFactory::Instance().Create(className, FileIdRef::Empty, IEventArg::Empty, flags);
+		node = (ILayer*)NodeFactory::Instance().Create(className, FileIdRef::Empty,StringRef::Empty, IEventArg::Empty, flags);
 	}
 
 	SetPropsWithFlatBuffers(node, nodeOptions,flags);
@@ -31,11 +31,11 @@ INode* LayerReader::CreateNodeWithJson(INodeEditor& editor, const rapidjson::Val
 	ILayer* node = nullptr;
 	if (className.IsEmpty())
 	{
-		node = LayerFactory::Instance().Create<NormalLayer>(IEventArg::Empty, flags);
+		node = NodeFactory::Instance().Create<NormalLayer>(IEventArg::Empty, flags);
 	}
 	else
 	{
-		node = LayerFactory::Instance().Create(className, FileIdRef::Empty, IEventArg::Empty, flags);
+		node = (ILayer*)NodeFactory::Instance().Create(className, FileIdRef::Empty, StringRef::Empty, IEventArg::Empty, flags);
 	}
 
 	SetPropsWithJson(node, nodeTree,flags);
@@ -49,5 +49,4 @@ INode* LayerReader::CreateNodeWithJson(INodeEditor& editor, const rapidjson::Val
 	return node;
 }
 
-MEDUSA_IMPLEMENT_COCOS_READER(LayerReader);
 MEDUSA_COCOS_END;

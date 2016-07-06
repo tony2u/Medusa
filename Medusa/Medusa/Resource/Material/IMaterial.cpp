@@ -11,15 +11,13 @@
 
 MEDUSA_BEGIN;
 
-IMaterial::IMaterial(ITexture* texture /*= nullptr*/, IEffect* effect /*= nullptr*/, GraphicsDrawMode drawMode /*= GraphicsDrawMode::Triangles*/, const FileIdRef& fileId /*= FileIdRef::Empty*/)
+IMaterial::IMaterial(const Share<ITexture>& texture /*= nullptr*/, const Share<IEffect>& effect /*= nullptr*/, GraphicsDrawMode drawMode /*= GraphicsDrawMode::Triangles*/, const FileIdRef& fileId /*= FileIdRef::Empty*/)
 	:IResource(fileId),
 	mFirstTexture(nullptr),
 	mEffect(effect),
 	mDrawMode(drawMode)
 {
 	
-	SAFE_RETAIN(mEffect);
-
 	if(texture!=nullptr)
 	{
 		AddTexture(texture);
@@ -29,20 +27,19 @@ IMaterial::IMaterial(ITexture* texture /*= nullptr*/, IEffect* effect /*= nullpt
 IMaterial::~IMaterial(void)
 {
 	mTextureSamplerDict.Clear();
-	SAFE_RELEASE_DICTIONARY_VALUE(mTextures);
+	mTextures.Clear();
 	mFirstTexture = nullptr;
 
-	SAFE_RELEASE(mEffect);
+	mEffect = nullptr;
 
 }
 
-void IMaterial::AddTexture(ITexture* texture)
+void IMaterial::AddTexture(const Share<ITexture>& texture)
 {
 	MEDUSA_ASSERT_NOT_NULL(texture, "");
 	MEDUSA_ASSERT_FALSE(mTextures.ContainsKey(texture->Unit()), "Duplicate add texture of same unit");
 	MEDUSA_ASSERT_FALSE(mTextureSamplerDict.ContainsKey(texture->SamplerName()), "Duplicate add texture of same sampler name");
 
-	texture->Retain();
 	mTextures.Add(texture->Unit(), texture);
 	mTextureSamplerDict.Add(texture->SamplerName(), texture);
 	OnMaterialChanged(RenderableChangedFlags::BatchChanged);
@@ -55,22 +52,21 @@ void IMaterial::AddTexture(ITexture* texture)
 	}
 }
 
-ITexture* IMaterial::FirstTexture()const
+Share<ITexture> IMaterial::FirstTexture()const
 {
 	return mFirstTexture;
 }
 
-ITexture* IMaterial::FindTextureBySampler(StringRef smaplerName)
+Share<ITexture> IMaterial::FindTextureBySampler(StringRef smaplerName)
 {
 	return mTextureSamplerDict.GetOptional(smaplerName, nullptr);
 }
 
 void IMaterial::Apply()const
 {
-	FOR_EACH_COLLECTION(i, mTextures)
+	for (auto& i:mTextures)
 	{
-		ITexture* texture = i->Value;
-		texture->Apply();
+		i.Value->Apply();
 	}
 
 	RenderStateSet::Apply();
@@ -79,11 +75,9 @@ void IMaterial::Apply()const
 void IMaterial::Restore()const
 {
 	RenderStateSet::Restore();
-
-	FOR_EACH_COLLECTION(i, mTextures)
+	for (auto& i : mTextures)
 	{
-		ITexture* texture = i->Value;
-		texture->Restore();
+		i.Value->Restore();
 	}
 }
 
@@ -94,10 +88,10 @@ bool IMaterial::Equals(const IMaterial& material) const
 	return Linq::IsEqual(mTextures, material.mTextures);
 }
 
-void IMaterial::SetEffect(const IEffect* val)
+void IMaterial::SetEffect(const Share<IEffect>& val)
 {
 	RETURN_IF_EQUAL(mEffect, val);
-	SAFE_ASSIGN_REF(mEffect, val);
+	mEffect = val;
 	OnMaterialChanged(RenderableChangedFlags::BatchChanged);
 }
 

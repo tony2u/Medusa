@@ -8,81 +8,80 @@
 
 MEDUSA_BEGIN;
 
+SirenClassAttribute::SirenClassAttribute(SirenClassGenerateMode mode, const StringRef& dir)
+	:mMode(mode), mDir(dir)
+{
+
+}
+
 SirenClassAttribute::~SirenClassAttribute(void)
 {
 	
 }
 
 
+
+
+
 bool SirenClassAttribute::OnLoaded()
 {
-	StringPropertySet copy = mKeyValues;
-
-	if (mKeyValues.Has("Generate"))
+	if (mKeyValues.RemoveKey("Generate"))
 	{
 		MEDUSA_FLAG_ADD(mMode, SirenClassGenerateMode::Generate);
-		copy.RemoveKey("Generate");
 	}
 
-	if (mKeyValues.Has("Suppress"))
+	if (mKeyValues.RemoveKey("Suppress"))
 	{
 		MEDUSA_FLAG_ADD(mMode, SirenClassGenerateMode::Suppress);
 		MEDUSA_FLAG_REMOVE(mMode, SirenClassGenerateMode::Generate);
 
-		copy.RemoveKey("Suppress");
 	}
 
-	if (mKeyValues.Has("Embeded"))
+	if (mKeyValues.RemoveKey("Embeded"))
 	{
 		MEDUSA_FLAG_ADD(mMode, SirenClassGenerateMode::Embeded);
-		copy.RemoveKey("Embeded");
 	}
 
-	if (mKeyValues.Has("SuppressCompare"))
+	if (mKeyValues.RemoveKey("SuppressCompare"))
 	{
 		MEDUSA_FLAG_ADD(mMode, SirenClassGenerateMode::SuppressCompare);
-		copy.RemoveKey("SuppressCompare");
 	}
 
-	if (mKeyValues.Has("SuppressCopy"))
+	if (mKeyValues.RemoveKey("SuppressCopy"))
 	{
 		MEDUSA_FLAG_ADD(mMode, SirenClassGenerateMode::SuppressCopy);
-		copy.RemoveKey("SuppressCopy");
 	}
 
-	if (mKeyValues.Has("SirenConfig"))
+	if (mKeyValues.RemoveKey("SirenConfig"))
 	{
 		MEDUSA_FLAG_ADD(mMode, SirenClassGenerateMode::SirenConfig);
-		copy.RemoveKey("SirenConfig");
 	}
 
 	if (mKeyValues.Has("Dir"))
 	{
 		mDir = mKeyValues.Get("Dir");
-		copy.RemoveKey("Dir");
-	}
-
-	for (auto& keyValuePair : copy)
-	{
-		Log::FormatError("Invalid attribute:{}={}", keyValuePair.Key, keyValuePair.Value);
+		mKeyValues.RemoveKey("Dir");
 	}
 
 	return true;
 }
 
+
 bool SirenClassAttribute::LoadFrom(IStream& stream)
 {
+	RETURN_FALSE_IF_FALSE(ISirenAttribute::LoadFrom(stream));
 	mMode = stream.Read<SirenClassGenerateMode>();
 	mDir = stream.ReadString();
-
 	return true;
 }
 
 bool SirenClassAttribute::SaveTo(IStream& stream) const
 {
+	RETURN_FALSE_IF_FALSE(ISirenAttribute::SaveTo(stream));
 	stream.Write(mMode);
 	stream.WriteString(mDir);
 	return true;
 }
+
 MEDUSA_END;
 

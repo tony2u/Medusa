@@ -47,7 +47,7 @@ void OtherTest::TestMd5()
 	watch.SetRunTimes(count);
 	watch.SetName("TestMd5");
 
-	byte temp[512];
+	Medusa::byte temp[512];
 	watch.Start();
 	FOR_EACH_SIZE(i, count)
 	{
@@ -74,7 +74,7 @@ void OtherTest::TestFlag()
 	uint sum = 0;
 	FOR_EACH_SIZE(i, count)
 	{
-		if (flag.Has(PackageFlags::EncryptFileNames))
+		if (MEDUSA_FLAG_HAS(flag,PackageFlags::EncryptFileNames))
 		{
 			++sum;
 		}

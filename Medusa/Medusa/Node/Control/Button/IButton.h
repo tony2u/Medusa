@@ -18,11 +18,11 @@ enum class ButtonState
 
 class IButton :public INode
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_RTTI(IButton, INode);
 public:
 	TapEvent OnTap;
 public:
-	IButton(StringRef name=StringRef::Empty);
+	IButton(StringRef name = StringRef::Empty, const IEventArg& e = IEventArg::Empty);
 	virtual ~IButton(void);
 	virtual bool Initialize() override;
 
@@ -39,7 +39,7 @@ public:
 protected:
 	void OnTapStateChanged(InputState oldState, InputState newState);
 
-	virtual void OnTapCallback(INode* sender,TapGestureEventArg& e);
+	virtual void OnTapCallback(INode* sender, TapGestureEventArg& e);
 	virtual void OnButtonStateChanged();
 protected:
 	TapGestureRecognizer* mRecognizer;

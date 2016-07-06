@@ -5,12 +5,12 @@
 #include "BaseMultipleLineEditBox.h"
 #include "Node/NodeFactory.h"
 #include "Node/Control/Label/ILabel.h"
-
+#include "Node/NodeFactory.h"
 MEDUSA_BEGIN;
 
 
 BaseMultipleLineEditBox::BaseMultipleLineEditBox(StringRef name, const Size2F& size, const FontId& fontId, WStringRef text /*= WStringRef::Empty*/, Alignment alignment /*= Alignment::LeftBottom*/)
-	:IEditBox(name, size, fontId, text, alignment)
+	:IEditBox(name)
 {
 	mTextLabel = NodeFactory::Instance().CreateMultipleLineLabel( fontId, text, alignment, size);
 	mTextLabel->EnableManaged();
@@ -25,11 +25,16 @@ BaseMultipleLineEditBox::BaseMultipleLineEditBox(StringRef name, const Size2F& s
 
 }
 
+BaseMultipleLineEditBox::BaseMultipleLineEditBox(const StringRef& name /*= StringRef::Empty*/, const IEventArg& e /*= IEventArg::Empty*/)
+	:IEditBox(name,e)
+{
+
+}
+
 BaseMultipleLineEditBox::~BaseMultipleLineEditBox(void)
 {
 
 }
 
-MEDUSA_IMPLEMENT_RTTI(BaseMultipleLineEditBox, IEditBox);
 
 MEDUSA_END;

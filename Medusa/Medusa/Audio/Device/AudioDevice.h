@@ -2,6 +2,9 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 #pragma once
+#include "MedusaPreDeclares.h"
+#ifdef MEDUSA_AL
+
 #include "IAudioDevice.h"
 
 #undef MEDUSA_AUDIO_TYPE
@@ -32,3 +35,4 @@ private:
 };
 
 MEDUSA_END;
+#endif

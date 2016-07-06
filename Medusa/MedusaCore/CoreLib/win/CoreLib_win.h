@@ -4,20 +4,21 @@
 #pragma once
 
 
-
 #ifdef MEDUSA_WINDOWS
 ////////////////////////////////////////////////////////////////////////// Windows
-#if 0
-#include <Windows.h>
-#else
+//#if 0
+//#include <Windows.h>
+//#else
+//#define _WINSOCKAPI_
+//#include <Windows.h>
+//#include <WinSock2.h>
+//#include <WS2tcpip.h>
+//#endif
+//#pragma comment(lib,"wsock32.lib")		//add socket lib, or it'll be failed
+
 #define _WINSOCKAPI_
 #include <Windows.h>
-#include <WinSock2.h>
-#include <WS2tcpip.h>
-#endif
 
-//add socket lib
-#pragma comment(lib,"wsock32.lib")		//必须包含,否则编译出错
 #include <stdlib.h>
 #include <stdio.h>
 #include <ctype.h>
@@ -34,12 +35,15 @@
 typedef int socklen_t;
 
 
-//#pragma comment(lib,"zlib.lib")
 
-#ifdef MEDUSA_ENABLE_VLD
-#pragma comment(lib,"vld.lib")		//必须包含,否则编译出错
+#ifdef MEDUSA_VLD
 #include "CoreLib/win/vld/vld.h"
 #endif
+
+#ifdef MEDUSA_MEMORY_LEAK_DETECT
+#include "CoreLib/win/MemoryLeakDetector.h"
+#endif
+
 
 #ifdef MEDUSA_POSIX_THREADING
 #include "CoreLib/win/pthread/pthread.h"
@@ -48,26 +52,8 @@ typedef int socklen_t;
 #pragma comment(lib,"pthreadVC2.lib")
 #endif
 
-#include <threadpoolapiset.h>
-
-//#pragma comment(lib,"unzip.lib")
-//#pragma comment(lib,"AngelScript.lib")
-//#pragma comment(lib,"Lzma.lib")
-
-
-
-
-
-
-#pragma comment(lib,"Ws2_32.lib")		//必须包含,否则编译出错
-#pragma comment(lib,"Wldap32.lib")		//必须包含,否则编译出错
-//#pragma comment(lib,"curl.lib")
-
-
-#ifdef MEDUSA_DEBUG
-#include <Dbghelp.h>
-#pragma comment(lib, "Dbghelp.lib")
-#endif
-
+//#include <threadpoolapiset.h>
+//#pragma comment(lib,"Ws2_32.lib")		//have to include this or it will failed
+//#pragma comment(lib,"Wldap32.lib")		//have to include this or it will failed
 
 #endif

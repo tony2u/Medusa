@@ -5,21 +5,27 @@
 #include "SpineSkeleton.h"
 #include "Core/Log/Log.h"
 #include "Resource/Skeleton/SpineSkeletonModel.h"
-
+#include "Node/NodeFactory.h"
 MEDUSA_BEGIN;
 
-SpineSkeleton::SpineSkeleton(StringRef name, SpineSkeletonModel* model)
+SpineSkeleton::SpineSkeleton(StringRef name, const Share<SpineSkeletonModel>& model)
 	:ISkeleton(name, model)
 {
 	
 }
 
 
+SpineSkeleton::SpineSkeleton(const StringRef& name /*= StringRef::Empty*/, const IEventArg& e /*= IEventArg::Empty*/)
+	:ISkeleton(name, e)
+{
+
+}
+
 SpineSkeleton::~SpineSkeleton()
 {
 	
 }
 
-
+MEDUSA_IMPLEMENT_NODE(SpineSkeleton);
 
 MEDUSA_END;

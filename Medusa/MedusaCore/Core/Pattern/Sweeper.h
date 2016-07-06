@@ -36,7 +36,7 @@ public:
 		RETURN_IF_EMPTY(mItems);
 		RETURN_IF_FALSE(OnBeforeRelease());	//give a chance to release all in one time
 
-		FOR_EACH_ITEM(mItems, OnRelease);
+		FOR_EACH_APPLY(mItems, OnRelease);
 		mItems.Clear();
 	}
 protected:

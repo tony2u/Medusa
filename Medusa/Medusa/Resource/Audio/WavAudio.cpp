@@ -2,6 +2,7 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 #include "MedusaPreCompiled.h"
+#ifdef MEDUSA_AL
 #include "WavAudio.h"
 #include "Core/IO/File.h"
 #include "Core/IO/FileSystem.h"
@@ -62,3 +63,4 @@ WavAudio* WavAudio::CreateFromMemory(const FileIdRef& fileId, MemoryData data)
 
 
 MEDUSA_END;
+#endif

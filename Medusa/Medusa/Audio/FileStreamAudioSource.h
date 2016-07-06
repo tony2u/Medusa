@@ -3,6 +3,7 @@
 // license that can be found in the LICENSE file.
 #pragma once
 #include "MedusaPreDeclares.h"
+#ifdef MEDUSA_AL
 #include "Audio/StreamAudioSource.h"
 #include "Core/Threading/Mutex.h"
 #include "Core/IO/Stream/MemoryStream.h"
@@ -22,10 +23,11 @@ protected:
 	virtual void OnSeek(uint secondOffset);
 	virtual bool OnFetchData(MemoryData& outData);
 private:
-	IAudio* mAudioFile = nullptr;
+	Share<IAudio> mAudioFile ;
 	MemoryStream mAudioStream;
 	RecursiveMutex mMutex;
 };
 
 
 MEDUSA_END;
+#endif

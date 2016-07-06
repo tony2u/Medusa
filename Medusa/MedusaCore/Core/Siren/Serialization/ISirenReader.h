@@ -16,9 +16,10 @@ public:
 public:
 	virtual bool OnValue(bool& obj) { return true; }
 	virtual bool OnValue(char& obj) { return true; }
-	virtual bool OnValue(byte& obj) { return true; }
-	virtual bool OnValue(short& obj) { return true; }
-	virtual bool OnValue(ushort& obj) { return true; }
+	virtual bool OnValue(int8& obj) { return true; }
+	virtual bool OnValue(uint8& obj) { return true; }
+	virtual bool OnValue(int16& obj) { return true; }
+	virtual bool OnValue(uint16& obj) { return true; }
 	virtual bool OnValue(int32& obj) { return true; }
 	virtual bool OnValue(uint32& obj) { return true; }
 	virtual bool OnValue(int64& obj) { return true; }

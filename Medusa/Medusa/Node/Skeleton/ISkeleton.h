@@ -5,22 +5,24 @@
 #include "Node/INode.h"
 #include "Core/Collection/List.h"
 #include "Core/Pattern/Event.h"
-#include "Core/Command/EventArg/TriggerEventArg.h"
+#include "Core/Event/EventArg/TriggerEventArg.h"
 
 MEDUSA_BEGIN;
 
 class ISkeleton :public INode
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_RTTI(ISkeleton, INode);
 public:
 	typedef Event<void(SkeletonAnimation* ani, float time, const TriggerEventArg& eventArg)> TriggerEvent;
 	typedef TriggerEvent::DelegateType TriggerDelegate;
 	TriggerEvent OnEvent;
 private:
-	typedef Dictionary<HeapString, TriggerEvent, DefaultHashCoder<HeapString>, NoHashCoder<TriggerEvent>, DefaultCompare<HeapString>, NoCompare<TriggerEvent>> TriggerEventDict;
+	typedef Dictionary<HeapString, TriggerEvent, DefaultHashCoder, NoHashCoder, DefaultCompare, NoCompare> TriggerEventDict;
 	typedef Dictionary<SkeletonAnimationModel*, TriggerEventDict*> TriggerDict;
 public:
-	ISkeleton(StringRef name, ISkeletonModel* model);
+	ISkeleton(const StringRef& name = StringRef::Empty, const IEventArg& e = IEventArg::Empty);
+
+	ISkeleton(StringRef name, const Share<ISkeletonModel>& model);
 	virtual ~ISkeleton();
 	virtual bool OnUpdate(float dt, NodeUpdateFlags flag = NodeUpdateFlags::None)override;
 
@@ -36,7 +38,7 @@ public:
 
 	bool SetAvatarName(const StringRef& avatarName);
 
-	ISkeletonModel* Model() const { return mModel; }
+	const Share<ISkeletonModel>& Model() const { return mModel; }
 
 	const List<SkeletonBone*>& Bones() const { return mBones; }
 	SkeletonBone* FindBone(const StringRef& name)const;
@@ -93,8 +95,8 @@ public:
 	SkeletonAnimation* CreateAnimation(SkeletonAnimationModel* model, bool isRepeatForever = false, float beforeDelay = 0.f, float repeatDuration = 0.f, float afterDelay = 0.f);
 
 protected:
-	ISkeletonModel* mModel;
-	SkeletonAvatarModel* mAvatarModel;
+	Share<ISkeletonModel> mModel = nullptr;
+	SkeletonAvatarModel* mAvatarModel = nullptr;
 
 	List<SkeletonBone*> mBones;
 	Dictionary<StringRef, SkeletonBone*> mBoneDict;
@@ -115,10 +117,10 @@ protected:
 	So every ik has a forward bone list meaning forward dependcy,and a backward bone list to update bone,which are next bone's forward list
 	so mBoneUpdateList's count should be ik's count+1
 	*/
-	List<List<SkeletonBone*>, NoCompare<List<SkeletonBone*>>> mBoneUpdateList;
+	List<List<SkeletonBone*>, NoCompare> mBoneUpdateList;
 
-	bool mIsBoneVisible;
-	bool mIsSlotVisible;
+	bool mIsBoneVisible = false;
+	bool mIsSlotVisible = false;
 };
 
 MEDUSA_END;

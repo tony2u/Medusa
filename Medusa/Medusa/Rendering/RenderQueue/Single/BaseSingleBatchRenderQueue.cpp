@@ -18,32 +18,26 @@
 MEDUSA_BEGIN;
 
 
-BaseSingleBatchRenderQueue::BaseSingleBatchRenderQueue(IRenderTarget* renderTarget /*= nullptr*/, Camera* camera /*= nullptr*/, RenderingStrategy strategy /*= RenderingStrategy::MultipleDynamicBatch*/)
+BaseSingleBatchRenderQueue::BaseSingleBatchRenderQueue(const Share<IRenderTarget>& renderTarget /*= nullptr*/, const Share<Camera>& camera /*= nullptr*/, RenderingStrategy strategy /*= RenderingStrategy::MultipleDynamicBatch*/)
 	:mRenderTarget(renderTarget), mCamera(camera)
 {
-	SAFE_RETAIN(mRenderTarget);
-	SAFE_RETAIN(mCamera);
-
 	mBatch = BatchPool::Instance().Create(strategy);
 	mBatch->Initialize();
 }
 
 BaseSingleBatchRenderQueue::~BaseSingleBatchRenderQueue(void)
 {
-	SAFE_RELEASE(mRenderTarget);
-	SAFE_RELEASE(mCamera);
-
 	BatchPool::Instance().Recycle(mBatch);
 }
 
-void BaseSingleBatchRenderQueue::SetRenderTarget(IRenderTarget* val)
+void BaseSingleBatchRenderQueue::SetRenderTarget(const Share<IRenderTarget>& val)
 {
-	SAFE_ASSIGN_REF(mRenderTarget, val);
+	mRenderTarget = val;
 }
 
-void BaseSingleBatchRenderQueue::SetCamera(Camera* val)
+void BaseSingleBatchRenderQueue::SetCamera(const Share<Camera>& val)
 {
-	SAFE_ASSIGN_REF(mCamera, val);
+	mCamera = val;
 }
 
 void BaseSingleBatchRenderQueue::Update(RenderableChangedFlags changedFlag)
@@ -62,9 +56,9 @@ void BaseSingleBatchRenderQueue::Update(RenderableChangedFlags changedFlag)
 			mBatch->SetStateTreeNode(node->RenderStateTreeNode());
 		}
 
-		FOR_EACH_COLLECTION(i, mNodes)
+		for(auto i: mNodes)
 		{
-			mBatch->AddNode(*i);
+			mBatch->AddNode(i);
 		}
 
 		mIsCommandChanged = true;

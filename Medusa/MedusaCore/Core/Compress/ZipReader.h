@@ -3,6 +3,7 @@
 // license that can be found in the LICENSE file.
 #pragma once
 #include "MedusaCorePreDeclares.h"
+#ifdef MEDUSA_UNZIP
 #include "Core/String/HeapString.h"
 #include "Core/String/StackString.h"
 #include "Core/Memory/MemoryData.h"
@@ -41,3 +42,4 @@ private:
 
 
 MEDUSA_END;
+#endif

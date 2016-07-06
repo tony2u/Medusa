@@ -13,27 +13,28 @@ template<typename TMaterial>
 class BaseMultipleModel:public IModel
 {
 public:
+	using MaterialType = Share<TMaterial>;
+public:
 	BaseMultipleModel(const FileIdRef& fileId):IModel(fileId){}
 	virtual ~BaseMultipleModel(void)
 	{
 		SAFE_DELETE_COLLECTION(mMeshNodes);
-		SAFE_RELEASE_COLLECTION(mMaterials);
+		mMaterials.Clear();
 	}
 public:
 	List<IMeshModelNode*>& MutableMeshes()  { return mMeshNodes; }
-	List<TMaterial*>& MutableMaterials() { return mMaterials; }
+	List<MaterialType>& MutableMaterials() { return mMaterials; }
 
 	const List<IMeshModelNode*>& Meshes()const  { return mMeshNodes; }
-	const List<TMaterial*>& Materials()const { return mMaterials; }
+	const List<MaterialType>& Materials()const { return mMaterials; }
 
-	TMaterial* FirstMaterial(){return mMaterials.First();}
-	bool ContainsMaterial(TMaterial* material)const {return mMaterials.Contains(material);}
-	bool TryAddMaterial(TMaterial* material)
+	const MaterialType& FirstMaterial(){return mMaterials.First();}
+	bool ContainsMaterial(const MaterialType& material)const {return mMaterials.Contains(material);}
+	bool TryAddMaterial(const MaterialType& material)
 	{
 		if(!mMaterials.Contains(material))
 		{
 			mMaterials.Add(material);
-			material->Retain();
 			return true;
 		}
 		return false;
@@ -41,14 +42,13 @@ public:
 
 	void ReleaseAllMaterials()
 	{
-		SAFE_RELEASE_COLLECTION(mMaterials);
+		mMaterials.Clear();
 	}
 
 	IMeshModelNode* FindMesh(StringRef name)
 	{
-		FOR_EACH_COLLECTION(i,mMeshNodes)
+		for(auto meshNode:mMeshNodes)
 		{
-			IMeshModelNode* meshNode=*i;
 			if (meshNode->Name()==name)
 			{
 				return (IMeshModelNode*)meshNode;
@@ -81,7 +81,7 @@ public:
 
 protected:
 	List<IMeshModelNode*> mMeshNodes;
-	List<TMaterial*> mMaterials;
+	List<MaterialType> mMaterials;
 };
 
 MEDUSA_END;

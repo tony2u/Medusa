@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 #include "MedusaPreCompiled.h"
 #include "Node/Control/EditBox/SingleLineEditBox.h"
-
+#include "Node/NodeFactory.h"
 MEDUSA_BEGIN;
 
 
@@ -12,10 +12,16 @@ SingleLineEditBox::SingleLineEditBox(StringRef name, const Size2F& size, const F
 {
 }
 
-SingleLineEditBox::~SingleLineEditBox( void )
+SingleLineEditBox::SingleLineEditBox(const StringRef& name /*= StringRef::Empty*/, const IEventArg& e /*= IEventArg::Empty*/)
+	: BaseSingleLineEditBox(name, e)
 {
 
 }
-MEDUSA_IMPLEMENT_RTTI(SingleLineEditBox, BaseSingleLineEditBox);
+
+SingleLineEditBox::~SingleLineEditBox(void)
+{
+
+}
+MEDUSA_IMPLEMENT_NODE(SingleLineEditBox);
 
 MEDUSA_END;

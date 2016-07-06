@@ -18,7 +18,7 @@ bool Environment::IsNetworkAvailable()
 	return true;
 }
 
-uint Environment::GetCPUCount() const
+uint Environment::CPUCount() const
 {
 	return get_nprocs();
 }

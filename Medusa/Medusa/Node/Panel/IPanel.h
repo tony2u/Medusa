@@ -9,9 +9,9 @@ MEDUSA_BEGIN;
 
 class IPanel :public INode
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_RTTI(IPanel,INode);
 public:
-	IPanel(StringRef name=StringRef::Empty);
+	IPanel(StringRef name=StringRef::Empty, const IEventArg& e = IEventArg::Empty);
 	virtual ~IPanel(void);
 public:
 	virtual PanelType GetPanelType()const=0;

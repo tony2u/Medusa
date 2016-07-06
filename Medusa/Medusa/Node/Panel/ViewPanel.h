@@ -9,10 +9,10 @@ MEDUSA_BEGIN;
 
 class ViewPanel :public IPanel
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_NODE(ViewPanel,IPanel);
 
 public:
-	ViewPanel(StringRef name=StringRef::Empty);
+	ViewPanel(StringRef name=StringRef::Empty, const IEventArg& e = IEventArg::Empty);
 	virtual ~ViewPanel(void);
 	virtual PanelType GetPanelType()const override{return PanelType::View;}
 

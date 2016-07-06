@@ -2,6 +2,8 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 #include "MedusaPreCompiled.h"
+#ifdef MEDUSA_JPEG
+
 #include "JpegImage.h"
 #include "Core/IO/File.h"
 #include "Core/IO/FileSystem.h"
@@ -53,7 +55,7 @@ JpegImage::~JpegImage(void)
 }
 
 
-JpegImage* JpegImage::CreateFromFile( const FileIdRef& fileId ) 
+Share<JpegImage> JpegImage::CreateFromFile( const FileIdRef& fileId )
 {
 	const auto* fileEntry = FileSystem::Instance().Find(fileId);
 	RETURN_NULL_IF_NULL(fileEntry);
@@ -62,7 +64,7 @@ JpegImage* JpegImage::CreateFromFile( const FileIdRef& fileId )
 	return CreateFromMemory(fileId, *fileEntry,data);
 }
 
-JpegImage* JpegImage::CreateFromMemory(const FileIdRef& fileId, const FileEntry& fileEntry, MemoryData data )
+Share<JpegImage> JpegImage::CreateFromMemory(const FileIdRef& fileId, const FileEntry& fileEntry, MemoryData data )
 {
 	RETURN_NULL_IF_EMPTY(data);
 	jpeg_decompress_struct cinfo;
@@ -102,7 +104,7 @@ JpegImage* JpegImage::CreateFromMemory(const FileIdRef& fileId, const FileEntry&
 	short width=(short)cinfo.image_width;
 	short height = (short)cinfo.image_height;
 
-	JpegImage* result=new JpegImage(fileId,Size2U(width,height),PixelType::RGB888,false);
+	Share<JpegImage> result=new JpegImage(fileId,Size2U(width,height),PixelType::RGB888,false);
 	MEDUSA_ASSERT_NOT_NULL(result,"");
 	byte* imageData=result->MutableData().MutableData();
 
@@ -165,6 +167,5 @@ bool JpegImage::SaveToFile(StringRef filePath ) const
 	return true;
 }
 
-
-
 MEDUSA_END;
+#endif

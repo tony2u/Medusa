@@ -38,8 +38,8 @@ public:
 
 	virtual uint Count()const=0;
 
-	BaseBufferRenderState* MutableRenderState(){return mRenderState;}
-	const BaseBufferRenderState* RenderState()const{return mRenderState;}
+	Share<BaseBufferRenderState>& MutableRenderState(){return mRenderState;}
+	const Share<BaseBufferRenderState>& RenderState()const{return mRenderState;}
 	GraphicsBufferType GetType()const{return mRenderState->BufferType();}
 
 	virtual bool IsAvailableFor(size_t newCount)const{return true;}
@@ -61,7 +61,7 @@ protected:
 	RangeS mDirtyRange;
 
 	bool mIsDataLoaded;
-	BaseBufferRenderState* mRenderState;
+	Share<BaseBufferRenderState> mRenderState;
 
 	GraphicsBufferUsage mUsageType;
 	GraphicsDataType mDataType;

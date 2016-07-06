@@ -1,4 +1,4 @@
-class Version[Suppress,Dir=Core/Utility]
+class Version[Suppress,Dir=Core/System]
 {
     uint Major;
     uint Minor;

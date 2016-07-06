@@ -6,7 +6,7 @@
 #include "RenderStateTreeCompositeNode.h"
 
 MEDUSA_BEGIN;
-RenderStateTreeLeafNode::RenderStateTreeLeafNode(IRenderState* state, RenderStateTreeCompositeNode* parent)
+RenderStateTreeLeafNode::RenderStateTreeLeafNode(const Share<IRenderState>& state, RenderStateTreeCompositeNode* parent)
 	:BaseRenderStateTreeNode(state, parent)
 {
 

@@ -26,15 +26,15 @@ bool TiledTilesetFactory::Uninitialize()
 	return true;
 }
 
-TiledTileset* TiledTilesetFactory::Create(const FileIdRef& fileId, ResourceShareType shareType /*= ResourceShareType::Share*/)
+Share<TiledTileset> TiledTilesetFactory::Create(const FileIdRef& fileId, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
 	if (shareType != ResourceShareType::None)
 	{
-		TiledTileset* val = (TiledTileset*)Find(fileId);
-		RETURN_SELF_IF_NOT_NULL((TiledTileset*)val);
+		auto val = Find(fileId);
+		RETURN_SELF_IF_NOT_NULL(val);
 	}
 
-	TiledTileset* model = new TiledTileset(fileId);
+	Share<TiledTileset> model = new TiledTileset(fileId);
 	RETURN_NULL_IF_NULL(model);
 	if (model->LoadFromFileSystem(fileId))
 	{
@@ -42,7 +42,6 @@ TiledTileset* TiledTilesetFactory::Create(const FileIdRef& fileId, ResourceShare
 	}
 	else
 	{
-		delete model;
 		model = nullptr;
 	}
 

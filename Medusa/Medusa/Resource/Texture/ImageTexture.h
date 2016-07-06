@@ -9,10 +9,10 @@ MEDUSA_BEGIN;
 class ImageTexture:public ITexture
 {
 public:
-	ImageTexture(const FileIdRef& fileId, IImage* image, StringRef samplerName = ShaderSamplerNames::Texture, GraphicsTextureUnits unit = GraphicsTextureUnits::Texture0);
+	ImageTexture(const FileIdRef& fileId, const Share<IImage>& image, StringRef samplerName = ShaderSamplerNames::Texture, GraphicsTextureUnits unit = GraphicsTextureUnits::Texture0);
 	virtual ~ImageTexture(void);
 public:
-	virtual IImage* Image() const { return mImage; }
+	virtual Share<IImage> Image() const { return mImage; }
 
 	virtual bool IsBlend()const;
 	virtual Size2U Size() const;
@@ -21,7 +21,7 @@ public:
 protected:
 	virtual void Upload();
 protected:
-	IImage* mImage;
+	Share<IImage> mImage;
 };
 
 MEDUSA_END;

@@ -8,19 +8,22 @@
 #include "Geometry/Moveable/DefaultMoveable.h"
 #include "Geometry/Color4.h"
 #include "Core/String/IStringWrapper.h"
+#include "Resource/Font/IFont.h"
+#include "Resource/Model/Mesh/Font/BaseFontMesh.h"
 
 MEDUSA_BEGIN;
 
 class ILabel :public INode, public IWStringWrapper
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_RTTI(ILabel,INode);
 public:
-	ILabel(StringRef name, IFont* font, Alignment alignment = Alignment::LeftBottom, Size2F restrictSize = Size2F::Zero, bool isMultipleLine = true, bool isStatic = false);
+	ILabel(const StringRef& name = StringRef::Empty, const IEventArg& e = IEventArg::Empty);
+	ILabel(StringRef name, const Share<IFont>& font, Alignment alignment = Alignment::LeftBottom, Size2F restrictSize = Size2F::Zero, bool isMultipleLine = true, bool isStatic = false);
 	virtual ~ILabel(void);
 	virtual bool Initialize() override;
 public:
-	IFont* Font() const { return mFont; }
-	void SetFont(IFont* val);
+	const Share<IFont>& Font() const { return mFont; }
+	void SetFont(const Share<IFont>& val);
 
 	const FontId& GetFontId()const;
 	bool SetFontId(const FontId& val);
@@ -34,7 +37,7 @@ public:
 	bool IsMultipleLine() const { return mIsMultipleLine; }
 	void EnableMultipleLine(bool val);
 
-	virtual BaseFontMesh* CreateFontMesh(TextureAtlasPage* page, bool isStatic = false) { return nullptr; }
+	virtual Share<BaseFontMesh> CreateFontMesh(TextureAtlasPage* page, bool isStatic = false) { return nullptr; }
 
 	bool IsStatic() const { return mIsStatic; }
 	void SetIsStatic(bool val) { mIsStatic = val; }
@@ -50,12 +53,12 @@ protected:
 	virtual void OnUpdateFont() {}
 
 protected:
-	IFont* mFont;
-	Alignment mAlignment;
+	Share<IFont> mFont=nullptr;
+	Alignment mAlignment=Alignment::LeftBottom;
 	Size2F mRestrictSize;
-	bool mIsMultipleLine;
+	bool mIsMultipleLine=true;
 
-	bool mIsStatic;
+	bool mIsStatic=false;
 
 };
 

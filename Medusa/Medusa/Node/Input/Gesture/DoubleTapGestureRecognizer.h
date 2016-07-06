@@ -2,9 +2,8 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 #pragma once
+#include "MedusaCorePreDeclares.h"
 #include "Node/Input/Gesture/IGestureRecognizer.h"
-
-
 
 MEDUSA_BEGIN;
 

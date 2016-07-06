@@ -19,16 +19,16 @@ struct BatchNewerById
 
 class BatchPool 
 	:public Singleton<BatchPool>,
-	public IdSingleObjectPool < RenderingStrategy, IRenderBatch*, BatchNewerById, SafeEnumHashCoder<RenderingStrategy> >,
+	public IdSingleObjectPool < RenderingStrategy, IRenderBatch*, BatchNewerById, SafeEnumHashCoder >,
 	public IInitializable
 {
 	friend class Singleton < BatchPool > ;
 	BatchPool() {}
-	~BatchPool() {}
+	~BatchPool();
 
 public:
-	using IdSingleObjectPool < RenderingStrategy, IRenderBatch*, BatchNewerById, SafeEnumHashCoder<RenderingStrategy> >::Create;
-	using IdSingleObjectPool < RenderingStrategy, IRenderBatch*, BatchNewerById, SafeEnumHashCoder<RenderingStrategy> >::Recycle;
+	using IdSingleObjectPool < RenderingStrategy, IRenderBatch*, BatchNewerById, SafeEnumHashCoder >::Create;
+	using IdSingleObjectPool < RenderingStrategy, IRenderBatch*, BatchNewerById, SafeEnumHashCoder >::Recycle;
 
 public:
 	virtual bool Initialize()override;

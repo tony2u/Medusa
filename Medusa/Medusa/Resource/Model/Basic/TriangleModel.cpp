@@ -8,7 +8,7 @@
 MEDUSA_BEGIN;
 
 
-TriangleModel::TriangleModel(const FileIdRef& fileId,IMaterial* material)
+TriangleModel::TriangleModel(const FileIdRef& fileId, const Share<IMaterial>& material)
 	:BaseSingleTextureModel(fileId,material)
 {
 

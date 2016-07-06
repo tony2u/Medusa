@@ -20,15 +20,17 @@ enum class SirenEnumGenerateMode
 class SirenEnumAttribute:public ISirenAttribute
 {
 public:
-	using ISirenAttribute::ISirenAttribute;
+	SirenEnumAttribute() {}
+	SirenEnumAttribute(const StringPropertySet& val) :ISirenAttribute(val) {}
+
+	SirenEnumAttribute(SirenEnumGenerateMode mode, const StringRef& dir);
 	~SirenEnumAttribute(void);
-	virtual SirenEnumAttribute* Clone() const override { return new SirenEnumAttribute(mKeyValues); }
+	virtual SirenEnumAttribute* Clone() const override { return new SirenEnumAttribute(mMode,mDir); }
 	SirenEnumGenerateMode Mode() const { return mMode; }
 	void SetMode(SirenEnumGenerateMode val) { mMode = val; }
 	bool Has(SirenEnumGenerateMode val)const { return MEDUSA_FLAG_HAS(mMode, val); }
 	bool IsGenerate()const { return Has(SirenEnumGenerateMode::Generate); }
 	StringRef Directory()const { return  mDir; }
-
 public:
 	virtual bool LoadFrom(IStream& stream)override;
 	virtual bool SaveTo(IStream& stream)const override;

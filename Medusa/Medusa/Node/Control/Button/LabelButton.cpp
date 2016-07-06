@@ -4,15 +4,23 @@
 #include "MedusaPreCompiled.h"
 #include "LabelButton.h"
 #include "Node/Control/Label/ILabel.h"
-
+#include "Node/NodeFactory.h"
 MEDUSA_BEGIN;
 
 
-LabelButton::LabelButton(ILabel* label, StringRef name/*=StringRef::Empty*/ ) :IButton(name),mLabel(label)
+LabelButton::LabelButton(ILabel* label, StringRef name/*=StringRef::Empty*/, const IEventArg& e /*= IEventArg::Empty*/) 
+	:IButton(name, e),
+	mLabel(label)
 {
 }
 
-LabelButton::~LabelButton( void )
+LabelButton::LabelButton(StringRef name /*= StringRef::Empty*/, const IEventArg& e /*= IEventArg::Empty*/)
+	:IButton(name, e)
+{
+
+}
+
+LabelButton::~LabelButton(void)
 {
 
 }
@@ -32,6 +40,6 @@ bool LabelButton::Initialize()
 	return true;
 }
 
-MEDUSA_IMPLEMENT_RTTI(LabelButton, IButton);
+MEDUSA_IMPLEMENT_NODE(LabelButton);
 
 MEDUSA_END;

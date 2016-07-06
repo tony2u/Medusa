@@ -19,5 +19,10 @@ enum class SirenCoderType
 
 	// Simple JSON protocol
 	Lua = 0x4a63,
+
+	SqlText= 0x4a73,
+	SqlBinary = 0x4a83,
+
+
 };
 

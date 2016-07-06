@@ -2,6 +2,8 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 #include "MedusaCorePreCompiled.h"
+#ifdef MEDUSA_LZMA
+
 #include "LZMAStreams.h"
 #include "Core/Memory/MemoryData.h"
 #include "Core/IO/Stream/IStream.h"
@@ -55,3 +57,4 @@ size_t LZMASeqOutStream::WriteData(const void *buf, size_t size)
 
 
 MEDUSA_END;
+#endif

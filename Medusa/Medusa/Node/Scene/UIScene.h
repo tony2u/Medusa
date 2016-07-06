@@ -9,7 +9,7 @@ MEDUSA_BEGIN;
 
 class UIScene :public IScene
 {
-	MEDUSA_DECLARE_SCENE(UIScene);
+	MEDUSA_NODE(UIScene,IScene);
 public:
 	UIScene(StringRef name = StringRef::Empty, const IEventArg& e = IEventArg::Empty);
 	virtual ~UIScene(void);

@@ -7,175 +7,40 @@
 #include "Core/Collection/List.h"
 #include "LogDefines.h"
 #include "Core/String/HeapString.h"
+#include "Core/Threading/ThreadingDefines.h"
+#include "Core/Pattern/SwapValue.h"
+#include "Core/Threading/Mutex.h"
+#include "LogMessage.h"
+#include "Core/Pattern/Share.h"
 
 MEDUSA_BEGIN;
 
 class ILogger
 {
 public:
-	
+	using MessageList = SwapValue<List<Share<LogMessage>>>;
+	using WMessageList = SwapValue<List<Share<WLogMessage>>>;
 public:
-	ILogger(StringRef name = StringRef::Empty,bool isLogHeader=true);
+	ILogger(StringRef name = StringRef::Empty);
 	virtual ~ILogger(void);
-	StringRef GetLogStringA() const { return mBufferA; }
-	WStringRef GetLogStringW() const { return mBufferW; }
 
+	virtual void Update(float dt = 0.f);
 
-	LogLevel CurrentLevel() const { return mCurrentLevel; }
-	void SetCurrentLevel(LogLevel inCurrentLevel) { mCurrentLevel = inCurrentLevel; }
-	bool IsLogInfo(){return MEDUSA_FLAG_HAS(mCurrentLevel,LogLevel::Info);}
-	bool IsLogError() { return MEDUSA_FLAG_HAS(mCurrentLevel, LogLevel::Error); }
-	bool IsLogAll() {return MEDUSA_FLAG_HAS(mCurrentLevel, LogLevel::All);}
-
-	bool IsLogHeaderEnabled() const { return mIsLogHeaderEnabled; }
-	void EnableLogHeader(bool val) { mIsLogHeaderEnabled = val; }
 public:
-	template<typename... TArgs>
-	void FormatInfo(const char* inFormat, const TArgs&... args)
-	{
-		RETURN_IF_FALSE(IsLogInfo());
+	void Add(const Share<LogMessage>& message);
+	void Add(const Share<WLogMessage>& message);
 
-		if (mIsLogHeaderEnabled)
-		{
-			LogHeaderInBufferA();
-		}
-
-		mBufferA.Format(mBufferA, inFormat, args...);
-
-		OutputLogString(mBufferA.Buffer());
-		OutputLogString("\n");
-	}
-
-	void Info(StringRef inString);
-
-	template<typename... TArgs>
-	void FormatError(const char* inFormat, const TArgs&... args)
-	{
-		RETURN_IF_FALSE(IsLogError());
-
-		if (mIsLogHeaderEnabled)
-		{
-			LogHeaderInBufferA(LogType::Error);
-		}
-
-		OutputLogString("ERROR: ", LogType::Error);
-
-		mBufferA.Format(inFormat, args...);
-
-		OutputLogString(mBufferA.Buffer(), LogType::Error);
-		OutputLogString("\n", LogType::Error);
-	}
-
-	void Error(StringRef inString);
-
-	template<typename... TArgs>
-	void AssertFormat(bool condition, const char* inFormat, const TArgs&... args)
-	{
-		if (!condition)
-		{
-			if (IsLogError())
-			{
-				FormatError(inFormat, args...);
-			}
-
-			assert(false);
-		}
-	}
-
-	void Assert(bool condition,StringRef inString);
-
-	template<typename... TArgs>
-	void AssertFailedFormat(const char* inFormat, const TArgs&... args)
-	{
-		if (IsLogError())
-		{
-			FormatError(inFormat, args...);
-		}
-
-		assert(false);
-	}
-	void AssertFailed(StringRef inString);
-public:
-	template<typename... TArgs>
-	void FormatInfo(const wchar_t* inFormat, const TArgs&... args)
-	{
-		RETURN_IF_FALSE(IsLogInfo());
-
-		if (mIsLogHeaderEnabled)
-		{
-			LogHeaderInBufferW();
-		}
-
-		mBufferW.Format(mBufferW, inFormat, args...);
-
-		OutputLogString(mBufferW.Buffer());
-		OutputLogString(L"\n");
-	}
-
-	void Info(WStringRef inString);
-
-	template<typename... TArgs>
-	void FormatError(const wchar_t* inFormat, const TArgs&... args)
-	{
-		RETURN_IF_FALSE(IsLogError());
-
-		if (mIsLogHeaderEnabled)
-		{
-			LogHeaderInBufferW(LogType::Error);
-		}
-
-		OutputLogString(L"ERROR: ", LogType::Error);
-
-		mBufferW.Format(inFormat, args...);
-
-		OutputLogString(mBufferW.Buffer(), LogType::Error);
-		OutputLogString(L"\n", LogType::Error);
-	}
-
-	void Error(WStringRef inString);
-
-	template<typename... TArgs>
-	void AssertFormat(bool condition, const wchar_t* inFormat, const TArgs&... args)
-	{
-		if (!condition)
-		{
-			if (IsLogError())
-			{
-				FormatError(inFormat, args...);
-			}
-
-			assert(false);
-		}
-	}
-
-	void Assert(bool condition,WStringRef inString);
-
-	template<typename... TArgs>
-	void AssertFailedFormat(const wchar_t* inFormat, const TArgs&... args)
-	{
-		if (IsLogError())
-		{
-			FormatError(inFormat, args...);
-		}
-
-		assert(false);
-	}
-
-	void AssertFailed(WStringRef inString);
 protected:
-	void LogHeaderInBufferA(LogType logType=LogType::Info);
-	void LogHeaderInBufferW(LogType logType=LogType::Info);
-
-	virtual void OutputLogString(StringRef inString,LogType logType=LogType::Info)=0;
-	virtual void OutputLogString(WStringRef inString,LogType logType=LogType::Info)=0;
-	virtual void SetLogColor(LogType logType){}
+	virtual void Print(const Share<LogMessage>& message)=0;
+	virtual void Print(const Share<WLogMessage>& message)=0;
+	bool IsCurrentThread()const;
 protected:
 	HeapString mName;
-	LogLevel mCurrentLevel;
-	
-	bool mIsLogHeaderEnabled;
-	HeapString mBufferA;
-	WHeapString mBufferW;
+	ThreadId mCurrentThread = 0;
+
+	MessageList mMessageList;
+	WMessageList mWMessageList;
+	Mutex mMutex;
 };
 
 MEDUSA_END;

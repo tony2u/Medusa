@@ -12,7 +12,7 @@ MEDUSA_BEGIN;
 
 class IRenderingCommand:public ICommand
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_RTTI(IRenderingCommand,ICommand);
 public:
 	IRenderingCommand();
 	~IRenderingCommand(void);

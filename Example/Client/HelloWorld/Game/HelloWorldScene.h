@@ -8,7 +8,7 @@ USING_MEDUSA;
 
 class HelloWorldScene:public UIScene
 {
-	MEDUSA_DECLARE_SCENE(HelloWorldScene);
+	MEDUSA_NODE(HelloWorldScene,UIScene);
 public:
 	HelloWorldScene(StringRef name=StringRef::Empty, const IEventArg& e = IEventArg::Empty);
 	virtual ~HelloWorldScene(void);

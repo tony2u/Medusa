@@ -48,7 +48,7 @@ public:
 	//SIREN_HEADER_COMPARE_END
 	//SIREN_HEADER_METHOD_BEGIN
 public:
-	SIREN_METHOD(HeapString, Name);
+	SIREN_STRING(HeapString, Name);
 	SIREN_METHOD(EntryOperation, Operations);
 	SIREN_METHOD_LIST(DirectoryEntry*, Dirs);
 	SIREN_METHOD_LIST(FileEntry*, Files);

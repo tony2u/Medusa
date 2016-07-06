@@ -10,7 +10,7 @@ MEDUSA_COCOS_BEGIN;
 
 class TextReader : public INodeReader
 {
-	MEDUSA_DECLARE_COCOS_READER;
+	MEDUSA_RTTI(TextReader,INodeReader);
 public:
 	TextReader() {};
 	virtual ~TextReader() {};

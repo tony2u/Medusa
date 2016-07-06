@@ -14,17 +14,18 @@ class ISirenWriter
 public:
 	virtual ~ISirenWriter() = 0;
 public:
-	virtual bool OnValue(bool val) { return true; }
-	virtual bool OnValue(char val) { return true; }
-	virtual bool OnValue(byte val) { return true; }
-	virtual bool OnValue(short val) { return true; }
-	virtual bool OnValue(ushort val) { return true; }
-	virtual bool OnValue(int32 val) { return true; }
-	virtual bool OnValue(uint32 val) { return true; }
-	virtual bool OnValue(int64 val) { return true; }
-	virtual bool OnValue(uint64 val) { return true; }
-	virtual bool OnValue(float val) { return true; }
-	virtual bool OnValue(double val) { return true; }
+	virtual bool OnValue(const bool& val) { return true; }
+	virtual bool OnValue(const char& val) { return true; }
+	virtual bool OnValue(const int8& val) { return true; }
+	virtual bool OnValue(const uint8& val) { return true; }
+	virtual bool OnValue(const int16& val) { return true; }
+	virtual bool OnValue(const uint16& val) { return true; }
+	virtual bool OnValue(const int32& val) { return true; }
+	virtual bool OnValue(const uint32& val) { return true; }
+	virtual bool OnValue(const int64& val) { return true; }
+	virtual bool OnValue(const uint64& val) { return true; }
+	virtual bool OnValue(const float& val) { return true; }
+	virtual bool OnValue(const double& val) { return true; }
 	virtual bool OnValue(const StringRef& val) { return true; }
 	virtual bool OnValue(const MemoryData& val) { return true; }
 	virtual bool OnValue(const SirenObject& val);

@@ -11,7 +11,7 @@ FontChar::FontChar(void)
 {
 	VBearing=Point2I::Zero;
 	VAdvance=0;
-	Channel=0;
+	Channel =0;
 }
 
 FontChar::FontChar(wchar_t id) 
@@ -19,7 +19,7 @@ FontChar::FontChar(wchar_t id)
 {
 	VBearing=Point2I::Zero;
 	VAdvance=0;
-	Channel=0;
+	Channel =0;
 }
 
 FontChar::FontChar( const FontChar& fontChar )
@@ -40,7 +40,7 @@ FontChar& FontChar::operator=( const FontChar& fontChar )
 	HAdvance=fontChar.HAdvance;
 	VBearing=fontChar.VBearing;
 	VAdvance=fontChar.VAdvance;
-	Channel=fontChar.Channel;
+	Channel =fontChar.Channel;
 	mRegion = fontChar.mRegion;
 
 

@@ -7,7 +7,7 @@
 
 class ThreeDFeatureLayer :public BaseFeatureLayer
 {
-	MEDUSA_DECLARE_LAYER(ThreeDFeatureLayer);
+	MEDUSA_NODE(ThreeDFeatureLayer, BaseFeatureLayer);
 public:
 	ThreeDFeatureLayer(StringRef name=StringRef::Empty,const IEventArg& e=IEventArg::Empty);
 	virtual ~ThreeDFeatureLayer(void);

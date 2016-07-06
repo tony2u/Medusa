@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 #include "MedusaPreCompiled.h"
 #include "NodeFactory_Binding.h"
-#include "Core/Command/EventArg/UserDataEventArg.h"
+#include "Core/Event/EventArg/UserDataEventArg.h"
 #ifdef MEDUSA_LUA
 #include "Core/Lua/LuaState.h"
 #include "Node/NodeFactory.h"
@@ -19,6 +19,8 @@ bool Register_NodeFactory(IEventArg& e)
 
 	typedef  Sprite* (NodeFactory::*PushPtr)(const FileIdRef&, const Rect2F&);
 	cls.AddMemberFunctionAsStatic("CreateSprite", NodeFactory::Instance(), (PushPtr)&NodeFactory::CreateSprite, LUA_ARGS(const FileIdRef&, Lua::Opt<const Rect2F&>));
+
+	cls.AddFunction("Create", [](const StringRef& className, const FileIdRef& editorFile, const StringRef& scriptName, NodeCreateFlags flags)->INode* {return NodeFactory::Instance().Create(className, editorFile, scriptName, IEventArg::Empty, flags); });
 
 
 	//typedef  IScene* (SceneManager::*PushPtr)(const StringRef&, ScenePushFlags, const IEventArg&);

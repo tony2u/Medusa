@@ -26,7 +26,7 @@ ISkeletonModel::ISkeletonModel(const FileIdRef& fileId)
 
 ISkeletonModel::~ISkeletonModel(void)
 {
-	SAFE_RELEASE(mAtlas);
+	
 
 	SAFE_DELETE_COLLECTION(mBones);
 	SAFE_DELETE_COLLECTION(mAnimations);
@@ -47,9 +47,8 @@ ISkeletonModel::~ISkeletonModel(void)
 bool ISkeletonModel::Initialize()
 {
 	//setup bone parent relationship
-	FOR_EACH_COLLECTION(i, mBones)
+	for(auto bone: mBones)
 	{
-		SkeletonBoneModel* bone = *i;
 		StringRef parentName = bone->ParentName();
 		if (!parentName.IsEmpty())
 		{
@@ -191,12 +190,12 @@ ISkeletonAttachmentModel* ISkeletonModel::FindAttachment(const StringRef attachm
 
 void ISkeletonModel::PreCalculate(float fps)
 {
-	FOR_EACH_ITEM_TO(mAnimations, PreCalculate(fps));
+	FOR_EACH_TO(mAnimations, PreCalculate(fps));
 }
 
 void ISkeletonModel::RemovePreCalculated()
 {
-	FOR_EACH_ITEM_TO(mAnimations, RemovePreCalculated());
+	FOR_EACH_TO(mAnimations, RemovePreCalculated());
 }
 
 

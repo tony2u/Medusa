@@ -16,7 +16,7 @@ bool ICommand::Execute()
 	RETURN_FALSE_IF_FALSE(OnEnter());
 	if (!mBeforeCommands.IsEmpty())
 	{
-		for(auto* item: mBeforeCommands)
+		for(auto& item: mBeforeCommands)
 		{
 			RETURN_FALSE_IF_FALSE(item->Execute());
 		}
@@ -26,7 +26,7 @@ bool ICommand::Execute()
 
 	if (!mAfterCommands.IsEmpty())
 	{
-		for (auto* item : mAfterCommands)
+		for (auto& item : mAfterCommands)
 		{
 			RETURN_FALSE_IF_FALSE(item->Execute());
 		}
@@ -36,27 +36,26 @@ bool ICommand::Execute()
 	return OnExit();
 }
 
-void ICommand::AddBefore(ICommand* command)
+void ICommand::AddBefore(const ShareCommand& command)
 {
-	SAFE_RETAIN(command);
 	mBeforeCommands.Add(command);
+	command->SetParent(this);
 
 }
-void ICommand::AddAfter(ICommand* command)
+void ICommand::AddAfter(const ShareCommand& command)
 {
-	SAFE_RETAIN(command);
 	mAfterCommands.Add(command);
+	command->SetParent(this);
 }
 
 void ICommand::ClearBefore()
 {
-	SAFE_RELEASE_COLLECTION(mBeforeCommands);
+	mBeforeCommands.Clear();
 
 }
 void ICommand::ClearAfter()
 {
-	SAFE_RELEASE_COLLECTION(mAfterCommands);
-
+	mAfterCommands.Clear();
 }
 void ICommand::Clear()
 {
@@ -66,7 +65,6 @@ void ICommand::Clear()
 }
 
 
-MEDUSA_IMPLEMENT_RTTI_ROOT(ICommand);
 
 MEDUSA_END;
 

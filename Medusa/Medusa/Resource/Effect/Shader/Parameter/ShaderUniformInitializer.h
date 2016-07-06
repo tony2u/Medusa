@@ -16,7 +16,7 @@ class ShaderUniformInitializer :public Singleton<ShaderUniformInitializer>
 	friend class Singleton<ShaderUniformInitializer>;
 	typedef Delegate<bool(ShaderUniform& uniform)> FuncType;
 	typedef Dictionary<StringRef, FuncType> InitializerType;
-	typedef Dictionary<RenderingStep, InitializerType*, SafeEnumHashCoder<RenderingStep>> InitializerDict;
+	typedef Dictionary<RenderingStep, InitializerType*, SafeEnumHashCoder> InitializerDict;
 protected:
 	ShaderUniformInitializer(void);
 	~ShaderUniformInitializer(void);

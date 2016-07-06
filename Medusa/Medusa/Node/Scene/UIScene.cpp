@@ -6,7 +6,7 @@
 #include "Node/Scene/SceneGraph/UISceneGraph.h"
 #include "Resource/Camera/CameraFactory.h"
 #include "Resource/Camera/Camera.h"
-#include "Node/Scene/SceneFactory.h"
+#include "Node/NodeFactory.h"
 
 MEDUSA_BEGIN;
 
@@ -33,6 +33,6 @@ bool UIScene::Initialize()
 
 
 
-MEDUSA_IMPLEMENT_SCENE(UIScene, IScene,StringRef::Empty, StringRef::Empty);
+MEDUSA_IMPLEMENT_NODE(UIScene);
 
 MEDUSA_END;

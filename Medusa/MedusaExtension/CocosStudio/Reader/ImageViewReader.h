@@ -7,17 +7,20 @@
 //[PRE_DECLARE_NAMESPCAE] Cocos
 #include "CocosStudio/Reader/INodeReader.h"
 #include "Node/Sprite/NineGridSprite.h"
+#include "CocosStudio/CSParseBinary_generated.h"
 MEDUSA_COCOS_BEGIN;
 
 class ImageViewReader : public INodeReader
 {
-	MEDUSA_DECLARE_COCOS_READER;
+	MEDUSA_RTTI(ImageViewReader,INodeReader);
 public:
 	ImageViewReader() {};
 	virtual ~ImageViewReader() {};
 public:
 	virtual INode* CreateNodeWithFlatBuffers(INodeEditor& editor, const flatbuffers::Table* imageOptions, const StringRef& className = StringRef::Empty, NodeCreateFlags flags = NodeCreateFlags::None) override;
 	virtual INode* CreateNodeWithJson(INodeEditor& editor, const rapidjson::Value& nodeTree, const StringRef& className = StringRef::Empty, NodeCreateFlags flags = NodeCreateFlags::None) override;
+public:
+	static NineGridSprite* CreateNineGridSprite(uint8 enable, const flatbuffers::FlatSize* nineGridSize, const flatbuffers::FlatSize* widgetSize, const flatbuffers::CapInsets* capInset, const FileIdRef& fileId);
 };
 
 MEDUSA_COCOS_END;

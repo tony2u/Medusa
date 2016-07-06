@@ -11,7 +11,7 @@ MEDUSA_BEGIN;
 class SingleBatchRenderQueue :public BaseSingleBatchRenderQueue
 {
 public:
-	SingleBatchRenderQueue(IRenderTarget* renderTarget = nullptr, Camera* camera = nullptr, RenderingStrategy strategy = RenderingStrategy::MultipleDynamicBatch);
+	using BaseSingleBatchRenderQueue::BaseSingleBatchRenderQueue;
 	virtual ~SingleBatchRenderQueue(void);
 
 };

@@ -13,7 +13,7 @@ class FileStream :public IStream
 {
 public:
 	FileStream(void);
-	FileStream(StringRef inFileName, FileOpenMode openMode = FileOpenMode::ReadOnly, FileDataType dataType = FileDataType::Binary);
+	FileStream(StringRef fileName, FileOpenMode openMode = FileOpenMode::ReadOnly, FileDataType dataType = FileDataType::Binary, FileShareMode shareMode=FileShareMode::None);
 	virtual ~FileStream(void);
 	virtual StreamType Type()const  override{ return StreamType::File; }
 
@@ -27,7 +27,7 @@ public:
 	bool OpenReadText(StringRef fileName);
 	bool OpenNewWriteBinary(StringRef fileName);
 	bool OpenNewWriteText(StringRef fileName);
-	bool Open(StringRef inFileName, FileOpenMode openMode = FileOpenMode::ReadOnly, FileDataType dataType = FileDataType::Binary);
+	bool Open(StringRef fileName, FileOpenMode openMode = FileOpenMode::ReadOnly, FileDataType dataType = FileDataType::Binary, FileShareMode shareMode = FileShareMode::None);
 
 	int Printf(const char* inStringFormat, ...);
 	int Scanf(const char* inStringFormat, ...);

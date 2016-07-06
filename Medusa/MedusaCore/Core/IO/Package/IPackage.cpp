@@ -317,9 +317,8 @@ void IPackage::OnFileRemoved(FileEntry& file)
 bool IPackage::OnCopyFile(const FileEntry& from, FileEntry& to)
 {
 	IPackage* toPackage = (IPackage*)to.Parent()->Storage();
-	const IStream* readStream = from.Read();
+	Share<const IStream> readStream = from.Read();
 	bool result = toPackage->SaveFile(to, *readStream);
-	SAFE_RELEASE(readStream);
 	to.SetSignature(from.Signature());
 	to.SetPermission(from.Permission());
 

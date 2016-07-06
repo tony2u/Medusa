@@ -7,7 +7,7 @@
 
 class ProgressBarLayer :public BaseCaseLayer
 {
-	MEDUSA_DECLARE_LAYER(ProgressBarLayer);
+	MEDUSA_NODE(ProgressBarLayer, BaseCaseLayer);
 public:
 	ProgressBarLayer(StringRef name=StringRef::Empty,const IEventArg& e=IEventArg::Empty);
 	virtual ~ProgressBarLayer(void);

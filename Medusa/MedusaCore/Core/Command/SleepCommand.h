@@ -10,7 +10,7 @@ MEDUSA_BEGIN;
 
 class SleepCommand :public ICommand
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_RTTI(SleepCommand,ICommand);
 
 public:
 	SleepCommand(long milliseconds = 0);

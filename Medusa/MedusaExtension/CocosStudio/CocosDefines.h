@@ -10,8 +10,3 @@
 #define MEDUSA_COCOS_END }}
 
 
-#define MEDUSA_DECLARE_COCOS_READER 													\
-		MEDUSA_DECLARE_RTTI;
-
-#define MEDUSA_IMPLEMENT_COCOS_READER(className) 																					 \
-	MEDUSA_IMPLEMENT_RTTI_ROOT(className);

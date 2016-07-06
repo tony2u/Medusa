@@ -86,7 +86,6 @@ enum class Orientation
 	Up,
 };
 
-
 //     Describes how content is resized to fill its allocated space.
 enum class Stretch
 {

@@ -31,7 +31,7 @@ Size2F LabelItemTemplate::CalculateItemSize(const IListDataSource& dataSource, s
 {
 	const StringListDataSource& stringDataSource=(const StringListDataSource&)dataSource;
 	WStringRef str=stringDataSource.GetString(index);
-	IFont* font=FontFactory::Instance().Create(mFontId);
+	auto font=FontFactory::Instance().Create(mFontId);
 
 	if (mIsSingleLine)
 	{

@@ -140,7 +140,7 @@ namespace String
 			&&!std::is_base_of<BaseString<TChar>,T>::value, FormatResult>::type DoFormat(BaseString<TChar>& stream, const T& value, const TChar* formatBegin, const TChar* formatEnd, const AlignmentSpec<TChar>* alignSpec /*= nullptr*/)
 		{
 			//transfer format string to object self
-			auto&& str = value.ToString(formatBegin, formatEnd);
+			auto&& str = value.ToString(TStringRef<TChar>(formatBegin, formatEnd- formatBegin+1));
 			AlignmentSpec<TChar>::WriteString(stream, str, alignSpec);
 			return FormatResult::Success;
 		}
@@ -316,9 +316,9 @@ namespace String
 			size_t resultLength = spec.CalculateIntFormattedLength(str.Length(), sign);
 
 			size_t zeroPrependCount = 0;
-			if (spec.HasFlag(NumberFormatSpecFlags::PrependZero) && spec.Precision > resultLength)
+			if (spec.HasFlag(NumberFormatSpecFlags::PrependZero) && spec.Precision > str.Length())
 			{
-				zeroPrependCount = spec.Precision - resultLength;
+				zeroPrependCount = spec.Precision - str.Length();
 				resultLength = spec.Precision;
 			}
 
@@ -435,9 +435,9 @@ namespace String
 			size_t resultLength = spec.CalculateIntFormattedLength(str.Length(), sign);
 
 			size_t zeroPrependCount = 0;
-			if (spec.HasFlag(NumberFormatSpecFlags::PrependZero) && spec.Precision > resultLength)
+			if (spec.HasFlag(NumberFormatSpecFlags::PrependZero) && spec.Precision > str.Length())
 			{
-				zeroPrependCount = spec.Precision - resultLength;
+				zeroPrependCount = spec.Precision - str.Length();
 				resultLength = spec.Precision;
 			}
 

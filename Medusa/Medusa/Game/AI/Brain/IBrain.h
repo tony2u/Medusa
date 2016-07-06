@@ -5,10 +5,11 @@
 #include "MedusaPreDeclares.h"
 #include "Core/Collection/Dictionary.h"
 #include "Game/AI/Behavior/IBehavior.h"
-#include "Core/Command/EventArg/IEventArg.h"
+#include "Core/Event/EventArg/IEventArg.h"
 #include "Core/Pattern/ISharable.h"
 #include "Core/Pattern/RTTI/RTTIObject.h"
 #include "Core/Pattern/StaticConstructor.h"
+#include "Core/Pattern/Share.h"
 
 MEDUSA_BEGIN;
 
@@ -16,7 +17,8 @@ MEDUSA_BEGIN;
 class IBrain :public ISharableSingleThread,public RTTIObject
 {
 public:
-	MEDUSA_DECLARE_RTTI_ROOT;
+	using ShareBrain = Share<IBrain>;
+	MEDUSA_RTTI_ROOT(IBrain);
 public:
 	IBrain();
 	virtual ~IBrain(void);
@@ -27,40 +29,37 @@ public:
 	IBrainMemory* Memory() const { return mMemory; }
 	void SetMemory(IBrainMemory* val);
 
-	IBehavior* RootBehavior() const { return mRootBehavior; }
+	const Share<IBehavior>& RootBehavior() const { return mRootBehavior; }
 	void SetRootBehavior(IBehavior* val);
 
 	template<typename TEventArg2>
-	bool RegisterEventBehavior(IBehavior* val)
+	bool RegisterEventBehavior(const ShareBrain& val)
 	{
 		const RTTIClass* rttiClass = &TEventArg2::ClassStatic();
 		return RegisterEventBehavior(rttiClass->Name(), val);
 	}
 
-	bool RegisterEventBehavior(const StringRef& eventName, IBehavior* val);
+	bool RegisterEventBehavior(const StringRef& eventName, const Share<IBehavior>& val);
 
 	StringRef Paramter() const { return mParamter; }
 	void SetParamter(const StringRef& val) { mParamter = val; }
 	virtual bool Initialize() { return true; }
 protected:
 	HeapString mParamter;
-	IBrainMemory* mMemory;
+	IBrainMemory* mMemory=nullptr;
 
-	IBehavior* mRootBehavior;
-	Dictionary<HeapString, IBehavior*> mEventBehaviorDict;
+	Share<IBehavior> mRootBehavior;
+	Dictionary<HeapString, Share<IBehavior>> mEventBehaviorDict;
 };
 
 
-#define MEDUSA_DECLARE_BRAIN													\
-		MEDUSA_DECLARE_RTTI;\
+#define MEDUSA_DECLARE_BRAIN(className,baseClassName) 													\
+		MEDUSA_RTTI(className,baseClassName);\
 private:																				\
-	const static StaticConstructor mStaticConstructor;							\
-	static void SelfRegisterStaticCallback();
+	const static StaticConstructor mStaticConstructor;							
 
-#define MEDUSA_IMPLEMENT_BRAIN(className,baseClassName) 																					 \
-	MEDUSA_IMPLEMENT_RTTI(className,baseClassName);\
-	const StaticConstructor className::mStaticConstructor(SelfRegisterStaticCallback);					 \
-	void className::SelfRegisterStaticCallback(){BrainFactory::Instance().Register<className>(#className);}
+#define MEDUSA_IMPLEMENT_BRAIN(className) 																					 \
+	const StaticConstructor className::mStaticConstructor([]{BrainFactory::Instance().Register<className>(#className);});					 
 
 
 MEDUSA_END;

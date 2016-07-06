@@ -8,7 +8,7 @@ MEDUSA_BEGIN;
 
 class ElementArrayBufferRenderState:public BaseBufferRenderState
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_RTTI(ElementArrayBufferRenderState,BaseBufferRenderState);
 public:
 	ElementArrayBufferRenderState(uint buffer=0);
 	virtual ~ElementArrayBufferRenderState();
@@ -18,10 +18,10 @@ public:
 
 	virtual RenderStateType Type()const override {return GetTypeIdStatic();}
 	static RenderStateType GetTypeIdStatic(){return RenderStateType::ElementArrayBuffer;}
-	virtual ElementArrayBufferRenderState* Clone()const override;
+	Share<ElementArrayBufferRenderState> Clone()const;
 	virtual void CopyFrom(const IRenderState& other)override;
 
-	static ElementArrayBufferRenderState* Current();
+	static Share<ElementArrayBufferRenderState> Current();
 };
 
 

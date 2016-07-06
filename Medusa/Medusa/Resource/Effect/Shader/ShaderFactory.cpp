@@ -32,9 +32,9 @@ bool ShaderFactory::Uninitialize()
 }
 
 
-IShader* ShaderFactory::CreateShader( const FileIdRef& fileId,const List<HeapString>* defines/*=nullptr*/,ResourceShareType shareType /*= ResourceShareType::Share*/)
+Share<IShader> ShaderFactory::CreateShader( const FileIdRef& fileId,const List<HeapString>* defines/*=nullptr*/,ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
-	IShader* result = nullptr;
+	Share<IShader> result = nullptr;
 	if (shareType != ResourceShareType::None)
 	{
 		result = Find(fileId);
@@ -64,7 +64,6 @@ IShader* ShaderFactory::CreateShader( const FileIdRef& fileId,const List<HeapStr
 	if (data.IsNull())
 	{
 		Log::FormatError("Cannot find:{}-{}", fileId.Name, fileId.Order);
-        delete result;
 		return nullptr;
 	}
 	StringRef str(data.Cast<char>());
@@ -76,7 +75,7 @@ IShader* ShaderFactory::CreateShader( const FileIdRef& fileId,const List<HeapStr
 	}
 	else
 	{
-		SAFE_DELETE(result);
+		result = nullptr;
 	}
 
 	return nullptr;

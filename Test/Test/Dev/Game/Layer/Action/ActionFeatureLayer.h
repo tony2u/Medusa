@@ -7,7 +7,7 @@
 
 class ActionFeatureLayer :public BaseFeatureLayer
 {
-	MEDUSA_DECLARE_LAYER(ActionFeatureLayer);
+	MEDUSA_NODE(ActionFeatureLayer, BaseFeatureLayer);
 public:
 	ActionFeatureLayer(StringRef name=StringRef::Empty,const IEventArg& e=IEventArg::Empty);
 	virtual ~ActionFeatureLayer(void);

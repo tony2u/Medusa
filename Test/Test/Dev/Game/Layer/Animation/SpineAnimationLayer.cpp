@@ -57,5 +57,5 @@ bool SpineAnimationLayer::Initialize()
 
 
 
-MEDUSA_IMPLEMENT_LAYER(SpineAnimationLayer, BaseCaseLayer, StringRef::Empty, StringRef::Empty);
+MEDUSA_IMPLEMENT_NODE(SpineAnimationLayer);
 

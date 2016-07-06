@@ -5,7 +5,7 @@
 #include "Resource/RenderTarget/DefaultRenderTarget.h"
 #include "Graphics/Render/Render.h"
 #include "Rendering/RenderingContext.h"
-#include "Core/Profile/ProfileSample.h"
+#include "Core/Chrono/ProfileSample.h"
 #include "Graphics/State/RenderTargetRenderState.h"
 #include "Graphics/State/RenderStateMachine.h"
 

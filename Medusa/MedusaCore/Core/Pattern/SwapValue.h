@@ -8,7 +8,7 @@
 
 MEDUSA_BEGIN;
 template<typename T>
-class SwapValue :public INonCopyable<SwapValue<T>>
+class SwapValue :public INonCopyable
 {
 public:
 	typedef T ValueType;

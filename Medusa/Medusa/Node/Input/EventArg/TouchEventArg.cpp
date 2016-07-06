@@ -21,9 +21,8 @@ void TouchEventArg::UpdateValidActiveTouches( INode* node )
 	mLocalActiveTouches.Clear();
 	mValidActiveTouches.Clear();
 
-	FOR_EACH_COLLECTION(i, mWorldActiveTouches)
+	for (auto& touch : mWorldActiveTouches)
 	{
-		Touch& touch = *i;
 		Point2F pos = node->TransformToLocal(touch.Pos);
 		Touch localTouch = touch;
 		localTouch.Pos = pos;
@@ -40,9 +39,8 @@ void TouchEventArg::UpdateValidCurrentTouches(INode* node)
 {
 	mLocalCurrentTouches.Clear();
 	mValidCurrentTouches.Clear();
-	FOR_EACH_COLLECTION(i, mWorldCurrentTouches)
+	for (auto& touch : mWorldCurrentTouches)
 	{
-		Touch& touch = *i;
 		Point2F pos = node->TransformToLocal(touch.Pos);
 		Touch localTouch = touch;
 		localTouch.Pos = pos;
@@ -71,9 +69,9 @@ Point2F TouchEventArg::GetValidActiveMiddlePoint() const
 	default:
 		{
 			Point2F result=Point2F::Zero;
-			FOR_EACH_COLLECTION(i,mValidActiveTouches)
+			for( auto i:mValidActiveTouches)
 			{
-				result+=(*i).Pos;
+				result+=i.Pos;
 			}
 
 			result/=count;
@@ -98,9 +96,9 @@ Point2F TouchEventArg::GetActiveMiddlePoint() const
 	default:
 		{
 			Point2F result;
-			FOR_EACH_COLLECTION(i,mWorldActiveTouches)
+			for(auto i:mWorldActiveTouches)
 			{
-				result+=(*i).Pos;
+				result+=i.Pos;
 			}
 			result/=count;
 
@@ -115,9 +113,9 @@ Point2F TouchEventArg::GetActiveMiddlePoint() const
 
 const Touch* TouchEventArg::FindWorldActiveTouchById(intp id) const
 {
-	FOR_EACH_COLLECTION(i,mWorldActiveTouches)
+	for (auto& touch : mWorldActiveTouches)
 	{
-		const Touch& touch=*i;
+		
 		if (touch.Id==id)
 		{
 			return &touch;
@@ -129,9 +127,8 @@ const Touch* TouchEventArg::FindWorldActiveTouchById(intp id) const
 
 const Touch* TouchEventArg::FindLocalActiveTouchById(intp id) const
 {
-	FOR_EACH_COLLECTION(i,mLocalActiveTouches)
+	for (auto& touch : mLocalActiveTouches)
 	{
-		const Touch& touch=*i;
 		if (touch.Id==id)
 		{
 			return &touch;
@@ -143,9 +140,9 @@ const Touch* TouchEventArg::FindLocalActiveTouchById(intp id) const
 
 const Touch* TouchEventArg::FindValidActiveTouchById(intp id) const
 {
-	FOR_EACH_COLLECTION(i,mValidActiveTouches)
+	for (auto& touch : mValidActiveTouches)
 	{
-		const Touch& touch=*i;
+		
 		if (touch.Id==id)
 		{
 			return &touch;
@@ -157,9 +154,9 @@ const Touch* TouchEventArg::FindValidActiveTouchById(intp id) const
 
 Touch* TouchEventArg::FindValidActiveTouchById(intp id)
 {
-	FOR_EACH_COLLECTION(i,mValidActiveTouches)
+	for (auto& touch : mValidActiveTouches)
 	{
-		Touch& touch=*i;
+		
 		if (touch.Id==id)
 		{
 			return &touch;
@@ -171,9 +168,9 @@ Touch* TouchEventArg::FindValidActiveTouchById(intp id)
 void TouchEventArg::MergeValidActiveTouches(const TouchEventArg& e)
 {
 	const List<Touch>& touches=e.ValidActiveTouches();
-	FOR_EACH_COLLECTION(i,touches)
+	for (auto& touch : touches)
 	{
-		const Touch& touch=*i;
+		
 		Touch* originalTouch=FindValidActiveTouchById(touch.Id);
 		if (originalTouch==nullptr)
 		{
@@ -189,9 +186,9 @@ void TouchEventArg::MergeValidActiveTouches(const TouchEventArg& e)
 void TouchEventArg::MoveValidActiveTouches(const TouchEventArg& e)
 {
 	const List<Touch>& touches=e.ValidActiveTouches();
-	FOR_EACH_COLLECTION(i,touches)
+	for (auto& touch : touches)
 	{
-		const Touch& touch=*i;
+		
 		Touch* originalTouch=FindValidActiveTouchById(touch.Id);
 		if (originalTouch!=nullptr)
 		{
@@ -203,9 +200,8 @@ void TouchEventArg::MoveValidActiveTouches(const TouchEventArg& e)
 void TouchEventArg::RemoveValidActiveTouches(const TouchEventArg& e)
 {
 	const List<Touch>& touches=e.WorldActiveTouches();	//remove all even move out of view
-	FOR_EACH_COLLECTION(i,touches)
+	for (auto& touch : touches)
 	{
-		const Touch& touch=*i;
 		Touch* originalTouch=FindValidActiveTouchById(touch.Id);
 		if (originalTouch!=nullptr)
 		{
@@ -217,19 +213,16 @@ void TouchEventArg::RemoveValidActiveTouches(const TouchEventArg& e)
 
 void TouchEventArg::PrintDebugString()
 {
-	FOR_EACH_COLLECTION(i,mWorldActiveTouches)
+	for (auto& touch : mWorldActiveTouches)
 	{
-		const Touch& touch=*i;
 		Log::FormatInfo("WorldTouch:{} ({},{})",touch.Id,touch.Pos.X,touch.Pos.Y);
 	}
-	FOR_EACH_COLLECTION(i,mLocalActiveTouches)
+	for (auto& touch : mLocalActiveTouches)
 	{
-		const Touch& touch=*i;
 		Log::FormatInfo("LocalTouch:{} ({},{})",touch.Id,touch.Pos.X,touch.Pos.Y);
 	}
-	FOR_EACH_COLLECTION(i,mValidActiveTouches)
+	for (auto& touch : mValidActiveTouches)
 	{
-		const Touch& touch=*i;
 		Log::FormatInfo("ValidTouch:{} ({},{})",touch.Id,touch.Pos.X,touch.Pos.Y);
 	}
 }

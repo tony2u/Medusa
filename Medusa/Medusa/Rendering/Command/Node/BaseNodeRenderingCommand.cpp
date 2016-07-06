@@ -17,6 +17,5 @@ BaseNodeRenderingCommand::~BaseNodeRenderingCommand(void)
 }
 
 
-MEDUSA_IMPLEMENT_RTTI(BaseNodeRenderingCommand,IRenderingCommand);
 
 MEDUSA_END;

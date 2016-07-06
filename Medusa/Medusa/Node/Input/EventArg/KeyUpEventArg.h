@@ -9,7 +9,7 @@ MEDUSA_BEGIN;
 
 class KeyUpEventArg:public BaseKeyEventArg
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_RTTI(KeyUpEventArg,BaseKeyEventArg);
 public:
 	KeyUpEventArg(uint keyData,uint status);
 	virtual ~KeyUpEventArg(void){}

@@ -4,12 +4,12 @@
 #pragma once
 #include "Node/Input/Gesture/IGestureRecognizer.h"
 #include "Geometry/ScrollDirection.h"
-#include "Core/Profile/PerformanceCounter.h"
+#include "Core/Chrono/StopWatch.h"
 
 MEDUSA_BEGIN;
 
 
-class SwipeGestureRecognizer:public IGestureRecognizer
+class SwipeGestureRecognizer :public IGestureRecognizer
 {
 public:
 	SwipeGestureRecognizer(INode* node, ScrollDirection direction, float minMovement, float minVelocity);
@@ -17,7 +17,7 @@ public:
 
 	virtual void Reset();
 
-	virtual InputType GetInputType()const{return InputType::Swipe;}
+	virtual InputType GetInputType()const { return InputType::Swipe; }
 
 	virtual void TouchesBegan(TouchEventArg& e);
 	virtual void TouchesMoved(TouchEventArg& e);
@@ -47,11 +47,11 @@ public:
 	ScrollDirection Direction() const { return mDirection; }
 	void SetDirection(ScrollDirection val) { mDirection = val; }
 
-	bool IsAllowHorizontal()const{return mDirection.HasHorizontal();}
-	bool IsAllowVertical()const{return mDirection.HasVertical();}
+	bool IsAllowHorizontal()const { return mDirection.HasHorizontal(); }
+	bool IsAllowVertical()const { return mDirection.HasVertical(); }
 
 
-	virtual bool HasHandler()const{return !OnSwipeBegin.IsEmpty()||!OnSwipeMoved.IsEmpty()||!OnSwipeFailed.IsEmpty()||!OnSwipeSuccess.IsEmpty();}
+	virtual bool HasHandler()const { return !OnSwipeBegin.IsEmpty() || !OnSwipeMoved.IsEmpty() || !OnSwipeFailed.IsEmpty() || !OnSwipeSuccess.IsEmpty(); }
 
 	SwipeBeginEvent OnSwipeBegin;
 	SwipeMovedEvent OnSwipeMoved;
@@ -65,10 +65,11 @@ private:
 	Point2F mCurrentPos;
 	Point2F mBeginPos;
 	ScrollDirection mDirection;
-	
-	ProfileTimeType mPrevTimeStamp;
-	ProfileTimeType mBeginTimeStamp;
-	ProfileTimeType mEndTimeStamp;
+
+
+	StopWatch::TimePoint mPrevTimeStamp;
+	StopWatch::TimePoint mBeginTimeStamp;
+	StopWatch::TimePoint mEndTimeStamp;
 
 	float mMinMovement;
 	float mMinVelocity;

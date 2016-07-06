@@ -11,7 +11,7 @@ template<typename TMesh>
 class BaseSingleTextureModel:public BaseSingleModel<TMesh,IMaterial>
 {
 public:
-	BaseSingleTextureModel(const FileIdRef& fileId,IMaterial* material):BaseSingleModel<TMesh,IMaterial>(fileId),mColor(Color4F::White){}
+	BaseSingleTextureModel(const FileIdRef& fileId, const Share<IMaterial>& material):BaseSingleModel<TMesh,IMaterial>(fileId),mColor(Color4F::White){}
 	virtual ~BaseSingleTextureModel(void){}
 
 protected:

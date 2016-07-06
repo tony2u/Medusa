@@ -38,9 +38,8 @@ ISkeletonAttachmentModel* SkeletonAvatarModel::FindAttachment(SkeletonSlotModel*
 	List<ISkeletonAttachmentModel*>* attchements = mSlotAttachmentDict.GetOptional(slot, nullptr);
 	RETURN_NULL_IF_NULL(attchements);
 
-	FOR_EACH_COLLECTION(i, *attchements)
+	for(auto attachemnt: *attchements)
 	{
-		ISkeletonAttachmentModel* attachemnt = *i;
 		if (attachemnt->Name()==attchementName)
 		{
 			return attachemnt;
@@ -52,14 +51,13 @@ ISkeletonAttachmentModel* SkeletonAvatarModel::FindAttachment(SkeletonSlotModel*
 
 ISkeletonAttachmentModel* SkeletonAvatarModel::FindAttachment(const StringRef& attchementName) const
 {
-	FOR_EACH_COLLECTION(i, mSlotAttachmentDict)
+	for(auto i:mSlotAttachmentDict)
 	{
-		List<ISkeletonAttachmentModel*>* attchements = i->Value;
+		List<ISkeletonAttachmentModel*>* attchements = i.Value;
 		if (attchements!=nullptr)
 		{
-			FOR_EACH_COLLECTION(j, *attchements)
+			for(auto attachemnt: *attchements)
 			{
-				ISkeletonAttachmentModel* attachemnt = *j;
 				if (attachemnt->Name() == attchementName)
 				{
 					return attachemnt;

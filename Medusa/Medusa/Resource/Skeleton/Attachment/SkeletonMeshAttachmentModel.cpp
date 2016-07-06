@@ -11,7 +11,7 @@ MEDUSA_BEGIN;
 SkeletonMeshAttachmentModel::SkeletonMeshAttachmentModel(const StringRef& name, TextureAtlasRegion* region)
 	:BaseSkeletonTextureAttachmentModel(name,region)
 {
-	
+	mMesh.Retain();
 }
 
 
@@ -42,7 +42,7 @@ bool SkeletonMeshAttachmentModel::Initialize()
 
 RenderingObject SkeletonMeshAttachmentModel::GetRenderingObject() const
 {
-	return RenderingObject((IMesh*)&mMesh, mRegion->CreateMaterial());
+	return RenderingObject(Share<IMesh>((IMesh*)&mMesh), mRegion->CreateMaterial());
 }
 
 

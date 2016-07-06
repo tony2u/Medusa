@@ -4,6 +4,5 @@
 #include "MedusaPreCompiled.h"
 #include "Node/Input/EventArg/ScrollEventArg.h"
 MEDUSA_BEGIN;
-MEDUSA_IMPLEMENT_RTTI(ScrollEventArg,IEventArg);
 
 MEDUSA_END;

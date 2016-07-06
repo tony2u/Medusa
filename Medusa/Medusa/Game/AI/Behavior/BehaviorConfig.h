@@ -5,14 +5,14 @@
 #include "MedusaPreDeclares.h"
 #include "Core/Pattern/Singleton.h"
 #include "Core/Pattern/Object/IdObjectCache.h"
-#include "Core/IO/IFileLoadable.h"
+#include "Core/IO/IFileLoadSavable.h"
 #include "Game/AI/Behavior/IBehavior.h"
 
 
 MEDUSA_BEGIN;
 
 
-class BehaviorConfig :public Singleton < BehaviorConfig >, public IdObjectCache < HeapString, IBehavior*>, public IFileLoadable
+class BehaviorConfig :public Singleton < BehaviorConfig >, public IdObjectCache < HeapString, IBehavior*>, public IFileLoadSavable
 {
 	friend class Singleton < BehaviorConfig > ;
 	BehaviorConfig() {}

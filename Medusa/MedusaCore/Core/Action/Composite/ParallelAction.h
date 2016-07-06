@@ -43,9 +43,8 @@ public:
 		}
 
 		bool isAllDone = true;
-		FOR_EACH_COLLECTION(i, mInnerActions)
+		for(auto currentAction: mInnerActions)
 		{
-			IAction* currentAction = *i;
 			currentAction->Update(dt, blend);
 			if (!currentAction->IsDone())
 			{
@@ -65,9 +64,8 @@ public:
 	{
 		RETURN_FALSE_IF_FALSE(BaseInfiniteAction::Start());
 		bool isAllDone = true;
-		FOR_EACH_COLLECTION(i, mInnerActions)
+		for (auto currentAction : mInnerActions)
 		{
-			IAction* currentAction = *i;
 			currentAction->Start();
 			if (!currentAction->IsDone())
 			{
@@ -87,9 +85,8 @@ public:
 	{
 		RETURN_FALSE_IF_FALSE(BaseInfiniteAction::Pause());
 
-		FOR_EACH_COLLECTION(i, mInnerActions)
+		for (auto currentAction : mInnerActions)
 		{
-			IAction* currentAction = *i;
 			currentAction->Pause();
 		}
 		return true;
@@ -97,9 +94,8 @@ public:
 	virtual bool Resume()override
 	{
 		RETURN_FALSE_IF_FALSE(BaseInfiniteAction::Resume());
-		FOR_EACH_COLLECTION(i, mInnerActions)
+		for (auto currentAction : mInnerActions)
 		{
-			IAction* currentAction = *i;
 			currentAction->Resume();
 		}
 		return true;
@@ -107,9 +103,8 @@ public:
 	virtual bool Stop()override
 	{
 		RETURN_FALSE_IF_FALSE(BaseInfiniteAction::Stop());
-		FOR_EACH_COLLECTION(i, mInnerActions)
+		for (auto currentAction : mInnerActions)
 		{
-			IAction* currentAction = *i;
 			currentAction->Stop();
 		}
 		return true;

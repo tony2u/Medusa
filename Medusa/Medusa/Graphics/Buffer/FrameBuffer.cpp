@@ -65,14 +65,13 @@ void FrameBuffer::AttachRenderBuffer( GraphicsAttachment attachment,RenderBuffer
 	UpdateClearMask(attachment,true);
 }
 
-void FrameBuffer::AttachTexture( GraphicsAttachment attachment,GraphicsTextureTarget textureTarget,ITexture* texture,int level )
+void FrameBuffer::AttachTexture( GraphicsAttachment attachment,GraphicsTextureTarget textureTarget, const Share<ITexture>& texture,int level )
 {
 	if(mRenderBuffers.ContainsKey(attachment)||mTextures.ContainsKey(attachment))
 	{
 		MEDUSA_ASSERT_FAILED("Duplicate attachment");
 		return;
 	}
-	texture->Retain();
 	mTextures.Add(attachment,texture);
 
 	Bind(true);
@@ -131,23 +130,22 @@ RenderBuffer* FrameBuffer::GetRenderBuffer(GraphicsAttachment attachment)
 
 void FrameBuffer::Resize(const Size2U& val)
 {
-	FOR_EACH_COLLECTION(i,mRenderBuffers)
+	for (auto i : mRenderBuffers)
 	{
-		RenderBuffer* buffer=i->Value;
+		RenderBuffer* buffer=i.Value;
 		buffer->Resize(val);
 	}
 }
 
-ITexture* FrameBuffer::DetachTexture( GraphicsAttachment attachment )
+Share<ITexture> FrameBuffer::DetachTexture( GraphicsAttachment attachment )
 {
-	ITexture* texture=mTextures.GetOptional(attachment,nullptr);
+	auto texture=mTextures.GetOptional(attachment,nullptr);
 	if (texture==nullptr)
 	{
 		MEDUSA_ASSERT_FAILED("Cannot find attachment");
 		return nullptr;
 	}
     bool isShared=texture->IsShared();
-	texture->Release();
 	mTextures.RemoveKey(attachment);
 
 	Bind(true);

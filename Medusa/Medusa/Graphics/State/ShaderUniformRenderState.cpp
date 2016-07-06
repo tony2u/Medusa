@@ -18,7 +18,7 @@ ShaderUniformRenderState::ShaderUniformRenderState()
 
 ShaderUniformRenderState::~ShaderUniformRenderState()
 {
-
+	SAFE_DELETE_DICTIONARY_VALUE(mItems);
 }
 
 void ShaderUniformRenderState::Apply()const
@@ -32,9 +32,9 @@ void ShaderUniformRenderState::Apply()const
 	}
 }
 
-ShaderUniformRenderState* ShaderUniformRenderState::Clone() const
+Share<ShaderUniformRenderState> ShaderUniformRenderState::Clone() const
 {
-	ShaderUniformRenderState* state = new ShaderUniformRenderState();
+	Share<ShaderUniformRenderState> state = new ShaderUniformRenderState();
 	state->CopyFrom(*this);
 	return state;
 }
@@ -47,7 +47,8 @@ void ShaderUniformRenderState::CopyFrom(const IRenderState& other)
 	for (auto keyValue : val.mItems)
 	{
 		auto* uniform = keyValue.Value;
-		Add(uniform);
+		auto* uniformCopy= uniform->Clone();
+		Add(uniformCopy);
 	}
 
 }
@@ -102,5 +103,4 @@ intp ShaderUniformRenderState::HashCode() const
 	return val;
 }
 
-MEDUSA_IMPLEMENT_RTTI(ShaderUniformRenderState, IRenderState);
 MEDUSA_END;

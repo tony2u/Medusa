@@ -29,10 +29,9 @@ void ScissorRenderState::Apply()const
 	Render::Instance().SetScissorBox(mScissorBox);
 }
 
-ScissorRenderState* ScissorRenderState::Clone() const
+Share<ScissorRenderState> ScissorRenderState::Clone() const
 {
-	ScissorRenderState* state = new ScissorRenderState(mScissorBox, mEnabled);
-	return state;
+	return new ScissorRenderState(mScissorBox, mEnabled);
 }
 
 void ScissorRenderState::CopyFrom(const IRenderState& other)
@@ -50,10 +49,10 @@ bool ScissorRenderState::Equals(const IRenderState& state) const
 	return mEnabled == val.IsEnabled() && mScissorBox == val.ScissorBox();
 }
 
-ScissorRenderState* ScissorRenderState::Current()
+Share<ScissorRenderState> ScissorRenderState::Current()
 {
 	IRender& render = Render::Instance();
-	ScissorRenderState* state = new ScissorRenderState();
+	Share<ScissorRenderState> state = new ScissorRenderState();
 
 	state->Enable(render.GetBoolean(GraphicsBooleanName::ScissorTest));
 
@@ -98,7 +97,7 @@ intp ScissorRenderState::HashCode() const
 }
 
 
-void ScissorRenderState::UpdateWorldState(const IRenderState* selfRenderState, const IRenderState* parentRenderState, const Matrix4& selfWorldMatrix)
+void ScissorRenderState::UpdateWorldState(const Share<IRenderState>& selfRenderState, const Share<IRenderState>& parentRenderState, const Matrix4& selfWorldMatrix)
 {
 	if (selfRenderState != nullptr&&parentRenderState==nullptr)
 	{
@@ -106,25 +105,24 @@ void ScissorRenderState::UpdateWorldState(const IRenderState* selfRenderState, c
 		MEDUSA_ASSERT(selfRenderState->Type() == Type(), "Cannot copy render state with different type");
 
 		CopyFrom(*selfRenderState);
-		Tansform(selfWorldMatrix);
+		Tansform(selfWorldMatrix);	//to world space
 	}
 	else if (parentRenderState != nullptr&&selfRenderState == nullptr)
 	{
 		MEDUSA_ASSERT(parentRenderState->Type() == Type(), "Cannot copy render state with different type");
 
-		CopyFrom(*parentRenderState);
-		Tansform(selfWorldMatrix);
+		CopyFrom(*parentRenderState);	//already at world space
+		
 	}
 	else if (selfRenderState != nullptr&&parentRenderState != nullptr)
 	{
 		MEDUSA_ASSERT(selfRenderState->Type() == Type(), "Cannot copy render state with different type");
 		MEDUSA_ASSERT(parentRenderState->Type() == Type(), "Cannot copy render state with different type");
 
-
 		CopyFrom(*selfRenderState);
-		Tansform(selfWorldMatrix);
-
-		ScissorRenderState* parent = (ScissorRenderState*)parentRenderState;
+		Tansform(selfWorldMatrix);	//to world space
+			
+		Share<ScissorRenderState> parent = parentRenderState.CastPtr<ScissorRenderState>();
 
 		if (parent->IsEnabled())
 		{
@@ -133,5 +131,4 @@ void ScissorRenderState::UpdateWorldState(const IRenderState* selfRenderState, c
 	}
 }
 
-MEDUSA_IMPLEMENT_RTTI(ScissorRenderState, IRenderState);
 MEDUSA_END;

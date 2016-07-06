@@ -20,7 +20,7 @@ public:
 	virtual bool Initialize()override;
 	virtual bool Uninitialize()override;
 public:
-	TmxTiledMap* Create(const FileIdRef& fileId, ResourceShareType shareType = ResourceShareType::Share);
+	Share<TmxTiledMap> Create(const FileIdRef& fileId, ResourceShareType shareType = ResourceShareType::Share);
 private:
 
 };

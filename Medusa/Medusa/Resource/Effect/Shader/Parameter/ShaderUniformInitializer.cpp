@@ -73,12 +73,12 @@ bool ShaderUniformInitializer::Update(RenderingStep step, ShaderUniform& uniform
 
 bool ShaderUniformInitializer::UpdateWorldViewProjectMatrix(ShaderUniform& uniform)
 {
-	BaseProgramRenderPass* effect = RenderingContext::Instance().ProgramRenderPass();
+	auto effect = RenderingContext::Instance().ProgramRenderPass();
 	RETURN_FALSE_IF_NULL(effect);
 
 	IRenderBatch* batch = RenderingContext::Instance().Batch();
 	const Matrix4& modelMatrix = batch->GetModelMatrix();
-	Camera* camera = RenderingContext::Instance().GetCamera();
+	auto camera = RenderingContext::Instance().GetCamera();
 	if (camera != nullptr)
 	{
 		const Matrix4& projectionMatrix = camera->ViewProjectionMatrix();
@@ -97,11 +97,11 @@ bool ShaderUniformInitializer::UpdateWorldViewProjectMatrix(ShaderUniform& unifo
 
 bool ShaderUniformInitializer::UpdateViewProjectMatrix(ShaderUniform& uniform)
 {
-	BaseProgramRenderPass* effect = RenderingContext::Instance().ProgramRenderPass();
+	auto effect = RenderingContext::Instance().ProgramRenderPass();
 	RETURN_FALSE_IF_NULL(effect);
 
 	//IRenderBatch* batch=RenderingContext::Instance().GetBatch();
-	Camera* camera = RenderingContext::Instance().GetCamera();
+	auto camera = RenderingContext::Instance().GetCamera();
 	if (camera != nullptr)
 	{
 		const Matrix4& projectionMatrix = camera->ViewProjectionMatrix();
@@ -117,7 +117,7 @@ bool ShaderUniformInitializer::UpdateViewProjectMatrix(ShaderUniform& uniform)
 
 bool ShaderUniformInitializer::UpdateWorldMatrix(ShaderUniform& uniform)
 {
-	BaseProgramRenderPass* effect = RenderingContext::Instance().ProgramRenderPass();
+	auto effect = RenderingContext::Instance().ProgramRenderPass();
 	RETURN_FALSE_IF_NULL(effect);
 
 	IRenderBatch* batch = RenderingContext::Instance().Batch();
@@ -133,7 +133,7 @@ bool ShaderUniformInitializer::UpdateWorldViewMatrixIT(ShaderUniform& uniform)
 {
 	IRenderBatch* batch = RenderingContext::Instance().Batch();
 	Matrix4 modelMatrix = batch->GetModelMatrix();
-	Camera* camera = RenderingContext::Instance().GetCamera();
+	auto camera = RenderingContext::Instance().GetCamera();
 	const Matrix4& viewMatrix = camera->ViewMatrix();
 	Matrix4 modelViewIT = modelMatrix*viewMatrix;
 	modelMatrix.Inverse();
@@ -147,7 +147,7 @@ bool ShaderUniformInitializer::UpdateWorldViewMatrixIT(ShaderUniform& uniform)
 
 bool ShaderUniformInitializer::UpdateModelEyePosition(ShaderUniform& uniform)
 {
-	Camera* camera = RenderingContext::Instance().GetCamera();
+	auto camera = RenderingContext::Instance().GetCamera();
 
 	Point3F pos = camera->EyePosition();
 	IRenderBatch* batch = RenderingContext::Instance().Batch();
@@ -162,7 +162,7 @@ bool ShaderUniformInitializer::UpdateModelEyePosition(ShaderUniform& uniform)
 
 bool ShaderUniformInitializer::UpdateModelEyeDirection(ShaderUniform& uniform)
 {
-	Camera* camera = RenderingContext::Instance().GetCamera();
+	auto camera = RenderingContext::Instance().GetCamera();
 	Point3F direction = camera->EyeDirection();
 	IRenderBatch* batch = RenderingContext::Instance().Batch();
 	Matrix4 modelMatrix = batch->GetModelMatrix();
@@ -177,7 +177,7 @@ bool ShaderUniformInitializer::UpdateModelEyeDirection(ShaderUniform& uniform)
 
 bool ShaderUniformInitializer::UpdateModelLightDirection(ShaderUniform& uniform)
 {
-	ILight* light = LightFactory::Instance().GetCurrentLight();
+	auto light = LightFactory::Instance().GetCurrentLight();
 	if (light != nullptr)
 	{
 		IRenderBatch* batch = RenderingContext::Instance().Batch();
@@ -200,7 +200,7 @@ bool ShaderUniformInitializer::UpdateModelLightDirection(ShaderUniform& uniform)
 
 bool ShaderUniformInitializer::UpdateModelLightPosition(ShaderUniform& uniform)
 {
-	ILight* light = LightFactory::Instance().GetCurrentLight();
+	auto light = LightFactory::Instance().GetCurrentLight();
 	if (light != nullptr)
 	{
 		IRenderBatch* batch = RenderingContext::Instance().Batch();
@@ -222,7 +222,7 @@ bool ShaderUniformInitializer::UpdateModelLightPosition(ShaderUniform& uniform)
 
 bool ShaderUniformInitializer::UpdateWorldEyePosition(ShaderUniform& uniform)
 {
-	Camera* camera = RenderingContext::Instance().GetCamera();
+	auto camera = RenderingContext::Instance().GetCamera();
 	Point3F pos = camera->EyePosition();
 	uniform.Invalidate();
 	uniform.Set(pos);
@@ -232,7 +232,7 @@ bool ShaderUniformInitializer::UpdateWorldEyePosition(ShaderUniform& uniform)
 
 bool ShaderUniformInitializer::UpdateWorldEyeDirection(ShaderUniform& uniform)
 {
-	Camera* camera = RenderingContext::Instance().GetCamera();
+	auto camera = RenderingContext::Instance().GetCamera();
 	Point3F direction = camera->EyeDirection();
 	uniform.Invalidate();
 	uniform.Set(direction);
@@ -242,7 +242,7 @@ bool ShaderUniformInitializer::UpdateWorldEyeDirection(ShaderUniform& uniform)
 
 bool ShaderUniformInitializer::UpdateWorldLightDirection(ShaderUniform& uniform)
 {
-	ILight* light = LightFactory::Instance().GetCurrentLight();
+	auto light = LightFactory::Instance().GetCurrentLight();
 	if (light != nullptr)
 	{
 		//IRenderBatch* batch=RenderingContext::Instance().GetBatch();
@@ -262,7 +262,7 @@ bool ShaderUniformInitializer::UpdateWorldLightDirection(ShaderUniform& uniform)
 
 bool ShaderUniformInitializer::UpdateWorldLightPosition(ShaderUniform& uniform)
 {
-	ILight* light = LightFactory::Instance().GetCurrentLight();
+	auto light = LightFactory::Instance().GetCurrentLight();
 	if (light != nullptr)
 	{
 		//IRenderBatch* batch=RenderingContext::Instance().GetBatch();
@@ -280,7 +280,7 @@ bool ShaderUniformInitializer::UpdateWorldLightPosition(ShaderUniform& uniform)
 
 bool ShaderUniformInitializer::UpdateLightAmbient(ShaderUniform& uniform)
 {
-	ILight* light = LightFactory::Instance().GetCurrentLight();
+	auto light = LightFactory::Instance().GetCurrentLight();
 	if (light != nullptr)
 	{
 		uniform.Invalidate();
@@ -297,7 +297,7 @@ bool ShaderUniformInitializer::UpdateLightAmbient(ShaderUniform& uniform)
 
 bool ShaderUniformInitializer::UpdateLightDiffuse(ShaderUniform& uniform)
 {
-	ILight* light = LightFactory::Instance().GetCurrentLight();
+	auto light = LightFactory::Instance().GetCurrentLight();
 	if (light != nullptr)
 	{
 		uniform.Invalidate();
@@ -313,7 +313,7 @@ bool ShaderUniformInitializer::UpdateLightDiffuse(ShaderUniform& uniform)
 
 bool ShaderUniformInitializer::UpdateLightSpecular(ShaderUniform& uniform)
 {
-	ILight* light = LightFactory::Instance().GetCurrentLight();
+	auto light = LightFactory::Instance().GetCurrentLight();
 	if (light != nullptr)
 	{
 		uniform.Invalidate();
@@ -329,11 +329,11 @@ bool ShaderUniformInitializer::UpdateLightSpecular(ShaderUniform& uniform)
 
 bool ShaderUniformInitializer::UpdateLightViewProjectMatrix(ShaderUniform& uniform)
 {
-	ILight* light = LightFactory::Instance().GetCurrentLight();
+	auto light = LightFactory::Instance().GetCurrentLight();
 
 	if (light != nullptr&&light->LightType() == GraphicsLightType::Spot)
 	{
-		SpotLight* spotLight = (SpotLight*)light;
+		auto spotLight = light.CastPtr<SpotLight>();
 		uniform.Invalidate();
 		const Matrix4& matrix = spotLight->ViewProjectMatrix();
 		uniform.SetMatrix(matrix);
@@ -349,13 +349,13 @@ bool ShaderUniformInitializer::UpdateLightViewProjectMatrix(ShaderUniform& unifo
 
 bool ShaderUniformInitializer::UpdateLightWorldViewProjectMatrix(ShaderUniform& uniform)
 {
-	ILight* light = LightFactory::Instance().GetCurrentLight();
+	auto light = LightFactory::Instance().GetCurrentLight();
 	if (light != nullptr&&light->LightType() == GraphicsLightType::Spot)
 	{
 		IRenderBatch* batch = RenderingContext::Instance().Batch();
 		Matrix4 modelMatrix = batch->GetModelMatrix();
 
-		SpotLight* spotLight = (SpotLight*)light;
+		auto spotLight = light.CastPtr<SpotLight>();
 		uniform.Invalidate();
 		const Matrix4& matrix = spotLight->ViewProjectMatrix();
 		modelMatrix *= matrix;

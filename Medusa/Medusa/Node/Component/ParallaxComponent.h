@@ -11,7 +11,7 @@ MEDUSA_BEGIN;
 
 class ParallaxComponent :public IComponent
 {
-	MEDUSA_DECLARE_COMPONENT;
+	MEDUSA_DECLARE_COMPONENT(ParallaxComponent,IComponent);
 	MEDUSA_TUPLE_2(ParallaxInfo, Point3F, Ratio, Point3F, Offset);
 public:
 	ParallaxComponent(const StringRef& name = StringRef::Empty, int priority = 0, void* userData = nullptr);

@@ -6,21 +6,23 @@
 #include "Core/Collection/List.h"
 #include "Core/Threading/ThreadingDefines.h"
 #include "Core/Pattern/IInitializable.h"
+#include "Core/Command/ICommand.h"
 
 MEDUSA_BEGIN;
 
-
-
-class Task:public IInitializable
+class Task :public IInitializable
 {
 public:
-	Task(ICommand* command = nullptr, ExecuteOption option = ExecuteOption::Async);
+	Task(const ShareCommand& command = nullptr, ExecuteOption option = ExecuteOption::Async);
 	virtual ~Task(void);
 
 	virtual bool Uninitialize();
 
-	ICommand* Command() const { return mCommand; }
-	void SetCommand(ICommand* val);
+	ThreadPool* Pool() const { return mPool; }
+	void SetPool(ThreadPool* val) { mPool = val; }
+
+	const ShareCommand& Command() const { return mCommand; }
+	void SetCommand(const ShareCommand& val);
 
 	ExecuteOption Option() const { return mOption; }
 	void SetOption(ExecuteOption val) { mOption = val; }
@@ -29,28 +31,30 @@ public:
 	void Wait();
 	bool IsSync()const { return mPoolWork == nullptr; }
 public:
-	Task* ContinueWith(ICommand* command);
+	Task* ContinueWith(const ShareCommand& command);
 
 	void When(Task* task);
 	void When(const List<Task*>& tasks);
 	void Then(Task* task);
 public:
 	static Task* Delay(long milliseconds, ExecuteOption option = ExecuteOption::Async);
-	static Task* Run(ICommand* command, ExecuteOption option = ExecuteOption::Async);
+	static Task* Run(const ShareCommand& command, ExecuteOption option = ExecuteOption::Async);
 	static Task* YieldSelf(ExecuteOption option = ExecuteOption::Async);
 
-	static Task* WhenAll(const List<Task*>& tasks, ICommand* command, ExecuteOption option = ExecuteOption::Async);
+	static Task* WhenAll(const List<Task*>& tasks, const ShareCommand& command, ExecuteOption option = ExecuteOption::Async);
 	static void WaitAll(const List<Task*>& tasks);
 protected:
 	void OnTaskExecute();
 	virtual void OnSelfExecute();
 
 protected:
-	ICommand* mCommand;
-	
-	ThreadPoolWork* mPoolWork;
+	ShareCommand mCommand;
+
+	ThreadPool* mPool = nullptr;
+
+	Share<ThreadPoolWork> mPoolWork ;
 	ExecuteOption mOption;
-	
+
 	List<Task*> mWhenTasks;	//weak ref
 	List<Task*> mThenTasks;	//strong ref
 };

@@ -91,3 +91,9 @@ class Color4F[Suppress,Dir=Geometry/Color4.h]
   float B;
   float A;
 };
+
+
+class PointPath2F[Suppress,Dir=Geometry/PointPath2.h]
+{
+  List<Point2F> Points;
+};

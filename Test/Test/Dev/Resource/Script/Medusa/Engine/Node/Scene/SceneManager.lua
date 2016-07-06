@@ -3,9 +3,8 @@ local extend=require("ISceneExtend");
 
 function Push(className, flags, ...)
 	className = className or "";
-	flags = flags or 0;
+	flags = flags or ml.NodePushFlags.BindScriptRecursively;
 	local native = nil;
-	local scriptObject = nil;
 
 	if type(className) == "table" then
 		return _M.PushEx("", "", className, flags, ...);
@@ -24,7 +23,7 @@ function PushEx(className, editorFile, scriptFile, flags, ...)
 	className = className or "";
 	editorFile = editorFile or "";
 	scriptFile = scriptFile or "";
-	flags = flags or 0;
+	flags = flags or ml.NodePushFlags.BindScriptRecursively;
 
 	local scriptObject = nil;
 	if type(scriptFile) == "table" then
@@ -40,14 +39,19 @@ function PushEx(className, editorFile, scriptFile, flags, ...)
 		end
 	end
 
-	className=scriptObject.className or className;
-	editorFile=scriptObject.editorFile or editorFile;
-	local native = ml.SceneFactory.Create(className, editorFile);
+	local native=nil;
+	if scriptObject then
+		className=scriptObject.__className or className;
+		editorFile=scriptObject.__editorFile or editorFile;
+		native = ml.SceneFactory.Create(className, editorFile,ml.NodeCreateFlags.BindScriptChildren);
+		native:SetScriptObject(scriptObject);
+	else
+		native = ml.SceneFactory.Create(className, editorFile,ml.NodeCreateFlags.BindScriptRecursively);
+	end
+
 	extend.Apply(native);
-	
-	native:SetScriptObject(scriptObject);
-
 	ml.SceneManager.PushObject(native, flags);
-
 	return native;
 end
+
+return _M;

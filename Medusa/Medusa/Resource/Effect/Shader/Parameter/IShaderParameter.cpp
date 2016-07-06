@@ -12,7 +12,7 @@
 
 MEDUSA_BEGIN;
 
-IShaderParameter::IShaderParameter( BaseProgramRenderPass* renderPass,int location,StringRef name)
+IShaderParameter::IShaderParameter(BaseProgramRenderPass* renderPass,int location,StringRef name)
 	:mRenderPass(renderPass),mLocation(location),mName(name),mIsAssigned(false)
 {
 

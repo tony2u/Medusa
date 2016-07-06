@@ -7,7 +7,7 @@
 
 class GraphicsFeatureLayer :public BaseFeatureLayer
 {
-	MEDUSA_DECLARE_LAYER(GraphicsFeatureLayer);
+	MEDUSA_NODE(GraphicsFeatureLayer,BaseFeatureLayer);
 public:
 	GraphicsFeatureLayer(StringRef name=StringRef::Empty,const IEventArg& e=IEventArg::Empty);
 	virtual ~GraphicsFeatureLayer(void);

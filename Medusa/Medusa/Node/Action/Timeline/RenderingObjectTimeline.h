@@ -9,8 +9,8 @@ MEDUSA_BEGIN;
 class RenderingObjectTimeline:public ITimeline
 {
 public:
-	RenderingObjectTimeline(RenderingObjectTimelineModel* model, intp repeatCount, float beforeDelay = 0.f, float repeatDuration = 0.f, float afterDelay = 0.f, const StringRef& name = StringRef::Empty);
-	RenderingObjectTimeline(RenderingObjectTimelineModel* model, bool isRepeatForever, float beforeDelay = 0.f, float repeatDuration = 0.f, float afterDelay = 0.f, const StringRef& name = StringRef::Empty);
+	RenderingObjectTimeline(const Share<RenderingObjectTimelineModel>& model, intp repeatCount, float beforeDelay = 0.f, float repeatDuration = 0.f, float afterDelay = 0.f, const StringRef& name = StringRef::Empty);
+	RenderingObjectTimeline(const Share<RenderingObjectTimelineModel>& model, bool isRepeatForever, float beforeDelay = 0.f, float repeatDuration = 0.f, float afterDelay = 0.f, const StringRef& name = StringRef::Empty);
 
 
 	virtual ~RenderingObjectTimeline();

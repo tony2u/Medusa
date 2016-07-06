@@ -25,8 +25,8 @@ protected:
 	virtual void AddPreCalcuatedItem(bool isFound, uint prevFrameIndex, uint nextFrameIndex, float percent) override;
 
 protected:
-	List<List<uint>, NoCompare<List<uint>> > mDrawOrderList;	//index to find node in other place
-	List<List<uint>, NoCompare<List<uint>> > mPreCalculatedDrawOrderList;
+	List<List<uint>, NoCompare> mDrawOrderList;	//index to find node in other place
+	List<List<uint>, NoCompare> mPreCalculatedDrawOrderList;
 };
 
 MEDUSA_END;

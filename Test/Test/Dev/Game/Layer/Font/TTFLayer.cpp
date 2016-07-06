@@ -17,7 +17,9 @@ bool TTFLayer::Initialize()
 {
 	RETURN_FALSE_IF_FALSE(BaseCaseLayer::Initialize());
 
-	auto* label = NodeFactory::Instance().CreateSingleLineLabel(FontId("arial.ttf", 88), "The quick brown fox");
+	WHeapString str = WHeapString(L"¿ªÊ¼");
+	
+	auto* label = NodeFactory::Instance().CreateSingleLineLabel(FontId(System::Instance().CurrentFontName(), 88), str);
 	//label->SetColor(Color4F(17.f / 255.f, 1.f, 20.f / 255, 1.f));
 	AddChild(label);
 	label->SetAnchorPoint(AnchorPoint::MiddleBottom);
@@ -27,5 +29,5 @@ bool TTFLayer::Initialize()
 
 
 
-MEDUSA_IMPLEMENT_LAYER(TTFLayer, BaseCaseLayer, StringRef::Empty, StringRef::Empty);
+MEDUSA_IMPLEMENT_NODE(TTFLayer);
 

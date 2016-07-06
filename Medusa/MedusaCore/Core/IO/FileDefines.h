@@ -50,9 +50,9 @@ enum class FileType :char
 	csb = 44,
 
 	lua = 45,
+	ttc = 46,
 
-
-	Count = 46,
+	Count = 47,
 };
 
 
@@ -74,6 +74,8 @@ namespace FileExtensions
 	const extern StringRef pod;
 	const extern StringRef pfx;
 	const extern StringRef ttf;
+	const extern StringRef ttc;
+
 	const extern StringRef fnt;
 	const extern StringRef json;
 	const extern StringRef xml;
@@ -134,5 +136,18 @@ enum class FileBufferMode
 	None = _IONBF
 };
 
+enum class FileShareMode
+{
+	ReadWrite = _SH_DENYNO,	//Permits read and write access.
+	Write = _SH_DENYRD,	//Denies read access to the file.
+	None = _SH_DENYRW,	//Denies read and write access to the file.
+	Read = _SH_DENYWR	//Denies write access to the file.
+};
+
+#define _SH_DENYRW      0x10    // deny read/write mode
+#define _SH_DENYWR      0x20    // deny write mode
+#define _SH_DENYRD      0x30    // deny read mode
+#define _SH_DENYNO      0x40    // deny none mode
+#define _SH_SECURE      0x80    // secure mode
 
 MEDUSA_END;

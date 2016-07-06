@@ -2,6 +2,8 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 #include "MedusaCorePreCompiled.h"
+#ifdef MEDUSA_HTTP
+
 #include "Core/Network/HTTP/HTTPClient.h"
 #include "Core/Network/HTTP/HTTPFileDownloader.h"
 #include "Core/Network/HTTP/HTTPMemoryDownloader.h"
@@ -97,3 +99,4 @@ bool HTTPClient::IsResponseOK()
 }
 
 MEDUSA_END;
+#endif

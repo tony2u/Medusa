@@ -7,7 +7,7 @@
 
 class SingleTextureFrameAnimationLayer :public BaseCaseLayer
 {
-	MEDUSA_DECLARE_LAYER(SingleTextureFrameAnimationLayer);
+	MEDUSA_NODE(SingleTextureFrameAnimationLayer,BaseCaseLayer);
 public:
 	SingleTextureFrameAnimationLayer(StringRef name=StringRef::Empty,const IEventArg& e=IEventArg::Empty);
 	virtual ~SingleTextureFrameAnimationLayer(void);

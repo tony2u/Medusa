@@ -32,7 +32,7 @@ bool ListBoxLayer::Initialize()
 	listBox->SetStretch(Medusa::Stretch::Fill);
 	//listBox->SetVerticalScrollBarVisibility(ScrollBarVisibility::Disabled);
 	//listBox->SetHorizontalScrollBarVisibility(ScrollBarVisibility::Disabled);
-	StringListDataSource* dataSource=(StringListDataSource*)listBox->DataSource();
+	auto dataSource=listBox->DataSource().CastPtr<StringListDataSource>();
 	LabelItemTemplate* labelItemTemplate=(LabelItemTemplate*)dataSource->ItemTemplate();
 	labelItemTemplate->SetAlignment(Alignment::MiddleCenter);
 	AddChild(listBox);
@@ -63,5 +63,5 @@ void ListBoxLayer::OnItemClicked(ListBox& sender,const ListBoxItem& item)
 
 
 
-MEDUSA_IMPLEMENT_LAYER(ListBoxLayer, BaseCaseLayer, StringRef::Empty, StringRef::Empty);
+MEDUSA_IMPLEMENT_NODE(ListBoxLayer);
 

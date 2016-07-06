@@ -28,8 +28,8 @@ enum class InputType
 
 	IME = 8,
 	Keyboard = 9,
-
-	Count = 10
+	Stroke = 10,
+	Count = 11
 };
 
 enum class InputState
@@ -87,6 +87,9 @@ enum class InputEventType
 	SwipeMoved,
 	SwipeFailed,
 	SwipeSuccess,
+
+	Stroke,
+	StrokeFailed,
 
 	Count,
 };

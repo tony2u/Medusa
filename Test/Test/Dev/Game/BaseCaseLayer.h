@@ -7,7 +7,7 @@
 
 class BaseCaseLayer :public ILayer
 {
-	MEDUSA_DECLARE_LAYER(BaseCaseLayer);
+	MEDUSA_NODE(BaseCaseLayer,ILayer);
 public:
 	BaseCaseLayer(StringRef name = StringRef::Empty, const IEventArg& e = IEventArg::Empty);
 	virtual ~BaseCaseLayer(void);

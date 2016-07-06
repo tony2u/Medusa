@@ -10,18 +10,18 @@
 
 MEDUSA_BEGIN;
 
-BaseFontModel::BaseFontModel( IFont* font,Alignment alignment/*=Alignment::LeftBottom*/,Size2U restrictSize/*=Size2U::Zero*/)
+BaseFontModel::BaseFontModel(const Share<IFont>& font,Alignment alignment/*=Alignment::LeftBottom*/,Size2U restrictSize/*=Size2U::Zero*/)
 	:BaseMultipleModel(font->Name()),mFont(font),mAlignment(alignment),mColor(Color4F::White),mRestrictSize(restrictSize)
 {
-	SAFE_RETAIN(mFont);
+	
 }
 
 
 BaseFontModel::~BaseFontModel(void)
 {
-	SAFE_RELEASE(mFont);
+	mFont = nullptr;
 	RemoveAllMeshes();
-	SAFE_DELETE_DICTIONARY_VALUE(mCachesMeshes);
+	mCachesMeshes.Clear();
 }
 
 bool BaseFontModel::Initialize(ModelLoadingOptions loadingOptions/*=ModelLoadingOptions::None*/)
@@ -36,9 +36,9 @@ bool BaseFontModel::Initialize(ModelLoadingOptions loadingOptions/*=ModelLoading
 
 void BaseFontModel::ResetCachedMeshes()
 {
-	FOR_EACH_COLLECTION(i,mCachesMeshes)
+	for (auto i : mCachesMeshes)
 	{
-		IMesh* mesh=i->Value;
+		auto mesh=i.Value;
 		mesh->Clear();
 	}
 }

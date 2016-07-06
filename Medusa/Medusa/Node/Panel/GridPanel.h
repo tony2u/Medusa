@@ -9,10 +9,10 @@ MEDUSA_BEGIN;
 
 class GridPanel :public IPanel
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_NODE(GridPanel,IPanel);
 
 public:
-	GridPanel(StringRef name=StringRef::Empty);
+	using IPanel::IPanel;
 	virtual ~GridPanel(void);
 	virtual PanelType GetPanelType()const override{return PanelType::Grid;}
 protected:

@@ -80,5 +80,5 @@ void BlendTestLayer::OnDestChanged(INode* sender, TapGestureEventArg& e)
 	mDestFuncButton->Label()->SetString(mDestFunc.ToString());
 }
 
-MEDUSA_IMPLEMENT_LAYER(BlendTestLayer, BaseCaseLayer, StringRef::Empty, StringRef::Empty);
+MEDUSA_IMPLEMENT_NODE(BlendTestLayer);
 

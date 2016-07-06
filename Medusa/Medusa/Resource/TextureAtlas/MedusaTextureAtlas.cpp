@@ -11,12 +11,12 @@ MEDUSA_BEGIN;
 
 
 
-TextureAtlasPage* MedusaTextureAtlas::OnCreatePage(const FileIdRef& fileId, const IStream& stream)
+TextureAtlasPage* MedusaTextureAtlas::OnCreatePage(FileEntry& fileEntry, const FileIdRef& fileId, const IStream& stream)
 {
 	HeapString outLine;
 	List<HeapString> outValues;
 
-	std::unique_ptr<TextureAtlasPage> page(new TextureAtlasPage(0));
+	std::unique_ptr<TextureAtlasPage> page(new TextureAtlasPage(0,&fileEntry));
 	page->SetTexcoordUpSide(false);
 
 	outLine.Clear();
@@ -67,8 +67,6 @@ TextureAtlasRegion* MedusaTextureAtlas::CreateAtlasRegion(const IStream& stream)
 {
 	HeapString outLine;
 	List<HeapString> outValues;
-	std::unique_ptr<TextureAtlasRegion> region(new TextureAtlasRegion());
-
 
 	//read source texture rect
 	Rect2U sourceRect;
@@ -76,6 +74,8 @@ TextureAtlasRegion* MedusaTextureAtlas::CreateAtlasRegion(const IStream& stream)
 
 	outLine.Clear();
 	RETURN_NULL_IF_FALSE(ReadLineToValues(stream, outLine, outValues));
+
+	std::unique_ptr<TextureAtlasRegion> region(new TextureAtlasRegion());
 	region->SetName(outValues[0]);
 	region->SetRotate(StringParser::StringTo<bool>(outValues[1]));
 

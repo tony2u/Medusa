@@ -12,7 +12,7 @@
 #include "Geometry/Point3.h"
 #include "Geometry/Point4.h"
 
-#include "Core/Profile/ProfileSample.h"
+#include "Core/Chrono/ProfileSample.h"
 #include "Graphics/Render/RenderExtensionNames.h"
 #include "Core/Log/Log.h"
 #include "Graphics/State/SamplerRenderState.h"
@@ -1028,10 +1028,9 @@ void OpenGLES2Render::GenTextures(uint count, uint* outBuffers)
 		FOR_EACH_SIZE(i, count)
 		{
 			uint texture = outBuffers[i];
-			SamplerRenderState* state = new SamplerRenderState(mDefaultTextureMinFilter, mDefaultTextureMagFilter, mDefaultTextureWrapS, mDefaultTextureWrapT);
+			Share<SamplerRenderState> state = new SamplerRenderState(mDefaultTextureMinFilter, mDefaultTextureMagFilter, mDefaultTextureWrapS, mDefaultTextureWrapT);
 			state->SetTexture(texture);
 			mSamplerRenderStateDict.Add(texture, state);
-			SAFE_RETAIN(state);
 		}
 #endif
 	}
@@ -1055,8 +1054,8 @@ void OpenGLES2Render::DeleteTextures(uint count, uint* textures)
 		FOR_EACH_SIZE(i, count)
 		{
 			uint texture = textures[i];
-			SamplerRenderState* state = mSamplerRenderStateDict.RemoveKeyOptional(texture, nullptr);
-			SAFE_RELEASE(state);
+			mSamplerRenderStateDict.RemoveKey(texture);
+			
 		}
 #endif
 	}
@@ -1164,7 +1163,7 @@ void OpenGLES2Render::SetTextureMinFilter(GraphicsTextureType textureType, Graph
 		return;
 	}
 
-	SamplerRenderState* state = mSamplerRenderStateDict.Get(texture);
+	auto state = mSamplerRenderStateDict.Get(texture);
 	RENDER_RETURN_IF_EQUAL(state->MinFilter(), minFilter);
 #endif
 	glTexParameteri((uint)textureType, (int)GraphicsTextureParameter::MinFilter, (uint)minFilter);
@@ -1194,7 +1193,7 @@ void OpenGLES2Render::SetTextureMagFilter(GraphicsTextureType textureType, Graph
 		return;
 	}
 
-	SamplerRenderState* state = mSamplerRenderStateDict.Get(texture);
+	auto state = mSamplerRenderStateDict.Get(texture);
 	RENDER_RETURN_IF_EQUAL(state->MagFilter(), magFilter);
 #endif
 	glTexParameteri((uint)textureType, (uint)GraphicsTextureParameter::MagFilter, (uint)magFilter);
@@ -1223,7 +1222,7 @@ void OpenGLES2Render::SetTextureWrapS(GraphicsTextureType textureType, GraphicsT
 		return;
 	}
 
-	SamplerRenderState* state = mSamplerRenderStateDict.Get(texture);
+	auto state = mSamplerRenderStateDict.Get(texture);
 	RENDER_RETURN_IF_EQUAL(state->WrapS(), wrapS);
 #endif
 	glTexParameteri((uint)textureType, (uint)GraphicsTextureParameter::WrapS, (uint)wrapS);
@@ -1253,7 +1252,7 @@ void OpenGLES2Render::SetTextureWrapT(GraphicsTextureType textureType, GraphicsT
 		return;
 	}
 
-	SamplerRenderState* state = mSamplerRenderStateDict.Get(texture);
+	auto state = mSamplerRenderStateDict.Get(texture);
 	RENDER_RETURN_IF_EQUAL(state->WrapT(), wrapT);
 #endif
 	glTexParameteri((uint)textureType, (uint)GraphicsTextureParameter::WrapT, (uint)wrapT);
@@ -1283,7 +1282,7 @@ int OpenGLES2Render::GetTextureParamter(GraphicsTextureType textureType, Graphic
 		return 0;
 	}
 
-	SamplerRenderState* state = mSamplerRenderStateDict.Get(texture);
+	auto state = mSamplerRenderStateDict.Get(texture);
 	switch (parameter)
 	{
 	case GraphicsTextureParameter::MinFilter:return (int)state->MinFilter();

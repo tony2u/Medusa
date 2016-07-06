@@ -23,6 +23,8 @@ public:
 #ifdef MEDUSA_ANDROID
 	void SetApkPath(StringRef apkPath, StringRef apkWritePath) { mApplicationPath = apkPath; mWritablePath = apkWritePath; }
 #endif
+	StringRef WorkingPath()const { return mWorkingPath; }
+	void SetWorkingPath(StringRef val) { mWorkingPath = val; }
 
 
 	StringRef ApplicationPath()const { return mApplicationPath; }
@@ -59,9 +61,17 @@ public:
 	HeapString GetWritablePath(StringRef fileName) const { return Path::CombineNoChecks(WritablePath(), fileName); }
 	HeapString GetTempPath(StringRef fileName) const { return Path::CombineNoChecks(TempPath(), fileName); }
 
+	static WHeapString DefaultFontName();
+	static bool ContainsFont(WStringRef fontName);
+	static MemoryData GetFontData(WStringRef fontName = WStringRef::Empty);
+
+	StringRef CurrentFontName() const { return mCurrentFontName; }
+	void SetCurrentFontName(StringRef val) { mCurrentFontName = val; }
 private:
 	void UpdatePaths();
 private:
+	HeapString mWorkingPath;
+
 	HeapString mApplicationPath;
 	HeapString mReadonlyPath;
 	HeapString mWritablePath;
@@ -71,6 +81,7 @@ private:
 	HeapString mWritableSubPath;
 	HeapString mTempSubPath;
 
+	HeapString mCurrentFontName;
 };
 
 MEDUSA_END;

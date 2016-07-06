@@ -26,11 +26,11 @@ public:
 		this->Insert(0, inBuffer, length);
 	}
 
-	explicit THeapString(T inChar) :BaseString<T>(Memory::Alloc<T>(2), 2)
+	/*explicit THeapString(T inChar) :BaseString<T>(Memory::Alloc<T>(2), 2)
 	{
 		this->Push(inChar);
 	}
-
+*/
 	THeapString(const TStringRef<T>& str) :THeapString<T>(str.c_str(), str.Length())
 	{
 
@@ -228,6 +228,13 @@ public:
 	THeapString& operator+=(const T* str)
 	{
 		Append(str);
+		return *this;
+	}
+
+	template<size_t size>
+	THeapString& operator+=(const T(&str)[size])
+	{
+		Append(str,size-1);
 		return *this;
 	}
 
@@ -532,8 +539,9 @@ public:
 		else
 		{
 			RETURN_IF_EQUAL(this->mBufferSize, this->mLength + 1);	//+1 to store '\0'
-			this->mBufferSize = this->mLength + 1;
-			Memory::Realloc(this->mBuffer, this->mBufferSize);
+			auto newSize = this->mLength + 1;
+			Memory::Realloc(this->mBuffer, this->mBufferSize, newSize);
+			this->mBufferSize = newSize;
 		}
 	}
 
@@ -549,7 +557,7 @@ protected:
 			return true;
 		}
 
-		Memory::Realloc(this->mBuffer, size);
+		Memory::Realloc(this->mBuffer, this->mBufferSize, size);
 
 		if (this->mBuffer != nullptr)
 		{

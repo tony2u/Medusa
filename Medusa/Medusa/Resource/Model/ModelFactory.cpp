@@ -38,16 +38,16 @@ bool ModelFactory::Uninitialize()
 }
 
 
-QuadModel* ModelFactory::CreateQuad( const FileIdRef& fileId ,ResourceShareType shareType /*= ResourceShareType::Share*/)
+Share<QuadModel> ModelFactory::CreateQuad( const FileIdRef& fileId ,ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
-	QuadModel* model = nullptr;
+	Share<QuadModel> model = nullptr;
 	if (shareType != ResourceShareType::None)
 	{
-		model = (QuadModel*)Find(fileId);
+		model = Find(fileId).CastPtr<QuadModel>();
 		RETURN_SELF_IF_NOT_NULL(model);
 	}
 
-	IMaterial* material= MaterialFactory::Instance().CreateSingleTexture(fileId);
+	auto material= MaterialFactory::Instance().CreateSingleTexture(fileId);
 
 	model=new QuadModel(fileId,material,Rect2I(Point2I::Zero,material->FirstTexture()->Size()));
 	model->Initialize();
@@ -56,30 +56,30 @@ QuadModel* ModelFactory::CreateQuad( const FileIdRef& fileId ,ResourceShareType 
 	return model;
 }
 
-SingleLineFontModel* ModelFactory::CreateSingleLineFontModel(const FontId& fontId,StringRef text,Alignment alignment/*=Alignment::LeftBottom*/,Size2U restrictSize/*=Size2U::Zero*/ )
+Share<SingleLineFontModel> ModelFactory::CreateSingleLineFontModel(const FontId& fontId,StringRef text,Alignment alignment/*=Alignment::LeftBottom*/,Size2U restrictSize/*=Size2U::Zero*/ )
 {
-	IFont* font=FontFactory::Instance().Create(fontId);
-	SingleLineFontModel* model=new SingleLineFontModel(font,alignment,restrictSize);
+	auto font=FontFactory::Instance().Create(fontId);
+	Share<SingleLineFontModel> model=new SingleLineFontModel(font,alignment,restrictSize);
 	model->Initialize();
 	model->SetText(text);
 	return model;
 
 }
 
-MultipleLineFontModel* ModelFactory::CreateMultipleLineFontModel(const FontId& fontId,StringRef text,Alignment alignment/*=Alignment::LeftBottom*/,Size2U restrictSize/*=Size2U::Zero*/)
+Share<MultipleLineFontModel> ModelFactory::CreateMultipleLineFontModel(const FontId& fontId,StringRef text,Alignment alignment/*=Alignment::LeftBottom*/,Size2U restrictSize/*=Size2U::Zero*/)
 {
-	IFont* font=FontFactory::Instance().Create(fontId);
+	auto font=FontFactory::Instance().Create(fontId);
 	RETURN_NULL_IF_NULL(font);
-	MultipleLineFontModel* model=new MultipleLineFontModel(font,alignment,restrictSize);
+	Share<MultipleLineFontModel> model=new MultipleLineFontModel(font,alignment,restrictSize);
 	model->Initialize();
 	model->SetText(text);
 	return model;
 
 }
 
-IModel* ModelFactory::Create( const FileIdRef& fileId,ModelLoadingOptions loadingOptions/*=ModelLoadingOptions::None*/ ,ResourceShareType shareType /*= ResourceShareType::Share*/)
+Share<IModel> ModelFactory::Create( const FileIdRef& fileId,ModelLoadingOptions loadingOptions/*=ModelLoadingOptions::None*/ ,ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
-	IModel* model = nullptr;
+	Share<IModel> model;
 	if (shareType != ResourceShareType::None)
 	{
 		model = Find(fileId);

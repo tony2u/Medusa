@@ -4,6 +4,7 @@
 #pragma once
 #include "MedusaCorePreDeclares.h"
 #include "Core/Collection/List.h"
+
 MEDUSA_BEGIN;
 
 
@@ -13,13 +14,11 @@ public:
 	ByteBuffer();
 	~ByteBuffer(void);
 
-	ByteBuffer(const ByteBuffer& other):mBuffer(other.mBuffer){}
+	ByteBuffer(const ByteBuffer& other) :mBuffer(other.mBuffer) {}
 	ByteBuffer(ByteBuffer&& other) :mBuffer(std::move(other.mBuffer)) {}
 
 	ByteBuffer& operator=(const ByteBuffer& other);
 	ByteBuffer& operator=(ByteBuffer&& other);
-
-
 
 	void Clear();
 

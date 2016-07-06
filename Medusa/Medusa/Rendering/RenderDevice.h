@@ -4,12 +4,12 @@
 #pragma once
 #include "MedusaPreDeclares.h"
 #include "Core/Pattern/Singleton.h"
-#include "Core/Command/Processor/BaseFrameCommandProcessor.h"
+#include "Core/Command/Executor/TFrameCommandExecutor.h"
 
 MEDUSA_BEGIN;
 
 
-class RenderDevice :public Singleton<RenderDevice>, public BaseFrameCommandProcessor
+class RenderDevice :public Singleton<RenderDevice>, public TFrameCommandExecutor<ICommand>
 {
 	friend class Singleton < RenderDevice > ;
 	RenderDevice();
@@ -20,7 +20,7 @@ public:
 
 	bool NeedAsync()const;
 protected:
-	ThreadHandle mCurrentThreadHandle;
+	ThreadId mCurrentThreadId;
 };
 
 MEDUSA_END;

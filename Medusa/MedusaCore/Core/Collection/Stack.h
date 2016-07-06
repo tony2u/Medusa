@@ -10,7 +10,7 @@
 MEDUSA_BEGIN;
 
 
-template<typename T, class TCompare = EqualCompare<T> >
+template<typename T, class TCompare = EqualCompare >
 class Stack :public ICollection < T >
 {
 	typedef Stack<T, TCompare> SelfType;

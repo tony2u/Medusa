@@ -219,7 +219,7 @@ bool StringStream::Seek(intp offset, SeekOrigin direction /*= SeekOrigin::Curren
 	size_t newPos = mPos;
 	switch (direction)
 	{
-	case SeekOrigin::Head:
+	case SeekOrigin::Begin:
 		newPos = (size_t)offset;
 		break;
 	case SeekOrigin::Current:
@@ -541,7 +541,7 @@ bool StringStream::CanWrite() const
 {
 	if (MEDUSA_FLAG_HAS(mSupportedOperation, StreamDataOperation::Write))
 	{
-		return (mPos < mData->Size());
+		return (mPos <= mData->Size());
 	}
 	return false;
 }

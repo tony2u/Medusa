@@ -20,8 +20,7 @@ public:
 	virtual bool Uninitialize()override;
 public:
 	template<typename T>
-	void Register(){ Register(new T());}
-
+	void Register() { Register(new T()); }
 	void Register(INodeEditor* editor);
 
 	const Medusa::Dictionary<HeapString, INodeEditor*>& Editors() const { return mEditors; }
@@ -34,10 +33,10 @@ public:
 	bool Enable(const StringRef& type, bool val);
 	void EnableAll(bool val);
 
-	INode* Create(const StringRef& className, const FileIdRef& editorFile, const IEventArg& e = IEventArg::Empty,NodeCreateFlags flags=NodeCreateFlags::None)const;
+	INode* Create(const StringRef& className, const FileIdRef& editorFile, const FileIdRef& scriptFile, const IEventArg& e = IEventArg::Empty, NodeCreateFlags flags = NodeCreateFlags::None)const;
 private:
-	Dictionary<HeapString, INodeEditor*> mEditors;
-	
+	Dictionary<HeapString, INodeEditor*> mEditors;	//extension-val
+
 };
 
 MEDUSA_END;

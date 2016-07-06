@@ -170,7 +170,7 @@ SirenCustomClass* SirenCustomClass::Clone() const
 	clone->mFullName = mFullName;
 	clone->mBaseTypeName = mBaseTypeName;
 
-	for (auto filePair:mFields)
+	for (auto filePair : mFields)
 	{
 		clone->mFields.Add(filePair.Key, filePair.Value->Clone());
 	}
@@ -221,7 +221,7 @@ bool SirenCustomClass::LoadFrom(IStream& stream)
 		RETURN_FALSE_IF_FALSE(field->LoadFrom(stream));
 		field->SetParentType(this);
 		mFields.Add(field->Name(), field.get());
-		field->SetIndex((ushort)mFields.Count()-1);
+		field->SetIndex((ushort)mFields.Count() - 1);
 		field.release();
 	}
 
@@ -263,7 +263,7 @@ bool SirenCustomClass::AddField(SirenField* val)
 {
 	if (mFields.TryAdd(val->Name(), val))
 	{
-		val->SetIndex((ushort)mFields.Count()-1);
+		val->SetIndex((ushort)mFields.Count() - 1);
 		val->SetParentType(this);
 		return true;
 	}
@@ -387,9 +387,24 @@ bool SirenCustomClass::Parse(SirenAssembly& assembly, StringRef& refProto)
 					return false;
 				}
 			}
-			else if (token == SirenTextParser::ClassKeyword)
+			else if (token == SirenTextParser::ClassKeyword )
 			{
 				std::unique_ptr<SirenCustomClass> child(new SirenCustomClass());
+				if (child->Parse(assembly, refProto))
+				{
+					RETURN_FALSE_IF_FALSE(AddType(child.get()));
+					child.release();
+				}
+				else
+				{
+					Log::Error("Failed to parse class.");
+					return false;
+				}
+			}
+			else if (token == SirenTextParser::StructKeyword)
+			{
+				std::unique_ptr<SirenCustomClass> child(new SirenCustomClass());
+				child->MutableAttribute().AddMode(SirenClassGenerateMode::Struct);
 				if (child->Parse(assembly, refProto))
 				{
 					RETURN_FALSE_IF_FALSE(AddType(child.get()));

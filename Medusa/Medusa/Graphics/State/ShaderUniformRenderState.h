@@ -4,18 +4,19 @@
 #pragma  once
 #include "Graphics/State/IRenderState.h"
 #include "Resource/Effect/Shader/Parameter/ShaderUniformValue.h"
+#include "Core/Collection/Dictionary.h"
 
 MEDUSA_BEGIN;
 
 class ShaderUniformRenderState :public IRenderState
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_RTTI(ShaderUniformRenderState,IRenderState);
 public:
 	ShaderUniformRenderState();
 	virtual ~ShaderUniformRenderState();
 	virtual void Apply()const override;
 
-	virtual ShaderUniformRenderState* Clone()const override;
+	Share<ShaderUniformRenderState> Clone()const;
 	virtual void CopyFrom(const IRenderState& other)override;
 
 	virtual bool Equals(const IRenderState& state)const override;

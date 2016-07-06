@@ -5,6 +5,10 @@
 #include "IAnimation.h"
 #include "Core/Collection/KeyValuePair.h"
 #include "Core/Collection/List.h"
+#include "Resource/Timeline/ScaleTimelineModel.h"
+#include "Resource/Timeline/RotationTimelineModel.h"
+#include "Resource/Timeline/TranslateTimelineModel.h"
+
 
 MEDUSA_BEGIN;
 
@@ -30,11 +34,11 @@ protected:
 
 	List<ITimeline*> mTimelines;
 
-	List<KeyValuePair<SkeletonBone*, ScaleTimelineModel*>> mBoneScaleTimelines;
-	List<KeyValuePair<SkeletonBone*, RotationTimelineModel*>> mBoneRotaionTimelines;
-	List<KeyValuePair<SkeletonBone*, TranslateTimelineModel*>> mBoneTranslateTimelines;
+	List<KeyValuePair<SkeletonBone*, Share<ScaleTimelineModel>>> mBoneScaleTimelines;
+	List<KeyValuePair<SkeletonBone*, Share<RotationTimelineModel>>> mBoneRotaionTimelines;
+	List<KeyValuePair<SkeletonBone*, Share<TranslateTimelineModel>>> mBoneTranslateTimelines;
 
-	List<KeyValuePair<SkeletonIK*, IKTimelineModel*>> mIKTimelines;
+	List<KeyValuePair<SkeletonIK*, Share<IKTimelineModel>>> mIKTimelines;
 
 };
 MEDUSA_END;

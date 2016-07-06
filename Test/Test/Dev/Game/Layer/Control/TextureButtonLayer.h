@@ -7,7 +7,7 @@
 
 class TextureButtonLayer :public BaseCaseLayer
 {
-	MEDUSA_DECLARE_LAYER(TextureButtonLayer);
+	MEDUSA_NODE(TextureButtonLayer, BaseCaseLayer);
 public:
 	TextureButtonLayer(StringRef name=StringRef::Empty,const IEventArg& e=IEventArg::Empty);
 	virtual ~TextureButtonLayer(void);

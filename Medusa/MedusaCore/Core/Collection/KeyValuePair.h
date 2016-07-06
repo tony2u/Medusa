@@ -8,7 +8,7 @@
 
 MEDUSA_BEGIN;
 
-template<typename TKey, typename TValue, typename TKeyHashCoder = DefaultHashCoder<TKey>, typename TValueHashCoder = DefaultHashCoder<TValue>>
+template<typename TKey, typename TValue, typename TKeyHashCoder = DefaultHashCoder, typename TValueHashCoder = DefaultHashCoder>
 struct KeyValuePair
 {
 	typedef TKey KeyType;

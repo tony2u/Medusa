@@ -9,19 +9,19 @@
 MEDUSA_BEGIN;
 
 
-BlockWriteStream::BlockWriteStream(IStream& stream, uint32 blockSize)
-	: mSourceStream(&stream),
+BlockWriteStream::BlockWriteStream(const Share<IStream>& stream, uint32 blockSize)
+	: mSourceStream(stream),
 	mBuffer(blockSize, false)
 {
-	SAFE_RETAIN(mSourceStream);
+
 }
 
 
 BlockWriteStream::BlockWriteStream(BlockWriteStream&& other)
-	:mSourceStream(nullptr),
+	:mSourceStream(std::move(other.mSourceStream)),
 	mBlockIndex(other.mBlockIndex)
 {
-	SAFE_MOVE_REF(mSourceStream, other.mSourceStream);
+	
 	other.mBlockIndex = 0;
 }
 
@@ -31,7 +31,7 @@ BlockWriteStream& BlockWriteStream::operator=(BlockWriteStream&& other)
 	if (this != &other)
 	{
 		Close();
-		SAFE_MOVE_REF(mSourceStream, other.mSourceStream);
+		mSourceStream = std::move(other.mSourceStream);
 		mBlockIndex = other.mBlockIndex;
 
 		other.mSourceStream = nullptr;
@@ -48,7 +48,7 @@ BlockWriteStream::~BlockWriteStream(void)
 bool BlockWriteStream::Close()
 {
 	Flush();
-	SAFE_RELEASE(mSourceStream);
+	mSourceStream = nullptr;
 
 	return true;
 }

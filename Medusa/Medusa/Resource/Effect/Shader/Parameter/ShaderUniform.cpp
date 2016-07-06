@@ -237,7 +237,7 @@ void ShaderUniform::SetArray1(MemoryFloatData data)
 	RETURN_IF_TRUE(mIsAssigned&&mFloatData.IsContentEqual(data));
 #endif
 
-	Render::Instance().SetUniformArray1(mLocation, data.Size(), data.Data());
+	Render::Instance().SetUniformArray1(mLocation, (uint)data.Size(), data.Data());
 	MarkAssigned();
 
 #ifdef MEDUSA_RENDER_STATE_CACHE_ENABLED
@@ -251,7 +251,7 @@ void ShaderUniform::SetArray1(MemoryIntData data)
 #ifdef MEDUSA_RENDER_STATE_CACHE_ENABLED
 	RETURN_IF_TRUE(mIsAssigned&&mIntData.IsContentEqual(data));
 #endif
-	Render::Instance().SetUniformArray1(mLocation, data.Size(), data.Data());
+	Render::Instance().SetUniformArray1(mLocation, (uint)data.Size(), data.Data());
 	MarkAssigned();
 #ifdef MEDUSA_RENDER_STATE_CACHE_ENABLED
 	mIntData = data;
@@ -264,7 +264,7 @@ void ShaderUniform::SetArray2(MemoryFloatData data)
 #ifdef MEDUSA_RENDER_STATE_CACHE_ENABLED
 	RETURN_IF_TRUE(mIsAssigned&&mFloatData.IsContentEqual(data));
 #endif
-	Render::Instance().SetUniformArray2(mLocation, data.Size(), data.Data());
+	Render::Instance().SetUniformArray2(mLocation, (uint)data.Size(), data.Data());
 	MarkAssigned();
 #ifdef MEDUSA_RENDER_STATE_CACHE_ENABLED
 	
@@ -278,7 +278,7 @@ void ShaderUniform::SetArray2(MemoryIntData data)
 #ifdef MEDUSA_RENDER_STATE_CACHE_ENABLED
 	RETURN_IF_TRUE(mIsAssigned&&mIntData.IsContentEqual(data));
 #endif
-	Render::Instance().SetUniformArray2(mLocation, data.Size(), data.Data());
+	Render::Instance().SetUniformArray2(mLocation, (uint)data.Size(), data.Data());
 	MarkAssigned();
 #ifdef MEDUSA_RENDER_STATE_CACHE_ENABLED
 	
@@ -292,7 +292,7 @@ void ShaderUniform::SetArray3(MemoryFloatData data)
 #ifdef MEDUSA_RENDER_STATE_CACHE_ENABLED
 	RETURN_IF_TRUE(mIsAssigned&&mFloatData.IsContentEqual(data));
 #endif
-	Render::Instance().SetUniformArray3(mLocation, data.Size(), data.Data());
+	Render::Instance().SetUniformArray3(mLocation, (uint)data.Size(), data.Data());
 	MarkAssigned();
 #ifdef MEDUSA_RENDER_STATE_CACHE_ENABLED
 	
@@ -307,7 +307,7 @@ void ShaderUniform::SetArray3(MemoryIntData data)
 	RETURN_IF_TRUE(mIsAssigned&&mIntData.IsContentEqual(data));
 #endif
 
-	Render::Instance().SetUniformArray3(mLocation, data.Size(), data.Data());
+	Render::Instance().SetUniformArray3(mLocation, (uint)data.Size(), data.Data());
 	MarkAssigned();
 
 #ifdef MEDUSA_RENDER_STATE_CACHE_ENABLED
@@ -322,7 +322,7 @@ void ShaderUniform::SetArray4(MemoryFloatData data)
 #ifdef MEDUSA_RENDER_STATE_CACHE_ENABLED
 	RETURN_IF_TRUE(mIsAssigned&&mFloatData.IsContentEqual(data));
 #endif
-	Render::Instance().SetUniformArray4(mLocation, data.Size(), data.Data());
+	Render::Instance().SetUniformArray4(mLocation, (uint)data.Size(), data.Data());
 	MarkAssigned();
 #ifdef MEDUSA_RENDER_STATE_CACHE_ENABLED
 	
@@ -336,7 +336,7 @@ void ShaderUniform::SetArray4(MemoryIntData data)
 #ifdef MEDUSA_RENDER_STATE_CACHE_ENABLED
 	RETURN_IF_TRUE(mIsAssigned&&mIntData.IsContentEqual(data));
 #endif
-	Render::Instance().SetUniformArray4(mLocation, data.Size(), data.Data());
+	Render::Instance().SetUniformArray4(mLocation, (uint)data.Size(), data.Data());
 	MarkAssigned();
 
 #ifdef MEDUSA_RENDER_STATE_CACHE_ENABLED
@@ -351,7 +351,7 @@ void ShaderUniform::SetMatrix2(MemoryFloatData data, bool isTransposed/*=false*/
 #ifdef MEDUSA_RENDER_STATE_CACHE_ENABLED
 	RETURN_IF_TRUE(mIsAssigned&&mFloatData.IsContentEqual(data)&&mIsTransposed==isTransposed);
 #endif
-	Render::Instance().SetUniformMatrix2(mLocation, data.Size() / sizeof(Matrix2), data.Data(), isTransposed);
+	Render::Instance().SetUniformMatrix2(mLocation, (uint)data.Size() / sizeof(Matrix2), data.Data(), isTransposed);
 	MarkAssigned();
 #ifdef MEDUSA_RENDER_STATE_CACHE_ENABLED
 	mFloatData = data;
@@ -365,7 +365,7 @@ void ShaderUniform::SetMatrix3(MemoryFloatData data, bool isTransposed/*=false*/
 #ifdef MEDUSA_RENDER_STATE_CACHE_ENABLED
 	RETURN_IF_TRUE(mIsAssigned&&mFloatData.IsContentEqual(data) && mIsTransposed == isTransposed);
 #endif
-	Render::Instance().SetUniformMatrix3(mLocation, data.Size() / sizeof(Matrix3), data.Data(), isTransposed);
+	Render::Instance().SetUniformMatrix3(mLocation, (uint)data.Size() / sizeof(Matrix3), data.Data(), isTransposed);
 	MarkAssigned();
 #ifdef MEDUSA_RENDER_STATE_CACHE_ENABLED
 	
@@ -386,7 +386,7 @@ void ShaderUniform::SetMatrix4(MemoryFloatData data, bool isTransposed/*=false*/
 #ifdef MEDUSA_RENDER_STATE_CACHE_ENABLED
 	RETURN_IF_TRUE(mIsAssigned&&mFloatData.IsContentEqual(data) && mIsTransposed == isTransposed);
 #endif
-	Render::Instance().SetUniformMatrix4(mLocation, data.Size()/sizeof(Matrix4), data.Data(), isTransposed);
+	Render::Instance().SetUniformMatrix4(mLocation, (uint)data.Size()/sizeof(Matrix4), data.Data(), isTransposed);
 	MarkAssigned();
 #ifdef MEDUSA_RENDER_STATE_CACHE_ENABLED
 

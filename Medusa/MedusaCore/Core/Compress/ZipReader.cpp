@@ -2,6 +2,8 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 #include "MedusaCorePreCompiled.h"
+#ifdef MEDUSA_UNZIP
+
 #include "Core/Compress/ZipReader.h"
 #include "Core/IO/Path.h"
 #include "Core/Log/Log.h"
@@ -177,3 +179,4 @@ MemoryData ZipReader::DecompressGZIP(const MemoryData& data, size_t expectedSize
 
 MEDUSA_END;
 
+#endif

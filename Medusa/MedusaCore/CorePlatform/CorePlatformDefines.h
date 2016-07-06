@@ -18,6 +18,27 @@
 #undef MEDUSA_POSIX
 
 
+#ifndef MEDUSA_DISABLE_HTTP
+#define MEDUSA_HTTP
+#endif
+
+#ifndef MEDUSA_DISABLE_LZMA
+#define MEDUSA_LZMA
+#endif
+
+#ifndef MEDUSA_DISABLE_LZ4
+#define MEDUSA_LZ4
+#endif
+
+#ifndef MEDUSA_DISABLE_UNZIP
+#define MEDUSA_UNZIP
+#endif
+
+#ifndef MEDUSA_DISABLE_ZLIB
+#define MEDUSA_ZLIB
+#endif
+
+
 
 
 
@@ -31,8 +52,9 @@
 
 #define MEDUSA_SCRIPT_LUA 100
 #define MEDUSA_SCRIPT_LUA_JIT 101
-
 #define MEDUSA_SCRIPT_JS 200
+
+#ifndef MEDUSA_DISABLE_SCRIPT
 
 #define MEDUSA_SCRIPT MEDUSA_SCRIPT_LUA_JIT
 
@@ -46,22 +68,23 @@
 #elif MEDUSA_SCRIPT==MEDUSA_SCRIPT_JS
 #define MEDUSA_JS MEDUSA_SCRIPT
 #endif
+#endif
+
+#ifndef MEDUSA_DISABLE_SQL
+#define MEDUSA_SQL
+#endif
 
 //#define MEDUSA_VFP
 //#define MEDUSA_NEON
-
-
 
 //#define MEDUSA_POSIX_THREADING
 //#define MEDUSA_THREADING_MULTIPLE_WAIT
 
 
-
-
-
 //#define MEDUSA_PROFILE_FEATURE
 //#define MEDUSA_VIRTUAL_ENABLED
-//#define MEDUSA_MEMORY_LEAK_DETECTED_ENABLED
+
+
 
 
 #define MEDUSA_BIT_X86 1
@@ -79,9 +102,7 @@
 #define MEDUSA_DEPRECATED
 
 
-
-
-
+//#define MEDUSA_VIRTUAL_ENABLED
 #ifdef MEDUSA_VIRTUAL_ENABLED
 #define MEDUSA_VIRTUAL virtual
 #else
@@ -114,9 +135,7 @@
 #define MEDUSA_DEPRECATED __declspec(deprecated)
 
 
-#if defined(MEDUSA_DEBUG) && defined(MEDUSA_MEMORY_LEAK_DETECTED_ENABLED)
-#define MEDUSA_ENABLE_VLD
-#endif
+
 
 
 #pragma warning(disable:4127)
@@ -393,7 +412,27 @@
 
 //////////////////////////////////////////////////////////////////////////
 
+#undef MEDUSA_LIKELY
+#undef MEDUSA_UNLIKELY
 
-//used to debug free,delete
-//#define MEDUSA_MEMORY_DEBUG
+#if defined(__GNUC__) && __GNUC__ >= 4
+#define MEDUSA_LIKELY(x)   (__builtin_expect((x), 1))
+#define MEDUSA_UNLIKELY(x) (__builtin_expect((x), 0))
+#else
+#define MEDUSA_LIKELY(x)   (x)
+#define MEDUSA_UNLIKELY(x) (x)
+#endif
 
+
+
+
+#ifndef MEDUSA_DISABLE_VLD
+#define MEDUSA_VLD
+#endif
+
+//default disable vld
+#ifndef MEDUSA_DEBUG
+#undef MEDUSA_VLD
+#endif
+
+//#define MEDUSA_MEMORY_LEAK_DETECT

@@ -29,6 +29,5 @@ bool SleepCommand::OnExecute()
 	}
 	return true;
 }
-MEDUSA_IMPLEMENT_RTTI(SleepCommand, ICommand);
 
 MEDUSA_END;

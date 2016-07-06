@@ -3,8 +3,8 @@
 // license that can be found in the LICENSE file.
 #pragma once
 #include "MedusaPreDeclares.h"
-#include "Core/IO/IFileLoadable.h"
-#include "Core/IO/IFileLoadable.h"
+#include "Core/IO/IFileLoadSavable.h"
+#include "Core/IO/IFileLoadSavable.h"
 #include "Resource/IResource.h"
 #include "TiledDefines.h"
 #include "Geometry/Color4.h"
@@ -24,7 +24,7 @@ InstantiateLayer: the layer class to instantiate
 
 MEDUSA_BEGIN;
 
-class TmxTiledMap : public IResource, public IFileLoadable
+class TmxTiledMap : public IResource, public IFileLoadSavable
 {
 public:
 	TmxTiledMap(const FileIdRef& fileId);

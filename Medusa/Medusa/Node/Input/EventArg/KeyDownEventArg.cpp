@@ -25,5 +25,4 @@ KeyDownEventArg::KeyDownEventArg(uint keyData,uint status):BaseKeyEventArg(keyDa
 }
 
 
-MEDUSA_IMPLEMENT_RTTI(KeyDownEventArg,BaseKeyEventArg);
 MEDUSA_END;

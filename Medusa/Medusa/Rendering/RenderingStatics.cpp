@@ -23,6 +23,12 @@ RenderingStatics::RenderingStatics()
 
 RenderingStatics::~RenderingStatics()
 {
+	Uninitialize();
+}
+
+void RenderingStatics::Uninitialize()
+{
+	Reset();
 }
 
 void RenderingStatics::Reset()
@@ -87,24 +93,24 @@ void RenderingStatics::CountRenderQueue(size_t count/*=1*/)
 	mRenderQueueCount += count;
 }
 
-void RenderingStatics::CountMaterial(const IMaterial* material)
+void RenderingStatics::CountMaterial(const Share<IMaterial>& material)
 {
 	RETURN_IF_FALSE(mEnabled);
 	mMaterials.TryAdd(material);
 }
 
 
-void RenderingStatics::CountMaterialTextures(const IMaterial* material)
+void RenderingStatics::CountMaterialTextures(const Share<IMaterial>& material)
 {
 	const IMaterial::TextureDict& textures = material->Textures();
-	FOR_EACH_COLLECTION(i, textures)
+	for (auto& i : textures)
 	{
-		ITexture* texture = i->Value;
+		auto& texture = i.Value;
 		CountTexture(texture);
 	}
 }
 
-void RenderingStatics::CountTexture(const ITexture* texture)
+void RenderingStatics::CountTexture(const Share<ITexture>& texture)
 {
 	RETURN_IF_FALSE(mEnabled);
 	mTextures.TryAdd(texture);

@@ -22,19 +22,19 @@ public:
 public:
 	void ResetToDefault();
 
-	IRenderTarget* Default() const { return mDefault; }
+	const Share<IRenderTarget>& Default() const { return mDefault; }
 
 	void SetCurrent(const FileIdRef& fileId);
-	IRenderTarget* Current() const { return mCurrent; }
-	void SetCurrent(IRenderTarget* val) { mCurrent = val; }
-	void ResetCurrentToDefault(){mCurrent=(IRenderTarget*)mDefault;}
+	const Share<IRenderTarget>& Current() const { return mCurrent; }
+	void SetCurrent(const Share<IRenderTarget>& val) { mCurrent = val; }
+	void ResetCurrentToDefault(){mCurrent=mDefault;}
 
-	CustomRenderTarget* CreateCustom(const FileIdRef& fileId,bool setCurrent=true,ResourceShareType shareType = ResourceShareType::Share);
+	Share<CustomRenderTarget> CreateCustom(const FileIdRef& fileId,bool setCurrent=true,ResourceShareType shareType = ResourceShareType::Share);
 	void Resize(const Size2F& newSize);
 
 private:
-	IRenderTarget* mCurrent;
-	IRenderTarget* mDefault;
+	Share<IRenderTarget> mCurrent;
+	Share<IRenderTarget> mDefault;
 	const static StringRef mDefaultRenderTargetName;
 };
 

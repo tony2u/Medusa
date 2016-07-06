@@ -199,9 +199,9 @@ struct LuaTypeMapping <bool>
 	}
 
 };
-
 template <> struct LuaTypeMapping <char> : LuaIntegerTypeMapping <char> {};
-template <> struct LuaTypeMapping <short> : LuaIntegerTypeMapping <short> {};
+template <> struct LuaTypeMapping <int8> : LuaIntegerTypeMapping <int8> {};
+template <> struct LuaTypeMapping <int16> : LuaIntegerTypeMapping <int16> {};
 template <> struct LuaTypeMapping <int> : LuaIntegerTypeMapping <int> {};
 template <> struct LuaTypeMapping <long> : LuaIntegerTypeMapping <long> {};
 
@@ -241,8 +241,9 @@ using LuaUnsignedTypeMapping = LuaIntegerTypeMapping<T>;
 
 #endif
 
-template <> struct LuaTypeMapping <unsigned char> : LuaIntegerTypeMapping <unsigned char> {};
-template <> struct LuaTypeMapping <unsigned short> : LuaIntegerTypeMapping <unsigned short> {};
+
+template <> struct LuaTypeMapping <uint8> : LuaIntegerTypeMapping <uint8> {};
+template <> struct LuaTypeMapping <uint16> : LuaIntegerTypeMapping <uint16> {};
 template <> struct LuaTypeMapping <unsigned int> : LuaIntegerTypeMapping <unsigned int> {};
 template <> struct LuaTypeMapping <unsigned long> : LuaIntegerTypeMapping <unsigned long> {};
 

@@ -55,7 +55,7 @@ protected:
 
 #ifdef MEDUSA_THREADING_MULTIPLE_WAIT
 	//support for multiple wait
-	List<ThreadEventMultipleWaiterIndex, NoCompare<ThreadEventMultipleWaiterIndex>> mRegisteredWaits;
+	List<ThreadEventMultipleWaiterIndex, NoCompare> mRegisteredWaits;
 #endif
 };
 

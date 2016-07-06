@@ -11,7 +11,7 @@ MEDUSA_COCOS_BEGIN;
 
 class ButtonReader : public INodeReader
 {
-	MEDUSA_DECLARE_COCOS_READER;
+	MEDUSA_RTTI(ButtonReader,INodeReader);
 public:
 	ButtonReader() {};
 	virtual ~ButtonReader() {};

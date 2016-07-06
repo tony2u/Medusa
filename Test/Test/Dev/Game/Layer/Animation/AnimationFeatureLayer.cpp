@@ -24,5 +24,5 @@ AnimationFeatureLayer::~AnimationFeatureLayer(void)
 }
 
 
-MEDUSA_IMPLEMENT_LAYER(AnimationFeatureLayer, BaseFeatureLayer, StringRef::Empty, StringRef::Empty);
+MEDUSA_IMPLEMENT_NODE(AnimationFeatureLayer);
 

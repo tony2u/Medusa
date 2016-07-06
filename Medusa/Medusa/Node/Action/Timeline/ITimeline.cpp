@@ -8,24 +8,24 @@
 MEDUSA_BEGIN;
 
 
-ITimeline::ITimeline(ITimelineModel* model, intp repeatCount, float beforeDelay /*= 0.f*/, float repeatDuration /*= 0.f*/, float afterDelay /*= 0.f*/, const StringRef& name /*= StringRef::Empty*/)
+ITimeline::ITimeline(const Share<ITimelineModel>& model, intp repeatCount, float beforeDelay /*= 0.f*/, float repeatDuration /*= 0.f*/, float afterDelay /*= 0.f*/, const StringRef& name /*= StringRef::Empty*/)
 	:BaseFiniteRepeatableCountDownDelayAction(model->Duration(), repeatCount, beforeDelay, repeatDuration, afterDelay, name),
 	mModel(model)
 {
-	SAFE_RETAIN(mModel);
+	
 }
 
-ITimeline::ITimeline(ITimelineModel* model, bool isRepeatForever, float beforeDelay /*= 0.f*/, float repeatDuration /*= 0.f*/, float afterDelay /*= 0.f*/, const StringRef& name /*= StringRef::Empty*/)
+ITimeline::ITimeline(const Share<ITimelineModel>& model, bool isRepeatForever, float beforeDelay /*= 0.f*/, float repeatDuration /*= 0.f*/, float afterDelay /*= 0.f*/, const StringRef& name /*= StringRef::Empty*/)
 	: BaseFiniteRepeatableCountDownDelayAction(model->Duration(), isRepeatForever, beforeDelay, repeatDuration, afterDelay, name),
 	mModel(model)
 {
-	SAFE_RETAIN(mModel);
+	
 }
 
 
 ITimeline::~ITimeline()
 {
-	SAFE_RELEASE(mModel);
+	
 }
 
 int ITimeline::CurrentFrameIndex() const

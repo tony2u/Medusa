@@ -40,6 +40,5 @@ void IDataSource::FireDataChangedEvent()
 	}
 }
 
-MEDUSA_IMPLEMENT_RTTI_ROOT(IDataSource);
 
 MEDUSA_END;

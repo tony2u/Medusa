@@ -5,50 +5,13 @@
 #include "Node/INode.h"
 #include "Node/Scene/SceneGraph/ISceneGraph.h"
 #include "Core/Collection/Stack.h"
-#include "Core/Command/EventArg/IEventArg.h"
 #include "Node/NodeStatus.h"
-#include "Core/IO/FileIdRef.h"
-#include "Node/NodeDefines.h"
 
 MEDUSA_BEGIN;
 
-#define MEDUSA_DECLARE_SCENE_ROOT(className) 													\
-		MEDUSA_DECLARE_RTTI;\
-public:																				\
-	virtual const FileIdRef& EditorFileName()const{return mEditorFileName;}									\
-	static const FileIdRef& EditorFileNameStatic(){return mEditorFileName;}									\
-	virtual const FileIdRef& ScriptFileName()const{return mScriptFileName;}									\
-	static const FileIdRef& ScriptFileNameStatic(){return mScriptFileName;}									\
-private:																				\
-	const static FileIdRef mEditorFileName;							\
-	const static FileIdRef mScriptFileName;							\
-	const static StaticConstructor mStaticConstructor;							\
-	static void SelfRegisterStaticCallback();
-
-#define MEDUSA_DECLARE_SCENE(className) 													\
-		MEDUSA_DECLARE_RTTI;\
-public:																				\
-	virtual const FileIdRef& EditorFileName()const override{return mEditorFileName;}									\
-	static const FileIdRef& EditorFileNameStatic(){return mEditorFileName;}									\
-	virtual const FileIdRef& ScriptFileName()const override{return mScriptFileName;}									\
-	static const FileIdRef& ScriptFileNameStatic(){return mScriptFileName;}									\
-private:																				\
-	const static FileIdRef mEditorFileName;							\
-	const static FileIdRef mScriptFileName;							\
-	const static StaticConstructor mStaticConstructor;							\
-	static void SelfRegisterStaticCallback();
-
-#define MEDUSA_IMPLEMENT_SCENE(className,baseClassName,editorFile,scriptFile) 																					 \
-	MEDUSA_IMPLEMENT_RTTI(className,baseClassName);\
-	const FileIdRef className::mEditorFileName=editorFile;					 \
-const FileIdRef className::mScriptFileName=scriptFile;					 \
-	const StaticConstructor className::mStaticConstructor(SelfRegisterStaticCallback);					 \
-	void className::SelfRegisterStaticCallback(){SceneFactory::Instance().Register<className>(#className);}
-
-
 class IScene :public INode
 {
-	MEDUSA_DECLARE_SCENE(IScene);
+	MEDUSA_RTTI(IScene,INode);
 public:
 	IScene(const StringRef& name = StringRef::Empty, const IEventArg& e = IEventArg::Empty);
 	virtual ~IScene(void);
@@ -58,11 +21,11 @@ public:
 	ISceneGraph* GraphPtr() const { return mSceneGraph; }
 
 
-	IRenderTarget* RenderTarget() const;
-	void SetRenderTarget(IRenderTarget* val);
+	const Share<IRenderTarget>& RenderTarget() const;
+	void SetRenderTarget(const Share<IRenderTarget>& val);
 
-	Camera* GetCamera() const;
-	void SetCamera(Camera* val);
+	const Share<Camera>& GetCamera() const { return mCamera; }
+	void SetCamera(const Share<Camera>& val);
 
 	virtual bool Uninitialize()override;
 
@@ -98,7 +61,7 @@ public:
 	ILayer* ReplaceToLayerEx(const StringRef& className, const FileIdRef& editorFile = FileIdRef::Empty, const FileIdRef& scriptFile = FileIdRef::Empty, NodePopFlags popFlags = NodePopFlags::None, NodePushFlags pushFlags = NodePushFlags::None, const IEventArg& e = IEventArg::Empty);
 
 
-	void PushLayer(ILayer* layer, NodePushFlags pushFlags = NodePushFlags::None);
+	ILayer* PushLayer(ILayer* layer, NodePushFlags pushFlags = NodePushFlags::None);
 	ILayer* ReplaceToLayer(ILayer* toLayer, NodePopFlags popFlags = NodePopFlags::None, NodePushFlags pushFlags = NodePushFlags::None);
 
 protected:
@@ -114,8 +77,8 @@ private:
 	void OnRestoreStatus();
 protected:
 	ISceneGraph* mSceneGraph;
-	IRenderTarget* mRenderTarget;
-	Camera* mCamera;
+	Share<IRenderTarget> mRenderTarget;
+	Share<Camera> mCamera;
 
 protected:
 	Dictionary<StringRef, ILayer*> mCachedLayers;

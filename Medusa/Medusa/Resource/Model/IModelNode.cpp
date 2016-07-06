@@ -32,9 +32,8 @@ void IModelNode::UpdateWorldMatrixRecursively( const Matrix4& parentWorldMatrix/
 {
 	mWorldMatrix=mMatrix.Value()*parentWorldMatrix;
 
-	FOR_EACH_COLLECTION(i,mNodes)
+	for(auto node :mNodes)
 	{
-		IModelNode* node=*i;
 		node->UpdateWorldMatrixRecursively(mWorldMatrix.OldValue());
 	}
 }

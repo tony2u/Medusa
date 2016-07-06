@@ -10,13 +10,13 @@
 MEDUSA_BEGIN;
 
 
-template<typename TKey, typename TValue, typename TKeyCompare = EqualCompare<TKey>, typename TValueCompare = EqualCompare<TValue>>
+template<typename TKey, typename TValue, typename TKeyCompare = EqualCompare, typename TValueCompare = EqualCompare>
 class PriorityDictionary :public ICollection < KeyValuePair<TKey, TValue> >
 {
 public:
 	typedef KeyValuePair<TKey, TValue> ItemType;
 	typedef PriorityDictionary<TKey, TValue, TKeyCompare,TValueCompare> SelfType;
-	typedef List<ItemType, NoCompare<ItemType>> ContainerType;
+	typedef List<ItemType, NoCompare> ContainerType;
 public:
 	typedef ICollection<ItemType> BaseType;
 	typedef typename BaseType::TConstPointerType TConstPointerType;

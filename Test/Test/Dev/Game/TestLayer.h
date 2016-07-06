@@ -9,7 +9,7 @@
 
 class TestLayer:public ILayer
 {
-	MEDUSA_DECLARE_LAYER(TestLayer);
+	MEDUSA_NODE(TestLayer,ILayer);
 public:
 	TestLayer(StringRef name=StringRef::Empty,const IEventArg& e=IEventArg::Empty);
 	virtual ~TestLayer(void);

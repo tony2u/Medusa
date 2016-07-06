@@ -94,9 +94,8 @@ PublishTarget PublishTarget::Parse(StringRef fileName)
 	}
 
 	int resultTag = 0;
-	FOR_EACH_COLLECTION(i, outResults)
+	for (const auto& str : outResults)
 	{
-		const HeapString& str = *i;
 		int* tempTag = mTagDict.TryGet(str);
 		if (tempTag != nullptr)
 		{

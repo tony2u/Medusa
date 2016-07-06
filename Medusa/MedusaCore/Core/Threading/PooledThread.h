@@ -10,32 +10,30 @@
 MEDUSA_BEGIN;
 
 
-class PooledThread
+class PooledThread:public Thread
 {
 public:
 	typedef Delegate<bool(PooledThread& sender)> CompleteDelegate;
 public:
-	PooledThread(const StringRef& name, CompleteDelegate completeDelegate, void* userData);
+	PooledThread(const StringRef& name, CompleteDelegate completeDelegate, void* userData=nullptr);
 	virtual ~PooledThread(void);
 
-	virtual bool Initialize();
-	virtual bool Uninitialize();
-	void Stop();
-	void Start();
 	void WaitForComplete();
-	void Activate(ICommand* val);
+	void Activate(const ShareCommand& val);
 
-	ICommand* Command() const { return mCommand; }
+	const ShareCommand& Command() const { return mCommand; }
 	bool IsIdle()const;
 private:
-	void OnThredCallback(Thread& thread);
-	void OnRun();
+	virtual bool OnBeforeJoin()override;
+	virtual void OnAfterJoin()override;
+
+	virtual void OnRun()override;
+	virtual void OnRunCommands();
 
 protected:
-	Thread mThread;
 	ThreadEvent mStartEvent;
 	ThreadEvent mCompleteEvent;
-	ICommand* mCommand;
+	ShareCommand mCommand;
 	NonRecursiveMutex mCommandMutex;
 	CompleteDelegate mCompleteDelegate;
 };

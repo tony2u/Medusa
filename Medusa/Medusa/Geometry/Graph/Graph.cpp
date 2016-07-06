@@ -62,7 +62,7 @@ void Graph::RemoveEdge(GraphEdge *edge)
 {
 	edge->From()->RemoveEdge(edge);
 	edge->To()->RemoveEdge(edge);
-	mEdges.RemoveUnordered(edge);
+	mEdges.RemoveSwap(edge);
 }
 
 void Graph::RemoveNode(GraphNode* node)

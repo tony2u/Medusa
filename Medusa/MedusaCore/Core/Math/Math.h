@@ -29,6 +29,7 @@ namespace Math
 		const static T Max;
 	};
 
+#undef PI	//for ue4 macro conflict
 	constexpr float PI= 3.14159265358979323846f;
 	constexpr float PIHalf = 1.570796326794897f;
 	constexpr float PI2 = 6.28318530717958647692f;

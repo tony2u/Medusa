@@ -7,8 +7,7 @@
 #include "CoreLib/Common/pugixml/pugixml.hpp"
 #include "Core/Log/Log.h"
 #include "Core/IO/Stream/MemoryStream.h"
-#include "Core/Utility/Endian.h"
-#include "Core/Utility/Utility.h"
+#include "Core/System/BitConverter.h"
 #include "Core/IO/FileIdRef.h"
 
 MEDUSA_BEGIN;
@@ -93,19 +92,19 @@ bool ApplePropertyListReader::ParseFromBinary(const FileIdRef& fileId, const Mem
 	int offsetByteSize = stream.ReadChar();
 	header.ObjectIntByteSize = stream.ReadChar();
 	stream.Skip(4);
-	int offsetsCount =Endian::ToLittle(stream.Read<int>());
+	int offsetsCount =BitConverter::ToLittle(stream.Read<int>());
 	stream.Skip(4);
-	int rootObjectIndex= Endian::ToLittle(stream.Read<int>());
+	int rootObjectIndex= BitConverter::ToLittle(stream.Read<int>());
 	stream.Skip(4);
-	int offsetTableOffset = Endian::ToLittle(stream.Read<int>());
+	int offsetTableOffset = BitConverter::ToLittle(stream.Read<int>());
 
 	//parse offset table
 	header.Offsets.ReserveSize(offsetsCount);
-	stream.Seek(offsetTableOffset, SeekOrigin::Head);
+	stream.Seek(offsetTableOffset, SeekOrigin::Begin);
 	auto offsetBuffer= stream.Ptr();
 	FOR_EACH_INT32(i, offsetsCount)
 	{
-		header.Offsets.NewAdd() = Utility::ToInt(offsetBuffer, offsetByteSize);
+		header.Offsets.NewAdd() = BitConverter::ToInt(offsetBuffer, offsetByteSize);
 		offsetBuffer += offsetByteSize;
 	}
 	

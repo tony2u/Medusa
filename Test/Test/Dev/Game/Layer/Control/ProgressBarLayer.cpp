@@ -38,5 +38,5 @@ bool ProgressBarLayer::Initialize()
 
 
 
-MEDUSA_IMPLEMENT_LAYER(ProgressBarLayer, BaseCaseLayer, StringRef::Empty, StringRef::Empty);
+MEDUSA_IMPLEMENT_NODE(ProgressBarLayer);
 

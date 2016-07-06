@@ -2,6 +2,8 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 #include "MedusaPreCompiled.h"
+#ifdef MEDUSA_AL
+
 #include "AudioFactory.h"
 #include "Audio/Device/AudioDevice.h"
 #include "Resource/Audio/IAudio.h"
@@ -37,9 +39,9 @@ bool AudioFactory::Uninitialize()
 }
 
 
-IAudio* AudioFactory::CreateFromRaw(const FileIdRef& fileId, AudioFileType audioFileType, const MemoryData& data, uint sampleCount, uint channelCount, uint samplerRate, uint bitsPerSample, ResourceShareType shareType /*= ResourceShareType::Share*/)
+Share<IAudio> AudioFactory::CreateFromRaw(const FileIdRef& fileId, AudioFileType audioFileType, const MemoryData& data, uint sampleCount, uint channelCount, uint samplerRate, uint bitsPerSample, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
-	IAudio* buffer = nullptr;
+	Share<IAudio> buffer;
 	if (shareType != ResourceShareType::None)
 	{
 		buffer = Find(fileId);
@@ -48,9 +50,11 @@ IAudio* AudioFactory::CreateFromRaw(const FileIdRef& fileId, AudioFileType audio
 
 	switch (audioFileType)
 	{
+#ifdef MEDUSA_OGG
 	case AudioFileType::ogg:
 		buffer = new OggAudio(data, fileId);
 		break;
+#endif
 	case AudioFileType::wav:
 		buffer = new WavAudio(data, fileId);
 		break;
@@ -67,9 +71,9 @@ IAudio* AudioFactory::CreateFromRaw(const FileIdRef& fileId, AudioFileType audio
 	return buffer;
 }
 
-IAudio* AudioFactory::CreateFromFile(const FileIdRef& fileId, ResourceShareType shareType /*= ResourceShareType::Share*/)
+Share<IAudio> AudioFactory::CreateFromFile(const FileIdRef& fileId, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
-	IAudio* buffer = nullptr;
+	Share<IAudio> buffer;
 	if (shareType != ResourceShareType::None)
 	{
 		buffer = Find(fileId);
@@ -79,9 +83,11 @@ IAudio* AudioFactory::CreateFromFile(const FileIdRef& fileId, ResourceShareType 
 
 	switch (FileInfo::ExtractType(fileId.Name))
 	{
+#ifdef MEDUSA_OGG
 	case FileType::ogg:
 		buffer = OggAudio::CreateFromFile(fileId);
 		break;
+#endif
 	case FileType::wav:
 		buffer = WavAudio::CreateFromFile(fileId);
 		break;
@@ -95,21 +101,22 @@ IAudio* AudioFactory::CreateFromFile(const FileIdRef& fileId, ResourceShareType 
 	return buffer;
 }
 
-IAudio* AudioFactory::CreateFromMemory(const FileIdRef& fileId, const MemoryData& data, ResourceShareType shareType /*= ResourceShareType::Share*/)
+Share<IAudio> AudioFactory::CreateFromMemory(const FileIdRef& fileId, const MemoryData& data, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
-	IAudio* buffer = nullptr;
+	Share<IAudio> buffer;
 	if (shareType != ResourceShareType::None)
 	{
 		buffer = Find(fileId);
 		RETURN_SELF_IF_NOT_NULL(buffer);
 	}
 
-
 	switch (FileInfo::ExtractType(fileId.Name))
 	{
+#ifdef MEDUSA_OGG
 	case FileType::ogg:
 		buffer = OggAudio::CreateFromMemory(fileId, data);
 		break;
+#endif
 	case FileType::wav:
 		buffer = WavAudio::CreateFromMemory(fileId, data);
 		break;
@@ -125,3 +132,4 @@ IAudio* AudioFactory::CreateFromMemory(const FileIdRef& fileId, const MemoryData
 
 
 MEDUSA_END;
+#endif

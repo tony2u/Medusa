@@ -9,7 +9,7 @@ MEDUSA_BEGIN;
 
 class BaseSingleListDataSource:public IListDataSource
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_RTTI(BaseSingleListDataSource,IListDataSource);
 
 public:
 	BaseSingleListDataSource();

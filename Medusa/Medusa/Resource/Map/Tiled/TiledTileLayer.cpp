@@ -10,7 +10,7 @@
 #include "TmxTiledMap.h"
 #include "Node/Layer/NormalLayer.h"
 #include "TiledTileset.h"
-#include "Node/Layer/LayerFactory.h"
+#include "Node/NodeFactory.h"
 #include "CoreLib/Common/pugixml/pugixml.hpp"
 
 MEDUSA_BEGIN;
@@ -45,11 +45,14 @@ bool TiledTileLayer::Parse(const pugi::xml_node& node)
 		MemoryData resultData;
 		if (compressionStr == "gzip")
 		{
+#ifdef MEDUSA_UNZIP
 			resultData = ZipReader::DecompressGZIP(data, mSize.Area()*sizeof(uint));
+#endif
 
 		}
 		else if (compressionStr == "zlib")
 		{
+#ifdef MEDUSA_ZLIB
 			// Use zlib to uncompress the tile layer into the temporary array of tiles.
 			uLongf outlen = mSize.Area()*sizeof(uint);
 			resultData = MemoryData::Alloc(outlen);
@@ -59,6 +62,7 @@ bool TiledTileLayer::Parse(const pugi::xml_node& node)
 				Log::FormatError("decompression error:{}", err);
 				return false;
 			}
+#endif
 		}
 		else if (compressionStr.IsEmpty())
 		{
@@ -75,7 +79,7 @@ bool TiledTileLayer::Parse(const pugi::xml_node& node)
 
 		//the decoded data is an array of 32 - bit integers.
 		uint tileCount = mSize.Area();
-		FOR_EACH_SIZE(i, tileCount)
+		FOR_EACH_UINT32(i, tileCount)
 		{
 			uint globalId = buffer[i];
 			TiledTileRef& tileRef = MutableTile(i);
@@ -89,9 +93,8 @@ bool TiledTileLayer::Parse(const pugi::xml_node& node)
 		int index = 0;
 		List<uint> outValues;
 		StringParser::SplitToValues(text, StringRef(","), outValues);
-		FOR_EACH_COLLECTION(i, outValues)
+		for(auto globalId: outValues)
 		{
-			uint globalId = *i;
 			TiledTileRef& tileRef = MutableTile(index);
 			const TiledTilesetRef* tileset = mMap->FindTilesetContainsGlobalId(globalId);
 			tileRef.Initialize(Point2I(index%mSize.Width, index / mSize.Height), globalId, tileset);
@@ -102,9 +105,8 @@ bool TiledTileLayer::Parse(const pugi::xml_node& node)
 	else if (encodingStr == "xml")
 	{
 		int index = 0;
-		FOR_EACH_COLLECTION_STL(i, node.children())
+		for (auto tileNode : node.children())
 		{
-			pugi::xml_node tileNode = *i;
 			uint globalId = tileNode.attribute("gid").as_uint(0);
 			TiledTileRef& tileRef = MutableTile(index);
 			const TiledTilesetRef* tileset = mMap->FindTilesetContainsGlobalId(globalId);
@@ -140,7 +142,7 @@ ILayer* TiledTileLayer::Instantiate(InstantiateMode mode /*= InstantiateMode::No
 		mode = InstantiateMode::Sprite;
 	}
 
-	ILayer* curLayer = LayerFactory::Instance().Create(mInstantiateLayer, StringRef::Empty);
+	ILayer* curLayer = (ILayer*)NodeFactory::Instance().Create(mInstantiateLayer);
 	if (curLayer==nullptr)
 	{
 
@@ -184,7 +186,7 @@ ILayer* TiledTileLayer::Instantiate(InstantiateMode mode /*= InstantiateMode::No
 #ifdef MEDUSA_SCRIPT
 	if (!mScriptFile.IsEmpty())
 	{
-		curLayer->AddScriptFile(mScriptFile);
+		curLayer->TryAddScriptFile(mScriptFile);
 	}
 #endif
 

@@ -5,6 +5,8 @@
 #include "MedusaPreDeclares.h"
 #include "Core/Pattern/Delegate.h"
 #include "Rendering/RenderingTypes.h"
+#include "Resource/Model/Mesh/IMesh.h"
+#include "Resource/Material/IMaterial.h"
 
 MEDUSA_BEGIN;
 
@@ -13,7 +15,7 @@ class RenderingObject
 {
 public:
 	const static RenderingObject Empty;
-	RenderingObject(IMesh* mesh=nullptr,IMaterial* material=nullptr);
+	RenderingObject(const Share<IMesh>& mesh = nullptr, const Share<IMaterial>& material = nullptr);
 	RenderingObject(::std::nullptr_t const) noexcept { }
 
 	~RenderingObject();
@@ -32,11 +34,11 @@ public:
 
 	explicit operator bool() const noexcept { return IsValid(); }
 public:
-	IMesh* Mesh()const { return mMesh; }
-	void SetMesh(IMesh* val);
+	const Share<IMesh>& Mesh()const { return mMesh; }
+	void SetMesh(const Share<IMesh>& val);
 
-	IMaterial* Material() const { return mMaterial; }
-	void SetMaterial(IMaterial* val);
+	const Share<IMaterial>& Material() const { return mMaterial; }
+	void SetMaterial(const Share<IMaterial>& val);
 
 	bool IsValid() const;
 	bool IsBlend()const;
@@ -47,8 +49,8 @@ public:
 	void RegisterMeshChanged(const Delegate<void(RenderableChangedFlags)>& val);
 	void RegisterMaterialChanged(const Delegate<void(RenderableChangedFlags)>& val);
 private:
-	IMesh* mMesh = nullptr;
-	IMaterial* mMaterial = nullptr;
+	Share<IMesh> mMesh = nullptr;
+	Share<IMaterial> mMaterial = nullptr;
 };
 
 

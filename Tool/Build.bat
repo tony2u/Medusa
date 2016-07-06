@@ -1,3 +1,11 @@
+
+::SirenCompiler
+"C:\Program Files (x86)\MSBuild\14.0\Bin\msbuild" Siren\SirenCompiler\SirenCompiler.vcxproj /p:Configuration=Release;Platform=Win32
+copy Siren\SirenCompiler\Release\sc.exe ..\Release\sc.exe
+rmdir /s /q SirenCompiler\Release
+pause
+
+
 ::Packer
 "C:\Program Files (x86)\MSBuild\14.0\Bin\msbuild" Packer\Packer.vcxproj /p:Configuration=Release;Platform=Win32
 copy Packer\Release\mp.exe ..\Release\mp.exe
@@ -21,8 +29,3 @@ rmdir /s /q FileWrapper\FileWrapper\obj
 pause
 
 
-::SirenCompiler
-"C:\Program Files (x86)\MSBuild\14.0\Bin\msbuild" SirenCompiler\SirenCompiler.vcxproj /p:Configuration=Release;Platform=Win32
-copy SirenCompiler\Release\sc.exe ..\Release\sc.exe
-rmdir /s /q SirenCompiler\Release
-pause

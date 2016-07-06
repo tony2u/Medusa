@@ -11,7 +11,7 @@ MEDUSA_BEGIN;
 
 class WinEGLView :public BaseRenderView
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_RTTI(WinEGLView,BaseRenderView);
 
 public:
 	WinEGLView(StringRef name=StringRef::Empty);

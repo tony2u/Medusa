@@ -30,5 +30,5 @@ bool NineGridSpriteLayer::Initialize()
 
 
 
-MEDUSA_IMPLEMENT_LAYER(NineGridSpriteLayer, BaseCaseLayer, StringRef::Empty, StringRef::Empty);
+MEDUSA_IMPLEMENT_NODE(NineGridSpriteLayer);
 

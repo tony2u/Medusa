@@ -501,9 +501,8 @@ if(!splitResult)
 {
 MEDUSA_ASSERT_FAILED("Invalid flags names");
 }
-for(auto i = (names).GetEnumerator();i.MoveNext();)
+for(const auto& str:names)
 {
-const HeapString& str=*i;
 if (isSucceed)
 {
 for(j=0;j<Size;++j)
@@ -547,9 +546,8 @@ if ((StringParser::Split<char>(name,"|",names))==false)
 {
 return false;
 };
-for(auto i = (names).GetEnumerator();i.MoveNext();)
+for(const auto& str:names)
 {
-const HeapString& str=*i;
 if (isSucceed)
 {
 for(j=0;j<Size;++j)

@@ -9,7 +9,7 @@ MEDUSA_BEGIN;
 
 struct TruePredicate :public IPredicate
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_DECLARE_PREDICATE(TruePredicate,IPredicate);
 public:
 	virtual int Evaluate(void*)const override { return 1; }
 };

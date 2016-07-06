@@ -9,7 +9,7 @@ MEDUSA_BEGIN;
 
 struct OrPredicate :public IPredicate
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_DECLARE_PREDICATE(OrPredicate,IPredicate);
 public:
 	OrPredicate(const IPredicate* left = nullptr, const IPredicate* right = nullptr);
 public:

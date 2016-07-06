@@ -3,12 +3,18 @@
 // license that can be found in the LICENSE file.
 #pragma once
 #include "MedusaCorePreDeclares.h"
+#ifdef MEDUSA_WINDOWS
+#include <WinSock2.h>
+#include <WS2tcpip.h>
+#pragma comment(lib,"wsock32.lib")		//add socket lib, or it'll be failed
+#endif
 
 MEDUSA_BEGIN;
 
-enum class SocketAddressFamily:ushort
+enum class SocketAddressFamily :ushort
 {
-	TCPIP = AF_INET,
+	IP = AF_INET,
+	IP6 = AF_INET6,
 	Unix = AF_UNIX
 };
 
@@ -28,46 +34,94 @@ enum class SocketProtocolType
 
 
 
+
+#ifdef MEDUSA_WINDOWS
+
 /*
-Success
-PartAll	transfer part or all data >0
-Fault	 -1 <0
-Interrupt
-ConnectFault	(maybe other close the connection)
+* Windows Sockets errors redefined as regular Berkeley error constants.
+* These are commented out in Windows NT to avoid conflicts with errno.h.
+* Use the WSA constants instead.
 */
-enum class SocketError
-{
-	Timeout = -3,
-	Fault = -2,
-	InProgress=-1,
+#if 1
+#undef  EWOULDBLOCK            
+#undef EINPROGRESS            
+#undef EALREADY               
+#undef ENOTSOCK               
+#undef EDESTADDRREQ           
+#undef EMSGSIZE               
+#undef EPROTOTYPE             
+#undef ENOPROTOOPT            
+#undef EPROTONOSUPPORT        
+#undef ESOCKTNOSUPPORT        
+#undef EOPNOTSUPP             
+#undef EPFNOSUPPORT           
+#undef EAFNOSUPPORT           
+#undef EADDRINUSE             
+#undef EADDRNOTAVAIL          
+#undef ENETDOWN               
+#undef ENETUNREACH            
+#undef ENETRESET              
+#undef ECONNABORTED           
+#undef ECONNRESET             
+#undef ENOBUFS                
+#undef EISCONN                
+#undef ENOTCONN               
+#undef ESHUTDOWN              
+#undef ETOOMANYREFS           
+#undef ETIMEDOUT              
+#undef ECONNREFUSED           
+#undef ELOOP                  
+#undef ENAMETOOLONG           
+#undef EHOSTDOWN              
+#undef EHOSTUNREACH           
+#undef ENOTEMPTY              
+#undef EPROCLIM               
+#undef EUSERS                 
+#undef EDQUOT                 
+#undef ESTALE                 
+#undef EREMOTE                
 
-	Success = 0,
+//////////////////////////////////////////////////////////////////////////
+#define EWOULDBLOCK             WSAEWOULDBLOCK
+#define EINPROGRESS             WSAEINPROGRESS
+#define EALREADY                WSAEALREADY
+#define ENOTSOCK                WSAENOTSOCK
+#define EDESTADDRREQ            WSAEDESTADDRREQ
+#define EMSGSIZE                WSAEMSGSIZE
+#define EPROTOTYPE              WSAEPROTOTYPE
+#define ENOPROTOOPT             WSAENOPROTOOPT
+#define EPROTONOSUPPORT         WSAEPROTONOSUPPORT
+#define ESOCKTNOSUPPORT         WSAESOCKTNOSUPPORT
+#define EOPNOTSUPP              WSAEOPNOTSUPP
+#define EPFNOSUPPORT            WSAEPFNOSUPPORT
+#define EAFNOSUPPORT            WSAEAFNOSUPPORT
+#define EADDRINUSE              WSAEADDRINUSE
+#define EADDRNOTAVAIL           WSAEADDRNOTAVAIL
+#define ENETDOWN                WSAENETDOWN
+#define ENETUNREACH             WSAENETUNREACH
+#define ENETRESET               WSAENETRESET
+#define ECONNABORTED            WSAECONNABORTED
+#define ECONNRESET              WSAECONNRESET
+#define ENOBUFS                 WSAENOBUFS
+#define EISCONN                 WSAEISCONN
+#define ENOTCONN                WSAENOTCONN
+#define ESHUTDOWN               WSAESHUTDOWN
+#define ETOOMANYREFS            WSAETOOMANYREFS
+#define ETIMEDOUT               WSAETIMEDOUT
+#define ECONNREFUSED            WSAECONNREFUSED
+#define ELOOP                   WSAELOOP
+#define ENAMETOOLONG            WSAENAMETOOLONG
+#define EHOSTDOWN               WSAEHOSTDOWN
+#define EHOSTUNREACH            WSAEHOSTUNREACH
+#define ENOTEMPTY               WSAENOTEMPTY
+#define EPROCLIM                WSAEPROCLIM
+#define EUSERS                  WSAEUSERS
+#define EDQUOT                  WSAEDQUOT
+#define ESTALE                  WSAESTALE
+#define EREMOTE                 WSAEREMOTE
 
-	Interrupt = EINTR,
-	ConnectFault = EPIPE,
+#endif
 
-};
-
-
-
-enum class SocketPipeType
-{
-	Read = 0,
-	Write = 1,
-	ReadWrite = 2
-
-};
-
-
-enum class SocketEventFlags
-{
-	None = 0,
-	Read = 1,
-	Write = 2,
-
-	ReadWrite = 3,
-
-
-};
+#endif
 
 MEDUSA_END;

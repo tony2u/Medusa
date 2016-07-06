@@ -10,7 +10,7 @@ MEDUSA_BEGIN;
 
 class BaseRenderView :public IView
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_RTTI(BaseRenderView,IView);
 
 public:
 	BaseRenderView(StringRef name=StringRef::Empty);

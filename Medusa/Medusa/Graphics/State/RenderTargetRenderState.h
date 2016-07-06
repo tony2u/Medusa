@@ -11,14 +11,14 @@ MEDUSA_BEGIN;
 
 class RenderTargetRenderState:public IRenderState
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_RTTI(RenderTargetRenderState,IRenderState);
 public:
 	RenderTargetRenderState(uint frameBuffer,const Rect2I& viewPort,const Color4F& clearColor,bool isDefault=false);
 	RenderTargetRenderState();
 	virtual ~RenderTargetRenderState();
 	virtual void Apply()const override;
 
-	virtual RenderTargetRenderState* Clone()const override;
+	Share<RenderTargetRenderState> Clone()const;
 	virtual void CopyFrom(const IRenderState& other)override;
 
 	virtual bool Equals(const IRenderState& state)const override;
@@ -34,7 +34,7 @@ public:
 	const Color4F& ClearColor() const { return mClearColor; }
 	void SetClearColor(const Color4F& val) {RETURN_IF_EQUAL(mClearColor, val); mClearColor = val; OnStateChanged();}
 
-	static RenderTargetRenderState* Current(bool isDefault=false);
+	static Share<RenderTargetRenderState> Current(bool isDefault=false);
 protected:
 	uint mFrameBuffer;
 	Rect2I mViewPort;

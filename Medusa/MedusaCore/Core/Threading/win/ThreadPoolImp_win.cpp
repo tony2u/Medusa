@@ -28,7 +28,7 @@ bool ThreadPoolImp::InitializeHelper(uint minCount /*= ThreadPoolImp::MinCount*/
 	//default is 0-1500
 	if (autoManaged)
 	{
-		uint cpuCount = Environment::Instance().GetCPUCount();
+		uint cpuCount = Environment::Instance().CPUCount();
 		minCount = 2;
 		maxCount = cpuCount * 2 + 2;
 	}

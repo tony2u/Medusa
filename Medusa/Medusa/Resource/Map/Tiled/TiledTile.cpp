@@ -73,9 +73,8 @@ bool TiledTile::Parse(const pugi::xml_node& node)
 	pugi::xml_node animationNode = node.child("animation");
 	if (!animationNode.empty())
 	{
-		FOR_EACH_COLLECTION_STL(i, animationNode.children())
+		for (auto frameNode : animationNode.children())
 		{
-			pugi::xml_node frameNode = *i;
 			int tileId = frameNode.attribute("tileid").as_int(0);
 			uint durationMilliseconds = frameNode.attribute("duration").as_uint(0);
 			AddFrame(tileId, durationMilliseconds);
@@ -97,7 +96,7 @@ bool TiledTile::Parse(const pugi::xml_node& node)
 
 void TiledTile::SetImage(TiledImage* val)
 {
-	SAFE_ASSIGN(mImage, val);
+	mImage = val;
 }
 
 void TiledTile::SetObjectLayer(TiledObjectLayer* val)
@@ -119,7 +118,7 @@ void TiledTile::TryUpdateRegion(const TiledTileset& tileset)
 	RETURN_IF_NULL(image);
 
 	auto* page = image->TexturePage();
-	auto* atlas = page->Atlas();
+	auto atlas = page->Atlas();
 	mRegion = atlas->FindRegion(mId);
 }
 

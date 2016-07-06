@@ -11,24 +11,22 @@ namespace ThreadingPrivate
 {
 	void NTAPI OnThreadpoolWorkCallback(PTP_CALLBACK_INSTANCE pInstance, PVOID pvContext, PTP_WORK Work)
 	{
-		ICommand* command = (ICommand*)pvContext;
+		ShareCommand* command = (ShareCommand*)pvContext;
 		RETURN_IF_NULL(command);
-		command->Execute();
+		(*command)->Execute();
 	}
 }
 
-ThreadPoolWork::ThreadPoolWork(const StringRef& name,ICommand* command)
+ThreadPoolWork::ThreadPoolWork(ThreadPool* pool, const StringRef& name, const ShareCommand& command)
 	:mName(name),mCommand(command)
 {
-	SAFE_RETAIN(command);
-	mWork = CreateThreadpoolWork(ThreadingPrivate::OnThreadpoolWorkCallback, command, &ThreadPool::Instance().mCallBackEnviron);
+	mWork = CreateThreadpoolWork(ThreadingPrivate::OnThreadpoolWorkCallback, &mCommand, &pool->mCallBackEnviron);
 
 }
 
 ThreadPoolWork::~ThreadPoolWork(void)
 {
-	SAFE_RELEASE(mCommand);
-
+	mCommand = nullptr;
 	if (mWork != nullptr)
 	{
 		CloseThreadpoolWork(mWork);

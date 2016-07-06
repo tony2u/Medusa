@@ -396,7 +396,7 @@ IRender::IRender(void)
 IRender::~IRender(void)
 {
 #ifdef MEDUSA_RENDER_ASSERT_ENABLED
-	SAFE_RELEASE_DICTIONARY_VALUE(mSamplerRenderStateDict);
+	mSamplerRenderStateDict.Clear();
 #endif
 }
 
@@ -1148,10 +1148,9 @@ bool IRender::Initialize()
 	TryGetTextureParamter(GraphicsTextureType::TextureCubeMap, GraphicsTextureParameter::WrapT, (int&)mDefaultCubeMapWrapT);
 
 
-	SamplerRenderState* state=new SamplerRenderState(mDefaultTextureMinFilter,mDefaultTextureMagFilter,mDefaultTextureWrapS,mDefaultTextureWrapT);
+	Share<SamplerRenderState> state=new SamplerRenderState(mDefaultTextureMinFilter,mDefaultTextureMagFilter,mDefaultTextureWrapS,mDefaultTextureWrapT);
 	state->SetTexture(0);
 	mSamplerRenderStateDict.Add(0,state);
-	SAFE_RETAIN(state);
 
 #endif
 	return true;

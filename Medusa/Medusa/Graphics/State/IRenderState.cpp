@@ -17,10 +17,10 @@ IRenderState::~IRenderState()
 
 }
 
-IRenderState* IRenderState::Clone() const
+Share<IRenderState> IRenderState::Clone() const
 {
 	uint32 index = Math::CountTrailingZero((uint32)Type());
-	IRenderState* state= RenderStateFactory::Instance().Create(index);
+	auto state= RenderStateFactory::Instance().Create(index);
 	state->CopyFrom(*this);
 	return state;
 }
@@ -33,7 +33,7 @@ bool IRenderState::Equals(const IRenderState& state) const
 }
 
 
-void IRenderState::UpdateWorldState(const IRenderState* selfRenderState, const IRenderState* parentRenderState, const Matrix4& selfWorldMatrix)
+void IRenderState::UpdateWorldState(const Share<IRenderState>& selfRenderState, const Share<IRenderState>& parentRenderState, const Matrix4& selfWorldMatrix)
 {
 	if (selfRenderState != nullptr)
 	{
@@ -53,6 +53,5 @@ void IRenderState::OnStateChanged()
 	OnChanged(*this);
 }
 
-MEDUSA_IMPLEMENT_RTTI_ROOT(IRenderState);
 
 MEDUSA_END;

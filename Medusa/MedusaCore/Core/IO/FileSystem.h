@@ -59,13 +59,13 @@ public:
 
 	const FileEntry* Find(const FileIdRef& fileId)const;
 	FileEntry* Find(const FileIdRef& fileId);
-	bool Exists(const FileIdRef& fileId)const { return Find(fileId) != nullptr; }
+	bool Exists(const FileIdRef& fileId)const;
 	bool AssertExists(const FileIdRef& fileId)const;
 	FileIdRef ExistsOr(const FileIdRef& fileId, const FileIdRef& optional)const;
 	StringRef ExistsOr(const StringRef& fileId, const StringRef& optional)const;
 
 public:
-	const IStream* Read(const FileIdRef& fileId, FileDataType dataType = FileDataType::Binary)const;
+	Share<const IStream> Read(const FileIdRef& fileId, FileDataType dataType = FileDataType::Binary)const;
 
 	MemoryData ReadAllData(const FileIdRef& fileId, DataReadingMode mode = DataReadingMode::AlwaysCopy)const;
 	MemoryData ReadAllData(const FileEntry& fileEntry, DataReadingMode mode = DataReadingMode::AlwaysCopy)const;
@@ -100,17 +100,18 @@ public:
 	bool TryGetNameItemsWithExtension(StringRef ext, List<FileMapNameItem*>& outItems);
 
 	FileMapOrderItem* MapFileReference(const StringRef& fileName, FileEntry& targetFileEntry, void* region = nullptr, bool tryReload = false);
+	void UnmapFileReference(FileMapOrderItem* orderItem, FileEntry& targetFileEntry);
+
 
 protected:
 	void ReloadTagItems();
 	FileMapOrderItem* MapFile(FileEntry& fileEntry, bool tryReload = false);
 	bool UnmapFile(const FileEntry& fileEntry, bool tryReload = false);
-
 	void ApplyTagHelper(const PublishTarget& tag);
 
 #pragma endregion Map
 protected:
-	SortedList<IPackage*, EqualCompare<IPackage*>, CustomCompareForPointer<IPackage*>> mPackages;
+	SortedList<IPackage*, EqualCompare, CustomCompareForPointer> mPackages;
 	MemoryPackage* mMemoryPackage = nullptr;		//weak
 	DirectoryPackage* mReadDirPackage = nullptr;	//weak
 	DirectoryPackage* mWriteDirPackage = nullptr;	//weak

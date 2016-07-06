@@ -14,7 +14,7 @@
 #include "Node/Input/EventArg/CharInputEventArg.h"
 #include "Node/Input/EventArg/KeyboardEventArg.h"
 
-#include "Core/Command/Processor/MainCommandProcessor.h"
+#include "Core/Command/Executor/SyncCommandExecutor.h"
 
 
 MEDUSA_BEGIN;
@@ -76,9 +76,8 @@ void InputManager::UpdateInputPassingRecursively()
 	IScene* scene = SceneManager::Instance().Current();
 	scene->ResetInputPassing();
 
-	FOR_EACH_COLLECTION(i, mDispatchers)
+	for(auto node: mDispatchers)
 	{
-		INode* node = *i;
 		node->EnableInputPassing();
 	}
 
@@ -90,9 +89,8 @@ void InputManager::UpdateInputPassingRecursively()
 
 void InputManager::Reset()
 {
-	FOR_EACH_COLLECTION(i, mDispatchers)
+	for (auto node : mDispatchers)
 	{
-		INode* node = *i;
 		node->MutableInput().Reset();
 	}
 }
@@ -113,7 +111,7 @@ bool InputManager::ShowKeyboard(INode* node)
 	KeyboardWillShowHelper(scene, e);
 	KeyboardShowedHelper(scene, e);
 
-	MainCommandProcessor::Instance().WaitForComplete();
+	SyncCommandExecutor::Instance().WaitForComplete();
 
 	return true;
 }
@@ -129,7 +127,7 @@ bool InputManager::HideKeyboard(INode* node)
 	KeyboardWillHideHelper(scene, e);
 	KeyboardHidedHelper(scene, e);
 
-	MainCommandProcessor::Instance().WaitForComplete();
+	SyncCommandExecutor::Instance().WaitForComplete();
 
 	return true;
 }
@@ -154,7 +152,7 @@ void InputManager::TouchesBegan(TouchEventArg& e)
 		TouchesBeganHelper(scene, e);
 	}
 	
-	MainCommandProcessor::Instance().WaitForComplete();
+	SyncCommandExecutor::Instance().WaitForComplete();
 
 }
 
@@ -177,7 +175,7 @@ void InputManager::TouchesMoved(TouchEventArg& e)
 		TouchesMovedHelper(scene, e);
 	}
 	
-	MainCommandProcessor::Instance().WaitForComplete();
+	SyncCommandExecutor::Instance().WaitForComplete();
 
 }
 
@@ -204,7 +202,7 @@ void InputManager::TouchesEnded(TouchEventArg& e)
 		}
 	}
 
-	MainCommandProcessor::Instance().WaitForComplete();
+	SyncCommandExecutor::Instance().WaitForComplete();
 
 }
 
@@ -228,7 +226,7 @@ void InputManager::TouchesCancelled(TouchEventArg& e)
 		Reset();
 	}
 	
-	MainCommandProcessor::Instance().WaitForComplete();
+	SyncCommandExecutor::Instance().WaitForComplete();
 
 }
 
@@ -250,7 +248,7 @@ void InputManager::KeyDown(KeyDownEventArg& e)
 		KeyDownHelper(scene, e);
 	}
 
-	MainCommandProcessor::Instance().WaitForComplete();
+	SyncCommandExecutor::Instance().WaitForComplete();
 }
 
 void InputManager::KeyUp(KeyUpEventArg& e)
@@ -271,7 +269,7 @@ void InputManager::KeyUp(KeyUpEventArg& e)
 		KeyUpHelper(scene, e);
 	}
 	
-	MainCommandProcessor::Instance().WaitForComplete();
+	SyncCommandExecutor::Instance().WaitForComplete();
 }
 
 void InputManager::CharInput(CharInputEventArg& e)
@@ -292,7 +290,7 @@ void InputManager::CharInput(CharInputEventArg& e)
 		CharInputHelper(scene, e);
 	}
 	
-	MainCommandProcessor::Instance().WaitForComplete();
+	SyncCommandExecutor::Instance().WaitForComplete();
 }
 
 void InputManager::Scroll(ScrollEventArg& e)
@@ -314,7 +312,7 @@ void InputManager::Scroll(ScrollEventArg& e)
 	}
 
 	
-	MainCommandProcessor::Instance().WaitForComplete();
+	SyncCommandExecutor::Instance().WaitForComplete();
 }
 
 void InputManager::TouchesBeganHelper(INode* node, TouchEventArg& e)

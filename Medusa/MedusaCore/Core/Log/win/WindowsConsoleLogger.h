@@ -11,14 +11,12 @@ class WindowsConsoleLogger :public ILogger
 {
 public:
 	using ILogger::ILogger;
-	virtual ~WindowsConsoleLogger(void);
-
 protected:
-	virtual void OutputLogString(StringRef inString,LogType logType=LogType::Info);
-	virtual void OutputLogString(WStringRef inString,LogType logType=LogType::Info);
-	virtual void SetLogColor(LogType logType);
+	virtual void Print(const Share<LogMessage>& message)override;
+	virtual void Print(const Share<WLogMessage>& message)override;
+	void SetLogColor(LogLevel logType);
 protected:
-	LogType mCurrentLogType;
+	LogLevel mCurrentLogType=LogLevel::None;
 };
 #endif
 

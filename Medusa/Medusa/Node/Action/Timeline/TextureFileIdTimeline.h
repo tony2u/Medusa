@@ -9,8 +9,8 @@ MEDUSA_BEGIN;
 class TextureFileIdTimeline:public ITimeline
 {
 public:
-	TextureFileIdTimeline(TextureFileIdTimelineModel* model, intp repeatCount, float beforeDelay = 0.f, float repeatDuration = 0.f, float afterDelay = 0.f, const StringRef& name = StringRef::Empty);
-	TextureFileIdTimeline(TextureFileIdTimelineModel* model, bool isRepeatForever, float beforeDelay = 0.f, float repeatDuration = 0.f, float afterDelay = 0.f, const StringRef& name = StringRef::Empty);
+	TextureFileIdTimeline(const Share<TextureFileIdTimelineModel>& model, intp repeatCount, float beforeDelay = 0.f, float repeatDuration = 0.f, float afterDelay = 0.f, const StringRef& name = StringRef::Empty);
+	TextureFileIdTimeline(const Share<TextureFileIdTimelineModel>& model, bool isRepeatForever, float beforeDelay = 0.f, float repeatDuration = 0.f, float afterDelay = 0.f, const StringRef& name = StringRef::Empty);
 
 	virtual ~TextureFileIdTimeline();
 protected:

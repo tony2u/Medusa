@@ -9,13 +9,13 @@
 MEDUSA_BEGIN;
 
 
-RotationTimeline::RotationTimeline(RotationTimelineModel* model, bool isRepeatForever, float beforeDelay /*= 0.f*/, float repeatDuration /*= 0.f*/, float afterDelay /*= 0.f*/, const StringRef& name /*= StringRef::Empty*/)
+RotationTimeline::RotationTimeline(const Share<RotationTimelineModel>& model, bool isRepeatForever, float beforeDelay /*= 0.f*/, float repeatDuration /*= 0.f*/, float afterDelay /*= 0.f*/, const StringRef& name /*= StringRef::Empty*/)
 	: ITimeline(model, isRepeatForever, beforeDelay, repeatDuration, afterDelay, name)
 {
 
 }
 
-RotationTimeline::RotationTimeline(RotationTimelineModel* model, intp repeatCount, float beforeDelay /*= 0.f*/, float repeatDuration /*= 0.f*/, float afterDelay /*= 0.f*/, const StringRef& name /*= StringRef::Empty*/)
+RotationTimeline::RotationTimeline(const Share<RotationTimelineModel>& model, intp repeatCount, float beforeDelay /*= 0.f*/, float repeatDuration /*= 0.f*/, float afterDelay /*= 0.f*/, const StringRef& name /*= StringRef::Empty*/)
 	: ITimeline(model, repeatCount, beforeDelay, repeatDuration, afterDelay, name)
 {
 
@@ -28,7 +28,7 @@ RotationTimeline::~RotationTimeline()
 
 bool RotationTimeline::OnUpdate(float prevElapsed,float dt, float blend /*= 1.f*/)
 {
-	RotationTimelineModel* model = (RotationTimelineModel*)mModel;
+	auto model = mModel.CastPtr<RotationTimelineModel>();
 	Rotation3F val= model->GetRotation(Elapsed())*blend;
 	INode* node = (INode*)mTarget;
 	node->SetRotation(val);

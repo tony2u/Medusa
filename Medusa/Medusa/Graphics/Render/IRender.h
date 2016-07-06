@@ -14,7 +14,8 @@
 #include "Core/Pattern/IInitializable.h"
 #include "Resource/Model/Mesh/MeshComponents.h"
 #include "Graphics/PixelType.h"
-
+#include "Core/String/StringRef.h"
+#include "Graphics/State/SamplerRenderState.h"
 
 MEDUSA_BEGIN;
 
@@ -589,7 +590,7 @@ protected:
 
 	//texture parameters
 
-	Dictionary<uint, SamplerRenderState*> mSamplerRenderStateDict;
+	Dictionary<uint, Share<SamplerRenderState>> mSamplerRenderStateDict;
 
 	GraphicsTextureMinFilter mDefaultTextureMinFilter;
 	GraphicsTextureMagFilter mDefaultTextureMagFilter;

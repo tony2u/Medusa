@@ -236,9 +236,8 @@ PODModel::~PODModel(void)
 
 PODNode* PODModel::GetPODNode( StringRef name )
 {
-	FOR_EACH_COLLECTION(i,mPODNodes)
+	for (auto node : mPODNodes)
 	{
-		PODNode* node=*i;
 		if (node->Name==name)
 		{
 			return node;
@@ -289,9 +288,9 @@ bool PODModel::Initialize(ModelLoadingOptions loadingOptions/*=ModelLoadingOptio
 {
 	RETURN_FALSE_IF_FALSE(BaseSceneModel::Initialize(loadingOptions));
 
-	FOR_EACH_COLLECTION(i,mMaterials)
+	for (auto i : mMaterials)
 	{
-		PODMaterial* material=(PODMaterial*)*i;
+		auto material=i.CastPtr<PODMaterial>();
 		material->Initialize(mTextureNames);
 	}
 
@@ -310,7 +309,7 @@ bool PODModel::Initialize(ModelLoadingOptions loadingOptions/*=ModelLoadingOptio
 		{
 			if (podNode->MaterialIndex<(int)mMaterials.Count())
 			{
-				IMaterial* material=mMaterials[podNode->MaterialIndex];
+				auto material=mMaterials[podNode->MaterialIndex];
 				meshNode->SetMaterial(material);
 			}
 			else
@@ -330,7 +329,7 @@ bool PODModel::Initialize(ModelLoadingOptions loadingOptions/*=ModelLoadingOptio
 			rootMeshes.Add(meshNode);
 		}
 
-		PODMesh* podMesh= (PODMesh*)meshNode->MutableBaseMeshPtr();
+		auto podMesh= meshNode->MutableBaseMeshPtr().CastPtr<PODMesh>();
 		podMesh->Initialzie();
 
 		if (podNode->TryGetMatrix(0.f, outNodeMatrix))
@@ -409,16 +408,16 @@ bool PODModel::Initialize(ModelLoadingOptions loadingOptions/*=ModelLoadingOptio
 	//init animation
 	if (!MEDUSA_FLAG_HAS(loadingOptions,ModelLoadingOptions::NoSkeletonAnimation))
 	{
-		ITimelineModel* ani= CreateSkeletonTimelineModel();
+		auto ani= CreateSkeletonTimelineModel();
 		TimelineModelFactory::Instance().Add(ani);
 	}
 
 	if (!MEDUSA_FLAG_HAS(loadingOptions,ModelLoadingOptions::NoCameraAnimation))
 	{
-		FOR_EACH_COLLECTION(i,mCameras)
+		for (auto i : mCameras)
 		{
-			PODCameraModelNode* camera=(PODCameraModelNode*)*i;
-			ITimelineModel* ani=CreateCameraTimelineModel(camera->Name());
+			PODCameraModelNode* camera=(PODCameraModelNode*)i;
+			auto ani=CreateCameraTimelineModel(camera->Name());
 			TimelineModelFactory::Instance().Add(ani);
 
 		}
@@ -426,10 +425,10 @@ bool PODModel::Initialize(ModelLoadingOptions loadingOptions/*=ModelLoadingOptio
 
 	if (!MEDUSA_FLAG_HAS(loadingOptions,ModelLoadingOptions::NoLightAnimation))
 	{
-		FOR_EACH_COLLECTION(i,mLights)
+		for (auto i : mLights)
 		{
-			PODLightModelNode* light=(PODLightModelNode*)*i;
-			ITimelineModel* ani=CreateLightTimelineModel(light->Name());
+			PODLightModelNode* light=(PODLightModelNode*)i;
+			auto ani=CreateLightTimelineModel(light->Name());
 			TimelineModelFactory::Instance().Add(ani);
 
 		}
@@ -442,15 +441,15 @@ bool PODModel::Initialize(ModelLoadingOptions loadingOptions/*=ModelLoadingOptio
 }
 
 
-ITimelineModel* PODModel::CreateSkeletonTimelineModel() const
+Share<ITimelineModel> PODModel::CreateSkeletonTimelineModel() const
 {
-	IdentityTimelineModel* rootAnimation=new IdentityTimelineModel(mFileId.ToRef());
+	Share<IdentityTimelineModel> rootAnimation=new IdentityTimelineModel(mFileId.ToRef());
 
-	List<PODJointTimelineModel*> tempAnimations;
+	List<Share<PODJointTimelineModel>> tempAnimations;
 	FOR_EACH_SIZE(i,mPODNodes.Count())	//all nodes
 	{
 		const PODNode* podNode=mPODNodes[i];
-		PODJointTimelineModel* podAnimation=new PODJointTimelineModel(podNode->Name);
+		Share<PODJointTimelineModel> podAnimation=new PODJointTimelineModel(podNode->Name);
 		podAnimation->Initialize(podNode);
 		tempAnimations.Append(podAnimation);
 	}
@@ -460,7 +459,7 @@ ITimelineModel* PODModel::CreateSkeletonTimelineModel() const
 		const PODNode* podNode=mPODNodes[i];
 		if (podNode->ParentIndex>=0)
 		{
-			//PODJointTimelineModel* parent=tempAnimations[podNode->ParentIndex];
+			//auto parent=tempAnimations[podNode->ParentIndex];
 			//parent->AddChild(tempAnimations[i]);
 		}
 		else
@@ -473,14 +472,14 @@ ITimelineModel* PODModel::CreateSkeletonTimelineModel() const
 }
 
 
-ITimelineModel* PODModel::CreateCameraTimelineModel(StringRef name) const
+Share<ITimelineModel> PODModel::CreateCameraTimelineModel(StringRef name) const
 {
-	FOR_EACH_COLLECTION(i,mCameras)
+	for (auto i : mCameras)
 	{
-		PODCameraModelNode* camera=(PODCameraModelNode*)*i;
+		PODCameraModelNode* camera=(PODCameraModelNode*)i;
 		if (camera->Name()==name)
 		{
-			PODCameraFOVTimelineModel* animation=new PODCameraFOVTimelineModel(name);
+			Share<PODCameraFOVTimelineModel> animation=new PODCameraFOVTimelineModel(name);
 
 
 			if(camera->TargetObjectIndex>=0)
@@ -500,14 +499,14 @@ ITimelineModel* PODModel::CreateCameraTimelineModel(StringRef name) const
 }
 
 
-ITimelineModel* PODModel::CreateLightTimelineModel( StringRef name ) const
+Share<ITimelineModel> PODModel::CreateLightTimelineModel( StringRef name ) const
 {
-	FOR_EACH_COLLECTION(i,mLights)
+	for (auto i : mLights)
 	{
-		PODLightModelNode* light=(PODLightModelNode*)*i;
+		PODLightModelNode* light=(PODLightModelNode*)i;
 		if (light->Name()==name)
 		{
-			PODLightTimelineModel* animation=new PODLightTimelineModel(name);
+			Share<PODLightTimelineModel> animation=new PODLightTimelineModel(name);
 
 			if(light->TargetObjectIndex>=0)
 			{
@@ -525,11 +524,11 @@ ITimelineModel* PODModel::CreateLightTimelineModel( StringRef name ) const
 	return nullptr;
 }
 
-Camera* PODModel::CreateCamera(const FileIdRef& fileId, const Size2F& winSize) const
+Share<Camera> PODModel::CreateCamera(const FileIdRef& fileId, const Size2F& winSize) const
 {
-	FOR_EACH_COLLECTION(i,mCameras)
+	for (auto i : mCameras)
 	{
-		const PODCameraModelNode* camera=(PODCameraModelNode*)*i;
+		const PODCameraModelNode* camera=(PODCameraModelNode*)i;
 		if (camera->Name() == fileId.Name)
 		{
 			return camera->CreateCamera(winSize);
@@ -539,11 +538,11 @@ Camera* PODModel::CreateCamera(const FileIdRef& fileId, const Size2F& winSize) c
 	return nullptr;
 }
 
-ILight* PODModel::CreateLight(const FileIdRef& fileId) const
+Share<ILight> PODModel::CreateLight(const FileIdRef& fileId) const
 {
-	FOR_EACH_COLLECTION(i,mLights)
+	for (auto i : mLights)
 	{
-		const PODLightModelNode* light=(PODLightModelNode*)*i;
+		const PODLightModelNode* light=(PODLightModelNode*)i;
 		if (light->Name() == fileId.Name)
 		{
 			return light->CreateLight();
@@ -1005,7 +1004,7 @@ bool PODModel::ReadMaterial( MemoryStream& stream,PODModel& model )
 		case (int)PODIdentifier::Material|(int)PODModel::EndTagMask:
 			{
 				MaterialFactory::Instance().Add(material.get());
-				IMaterial* materialResource=material.release();
+				auto materialResource=material.release();
 				model.mMaterials.Append(materialResource);
 				materialResource->Retain();
 				return true;

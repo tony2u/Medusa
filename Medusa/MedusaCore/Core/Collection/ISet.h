@@ -12,7 +12,7 @@
 
 MEDUSA_BEGIN;
 
-template<typename T,typename TCompare=DefaultCompare<T> >
+template<typename T,typename TCompare=DefaultCompare >
 struct ISet:public ICollection<T>
 {
 public:

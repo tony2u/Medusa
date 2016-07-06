@@ -9,7 +9,7 @@
 
 MEDUSA_BEGIN;
 
-QuadModel::QuadModel( const FileIdRef& fileId,IMaterial* material,const Rect2F& textureRect )
+QuadModel::QuadModel( const FileIdRef& fileId, const Share<IMaterial>& material,const Rect2F& textureRect )
 	:BaseSingleTextureModel(fileId,material),mTextureRect(textureRect)
 {
 	

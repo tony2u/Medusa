@@ -11,12 +11,10 @@
 
 MEDUSA_BEGIN;
 
-class StateFactory :public Singleton < StateFactory >, public MapObjectFactory < StringRef, IState*() >
+class StateFactory : public MapObjectFactory < StringRef, IState*() >, public Singleton < StateFactory >
 {
-	friend class Singleton < StateFactory > ;
-
+	friend class Singleton < StateFactory >;
 	StateFactory();
-
 	~StateFactory(void) {}
 public:
 	using MapObjectFactory<StringRef, IState*()>::Register;

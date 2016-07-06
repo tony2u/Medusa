@@ -13,7 +13,7 @@
 
 
 MEDUSA_BEGIN;
-SwipeGestureRecognizer::SwipeGestureRecognizer( INode* node,ScrollDirection direction,float minMovement,float minVelocity) 
+SwipeGestureRecognizer::SwipeGestureRecognizer(INode* node, ScrollDirection direction, float minMovement, float minVelocity)
 	:IGestureRecognizer(node),
 	mDirection(direction),
 	mMinMovement(minMovement),
@@ -25,33 +25,33 @@ SwipeGestureRecognizer::SwipeGestureRecognizer( INode* node,ScrollDirection dire
 
 SwipeGestureRecognizer::~SwipeGestureRecognizer(void)
 {
-	
+
 }
 
 void SwipeGestureRecognizer::Reset()
 {
-	mPrevPos=Point2F::Zero;
-	mCurrentPos=Point2F::Zero;
-	mBeginPos=Point2F::Zero;
-	mBeginTimeStamp=0;
-	mEndTimeStamp=0;
-	mPrevTimeStamp=0;
+	mPrevPos = Point2F::Zero;
+	mCurrentPos = Point2F::Zero;
+	mBeginPos = Point2F::Zero;
+	mBeginTimeStamp = StopWatch::ClockType::now();
+	mEndTimeStamp = mBeginTimeStamp;
+	mPrevTimeStamp = mBeginTimeStamp;
 }
 
-void SwipeGestureRecognizer::TouchesBegan( TouchEventArg& e )
+void SwipeGestureRecognizer::TouchesBegan(TouchEventArg& e)
 {
 	IInputHandler::TouchesBegan(e);
-	switch(mState)
+	switch (mState)
 	{
 	case InputState::None:
 		if (e.IsValid())
 		{
-			mBeginPos=e.GetActiveMiddlePoint();
-			mPrevPos=mBeginPos;
-			mCurrentPos=mBeginPos;
-			mBeginTimeStamp=PerformanceCounter::Ticks();
-			mEndTimeStamp=mBeginTimeStamp;
-			mPrevTimeStamp=mBeginTimeStamp;
+			mBeginPos = e.GetActiveMiddlePoint();
+			mPrevPos = mBeginPos;
+			mCurrentPos = mBeginPos;
+			mBeginTimeStamp = StopWatch::ClockType::now();
+			mEndTimeStamp = mBeginTimeStamp;
+			mPrevTimeStamp = mBeginTimeStamp;
 
 
 			SetState(InputState::Begin);
@@ -59,7 +59,7 @@ void SwipeGestureRecognizer::TouchesBegan( TouchEventArg& e )
 
 			//swipe begin event
 			SwipeBeginGestureEventArg e2(this);
-			OnSwipeBegin(mNode,e2);
+			OnSwipeBegin(mNode, e2);
 		}
 		break;
 	default:
@@ -67,195 +67,195 @@ void SwipeGestureRecognizer::TouchesBegan( TouchEventArg& e )
 	}
 }
 
-void SwipeGestureRecognizer::TouchesMoved( TouchEventArg& e )
+void SwipeGestureRecognizer::TouchesMoved(TouchEventArg& e)
 {
 	IInputHandler::TouchesMoved(e);
-	switch(mState)
+	switch (mState)
 	{
 	case InputState::None:
 		break;
 	case InputState::Begin:
+	{
+		mPrevTimeStamp = mEndTimeStamp;
+		mPrevPos = mCurrentPos;
+
+		mEndTimeStamp = StopWatch::ClockType::now();
+		mCurrentPos = e.GetActiveMiddlePoint();
+
+		if (!IsMovementValid())
 		{
-			mPrevTimeStamp=mEndTimeStamp;
-			mPrevPos=mCurrentPos;
+			//don't move,keep prev pos and prev time stamp at begin
 
-			mEndTimeStamp= PerformanceCounter::Ticks();
-			mCurrentPos=e.GetActiveMiddlePoint();
-
-			if (!IsMovementValid())
-			{
-				//don't move,keep prev pos and prev time stamp at begin
-				
-			}
-			else
-			{
-				//first move
-				SetState(InputState::Valid);
-
-				SwipeMovedGestureEventArg e2(this);
-				OnSwipeMoved(mNode,e2);
-				
-				e.Handled=true;
-			}
 		}
-
-		break;
-
-	case InputState::Valid:
+		else
 		{
 			//first move
-			mPrevPos=mCurrentPos;
-			mPrevTimeStamp=mEndTimeStamp;
-
-			mEndTimeStamp= PerformanceCounter::Ticks();
-			mCurrentPos=e.GetActiveMiddlePoint();
+			SetState(InputState::Valid);
 
 			SwipeMovedGestureEventArg e2(this);
-			OnSwipeMoved(mNode,e2);
+			OnSwipeMoved(mNode, e2);
 
-			e.Handled=true;
+			e.Handled = true;
 		}
-		break;
+	}
+
+	break;
+
+	case InputState::Valid:
+	{
+		//first move
+		mPrevPos = mCurrentPos;
+		mPrevTimeStamp = mEndTimeStamp;
+
+		mEndTimeStamp = StopWatch::ClockType::now();
+		mCurrentPos = e.GetActiveMiddlePoint();
+
+		SwipeMovedGestureEventArg e2(this);
+		OnSwipeMoved(mNode, e2);
+
+		e.Handled = true;
+	}
+	break;
 	default:
 		break;
 	}
-	
+
 }
 
-void SwipeGestureRecognizer::TouchesEnded( TouchEventArg& e )
+void SwipeGestureRecognizer::TouchesEnded(TouchEventArg& e)
 {
 	IInputHandler::TouchesEnded(e);
-	switch(mState)
+	switch (mState)
 	{
 	case InputState::None:
 	case InputState::Begin:
-		{
-			SetState(InputState::Failed);
-			SwipeFailedGestureEventArg e2(this);
-			OnSwipeFailed(mNode,e2);
-		}
-		break;
+	{
+		SetState(InputState::Failed);
+		SwipeFailedGestureEventArg e2(this);
+		OnSwipeFailed(mNode, e2);
+	}
+	break;
 	case InputState::Valid:
+	{
+
+		//////////////////////////////////////////////////////////////////////////TODO: If have to add this?
+		mPrevPos = mCurrentPos;
+		mPrevTimeStamp = mEndTimeStamp;
+
+		mCurrentPos = e.GetActiveMiddlePoint();
+		mEndTimeStamp = StopWatch::ClockType::now();
+		//////////////////////////////////////////////////////////////////////////
+
+		Point2F totalMovement = TotalMovement();
+		Point2F velocity = VelocityAverage();
+
+
+		ScrollDirection directionSucceed;
+		if (IsAllowHorizontal())
 		{
-
-			//////////////////////////////////////////////////////////////////////////TODO: If have to add this?
-			mPrevPos=mCurrentPos;
-			mPrevTimeStamp=mEndTimeStamp;
-
-			mCurrentPos=e.GetActiveMiddlePoint();
-			mEndTimeStamp= PerformanceCounter::Ticks();
-			//////////////////////////////////////////////////////////////////////////
-
-			Point2F totalMovement=TotalMovement();
-			Point2F velocity=VelocityAverage();
-
-
-			ScrollDirection directionSucceed;
-			if (IsAllowHorizontal())
+			if (Math::Abs(totalMovement.X)>mMinMovement || velocity.X>mMinVelocity)
 			{
-				if (Math::Abs(totalMovement.X)>mMinMovement||velocity.X>mMinVelocity)
-				{
-					directionSucceed |= ScrollDirection::HorizontalMask;
-				}
+				directionSucceed |= ScrollDirection::HorizontalMask;
 			}
-
-			if (IsAllowVertical())
-			{
-				if (Math::Abs(totalMovement.Y)>mMinMovement||velocity.Y>mMinVelocity)
-				{
-					directionSucceed |= ScrollDirection::HorizontalMask;
-				}
-			}
-
-			
-			SetState(InputState::End);
-
-			if (directionSucceed != ScrollDirection::None)
-			{
-				SwipeSuccessGestureEventArg e2(this,directionSucceed);
-				OnSwipeSuccess(mNode,e2);
-			}
-			else
-			{
-				SwipeFailedGestureEventArg e2(this);
-				OnSwipeFailed(mNode,e2);
-			}
-
 		}
-		break;
+
+		if (IsAllowVertical())
+		{
+			if (Math::Abs(totalMovement.Y)>mMinMovement || velocity.Y>mMinVelocity)
+			{
+				directionSucceed |= ScrollDirection::HorizontalMask;
+			}
+		}
+
+
+		SetState(InputState::End);
+
+		if (directionSucceed != ScrollDirection::None)
+		{
+			SwipeSuccessGestureEventArg e2(this, directionSucceed);
+			OnSwipeSuccess(mNode, e2);
+		}
+		else
+		{
+			SwipeFailedGestureEventArg e2(this);
+			OnSwipeFailed(mNode, e2);
+		}
+
+	}
+	break;
 	default:
 		break;
 	}
 
 	Reset();
-	mState=InputState::None;
+	mState = InputState::None;
 }
 
-void SwipeGestureRecognizer::TouchesCancelled( TouchEventArg& e )
+void SwipeGestureRecognizer::TouchesCancelled(TouchEventArg& e)
 {
 	IInputHandler::TouchesCancelled(e);
 	Reset();
-	mState=InputState::None;
+	mState = InputState::None;
 }
 
 
 Point2F SwipeGestureRecognizer::VelocityAverage() const
 {
-	Point2F movement=TotalMovement();
+	Point2F movement = TotalMovement();
 
-	float dt=TotalDuration();
+	float dt = TotalDuration();
 	if (dt>0.000001f)
 	{
-		return movement/dt;
+		return movement / dt;
 	}
 
-	return mpp(Math::FloatMaxValue,Math::FloatMaxValue);
+	return mpp(Math::FloatMaxValue, Math::FloatMaxValue);
 }
 
 
 Point2F SwipeGestureRecognizer::Movement() const
 {
-	return mCurrentPos-mPrevPos;
+	return mCurrentPos - mPrevPos;
 }
 
 Point2F SwipeGestureRecognizer::MovementOnDirection() const
 {
-	Point2F movement=Movement();
+	Point2F movement = Movement();
 	if (!mDirection.HasHorizontal())
 	{
-		movement.X=0.f;
+		movement.X = 0.f;
 	}
 
 	if (!mDirection.HasVertical())
 	{
-		movement.Y=0.f;
+		movement.Y = 0.f;
 	}
 	return movement;
 }
 
 Point2F SwipeGestureRecognizer::TotalMovement() const
 {
-	return mCurrentPos-mBeginPos;
+	return mCurrentPos - mBeginPos;
 }
 
 Point2F SwipeGestureRecognizer::TotalMovementOnDirection() const
 {
-	Point2F movement=TotalMovement();
+	Point2F movement = TotalMovement();
 	if (!mDirection.HasHorizontal())
 	{
-		movement.X=0.f;
+		movement.X = 0.f;
 	}
 
 	if (!mDirection.HasVertical())
 	{
-		movement.Y=0.f;
+		movement.Y = 0.f;
 	}
 	return movement;
 }
 
 bool SwipeGestureRecognizer::IsValid() const
 {
-	switch(mState)
+	switch (mState)
 	{
 	case InputState::Valid:
 		return true;
@@ -266,18 +266,18 @@ bool SwipeGestureRecognizer::IsValid() const
 
 Point2F SwipeGestureRecognizer::CurrentVelocity() const
 {
-	return Movement()/Duration();
+	return Movement() / Duration();
 }
 
 
 Point2F SwipeGestureRecognizer::CurrentVelocityOnDirection() const
 {
-	return MovementOnDirection()/Duration();
+	return MovementOnDirection() / Duration();
 }
 
 bool SwipeGestureRecognizer::IsMovementValid() const
 {
-	Point2F totalMovement=TotalMovement();
+	Point2F totalMovement = TotalMovement();
 
 	if (IsAllowHorizontal())
 	{
@@ -300,12 +300,12 @@ bool SwipeGestureRecognizer::IsMovementValid() const
 
 float SwipeGestureRecognizer::TotalDuration() const
 {
-	return PerformanceCounter::Instance().ToMilliseconds(mEndTimeStamp - mBeginTimeStamp)*1000.f;
+	return StopWatch::ToMilliseconds(mEndTimeStamp - mBeginTimeStamp);
 }
 
 float SwipeGestureRecognizer::Duration() const
 {
-	return PerformanceCounter::Instance().ToMilliseconds(mEndTimeStamp - mPrevTimeStamp)*1000.f;
+	return StopWatch::ToMilliseconds(mEndTimeStamp - mPrevTimeStamp);
 }
 
 

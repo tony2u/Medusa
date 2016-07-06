@@ -18,6 +18,5 @@ BaseMultipleListDataSource::~BaseMultipleListDataSource( void )
 	SAFE_DELETE_COLLECTION(mItemTemplates);
 }
 
-MEDUSA_IMPLEMENT_RTTI(BaseMultipleListDataSource,IListDataSource);
 
 MEDUSA_END;

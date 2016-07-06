@@ -7,7 +7,7 @@
 #include "Core/Threading/ThreadEvent.h"
 #include "Core/Threading/ScopedLock.h"
 #include "Core/Threading/ScopedUnlock.h"
-#include "Core/Profile/PerformanceCounter.h"
+#include "Core/Chrono/DateTime.h"
 
 
 MEDUSA_BEGIN;
@@ -47,17 +47,17 @@ ThreadEvent::~ThreadEvent()
 void ThreadEvent::Initialize(bool autoReset /*= true*/, bool isSet /*= false*/)
 {
 	mIsAutoReset = autoReset;
-	
-		mMutex.Initialize();
-		::pthread_cond_init(&mCond, nullptr);
-		mState = isSet;
-	
+
+	mMutex.Initialize();
+	::pthread_cond_init(&mCond, nullptr);
+	mState = isSet;
+
 }
 
 void ThreadEvent::Uninitialize()
 {
-    ::pthread_cond_destroy(&mCond);
-    mCond = PTHREAD_COND_INITIALIZER;
+	::pthread_cond_destroy(&mCond);
+	mCond = PTHREAD_COND_INITIALIZER;
 
 }
 
@@ -106,9 +106,8 @@ void ThreadEvent::Set()
 
 		if (!mRegisteredWaits.IsEmpty())
 		{
-			FOR_EACH_COLLECTION(i, mRegisteredWaits)
+			for (auto& waiterIndex : mRegisteredWaits)
 			{
-				ThreadEventMultipleWaiterIndex& waiterIndex = *i;
 				ThreadEventMultipleWaiter* waiter = waiterIndex.Waiter;
 				waiter->Mutex.Lock();
 
@@ -175,7 +174,7 @@ bool ThreadEvent::TryWait()
 	return TryWaitWithoutLock();
 }
 
-bool ThreadEvent::WaitTimeout(long milliseconds)
+bool ThreadEvent::WaitFor(long milliseconds)
 {
 	ScopedLock lock(mMutex);
 	if (!mState)
@@ -193,7 +192,7 @@ bool ThreadEvent::WaitTimeout(long milliseconds)
 		}
 		else
 		{
-			struct timespec abstime = PerformanceCounter::ToAbsoluteTime(milliseconds);
+			struct timespec abstime = DateTime::ToAbsoluteTime(milliseconds);
 			do
 			{
 				result = pthread_cond_timedwait(&mCond, &mMutex.mMutex, &abstime);
@@ -284,7 +283,7 @@ bool ThreadEvent::WaitForMultipleEvents(const List<ThreadEvent*>& events, bool w
 		}
 		else
 		{
-			struct timespec abstime = PerformanceCounter::ToAbsoluteTime(milliseconds);
+			struct timespec abstime = DateTime::ToAbsoluteTime(milliseconds);
 
 			int r = 0;
 			while (!isComplete&&r == 0)

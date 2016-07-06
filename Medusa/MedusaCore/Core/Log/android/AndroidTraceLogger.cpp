@@ -3,39 +3,24 @@
 // license that can be found in the LICENSE file.
 #include "MedusaCorePreCompiled.h"
 #include "AndroidTraceLogger.h"
-
-
+#include "Core/Log/LogMessage.h"
+#include "Core/Pattern/Share.h"
 MEDUSA_BEGIN;
 
 
 #ifdef MEDUSA_ANDROID
 
-
-
-AndroidTraceLogger::~AndroidTraceLogger(void)
+void AndroidTraceLogger::Print(const Share<LogMessage>& message)
 {
+	__android_log_write(ANDROID_LOG_DEBUG, mName.c_str(), message->Content().c_str());
 }
 
-void AndroidTraceLogger::OutputLogString( StringRef inString,LogType logType/*=LogType::Info*/ )
+void AndroidTraceLogger::Print(const Share<WLogMessage>& message)
 {
-	
-	__android_log_write(ANDROID_LOG_DEBUG,mName.c_str(),inString.c_str());
-
-	//assert(false);
-
-}
-
-void AndroidTraceLogger::OutputLogString( WStringRef inString ,LogType logType/*=LogType::Info*/ )
-{
-	auto&& str= StringParser::ToA(inString);
+	auto&& str = StringParser::ToA(message->Content());
 	__android_log_write(ANDROID_LOG_DEBUG, mName.c_str(), str.c_str());
-
-	//__android_log_print(ANDROID_LOG_DEBUG, mName.c_str(),inString.c_str());
-	//CCLog( "OutputLog" );
-
-	//assert(false);
-	//__android_log_print(ANDROID_LOG_DEBUG,"Medusa",inString.c_str());
 }
+
 
 #endif
 

@@ -62,6 +62,21 @@ namespace Siren
 
 			return MemoryData::Empty;
 		}
+#ifdef MEDUSA_SQL
+		case SirenCoderType::SqlText:
+		{
+			MemoryStream stream;
+			SirenSqlTextWriter writer(stream);
+			SirenObjectSerializer serializer(writer);
+			if (serializer.Serialize(obj, type))
+			{
+				return stream.CurrentBuffer();
+			}
+
+			return MemoryData::Empty;
+		}
+#endif
+
 		}
 
 		return MemoryData::Empty;
@@ -109,6 +124,7 @@ namespace Siren
 			}
 			return SirenObject::Null;
 		}
+
 		}
 		return SirenObject::Null;
 
@@ -128,7 +144,7 @@ namespace Siren
 		{
 			StringStream stream;
 			SirenCompactBinaryWriter writer(stream);
-			SirenReaderWriter rw(reader,writer);
+			SirenReaderWriter rw(reader, writer);
 			if (rw.Run(type))
 			{
 				return stream.CurrentBuffer();

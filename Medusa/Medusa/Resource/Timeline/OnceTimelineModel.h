@@ -44,8 +44,8 @@ public:
 
 	TConstReturnType GetItem(uintp index)const { return mItems[index]; }
 	void SetItem(uintp index, TParameterType val) { mItems[index] = val; }
-	const List<T, NoCompare<T> >& Items() const { return mItems; }
-	List<T, NoCompare<T> >& MutableItems()  { return mItems; }
+	const List<T, NoCompare >& Items() const { return mItems; }
+	List<T, NoCompare >& MutableItems()  { return mItems; }
 
 
 	virtual void Clear()
@@ -55,7 +55,7 @@ public:
 	}
 
 protected:
-	List<T, NoCompare<T> > mItems;
+	List<T, NoCompare > mItems;
 };
 
 MEDUSA_END;

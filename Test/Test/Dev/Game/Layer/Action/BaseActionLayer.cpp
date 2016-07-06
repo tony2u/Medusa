@@ -31,5 +31,5 @@ void BaseActionLayer::OnRestart()
 }
 
 
-MEDUSA_IMPLEMENT_LAYER(BaseActionLayer, BaseCaseLayer, StringRef::Empty, StringRef::Empty);
+MEDUSA_IMPLEMENT_NODE(BaseActionLayer);
 

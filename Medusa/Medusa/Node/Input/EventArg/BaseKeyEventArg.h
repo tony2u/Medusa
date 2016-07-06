@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 #pragma once
-#include "Core/Command/EventArg/IEventArg.h"
+#include "Core/Event/EventArg/IEventArg.h"
 #include "Node/NodeDefines.h"
 
 
@@ -10,7 +10,7 @@ MEDUSA_BEGIN;
 
 class BaseKeyEventArg:public IEventArg
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_RTTI(BaseKeyEventArg,IEventArg);
 public:
 	BaseKeyEventArg(uint keyData,uint status);
 	virtual ~BaseKeyEventArg(void){}

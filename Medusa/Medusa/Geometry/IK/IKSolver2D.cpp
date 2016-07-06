@@ -139,7 +139,7 @@ bool IKSolver2D::AnalyzeAllTwoBone(float boneLength1, float boneLength2, float t
 }
 
 
-void IKSolver2D::CalculateWorldBone(List<Bone, NoCompare<Bone>>& bones)
+void IKSolver2D::CalculateWorldBone(List<Bone, NoCompare>& bones)
 {
 	// Start with the root bone.
 	Bone& rootWorldBone = bones[0];
@@ -164,7 +164,7 @@ void IKSolver2D::CalculateWorldBone(List<Bone, NoCompare<Bone>>& bones)
 }
 
 
-IKSolver2D::CCDResult IKSolver2D::CyclicCoordinateDescent(List<Bone, NoCompare<Bone>>& bones, float targetX, float targetY, float arrivalDistance)
+IKSolver2D::CCDResult IKSolver2D::CyclicCoordinateDescent(List<Bone, NoCompare>& bones, float targetX, float targetY, float arrivalDistance)
 {
 	// Set an epsilon value to prevent division by small numbers.
 	const float epsilon = 0.0001f;

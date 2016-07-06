@@ -14,7 +14,7 @@
 
 MEDUSA_BEGIN;
 
-template<typename TId, typename FuncSignature, typename THashCoder = DefaultHashCoder<TId>, bool IsPoolEnabled = false>
+template<typename TId, typename FuncSignature, typename THashCoder = DefaultHashCoder, bool IsPoolEnabled = false>
 class MapObjectFactory;
 
 template<typename TId, typename TBase, typename... TArgs, typename THashCoder, bool IsPoolEnabled>
@@ -138,9 +138,9 @@ public:
 	void Clear()
 	{
 		if (!IsPoolEnabled) { return; }
-		FOR_EACH_COLLECTION(i, mPoolDict)
+		for (auto i : mPoolDict)
 		{
-			ObjectPool* objectPool = i->Value;
+			ObjectPool* objectPool = i.Value;
 			SAFE_DELETE_COLLECTION(*objectPool);
 			delete objectPool;
 		}

@@ -45,7 +45,7 @@ typedef struct {
     AudioBufferList *bufferList;           // Buffer for data coming from the input device
     ALCvoid *resampleBuffer;               // Buffer for returned RingBuffer data when resampling
 
-    RingBuffer *ring;
+    ll_ringbuffer_t *ring;
 } ca_data;
 
 static const ALCchar ca_device[] = "CoreAudio Default";
@@ -102,7 +102,7 @@ static OSStatus ca_capture_conversion_callback(AudioConverterRef inAudioConverte
     ca_data *data = (ca_data*)device->ExtraData;
 
     // Read from the ring buffer and store temporarily in a large buffer
-    ReadRingBuffer(data->ring, data->resampleBuffer, (ALsizei)(*ioNumberDataPackets));
+    ll_ringbuffer_read(data->ring, data->resampleBuffer, *ioNumberDataPackets);
 
     // Set the input data
     ioData->mNumberBuffers = 1;
@@ -130,15 +130,15 @@ static OSStatus ca_capture_callback(void *inRefCon, AudioUnitRenderActionFlags *
         return err;
     }
 
-    WriteRingBuffer(data->ring, data->bufferList->mBuffers[0].mData, inNumberFrames);
+    ll_ringbuffer_write(data->ring, data->bufferList->mBuffers[0].mData, inNumberFrames);
 
     return noErr;
 }
 
 static ALCenum ca_open_playback(ALCdevice *device, const ALCchar *deviceName)
 {
-    ComponentDescription desc;
-    Component comp;
+    AudioComponentDescription desc;
+    AudioComponent comp;
     ca_data *data;
     OSStatus err;
 
@@ -154,19 +154,19 @@ static ALCenum ca_open_playback(ALCdevice *device, const ALCchar *deviceName)
     desc.componentFlags = 0;
     desc.componentFlagsMask = 0;
 
-    comp = FindNextComponent(NULL, &desc);
+    comp = AudioComponentFindNext(NULL, &desc);
     if(comp == NULL)
     {
-        ERR("FindNextComponent failed\n");
+        ERR("AudioComponentFindNext failed\n");
         return ALC_INVALID_VALUE;
     }
 
     data = calloc(1, sizeof(*data));
 
-    err = OpenAComponent(comp, &data->audioUnit);
+    err = AudioComponentInstanceNew(comp, &data->audioUnit);
     if(err != noErr)
     {
-        ERR("OpenAComponent failed\n");
+        ERR("AudioComponentInstanceNew failed\n");
         free(data);
         return ALC_INVALID_VALUE;
     }
@@ -176,7 +176,7 @@ static ALCenum ca_open_playback(ALCdevice *device, const ALCchar *deviceName)
     if(err != noErr)
     {
         ERR("AudioUnitInitialize failed\n");
-        CloseComponent(data->audioUnit);
+        AudioComponentInstanceDispose(data->audioUnit);
         free(data);
         return ALC_INVALID_VALUE;
     }
@@ -191,7 +191,7 @@ static void ca_close_playback(ALCdevice *device)
     ca_data *data = (ca_data*)device->ExtraData;
 
     AudioUnitUninitialize(data->audioUnit);
-    CloseComponent(data->audioUnit);
+    AudioComponentInstanceDispose(data->audioUnit);
 
     free(data);
     device->ExtraData = NULL;
@@ -374,12 +374,13 @@ static ALCenum ca_open_capture(ALCdevice *device, const ALCchar *deviceName)
     AudioStreamBasicDescription hardwareFormat;   // The hardware format
     AudioStreamBasicDescription outputFormat;     // The AudioUnit output format
     AURenderCallbackStruct input;
-    ComponentDescription desc;
+    AudioComponentDescription desc;
     AudioDeviceID inputDevice;
     UInt32 outputFrameCount;
     UInt32 propertySize;
+    AudioObjectPropertyAddress propertyAddress;
     UInt32 enableIO;
-    Component comp;
+    AudioComponent comp;
     ca_data *data;
     OSStatus err;
 
@@ -395,10 +396,10 @@ static ALCenum ca_open_capture(ALCdevice *device, const ALCchar *deviceName)
     desc.componentFlagsMask = 0;
 
     // Search for component with given description
-    comp = FindNextComponent(NULL, &desc);
+    comp = AudioComponentFindNext(NULL, &desc);
     if(comp == NULL)
     {
-        ERR("FindNextComponent failed\n");
+        ERR("AudioComponentFindNext failed\n");
         return ALC_INVALID_VALUE;
     }
 
@@ -406,10 +407,10 @@ static ALCenum ca_open_capture(ALCdevice *device, const ALCchar *deviceName)
     device->ExtraData = data;
 
     // Open the component
-    err = OpenAComponent(comp, &data->audioUnit);
+    err = AudioComponentInstanceNew(comp, &data->audioUnit);
     if(err != noErr)
     {
-        ERR("OpenAComponent failed\n");
+        ERR("AudioComponentInstanceNew failed\n");
         goto error;
     }
 
@@ -432,11 +433,16 @@ static ALCenum ca_open_capture(ALCdevice *device, const ALCchar *deviceName)
     }
 
     // Get the default input device
+
     propertySize = sizeof(AudioDeviceID);
-    err = AudioHardwareGetProperty(kAudioHardwarePropertyDefaultInputDevice, &propertySize, &inputDevice);
+    propertyAddress.mSelector = kAudioHardwarePropertyDefaultInputDevice;
+    propertyAddress.mScope = kAudioObjectPropertyScopeGlobal;
+    propertyAddress.mElement = kAudioObjectPropertyElementMaster;
+
+    err = AudioObjectGetPropertyData(kAudioObjectSystemObject, &propertyAddress, 0, NULL, &propertySize, &inputDevice);
     if(err != noErr)
     {
-        ERR("AudioHardwareGetProperty failed\n");
+        ERR("AudioObjectGetPropertyData failed\n");
         goto error;
     }
 
@@ -580,23 +586,26 @@ static ALCenum ca_open_capture(ALCdevice *device, const ALCchar *deviceName)
     if(data->bufferList == NULL)
         goto error;
 
-    data->ring = CreateRingBuffer(data->frameSize, (device->UpdateSize * data->sampleRateRatio) * device->NumUpdates);
-    if(data->ring == NULL)
-        goto error;
+    data->ring = ll_ringbuffer_create(
+        device->UpdateSize*data->sampleRateRatio*device->NumUpdates + 1,
+        data->frameSize
+    );
+    if(!data->ring) goto error;
 
     al_string_copy_cstr(&device->DeviceName, deviceName);
 
     return ALC_NO_ERROR;
 
 error:
-    DestroyRingBuffer(data->ring);
+    ll_ringbuffer_free(data->ring);
+    data->ring = NULL;
     free(data->resampleBuffer);
     destroy_buffer_list(data->bufferList);
 
     if(data->audioConverter)
         AudioConverterDispose(data->audioConverter);
     if(data->audioUnit)
-        CloseComponent(data->audioUnit);
+        AudioComponentInstanceDispose(data->audioUnit);
 
     free(data);
     device->ExtraData = NULL;
@@ -608,12 +617,13 @@ static void ca_close_capture(ALCdevice *device)
 {
     ca_data *data = (ca_data*)device->ExtraData;
 
-    DestroyRingBuffer(data->ring);
+    ll_ringbuffer_free(data->ring);
+    data->ring = NULL;
     free(data->resampleBuffer);
     destroy_buffer_list(data->bufferList);
 
     AudioConverterDispose(data->audioConverter);
-    CloseComponent(data->audioUnit);
+    AudioComponentInstanceDispose(data->audioUnit);
 
     free(data);
     device->ExtraData = NULL;
@@ -670,7 +680,7 @@ static ALCenum ca_capture_samples(ALCdevice *device, ALCvoid *buffer, ALCuint sa
 static ALCuint ca_available_samples(ALCdevice *device)
 {
     ca_data *data = device->ExtraData;
-    return RingBufferSize(data->ring) / data->sampleRateRatio;
+    return ll_ringbuffer_read_space(data->ring) / data->sampleRateRatio;
 }
 
 

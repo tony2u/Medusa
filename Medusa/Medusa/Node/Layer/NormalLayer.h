@@ -8,7 +8,7 @@
 MEDUSA_BEGIN;
 class NormalLayer :public ILayer
 {
-	MEDUSA_DECLARE_LAYER(NormalLayer);
+	MEDUSA_NODE(NormalLayer,ILayer);
 public:
 	NormalLayer(StringRef name = StringRef::Empty, const IEventArg& e = IEventArg::Empty);
 	virtual ~NormalLayer(void);

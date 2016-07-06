@@ -20,8 +20,8 @@ IBrain::~IBrain(void)
 {
 	SAFE_DELETE(mMemory);
 
-	SAFE_RELEASE(mRootBehavior);
-	SAFE_RELEASE_DICTIONARY_VALUE(mEventBehaviorDict);
+	mRootBehavior = nullptr;
+	mEventBehaviorDict.Clear();
 }
 
 const IBehavior* IBrain::Behave(IBrainBody& brainBody, void* sender)
@@ -32,7 +32,7 @@ const IBehavior* IBrain::Behave(IBrainBody& brainBody, void* sender)
 
 const IBehavior* IBrain::ReceiveEvent(IBrainBody& brainBody, void* sender, IEventArg& e)
 {
-	IBehavior* behavior = mEventBehaviorDict.GetOptional(e.Class().Name(), nullptr);
+	auto behavior = mEventBehaviorDict.GetOptional(e.Class().Name(), nullptr);
 	RETURN_NULL_IF_NULL(behavior);
 	return behavior->ReceiveEvent(brainBody, sender, e);
 }
@@ -44,20 +44,18 @@ void IBrain::SetMemory(IBrainMemory* val)
 
 void IBrain::SetRootBehavior(IBehavior* val)
 {
-	SAFE_ASSIGN_REF(mRootBehavior, val);
+	mRootBehavior = val;
 }
 
-bool IBrain::RegisterEventBehavior(const StringRef& eventName, IBehavior* val)
+bool IBrain::RegisterEventBehavior(const StringRef& eventName, const Share<IBehavior>& val)
 {
 	if (mEventBehaviorDict.TryAdd(eventName, val))
 	{
-		SAFE_RETAIN(val);
+		
 		return true;
 	}
 	return false;
 }
-
-MEDUSA_IMPLEMENT_RTTI_ROOT(IBrain);
 
 
 MEDUSA_END;

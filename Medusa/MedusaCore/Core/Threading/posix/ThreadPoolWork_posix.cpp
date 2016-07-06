@@ -8,20 +8,20 @@
 
 MEDUSA_BEGIN;
 
-ThreadPoolWork::ThreadPoolWork(const StringRef& name, ICommand* command)
-	:mName(name), mCommand(command)
+ThreadPoolWork::ThreadPoolWork(ThreadPool* pool, const StringRef& name, const ShareCommand& command)
+	:mPool(pool),mName(name), mCommand(command)
 {
-	SAFE_RETAIN(command);
+	
 }
 
 ThreadPoolWork::~ThreadPoolWork(void)
 {
-	SAFE_RELEASE(mCommand);
+	
 }
 
 void ThreadPoolWork::Sumbit()
 {
-	ThreadPool::Instance().Enqueue(this);
+	mPool->Enqueue(this);
 }
 
 void ThreadPoolWork::Wait(bool cancelPending /*= false*/)
@@ -29,7 +29,7 @@ void ThreadPoolWork::Wait(bool cancelPending /*= false*/)
 	if (cancelPending)
 	{
 		//find current pending work in thread pool
-		ThreadPool::Instance().CancelPendingCommands(this);
+		mPool->CancelPendingCommands(this);
 	}
 	mCompleteEvent.Wait();
 }

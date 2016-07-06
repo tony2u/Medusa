@@ -66,3 +66,5 @@ function _M:Invoke(...)
 	end
 	return table.unpack(results);
 end
+
+return _M;

@@ -131,9 +131,9 @@ namespace StdString
 				return nullptr;	//not enough size
 			}
 
-			if (CompareN(src, val+1, valLength) == 0)
+			if (CompareN(src, val + 1, valLength) == 0)
 			{
-				return src-1;	//back one char
+				return src - 1;	//back one char
 			}
 		}
 		return nullptr;
@@ -148,14 +148,14 @@ namespace StdString
 		const T* end = src + length;
 		while (src != end)
 		{
-			if (FindFirstChar(val,valLength,*src)!=nullptr)
+			if (FindFirstChar(val, valLength, *src) != nullptr)
 			{
 				return src;
 			}
 			++src;
 		}
 		return nullptr;
-		
+
 	}
 
 	//Get span of character set in string.	strspn("129th","1234567890")==3
@@ -467,7 +467,13 @@ namespace StdString
 
 	static uint ParseUInt(const char* begin, char** next) { return (uint)strtoul(begin, next, 10); }
 	static uint ParseUInt(const wchar_t* begin, wchar_t** next) { return (uint)wcstol(begin, next, 10); }
-	};
+
+	template<size_t size>
+	constexpr static size_t StaticLength(const char(&str)[size])
+	{
+		return size - 1;
+	}
+};
 
 
 

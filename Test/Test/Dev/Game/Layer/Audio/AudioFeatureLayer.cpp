@@ -15,5 +15,5 @@ AudioFeatureLayer::~AudioFeatureLayer(void)
 }
 
 
-MEDUSA_IMPLEMENT_LAYER(AudioFeatureLayer, BaseFeatureLayer, StringRef::Empty, StringRef::Empty);
+MEDUSA_IMPLEMENT_NODE(AudioFeatureLayer);
 

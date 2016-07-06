@@ -27,7 +27,7 @@ RenderingObjectTimelineModel::~RenderingObjectTimelineModel(void)
 	
 }
 
-bool RenderingObjectTimelineModel::InitializeWithSingleTexture(IMaterial* material, uint coloumn, uint row, float fps /*= 24.f*/)
+bool RenderingObjectTimelineModel::InitializeWithSingleTexture(const Share<IMaterial>& material, uint coloumn, uint row, float fps /*= 24.f*/)
 {
 	RETURN_FALSE_IF_FALSE(ITimelineModel::Initialize());
 	float frameInterval = 1.f / fps;
@@ -44,7 +44,7 @@ bool RenderingObjectTimelineModel::InitializeWithSingleTexture(IMaterial* materi
 		{
 			textureRect.Origin.X = j*textureRect.Size.Width;
 			textureRect.Origin.Y = i*textureRect.Size.Height;
-			TextureQuadMesh* mesh = new TextureQuadMesh();
+			Share<TextureQuadMesh> mesh = new TextureQuadMesh();
 			mesh->Initialize(textureSize, textureRect);
 			AddRenderingObjectWithInterval(frameInterval, RenderingObject(mesh,material));
 		}
@@ -54,16 +54,16 @@ bool RenderingObjectTimelineModel::InitializeWithSingleTexture(IMaterial* materi
 	return true;
 }
 
-bool RenderingObjectTimelineModel::InitializeWithTextures(const SortedDictionary<uint, IMaterial*>& materials, float fps /*= 24.f*/)
+bool RenderingObjectTimelineModel::InitializeWithTextures(const SortedDictionary<uint, Share<IMaterial>>& materials, float fps /*= 24.f*/)
 {
 	RETURN_FALSE_IF_FALSE(ITimelineModel::Initialize());
 	float frameInterval = 1.f / fps;
 	RETURN_FALSE_IF_EMPTY(materials);
 
-	FOR_EACH_COLLECTION_STL(i, materials.STLItems())
+	for (auto i : materials.STLItems())
 	{
-		uint order = i->first;
-		auto* material = i->second;
+		uint order = i.first;
+		auto material = i.second;
 		RenderingObject renderingObject = RenderingObjectFactory::Instance().CreateFromSingleTextureMaterial(material);
 		AddRenderingObject(frameInterval*order, renderingObject);
 	}
@@ -74,16 +74,16 @@ bool RenderingObjectTimelineModel::InitializeWithTextures(const SortedDictionary
 
 
 
-bool RenderingObjectTimelineModel::InitializeWithTextureAtlas(IMaterial* material, const SortedDictionary<uint, IMesh*>& meshes, float fps /*= 24.f*/)
+bool RenderingObjectTimelineModel::InitializeWithTextureAtlas(const Share<IMaterial>& material, const SortedDictionary<uint, Share<IMesh>>& meshes, float fps /*= 24.f*/)
 {
 	RETURN_FALSE_IF_FALSE(ITimelineModel::Initialize());
 	float frameInterval = 1.f / fps;
 	RETURN_FALSE_IF_EMPTY(meshes);
 
-	FOR_EACH_COLLECTION_STL(i, meshes.STLItems())
+	for (auto i : meshes.STLItems())
 	{
-		uint order = i->first;
-		auto* mesh = i->second;
+		uint order = i.first;
+		auto mesh = i.second;
 		AddRenderingObject(frameInterval*order, RenderingObject(mesh,material));
 	}
 	uint maxOrder = meshes.LastKey();
@@ -97,10 +97,10 @@ bool RenderingObjectTimelineModel::InitializeWithObjects(SortedDictionary<uint, 
 	float frameInterval = 1.f / fps;
 	RETURN_FALSE_IF_EMPTY(renderingObjects);
 
-	FOR_EACH_COLLECTION_STL(i, renderingObjects.STLItems())
+	for (auto i : renderingObjects.STLItems())
 	{
-		uint order = i->first;
-		AddRenderingObject(frameInterval*order, i->second);
+		uint order = i.first;
+		AddRenderingObject(frameInterval*order, i.second);
 	}
 	uint maxOrder = renderingObjects.LastKey();
 	mDuration = frameInterval*(maxOrder + 1);
@@ -120,7 +120,7 @@ bool RenderingObjectTimelineModel::InitializeWithObjects(List<RenderingObject>& 
 		++index;
 	}
 
-	uint maxOrder = renderingObjects.Count()-1;
+	uint maxOrder = (uint)renderingObjects.Count()-1;
 	mDuration = frameInterval*(maxOrder + 1);
 	return true;
 }

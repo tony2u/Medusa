@@ -14,7 +14,7 @@ public:
 	virtual ~SirenBuildinType(void);
 public:
 	virtual bool IsBuildIn()const override { return true; }
-	virtual bool Save(IStream& stream)const override { return true; }
+	virtual bool SaveTo(IStream& stream)const override { return true; }
 };
 
 
@@ -122,6 +122,26 @@ public:
 	using SirenBuildinType::SirenBuildinType;
 	virtual SirenTypeId Id()const override { return SirenTypeId::Blob; }
 	virtual SirenBuildinBlob* Clone() const override { return (SirenBuildinBlob*)this; }	//return self
+};
+
+class SirenBuildinList :public SirenBuildinType
+{
+public:
+	using SirenBuildinType::SirenBuildinType;
+	virtual bool IsTemplate()const override { return true; }
+	virtual SirenTypeId Id()const override { return SirenTypeId::List; }
+	virtual SirenBuildinList* Clone() const override { return (SirenBuildinList*)this; }	//return self
+
+};
+
+class SirenBuildinDictionary :public SirenBuildinType
+{
+public:
+	using SirenBuildinType::SirenBuildinType;
+	virtual bool IsTemplate()const override { return true; }
+	virtual SirenTypeId Id()const override { return SirenTypeId::Dictionary; }
+	virtual SirenBuildinDictionary* Clone() const override { return (SirenBuildinDictionary*)this; }	//return self
+
 };
 
 MEDUSA_END;

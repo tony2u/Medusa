@@ -17,5 +17,5 @@ ThreeDFeatureLayer::~ThreeDFeatureLayer(void)
 }
 
 
-MEDUSA_IMPLEMENT_LAYER(ThreeDFeatureLayer, BaseFeatureLayer, StringRef::Empty, StringRef::Empty);
+MEDUSA_IMPLEMENT_NODE(ThreeDFeatureLayer);
 

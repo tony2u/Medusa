@@ -12,7 +12,7 @@ MEDUSA_BEGIN;
 
 class IOSWindow:public IWindow
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_RTTI(IOSWindow,IWindow);
 
 public:
 	IOSWindow(MedusaWindowHandle parentWindow,StringRef name=StringRef::Empty);

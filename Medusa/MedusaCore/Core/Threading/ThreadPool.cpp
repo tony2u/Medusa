@@ -38,65 +38,65 @@ void ThreadPool::Uninitialize()
 
 #pragma region Work
 
-ThreadPoolWork* ThreadPool::TrySumbitWork(Action0 action)
+ThreadPool::WorkType ThreadPool::TrySumbitWork(Action action)
 {
-	DelegateCommand* command = new DelegateCommand(action);
+	ShareCommand command = new DelegateCommand(action);
 	return CreateWork(command);
 }
 
-ThreadPoolWork* ThreadPool::TrySumbitWork(Action1 action, void* userData)
+ThreadPool::WorkType ThreadPool::TrySumbitWork(ActionWithUserData action, void* userData)
 {
-	DelegateCommand* command = new DelegateCommand(Bind(action, userData));
+	ShareCommand command = new DelegateCommand(Bind(action, userData));
 	return CreateWork(command);
 }
 
-ThreadPoolWork* ThreadPool::CreateWork(const StringRef& name, ICommand* command)
+ThreadPool::WorkType ThreadPool::CreateWork(const StringRef& name,const ShareCommand& command)
 {
-	ThreadPoolWork* work = new ThreadPoolWork(name, command);
+	WorkType work = new ThreadPoolWork(this,name, command);
 	mNamedWorks.Add(name, work);
 	return work;
 }
 
-ThreadPoolWork* ThreadPool::CreateWork(ICommand* command)
+ThreadPool::WorkType ThreadPool::CreateWork(const ShareCommand& command)
 {
-	ThreadPoolWork* work = new ThreadPoolWork(StringRef::Empty, command);
+	WorkType work = new ThreadPoolWork(this,StringRef::Empty, command);
 	mUnnamedWorks.Add(work);
 	return work;
 
 }
 
-ThreadPoolWork* ThreadPool::FindWork(const StringRef& name) const
+ThreadPool::WorkType ThreadPool::FindWork(const StringRef& name) const
 {
 	return mNamedWorks.GetOptional(name, nullptr);
 }
 
-void ThreadPool::SubmitWork(ThreadPoolWork& work)
+void ThreadPool::SubmitWork(const ThreadPool::WorkType& work)
 {
-	work.Sumbit();
+	work->Sumbit();
 }
 
 void ThreadPool::SubmitWork(const StringRef& name)
 {
 	RETURN_IF_EMPTY(name);
-	ThreadPoolWork* work = FindWork(name);
+	WorkType work = FindWork(name);
 	RETURN_IF_NULL(work);
-	SubmitWork(*work);
+	SubmitWork(work);
 }
 
-void ThreadPool::WaitWork(ThreadPoolWork& work, bool cancelPending /*= false*/)
+void ThreadPool::WaitWork(const ThreadPool::WorkType& work, bool cancelPending /*= false*/)
 {
-	work.Wait(cancelPending);
+	work->Wait(cancelPending);
 }
 
 void ThreadPool::WaitWork(const StringRef& name, bool cancelPending /*= false*/)
 {
 	RETURN_IF_EMPTY(name);
-	ThreadPoolWork* work = FindWork(name);
+	ThreadPool::WorkType work = FindWork(name);
 	RETURN_IF_NULL(work);
-	WaitWork(*work, cancelPending);
+	WaitWork(work, cancelPending);
 }
 
-void ThreadPool::DeleteWork(ThreadPoolWork* work)
+void ThreadPool::DeleteWork(const ThreadPool::WorkType& work)
 {
 	RETURN_IF_NULL(work);
 	StringRef name = work->Name();
@@ -108,28 +108,24 @@ void ThreadPool::DeleteWork(ThreadPoolWork* work)
 	{
 		mNamedWorks.RemoveKey(name);
 	}
-
-	SAFE_RELEASE(work);
 }
 
 void ThreadPool::DeleteWork(const StringRef& name)
 {
 	RETURN_IF_EMPTY(name);
-	ThreadPoolWork* work = mNamedWorks.RemoveKeyOptional(name, nullptr);
-	SAFE_RELEASE(work);
+	mNamedWorks.RemoveKey(name);
 }
 
 void ThreadPool::WaitAllWork(bool cancelPending /*= false*/)
 {
-	FOR_EACH_COLLECTION(i, mNamedWorks)
+	for(auto i: mNamedWorks)
 	{
-		ThreadPoolWork* work = i->Value;
+		auto& work = i.Value;
 		work->Wait(cancelPending);
 	}
 
-	FOR_EACH_COLLECTION(i, mUnnamedWorks)
+	for (auto& work : mUnnamedWorks)
 	{
-		ThreadPoolWork* work = *i;
 		work->Wait(cancelPending);
 	}
 }
@@ -137,60 +133,60 @@ void ThreadPool::WaitAllWork(bool cancelPending /*= false*/)
 
 void ThreadPool::ClearAllWork()
 {
-	SAFE_RELEASE_DICTIONARY_VALUE(mNamedWorks);
-	SAFE_RELEASE_COLLECTION(mUnnamedWorks);
+	mNamedWorks.Clear();
+	mUnnamedWorks.Clear();
 }
 
 #pragma endregion Work
 
 #pragma region Timer
-ThreadPoolTimer* ThreadPool::CreateTimer(const StringRef& name, ICommand* command, uint delay /*= 0*/, uint repeatCount /*= 0*/, uint repeatInterval /*= 0*/, uint repeatIntervalRange /*= 0*/)
+ThreadPool::TimerType ThreadPool::CreateTimer(const StringRef& name,const ShareCommand& command, uint delay /*= 0*/, uint repeatCount /*= 0*/, uint repeatInterval /*= 0*/, uint repeatIntervalRange /*= 0*/)
 {
-	ThreadPoolTimer* timer = new ThreadPoolTimer(name, command, delay, repeatCount, repeatInterval, repeatIntervalRange);
+	ThreadPool::TimerType timer = new ThreadPoolTimer(this,name, command, delay, repeatCount, repeatInterval, repeatIntervalRange);
 	mNamedTimers.Add(name, timer);
 	return timer;
 }
 
-ThreadPoolTimer* ThreadPool::CreateTimer(ICommand* command, uint delay /*= 0*/, uint repeatCount /*= 0*/, uint repeatInterval /*= 0*/, uint repeatIntervalRange /*= 0*/)
+ThreadPool::TimerType ThreadPool::CreateTimer(const ShareCommand& command, uint delay /*= 0*/, uint repeatCount /*= 0*/, uint repeatInterval /*= 0*/, uint repeatIntervalRange /*= 0*/)
 {
-	ThreadPoolTimer* timer = new ThreadPoolTimer(StringRef::Empty, command, delay, repeatCount, repeatInterval, repeatIntervalRange);
+	ThreadPool::TimerType timer = new ThreadPoolTimer(this,StringRef::Empty, command, delay, repeatCount, repeatInterval, repeatIntervalRange);
 	mUnnamedTimers.Add(timer);
 
 	return timer;
 }
 
-ThreadPoolTimer* ThreadPool::FindTimer(const StringRef& name) const
+ThreadPool::TimerType ThreadPool::FindTimer(const StringRef& name) const
 {
 	return mNamedTimers.GetOptional(name, nullptr);
 }
 
-void ThreadPool::SubmitTimer( ThreadPoolTimer& timer)
+void ThreadPool::SubmitTimer(const ThreadPool::TimerType& timer)
 {
-	timer.Sumbit();
+	timer->Sumbit();
 }
 
 void ThreadPool::SubmitTimer(const StringRef& name)
 {
 	RETURN_IF_EMPTY(name);
-	ThreadPoolTimer* timer = FindTimer(name);
+	ThreadPool::TimerType timer = FindTimer(name);
 	RETURN_IF_NULL(timer);
-	SubmitTimer(*timer);
+	SubmitTimer(timer);
 }
 
-void ThreadPool::WaitTimer( ThreadPoolTimer& timer, bool cancelPending /*= false*/)
+void ThreadPool::WaitTimer(const ThreadPool::TimerType& timer, bool cancelPending /*= false*/)
 {
-	timer.Wait(cancelPending);
+	timer->Wait(cancelPending);
 }
 
 void ThreadPool::WaitTimer(const StringRef& name, bool cancelPending /*= false*/)
 {
 	RETURN_IF_EMPTY(name);
-	ThreadPoolTimer* timer = FindTimer(name);
+	ThreadPool::TimerType timer = FindTimer(name);
 	RETURN_IF_NULL(timer);
-	WaitTimer(*timer, cancelPending);
+	WaitTimer(timer, cancelPending);
 }
 
-void ThreadPool::DeleteTimer(ThreadPoolTimer* timer)
+void ThreadPool::DeleteTimer(const ThreadPool::TimerType& timer)
 {
 	RETURN_IF_NULL(timer);
 	StringRef name = timer->Name();
@@ -203,89 +199,86 @@ void ThreadPool::DeleteTimer(ThreadPoolTimer* timer)
 		mNamedTimers.RemoveKey(name);
 	}
 
-	SAFE_RELEASE(timer);
-
 }
 
 void ThreadPool::DeleteTimer(const StringRef& name)
 {
 	RETURN_IF_EMPTY(name);
-	ThreadPoolTimer* timer = mNamedTimers.RemoveKeyOptional(name, nullptr);
-	SAFE_RELEASE(timer);
+	mNamedTimers.RemoveKey(name);
 }
 
 void ThreadPool::WaitAllTimer(bool cancelPending /*= false*/)
 {
-	FOR_EACH_COLLECTION(i, mNamedTimers)
+	for (auto i : mNamedTimers)
 	{
-		ThreadPoolTimer* item = i->Value;
+		auto& item = i.Value;
 		item->Wait(cancelPending);
 	}
 
-	FOR_EACH_COLLECTION(i, mUnnamedTimers)
+	for (auto& item : mUnnamedTimers)
 	{
-		ThreadPoolTimer* item = *i;
 		item->Wait(cancelPending);
 	}
 }
 
 void ThreadPool::ClearAllTimer()
 {
-	SAFE_RELEASE_DICTIONARY_VALUE(mNamedTimers);
-	SAFE_RELEASE_COLLECTION(mUnnamedTimers);
+	mNamedTimers.Clear();
+	mUnnamedTimers.Clear();
+
 }
 
 #pragma endregion Timer
 
 #pragma region Wait
 
-ThreadPoolWait* ThreadPool::CreateWait(const StringRef& name, ICommand* command, IWaitable* waitable)
+ThreadPool::WaitType ThreadPool::CreateWait(const StringRef& name,const ShareCommand& command, IWaitable* waitable)
 {
-	ThreadPoolWait* wait = new ThreadPoolWait(name, command, waitable);
+	ThreadPool::WaitType wait = new ThreadPoolWait(this,name, command, waitable);
 	mNamedWaits.Add(name, wait);
 	return wait;
 }
 
-ThreadPoolWait* ThreadPool::CreateWait(ICommand* command, IWaitable* waitable)
+ThreadPool::WaitType ThreadPool::CreateWait(const ShareCommand& command, IWaitable* waitable)
 {
-	ThreadPoolWait* wait = new ThreadPoolWait(StringRef::Empty, command, waitable);
+	ThreadPool::WaitType wait = new ThreadPoolWait(this,StringRef::Empty, command, waitable);
 	mUnnamedWaits.Add(wait);
 	return wait;
 }
 
-ThreadPoolWait* ThreadPool::FindWait(const StringRef& name) const
+ThreadPool::WaitType ThreadPool::FindWait(const StringRef& name) const
 {
 	return mNamedWaits.GetOptional(name, nullptr);
 
 }
 
-void ThreadPool::SubmitWait( ThreadPoolWait& wait)
+void ThreadPool::SubmitWait(const ThreadPool::WaitType& wait)
 {
-	wait.Sumbit();
+	wait->Sumbit();
 }
 
 void ThreadPool::SubmitWait(const StringRef& name)
 {
 	RETURN_IF_EMPTY(name);
-	ThreadPoolWait* wait = FindWait(name);
+	ThreadPool::WaitType wait = FindWait(name);
 	RETURN_IF_NULL(wait);
-	SubmitWait(*wait);
+	SubmitWait(wait);
 }
 
-void ThreadPool::WaitWait( ThreadPoolWait& wait, bool cancelPending /*= false*/)
+void ThreadPool::WaitWait(const ThreadPool::WaitType& wait, bool cancelPending /*= false*/)
 {
-	wait.Wait(cancelPending);
+	wait->Wait(cancelPending);
 }
 
 void ThreadPool::WaitWait(const StringRef& name, bool cancelPending /*= false*/)
 {
 	RETURN_IF_EMPTY(name);
-	ThreadPoolWait* wait = FindWait(name);
+	ThreadPool::WaitType wait = FindWait(name);
 	RETURN_IF_NULL(wait);
-	WaitWait(*wait, cancelPending);
+	WaitWait(wait, cancelPending);
 }
 
-void ThreadPool::DeleteWait(ThreadPoolWait* wait)
+void ThreadPool::DeleteWait(const ThreadPool::WaitType& wait)
 {
 	RETURN_IF_NULL(wait);
 	StringRef name = wait->Name();
@@ -297,36 +290,32 @@ void ThreadPool::DeleteWait(ThreadPoolWait* wait)
 	{
 		mNamedWaits.RemoveKey(name);
 	}
-
-	SAFE_RELEASE(wait);
 }
 
 void ThreadPool::DeleteWait(const StringRef& name)
 {
 	RETURN_IF_EMPTY(name);
-	ThreadPoolWait* wait = mNamedWaits.RemoveKeyOptional(name, nullptr);
-	SAFE_RELEASE(wait);
+	mNamedWaits.RemoveKey(name);
 }
 
 void ThreadPool::WaitAllWait(bool cancelPending /*= false*/)
 {
-	FOR_EACH_COLLECTION(i, mNamedWaits)
+	for (auto& i : mNamedWaits)
 	{
-		ThreadPoolWait* item = i->Value;
+		auto& item = i.Value;
 		item->Wait(cancelPending);
 	}
 
-	FOR_EACH_COLLECTION(i, mUnnamedWaits)
+	for (auto& item : mUnnamedWaits)
 	{
-		ThreadPoolWait* item = *i;
 		item->Wait(cancelPending);
 	}
 }
 
 void ThreadPool::ClearAllWait()
 {
-	SAFE_RELEASE_DICTIONARY_VALUE(mNamedWaits);
-	SAFE_RELEASE_COLLECTION(mUnnamedWaits);
+	mNamedWaits.Clear();
+	mUnnamedWaits.Clear();
 }
 
 

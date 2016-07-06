@@ -18,13 +18,14 @@ MEDUSA_BEGIN;
 //	}
 //}
 
+template<bool TIsForceWriteDefault=false>
 struct SirenSchemaSerializer
 {
 
 	template<typename TWriter, typename TObject>
 	static typename std::enable_if<Siren::HasCustomSerialization<TObject>::value, bool>::type Visit(TWriter& hander, const TObject& obj)
 	{
-		Siren::Serialize<TWriter,TObject>(hander, obj);
+		Siren::Serialize(hander, obj);
 		return true;
 	}
 
@@ -89,7 +90,7 @@ struct SirenSchemaSerializer
 	{
 		uint count = (uint)obj.Count();
 		hander.OnListBegin(Siren::GetDataType<TObject>::Type,(uint)count);
-		FOR_EACH_SIZE(i, count)
+		FOR_EACH_UINT32(i, count)
 		{
 			hander.OnListItemBegin(i);
 			RETURN_FALSE_IF_FALSE(Visit(hander, obj[i]));
@@ -106,12 +107,12 @@ struct SirenSchemaSerializer
 		uint count = (uint)obj.Count();
 		hander.OnDictionaryBegin(Siren::GetDataType<TKey>::Type, Siren::GetDataType<TValue>::Type,count);
 		uint index = 0;
-		FOR_EACH_COLLECTION(i, obj)
+		for (auto i : obj)
 		{
 			hander.OnDictionaryItemBegin(index);
-			RETURN_FALSE_IF_FALSE(Visit(hander, i->Key));
+			RETURN_FALSE_IF_FALSE(Visit(hander, i.Key));
 			hander.OnDictionaryKeyEnd(index);
-			RETURN_FALSE_IF_FALSE(Visit(hander, i->Value));
+			RETURN_FALSE_IF_FALSE(Visit(hander, i.Value));
 			hander.OnDictionaryItemEnd(index++);
 		}
 		hander.OnDictionaryEnd(count);
@@ -160,11 +161,11 @@ struct SirenSchemaSerializer
 	template<typename TWriter, typename TObject, typename TFieldInfo>
 	static typename std::enable_if<std::is_same<TFieldInfo,void>::value, bool>::type VisitNextFieldHelper(TWriter& hander, const TObject& obj)
 	{
-
+		return true;
 	}
 
 	template<typename TWriter, typename TObject, typename TFieldInfo>
-	static typename std::enable_if<!std::is_pointer<TObject>::value, bool>::type VisitNextFieldHelper(TWriter& hander, const TObject& obj)
+	static typename std::enable_if<!std::is_same<TFieldInfo, void>::value&&!std::is_pointer<TObject>::value, bool>::type VisitNextFieldHelper(TWriter& hander, const TObject& obj)
 	{
 		const typename TFieldInfo::MetadataType& metadata = TFieldInfo::Metadata;
 
@@ -183,7 +184,10 @@ struct SirenSchemaSerializer
 			if (!TFieldInfo::HasValue(obj))
 			{
 				//no set value
-				return true;
+				if (!TIsForceWriteDefault)
+				{
+					return true;
+				}
 			}
 
 		}
@@ -217,7 +221,10 @@ struct SirenSchemaSerializer
 			if (obj==nullptr)
 			{
 				//no set value
-				return true;
+				if (!TIsForceWriteDefault)
+				{
+					return true;
+				}
 			}
 
 		}

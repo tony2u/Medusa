@@ -13,7 +13,7 @@ MEDUSA_BEGIN;
 
 class IBehavior :public ISharableSingleThread, public RTTIObject
 {
-	MEDUSA_DECLARE_RTTI_ROOT;
+	MEDUSA_RTTI_ROOT(IBehavior);
 public:
 	IBehavior();
 	virtual ~IBehavior(void);
@@ -34,16 +34,13 @@ protected:
 };
 
 
-#define MEDUSA_DECLARE_BEHAVIOR													\
-		MEDUSA_DECLARE_RTTI;\
+#define MEDUSA_DECLARE_BEHAVIOR(className,baseClassName)													\
+		MEDUSA_RTTI(className,baseClassName);\
 private:																				\
-	const static StaticConstructor mStaticConstructor;							\
-	static void SelfRegisterStaticCallback();
+	const static StaticConstructor mStaticConstructor;							
 
-#define MEDUSA_IMPLEMENT_BEHAVIOR(className,baseClassName) 																					 \
-	MEDUSA_IMPLEMENT_RTTI(className,baseClassName);\
-	const StaticConstructor className::mStaticConstructor(SelfRegisterStaticCallback);					 \
-	void className::SelfRegisterStaticCallback(){BehaviorFactory::Instance().Register<className>(#className);}
+#define MEDUSA_IMPLEMENT_BEHAVIOR(className) 																					 \
+	const StaticConstructor className::mStaticConstructor([]{BehaviorFactory::Instance().Register<className>(#className);});			
 
 
 MEDUSA_END;

@@ -3,9 +3,9 @@
 // license that can be found in the LICENSE file.
 #pragma  once
 #include "MedusaPreDeclares.h"
-
 #include "Core/String/HeapString.h"
 #include "Graphics/GraphicsTypes.h"
+#include "Resource/Effect/Pass/Program/BaseProgramRenderPass.h"
 
 MEDUSA_BEGIN;
 
@@ -32,7 +32,7 @@ public:
 protected:
 	void MarkAssigned();
 protected:
-	BaseProgramRenderPass* mRenderPass = nullptr;
+	BaseProgramRenderPass* mRenderPass = nullptr;	//weak ptr
 	int mLocation = -1;
 	HeapString mName;
 	bool mIsAssigned = false;

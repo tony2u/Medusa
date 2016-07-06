@@ -12,7 +12,7 @@
 
 MEDUSA_BEGIN;
 
-SkeletonSlotVertexTimeline::SkeletonSlotVertexTimeline(VertexTimelineModel* model, ISkeletonAttachmentModel* attachmentModel, bool isRepeatForever /*= false*/)
+SkeletonSlotVertexTimeline::SkeletonSlotVertexTimeline(const Share<VertexTimelineModel>& model, ISkeletonAttachmentModel* attachmentModel, bool isRepeatForever /*= false*/)
 	:ITimeline(model, isRepeatForever), mAttachmentModel(attachmentModel)
 {
 }
@@ -47,7 +47,7 @@ bool SkeletonSlotVertexTimeline::OnUpdate(float prevElapsed,float dt, float blen
 
 	const List<Point3F>* prevOffset = nullptr;
 	const List<Point3F>* nextOffset = nullptr;
-	VertexTimelineModel* model = (VertexTimelineModel*)mModel;
+	auto model = mModel.CastPtr<VertexTimelineModel>();
 	uint outPrevFrameIndex;
 	uint outNextFrameIndex;
 	float outPercent;
@@ -73,7 +73,7 @@ bool SkeletonSlotVertexTimeline::OnUpdate(float prevElapsed,float dt, float blen
 		case SkeletonAttachmentType::Mesh:
 		case SkeletonAttachmentType::SkinnedMesh:
 		{
-			TextureGeneralMesh* mesh = (TextureGeneralMesh*)slot->Mesh();
+			auto mesh = slot->Mesh().CastPtr<TextureGeneralMesh>();
 			List<Point3F>& vertices = mesh->MutableVertices();
 			uintp count = nextOffset->Count();
 			if (count>vertices.Count())

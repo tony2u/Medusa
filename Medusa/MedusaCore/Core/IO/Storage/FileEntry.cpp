@@ -41,7 +41,7 @@ MemoryData FileEntry::ReadAllData(DataReadingMode mode /*= DataReadingMode::Alwa
 	return mStorage->ReadAllData(*this, mode);
 }
 
-const IStream* FileEntry::Read(FileDataType dataType /*= FileDataType::Binary*/) const
+Share<const IStream> FileEntry::Read(FileDataType dataType /*= FileDataType::Binary*/) const
 {
 	return mStorage->ReadFileHelper(*this, dataType);
 }
@@ -74,7 +74,7 @@ bool FileEntry::Extract(const StringRef& outDir) const
 		return false;
 	}
 
-	const IStream* readStream = Read(FileDataType::Binary);
+	auto readStream = Read(FileDataType::Binary);
 	auto writeSize = readStream->CopyTo(dest);
 	auto extractSize = ExtractedSize();
 	if (writeSize!= extractSize)

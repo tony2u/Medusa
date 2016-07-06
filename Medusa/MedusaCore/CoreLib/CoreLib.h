@@ -2,7 +2,6 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 #pragma once
-
 #include <list>
 #include <queue>
 #include <stack>
@@ -43,7 +42,8 @@
 #include <cerrno>
 #include <climits>
 #include <chrono>
-
+#include <future>
+#include <utility>
 
 //curl
 #ifndef HAVE_CONFIG_H

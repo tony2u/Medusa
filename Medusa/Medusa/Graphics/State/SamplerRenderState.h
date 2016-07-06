@@ -8,7 +8,7 @@ MEDUSA_BEGIN;
 
 class SamplerRenderState:public IRenderState
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_RTTI(SamplerRenderState,IRenderState);
 
 public:
 	SamplerRenderState(GraphicsTextureType textureType = GraphicsTextureType::Texture2D,GraphicsTextureUnits unit = GraphicsTextureUnits::Texture0);
@@ -17,7 +17,7 @@ public:
 	virtual ~SamplerRenderState();
 	virtual void Apply()const override;
 
-	virtual SamplerRenderState* Clone()const override;
+	Share<SamplerRenderState> Clone()const;
 	virtual void CopyFrom(const IRenderState& other)override;
 
 	virtual bool Equals(const IRenderState& state)const override;
@@ -47,7 +47,7 @@ public:
 	GraphicsTextureWrapMode WrapT() const { return mWrapT; }
 	void SetWrapT(GraphicsTextureWrapMode val) {RETURN_IF_EQUAL(mWrapT, val); mWrapT = val; OnStateChanged();}
 	
-	static SamplerRenderState* Current();
+	static Share<SamplerRenderState> Current();
 protected:
 	GraphicsTextureType mTextureType = GraphicsTextureType::Texture2D;
 	GraphicsTextureUnits mTextureUnit= GraphicsTextureUnits::Texture0;

@@ -10,7 +10,7 @@ MEDUSA_BEGIN;
 class BlockCodeWriteStream :public BlockWriteStream
 {
 public:
-	BlockCodeWriteStream(IStream& stream, uint32 blockSize, const CoderChain& coderChain,FileEntry& fileEntry);
+	BlockCodeWriteStream(const Share<IStream>& stream, uint32 blockSize, const CoderChain& coderChain,FileEntry& fileEntry);
 	virtual ~BlockCodeWriteStream(void);
 	virtual StreamType Type()const { return StreamType::CodeWrite; }
 	BlockCodeWriteStream(const BlockCodeWriteStream&) = delete;
@@ -23,8 +23,8 @@ protected:
 	virtual size_t WriteBlock(uint blockIndex, const MemoryData& data);
 	void WriteOffset(size_t dataSize);
 protected:
-	const CoderChain* mCoderChain;
-	FileEntry* mFileEntry;
+	const CoderChain* mCoderChain=nullptr;
+	FileEntry* mFileEntry=nullptr;
 
 };
 

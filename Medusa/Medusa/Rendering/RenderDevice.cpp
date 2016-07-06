@@ -8,7 +8,7 @@ MEDUSA_BEGIN;
 
 RenderDevice::RenderDevice()
 {
-	mCurrentThreadHandle = 0;
+	mCurrentThreadId = 0;
 }
 
 RenderDevice::~RenderDevice(void)
@@ -18,26 +18,26 @@ RenderDevice::~RenderDevice(void)
 
 bool RenderDevice::Initialize(bool disableThreading /*= false*/)
 {
-	bool result = BaseFrameCommandProcessor::Initialize(disableThreading);
+	bool result = TFrameCommandExecutor::Initialize(disableThreading);
 	if (!disableThreading)
 	{
-		mCurrentThreadHandle = mThread.Handle();
+		mCurrentThreadId = Id();
 	}
 	else
 	{
-		mCurrentThreadHandle = Thread::Current();
+		mCurrentThreadId = Thread::CurrentId();
 	}
 	return result;
 }
 
 bool RenderDevice::Uninitialize()
 {
-	return BaseFrameCommandProcessor::Uninitialize();
+	return TFrameCommandExecutor::Uninitialize();
 }
 
 bool RenderDevice::NeedAsync() const
 {
-	return !Thread::IsThreadEqual(mCurrentThreadHandle, Thread::Current());
+	return !Thread::IsCurrent(mCurrentThreadId);
 }
 
 MEDUSA_END;

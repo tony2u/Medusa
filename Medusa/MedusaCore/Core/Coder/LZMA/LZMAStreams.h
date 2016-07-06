@@ -3,6 +3,8 @@
 // license that can be found in the LICENSE file.
 #pragma once
 #include "MedusaCorePreDeclares.h"
+#ifdef MEDUSA_LZMA
+
 #include "CoreLib/Common/Lzma/7zTypes.h"
 
 MEDUSA_BEGIN;
@@ -32,3 +34,4 @@ private:
 
 
 MEDUSA_END;
+#endif

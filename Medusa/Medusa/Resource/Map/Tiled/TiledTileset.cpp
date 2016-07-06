@@ -68,9 +68,8 @@ bool TiledTileset::Parse(const pugi::xml_node& node)
 	pugi::xml_node terrainNode = node.child("terraintypes");
 	if (!terrainNode.empty())
 	{
-		FOR_EACH_COLLECTION_STL(i, terrainNode.children())
+		for (auto child : terrainNode.children())
 		{
-			pugi::xml_node child = *i;
 			StringRef childName = child.name();
 			BREAK_IF_NOT_EQUAL(childName, "terrain");
 			TiledTerrain& terrain = NewTerrain();
@@ -126,7 +125,7 @@ bool TiledTileset::Parse(const pugi::xml_node& node)
 
 void TiledTileset::SetImage(TiledImage* val)
 {
-	SAFE_ASSIGN(mImage, val);
+	mImage = val;
 }
 
 TiledTerrain& TiledTileset::NewTerrain()
@@ -138,7 +137,7 @@ void TiledTileset::AllocTiles(uint tileCount)
 {
 	mTiles.ForceReserveCount(tileCount);
 
-	FOR_EACH_SIZE(i, tileCount)
+	FOR_EACH_UINT32(i, tileCount)
 	{
 		TiledTile& tile = mTiles[i];
 		tile.SetId(i);

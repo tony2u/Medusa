@@ -2,6 +2,8 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 #include "MedusaCorePreCompiled.h"
+#ifdef MEDUSA_LZ4
+
 #include "Core/Coder/LZ4/LZ4Decoder.h"
 #include "Core/Coder/CoderFactory.h"
 #include "CoreLib/Common/lz4/lz4.h"
@@ -43,3 +45,4 @@ size_t LZ4Decoder::OnCode(const MemoryData& input, MemoryData& output) const
 }
 
 MEDUSA_END;
+#endif

@@ -17,5 +17,5 @@ ActionFeatureLayer::~ActionFeatureLayer(void)
 }
 
 
-MEDUSA_IMPLEMENT_LAYER(ActionFeatureLayer, BaseFeatureLayer, StringRef::Empty, StringRef::Empty);
+MEDUSA_IMPLEMENT_NODE(ActionFeatureLayer);
 

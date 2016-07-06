@@ -1,147 +1,95 @@
 // Copyright (c) 2015 fjz13. All rights reserved.
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
-#pragma once
+#pragma  once
 #include "MedusaCorePreDeclares.h"
-#include "Core/Network/Socket/SocketDefines.h"
+#include "MessageDefines.h"
 #include "Core/Memory/MemoryData.h"
-#include "Core/Command/EventArg/IEventArg.h"
-#include "Core/String/StringRef.h"
-#include "Core/Pattern/RTTI/RTTIObject.h"
-#include "Core/Profile/StopWatch.h"
-
-#include "MessageErrorReportSuppress.h"
+#include "Core/Chrono/StopWatch.h"
+#include "Core/Command/ICommand.h"
+#include "Core/Pattern/Event.h"
+#include "Core/Pattern/StaticConstructor.h"
 
 MEDUSA_BEGIN;
 
+/*
+Id!=0 && SessionId!=0 : Request need response
+Id!=0 && SessionId==0 : Request without response
 
+Id==0 && SessionId!=0 : Reponse to request
+Id==0 && SessionId==0 : Heartbeat without response
+*/
 
-enum class MessageError
+class IMessage :public ICommand
 {
-	Success=0,
-	ConnectFail=-1,
-
-};
-
-//None->ReadyForSend->Running->Completed/ConnectFail
-
-enum class MessageState
-{
-	ConnectFail=-1,
-	None=0,
-	Running=2,
-	Completed=3,
-};
-
-
-class IMessage:public RTTIObject
-{
-	MEDUSA_DECLARE_RTTI_ROOT;
-
+	MEDUSA_RTTI(IMessage,ICommand);
 public:
-	typedef Delegate<void (IMessage* sender,MessageEventArg)> MessageEventHandler;
-
-	IMessage();
+	IMessage(uint fromServiceId = 0, uint toServcieId = 0);
 	virtual ~IMessage(void);
 public:
-	void Retain();
-	void Release();
-	bool IsDead()const{return mRefCount==0;}
-	virtual StringRef ResponseClassName()const{return nullptr;}				
-public:
-	const MessageEventHandler& SendHandler()  { return mSendHandler; }
-	void SetSendHandler(const MessageEventHandler& val) { mSendHandler = val; }
+	virtual uint StaticId()const = 0;
+	uint Version() const { return mVersion; }
+	void SetVersion(uint val) { mVersion = val; }
+	uint Id() const { return mId; }
+	void SetId(uint val) { mId = val; }
+	uint SessionId() const { return mSessionId; }
+	void SetSessionId(uint val) { mSessionId = val; }
+	uint ConnectionId() const { return mConnectionId; }
+	void SetConnectionId(uint val) { mConnectionId = val; }
 
-	const MessageEventHandler& ReceiveHandler()  { return mReceiveHandler; }
-	void SetReceiveHandler(const MessageEventHandler& val) { mReceiveHandler = val; }
+	bool CheckTimeout();
 
-	const MessageEventHandler& CompleteHandler()  { return mCompleteHandler; }
-	void SetCompleteHandler(const MessageEventHandler& val) { mCompleteHandler = val; }
-
-	const MessageEventHandler& RootHandler() { return mRootHandler; }
-	void SetRootHandler(const MessageEventHandler& val) { mRootHandler = val; }
-
-	void SetError(MessageError val) { mError = val; }
-	void SetError(SocketError val);
-	virtual int ServerError()const=0;
-	virtual int CustomError()const=0;
-
+	int MillisecondsTimeout() const { return mMillisecondsTimeout; }
+	void SetMillisecondsTimeout(int val) { mMillisecondsTimeout = val; }
 
 	MessageState State() const { return mState; }
 	void SetState(MessageState val) { mState = val; }
 
-	float Timeout() const { return mTimeout; }
-	void SetTimeout(float val) { mTimeout = val;mTimeLeft=mTimeout; }
-
-
-	virtual bool HasResponse()const{return false;}
-	virtual bool IsResultOk()const=0;
-
-	bool IsTimeout()const{return mTimeLeft<0.f;}
-
-	virtual MemoryData SerializeRequest()const{return MemoryData::Empty;};
-	virtual void ParseFromRequest(MemoryData data){};
-	virtual void PrintRequest()const{};
-
-	virtual MemoryData SerializeResponse()const{return MemoryData::Empty;};
-	virtual void ParseFromResponse(MemoryData data){};
-	virtual void PrintResponse()const{};
-
-	void Send();
-	void Send(MessageEventHandler handler);
-
-	size_t ServiceId() const { return mServiceId; }
-	void SetServiceId(size_t val) { mServiceId = val; }
-
-
-	MessageErrorReportSuppress ErrorReportSuppress() const { return mErrorReportSuppress; }
-	void SetErrorReportSuppress(MessageErrorReportSuppress val) { mErrorReportSuppress = val; }
-
-	int GetSocketError() const { return mSocketError; }
-	void SetSocketError(int val) { mSocketError = val; }
-
-	bool IsProfileEnabled() const { return mIsProfileEnabled; }
-	void EnableProfile(bool val) { mIsProfileEnabled = val; }
-	float SendElapsedMilliseconds() const { return mSendElapsedMilliseconds; }
-	void SetSendElapsedMilliseconds(float val) { mSendElapsedMilliseconds = val; }
-
-	float ReceiveElapsedMilliseconds() const { return mReceiveElapsedMilliseconds; }
-	void SetReceiveElapsedMilliseconds(float val) { mReceiveElapsedMilliseconds = val; }
-
-	float TotalElapsedMilliseconds() const { return mTotalStopWatch.ElapsedMilliseconds(); }
+	bool IsRequest()const;
+	bool IsResponse()const;
+	MessageBehavior Behavior()const;
+	virtual bool NeedResponse()const = 0;
 public:
-	virtual void BeforeEnd();
-	virtual void Mock(){}
+	virtual bool OnSend(MessageSocketConnection& connection);
+	virtual bool OnRequest(MessageSocketConnection& connection);
+	virtual bool OnResponse(MessageSocketConnection& connection);
+	virtual MemoryData SerializeRequest() const { return MemoryData::Empty; }
+	virtual MemoryData SerializeResponse() const { return MemoryData::Empty; }
+	virtual bool DeserializeRequest(const MemoryData& val) { return true; }
+	virtual bool DeserializeResponse(const MemoryData& val) { return true; }
 
-	virtual void Update(float dt);
+	Event<void(IMessage&, MessageSocketConnection& connection)> OnRequestEvent;
+	Event<void(IMessage&, MessageSocketConnection& connection)> OnResponseEvent;
+	Event<void(IMessage&, MessageSocketConnection& connection)> OnSendEvent;
+
 protected:
-	MessageError GetError() const { return mError; }
-protected:
-	size_t mServiceId;
-	void* mUserData;
+	void* mUserData = nullptr;
+	MessageState mState = MessageState::None;
 
-	MessageEventHandler mSendHandler;
-	MessageEventHandler mReceiveHandler;
-	MessageEventHandler mCompleteHandler;
-	MessageEventHandler mRootHandler;
+	uint mVersion = 0;	//used to indicate application message version
+	uint mId = 0;	//message type id
+	uint mSessionId = 0;	//0:response
+	uint mConnectionId = 0;	//used to indicate a connection
 
-	MessageError mError;
-	MessageState mState;
-	int mSocketError;
-	
-	float mTimeout;
-	float mTimeLeft;
+	StopWatch mTimeoutWatch;
+	int mMillisecondsTimeout = 0;
+	StopWatch mPerformanceWatch;
 
-	bool mIsProfileEnabled;
-	
-	StopWatch mTotalStopWatch;	
-	float mSendElapsedMilliseconds;
-	float mReceiveElapsedMilliseconds;
-	size_t mRefCount;
-
-	MessageErrorReportSuppress mErrorReportSuppress;
-
-
+	//callbacks
 };
+
+
+//[PRE_DECLARE_BEGIN]
+typedef Share<IMessage> ShareMessage;
+//[PRE_DECLARE_END]
+
+
+#define MEDUSA_DECLARE_MESSAGE(className,baseClassName) 													\
+		MEDUSA_RTTI(className,baseClassName);\
+private:																				\
+	const static StaticConstructor mStaticConstructor;							
+
+#define MEDUSA_IMPLEMENT_MESSAGE(className) 																					 \
+	const StaticConstructor className::mStaticConstructor([]{MessageFactory::Instance().Register<className>(className::mStaticId);});					 
 
 MEDUSA_END;

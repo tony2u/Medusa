@@ -15,5 +15,5 @@ ShaderFeatureLayer::~ShaderFeatureLayer(void)
 }
 
 
-MEDUSA_IMPLEMENT_LAYER(ShaderFeatureLayer, BaseFeatureLayer, StringRef::Empty, StringRef::Empty);
+MEDUSA_IMPLEMENT_NODE(ShaderFeatureLayer);
 

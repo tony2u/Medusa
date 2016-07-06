@@ -5,6 +5,8 @@
 #include "Rendering/IRenderGroup.h"
 #include "Graphics/GraphicsTypes.h"
 #include "Core/Collection/List.h"
+#include "Resource/Material/IMaterial.h"
+#include "Core/Pattern/Share.h"
 
 MEDUSA_BEGIN;
 
@@ -14,8 +16,8 @@ public:
 	MaterialRenderGroup();
 	virtual ~MaterialRenderGroup();
 
-	const IMaterial* Material() const { return mMaterial; }
-	void SetMaterial(const IMaterial* val);
+	const Share<IMaterial>& Material() const { return mMaterial; }
+	void SetMaterial(const Share<IMaterial>& val) { mMaterial = val; }
 public:
 	virtual bool Initialize()override;
 	virtual bool Uninitialize()override;
@@ -25,7 +27,7 @@ public:
 	virtual void Print(HeapString& ioStr, uint level)override;
 
 private:
-	const IMaterial* mMaterial;
+	Share<IMaterial> mMaterial;
 	List<StateRenderGroup*> mGroups;
 };
 

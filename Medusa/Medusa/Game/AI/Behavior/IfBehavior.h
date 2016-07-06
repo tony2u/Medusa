@@ -9,7 +9,7 @@ MEDUSA_BEGIN;
 
 struct IfBehavior :public IPredicateBehavior
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_DECLARE_BEHAVIOR(IfBehavior,IPredicateBehavior);
 public:
 	virtual ~IfBehavior();
 public:

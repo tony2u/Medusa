@@ -13,6 +13,8 @@
 
 #include "Content/Content.h"
 #include "Core/Module/DelegateModule.h"
+#include "Core/Module/SingletonModule.h"
+
 #include "Graphics/ResolutionAdapter.h"
 #include "Application/Application.h"
 #include "Rendering/RenderEngine.h"
@@ -46,7 +48,8 @@ bool MedusaModule::Initialize()
 	ScriptBinding::Register_Engine();
 #endif
 
-	DelegateModule* module = nullptr;
+	Share<DelegateModule> module;
+
 	module = new DelegateModule("Content");
 	module->LoadHandler = [](IEventArg&)
 	{
@@ -54,8 +57,6 @@ bool MedusaModule::Initialize()
 		return true;
 	};
 	AddPrevModule(module);
-	SAFE_RELEASE(module);
-	
 
 	return true;
 }
@@ -125,11 +126,13 @@ bool MedusaModule::OnLoad(IEventArg& e /*= IEventArg::Empty*/)
 	RenderEngine::Instance().InitializeAfterWindow(!MEDUSA_FLAG_HAS(ApplicationSettings::Instance().Features(), EngineFeatures::MultipleThreadRendering));
 
 
-	mUpdateSystemStage.Add(ResourceManager::InstancePtr());
+	mUpdateSystemStage.Add( ResourceManager::InstancePtr());
 	mUpdateSystemStage.Add(AnimationManager::InstancePtr());
 	mUpdateSystemStage.Add(ParticleManager::InstancePtr());
 	mUpdateSystemStage.Add(InputManager::InstancePtr());
+#ifdef MEDUSA_AL
 	mUpdateSystemStage.Add(AudioEngine::InstancePtr());	//must be after resource manager
+#endif
 
 	mUpdateSystemStage.Initialize();
 	mUpdateSystemStage.ApplyOptionToAll(!MEDUSA_FLAG_HAS(ApplicationSettings::Instance().Features(), EngineFeatures::MultipleThreadUpdating) ? ExecuteOption::Sync : ExecuteOption::Async);
@@ -148,8 +151,7 @@ bool MedusaModule::OnUnload(IEventArg& e /*= IEventArg::Empty*/)
 
 	SceneManager::Instance().Uninitialize();
 
-	mUpdateSystemStage.Uninitialize();
-
+	ResolutionAdapter::Instance().Uninitialize();
 	RenderEngine::Instance().UninitializeBeforeWindow();
 
 	mRootView->Uninitialize();
@@ -158,9 +160,10 @@ bool MedusaModule::OnUnload(IEventArg& e /*= IEventArg::Empty*/)
 	SAFE_DELETE(mWindow);
 	mRootView = nullptr;
 
+	mUpdateSystemStage.Uninitialize();
+
 	RenderEngine::Instance().UninitializeAfterWindow();
 
-	ResolutionAdapter::Instance().Uninitialize();
 	NodeEditorFactory::Instance().Uninitialize();
 
 

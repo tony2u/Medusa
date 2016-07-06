@@ -7,7 +7,7 @@
 
 class BaseFeatureLayer:public ILayer
 {
-	MEDUSA_DECLARE_LAYER(BaseFeatureLayer);
+	MEDUSA_NODE(BaseFeatureLayer,ILayer);
 public:
 	BaseFeatureLayer(StringRef name=StringRef::Empty,const IEventArg& e=IEventArg::Empty);
 	virtual ~BaseFeatureLayer(void);

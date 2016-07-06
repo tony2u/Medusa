@@ -12,5 +12,4 @@ BaseKeyEventArg::BaseKeyEventArg(uint keyData,uint status)
 }
 
 
-MEDUSA_IMPLEMENT_RTTI(BaseKeyEventArg,IEventArg);
 MEDUSA_END;

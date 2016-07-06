@@ -37,9 +37,9 @@ void DepthStencilRenderState::Apply()const
 	render.SetStencilOperationSeparate(GraphicsFace::Back,mBackStencilFailOp,mBackStencilDepthFailOp,mBackStencilPassOp);
 }
 
-DepthStencilRenderState* DepthStencilRenderState::Clone() const
+Share<DepthStencilRenderState> DepthStencilRenderState::Clone() const
 {
-	DepthStencilRenderState* state=new DepthStencilRenderState();
+	Share<DepthStencilRenderState> state=new DepthStencilRenderState();
 	state->CopyFrom(*this);
 	return state;
 }
@@ -104,11 +104,11 @@ bool DepthStencilRenderState::Equals(const IRenderState& state) const
 
 }
 
-DepthStencilRenderState* DepthStencilRenderState::Current()
+Share<DepthStencilRenderState> DepthStencilRenderState::Current()
 {
 	IRender& render=Render::Instance();
 
-	DepthStencilRenderState* depthState=new DepthStencilRenderState();
+	Share<DepthStencilRenderState> depthState=new DepthStencilRenderState();
 	depthState->EnableDepthTest(render.IsFeatureEnabled(GraphicsFeatures::DepthTest));
 	depthState->EnableDepthWrite(render.GetBoolean(GraphicsBooleanName::DepthWritable));
 	depthState->SetDepthFunc((GraphicsFuncType)render.GetInteger(GraphicsIntegerName::DepthFunc));
@@ -138,7 +138,6 @@ DepthStencilRenderState* DepthStencilRenderState::Current()
 
 
 
-MEDUSA_IMPLEMENT_RTTI(DepthStencilRenderState,IRenderState);
 
 
 MEDUSA_END;

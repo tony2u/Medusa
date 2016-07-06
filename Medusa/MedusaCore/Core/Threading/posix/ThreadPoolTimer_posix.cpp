@@ -11,10 +11,9 @@
 MEDUSA_BEGIN;
 
 
-ThreadPoolTimer::ThreadPoolTimer(const StringRef& name, ICommand* command, uint delay /*= 0*/, uint repeatCount /*= 0*/, uint repeatInterval /*= 0*/, uint repeatIntervalRange/*=0*/)
-	:mName(name), mCommand(command), mDelay(delay), mRepeatCount(repeatCount), mRepeatInterval(repeatInterval), mRepeatIntervalRange(repeatIntervalRange)
+ThreadPoolTimer::ThreadPoolTimer(ThreadPool* pool, const StringRef& name, const ShareCommand& command, uint delay /*= 0*/, uint repeatCount /*= 0*/, uint repeatInterval /*= 0*/, uint repeatIntervalRange/*=0*/)
+	:mPool(pool), mName(name), mCommand(command), mDelay(delay), mRepeatCount(repeatCount), mRepeatInterval(repeatInterval), mRepeatIntervalRange(repeatIntervalRange)
 {
-	SAFE_RETAIN(command);
 	mIsSubmitted = false;
 	mIsCancelled = false;
 }
@@ -22,7 +21,7 @@ ThreadPoolTimer::ThreadPoolTimer(const StringRef& name, ICommand* command, uint 
 
 ThreadPoolTimer::~ThreadPoolTimer(void)
 {
-	SAFE_RELEASE(mCommand);
+
 }
 
 bool ThreadPoolTimer::OnExecute()
@@ -92,7 +91,7 @@ bool ThreadPoolTimer::OnExecute()
 void ThreadPoolTimer::Sumbit()
 {
 	mWatch.Start();
-	ThreadPool::Instance().Enqueue(this);
+	mPool->Enqueue(this);
 	mIsSubmitted = true;
 }
 
@@ -106,7 +105,7 @@ void ThreadPoolTimer::Wait(bool cancelPending /*= false*/)
 	if (cancelPending)
 	{
 		//find current pending work in thread pool
-		ThreadPool::Instance().CancelPendingCommands(this);
+		mPool->CancelPendingCommands(this);
 	}
 	mCompleteEvent.Wait();
 }

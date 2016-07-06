@@ -19,11 +19,11 @@ public:
 	virtual bool Initialize();
 	virtual bool Uninitialize();
 public:
-	QuadModel* CreateQuad(const FileIdRef& fileId,ResourceShareType shareType = ResourceShareType::Share);
-	SingleLineFontModel* CreateSingleLineFontModel(const FontId& fontId,StringRef text,Alignment alignment=Alignment::LeftBottom,Size2U restrictSize=Size2U::Zero);
-	MultipleLineFontModel* CreateMultipleLineFontModel(const FontId& fontId,StringRef text,Alignment alignment=Alignment::LeftBottom,Size2U restrictSize=Size2U::Zero);
+	Share<QuadModel> CreateQuad(const FileIdRef& fileId,ResourceShareType shareType = ResourceShareType::Share);
+	Share<SingleLineFontModel> CreateSingleLineFontModel(const FontId& fontId,StringRef text,Alignment alignment=Alignment::LeftBottom,Size2U restrictSize=Size2U::Zero);
+	Share<MultipleLineFontModel> CreateMultipleLineFontModel(const FontId& fontId,StringRef text,Alignment alignment=Alignment::LeftBottom,Size2U restrictSize=Size2U::Zero);
 
-	IModel* Create(const FileIdRef& fileId,ModelLoadingOptions loadingOptions=ModelLoadingOptions::None,ResourceShareType shareType = ResourceShareType::Share);
+	Share<IModel> Create(const FileIdRef& fileId,ModelLoadingOptions loadingOptions=ModelLoadingOptions::None,ResourceShareType shareType = ResourceShareType::Share);
 };
 
 MEDUSA_END;

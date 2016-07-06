@@ -15,6 +15,5 @@ IView::~IView(void)
 }
 
 
-MEDUSA_IMPLEMENT_RTTI_ROOT(IView);
 
 MEDUSA_END;

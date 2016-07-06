@@ -15,5 +15,5 @@ ParticleFeatureLayer::~ParticleFeatureLayer(void)
 }
 
 
-MEDUSA_IMPLEMENT_LAYER(ParticleFeatureLayer, BaseFeatureLayer, StringRef::Empty, StringRef::Empty);
+MEDUSA_IMPLEMENT_NODE(ParticleFeatureLayer);
 

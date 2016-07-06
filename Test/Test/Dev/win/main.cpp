@@ -5,12 +5,13 @@
 #include "Content/Content.h"
 #include <tchar.h>
 
-
 int APIENTRY _tWinMain(HINSTANCE hInstance,
 					   HINSTANCE hPrevInstance,
 					   LPTSTR    lpCmdLine,
 					   int       nCmdShow)
 {
+	//MemoryLeakDetector::Start();
+
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(lpCmdLine);
 

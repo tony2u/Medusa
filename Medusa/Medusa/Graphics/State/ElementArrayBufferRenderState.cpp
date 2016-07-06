@@ -25,15 +25,14 @@ void ElementArrayBufferRenderState::Apply()const
 }
 
 
-ElementArrayBufferRenderState* ElementArrayBufferRenderState::Current()
+Share<ElementArrayBufferRenderState> ElementArrayBufferRenderState::Current()
 {
 	return new ElementArrayBufferRenderState(Render::Instance().GetInteger(GraphicsIntegerName::ElementArrayBufferBinding));
 }
 
-ElementArrayBufferRenderState* ElementArrayBufferRenderState::Clone() const
+Share<ElementArrayBufferRenderState> ElementArrayBufferRenderState::Clone() const
 {
-	ElementArrayBufferRenderState* state=new ElementArrayBufferRenderState(mBuffer);
-	return state;
+	return new ElementArrayBufferRenderState(mBuffer);
 }
 
 void ElementArrayBufferRenderState::CopyFrom(const IRenderState& other)
@@ -43,6 +42,5 @@ void ElementArrayBufferRenderState::CopyFrom(const IRenderState& other)
 	mBuffer = val.mBuffer;
 }
 
-MEDUSA_IMPLEMENT_RTTI(ElementArrayBufferRenderState, BaseBufferRenderState);
 
 MEDUSA_END;

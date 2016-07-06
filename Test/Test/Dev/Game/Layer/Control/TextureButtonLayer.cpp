@@ -37,5 +37,5 @@ void TextureButtonLayer::OnTap(INode* sender,TapGestureEventArg& e)
 
 
 
-MEDUSA_IMPLEMENT_LAYER(TextureButtonLayer, BaseCaseLayer, StringRef::Empty, StringRef::Empty);
+MEDUSA_IMPLEMENT_NODE(TextureButtonLayer);
 

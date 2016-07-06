@@ -17,7 +17,7 @@ public:
 
 	virtual bool Uninitialize() override;
 
-	void Load(IFileLoadable* item);
+	void Load(IFileLoadSavable* item);
 	void Clear();
 
 	template<typename T>
@@ -33,7 +33,7 @@ public:
 		return item;
 	}
 protected:
-	List<IFileLoadable*> mItems;
+	List<IFileLoadSavable*> mItems;
 };
 
 MEDUSA_END;

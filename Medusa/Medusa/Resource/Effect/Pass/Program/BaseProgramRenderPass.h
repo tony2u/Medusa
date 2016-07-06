@@ -12,7 +12,7 @@ MEDUSA_BEGIN;
 class BaseProgramRenderPass :public IRenderPass
 {
 public:
-	BaseProgramRenderPass(const FileIdRef& fileId, IShader* vertexShader, IShader* pixelShader, int index = 0);
+	BaseProgramRenderPass(const FileIdRef& fileId, const Share<IShader>& vertexShader, const Share<IShader>& pixelShader, int index = 0);
 	virtual ~BaseProgramRenderPass();
 
 	virtual void Apply();
@@ -30,8 +30,8 @@ public:
 	ShaderAttribute* FindAttributeByIndex(ShaderAttributeIndex index)const;
 
 
-	IShader* VertexShader() const { return mVertexShader; }
-	IShader* PixelShader() const { return mPixelShader; }
+	const Share<IShader>& VertexShader() const { return mVertexShader; }
+	const Share<IShader>& PixelShader() const { return mPixelShader; }
 
 	virtual void UpdateShaderUniforms(RenderingStep step);
 	virtual void Validate();
@@ -40,10 +40,10 @@ private:
 	void Link();
 	bool TryAddToManagedAttributes(const StringRef& name, ShaderAttribute* val);
 protected:
-	IShader* mVertexShader = nullptr;
-	IShader* mPixelShader = nullptr;
+	Share<IShader> mVertexShader;
+	Share<IShader> mPixelShader;
 	//render states
-	ProgramRenderState* mProgramState = nullptr;
+	Share<ProgramRenderState> mProgramState;
 
 	bool mIsLinked = false;
 	Dictionary<HeapString, ShaderUniform*> mUniforms;

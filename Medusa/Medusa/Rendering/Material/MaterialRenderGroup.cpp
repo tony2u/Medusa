@@ -36,19 +36,13 @@ bool MaterialRenderGroup::Initialize()
 
 bool MaterialRenderGroup::Uninitialize()
 {
-	FOR_EACH_ITEM_TO(mGroups, Uninitialize());
+	FOR_EACH_TO(mGroups, Uninitialize());
 
 	FOR_EACH_ITEM_CLEAR(mGroups, StateRenderGroupPool::Instance().Recycle);
-	SAFE_RELEASE(mMaterial);
-
+	
 	return true;
 }
 
-
-void MaterialRenderGroup::SetMaterial(const IMaterial* val)
-{
-	SAFE_ASSIGN_REF(mMaterial, val);
-}
 
 bool MaterialRenderGroup::Add(IRenderBatch* batch)
 {
@@ -80,9 +74,8 @@ void MaterialRenderGroup::Draw(IRenderQueue& renderQueue, RenderingFlags renderi
 	RenderingStatics::Instance().CountMaterial(mMaterial);
 	RenderingStatics::Instance().CountMaterialTextures(mMaterial);
 
-	FOR_EACH_COLLECTION(i, mGroups)
+	for (auto group : mGroups)
 	{
-		StateRenderGroup* group = *i;
 		group->Draw(renderQueue, renderingFlags);
 	}
 
@@ -94,9 +87,8 @@ void MaterialRenderGroup::Print(HeapString& ioStr, uint level)
 {
 	ioStr.Append('\t', level);
 	ioStr.AppendLine(mMaterial->Name().c_str());
-	FOR_EACH_COLLECTION(i, mGroups)
+	for (auto group : mGroups)
 	{
-		StateRenderGroup* group = *i;
 		group->Print(ioStr, level + 1);
 	}
 }

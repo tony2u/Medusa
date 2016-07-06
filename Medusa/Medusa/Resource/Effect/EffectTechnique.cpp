@@ -36,14 +36,14 @@ bool EffectTechnique::Initialize()
 
 bool EffectTechnique::Uninitialize()
 {
-	SAFE_RELEASE_COLLECTION(mRenderPasses);
+	mRenderPasses.Clear();
 	return true;
 }
 
 
-void EffectTechnique::AddPass( IRenderPass* pass )
+void EffectTechnique::AddPass(const Share<IRenderPass>& pass )
 {
-	IRenderPass* result=GetPassByName(pass->Name());
+	auto result=GetPassByName(pass->Name());
 	if (result!=nullptr)
 	{
 		MEDUSA_ASSERT_FAILED("Duplicate add pass");
@@ -54,15 +54,14 @@ void EffectTechnique::AddPass( IRenderPass* pass )
 		mRenderPassDict.Add(pass->Name(),pass);
 	}
 	mRenderPasses.Add(pass);
-	pass->Retain();
 	pass->SetTechnique(this);
 
 	UpdateFlags();
 }
 
-IRenderPass* EffectTechnique::RemovePass( StringRef name )
+Share<IRenderPass> EffectTechnique::RemovePass( StringRef name )
 {
-	IRenderPass* result=GetPassByName(name);
+	auto result=GetPassByName(name);
 	if (result!=nullptr)
 	{
 		mRenderPasses.Remove(result);
@@ -77,11 +76,10 @@ IRenderPass* EffectTechnique::RemovePass( StringRef name )
 
 
 
-IRenderPass* EffectTechnique::GetPassByIndex( uint index )
+Share<IRenderPass> EffectTechnique::GetPassByIndex( uint index )
 {
-	FOR_EACH_COLLECTION(i,mRenderPasses)
+	for(auto pass:mRenderPasses)
 	{
-		IRenderPass* pass=*i;
 		if (pass->GetIndex()==index)
 		{
 			return pass;
@@ -91,7 +89,7 @@ IRenderPass* EffectTechnique::GetPassByIndex( uint index )
 	return nullptr;
 }
 
-IRenderPass* EffectTechnique::GetPassByName( StringRef name )
+Share<IRenderPass> EffectTechnique::GetPassByName( StringRef name )
 {
 	return mRenderPassDict.GetOptional(name,nullptr);
 }
@@ -99,14 +97,13 @@ IRenderPass* EffectTechnique::GetPassByName( StringRef name )
 void EffectTechnique::UpdateFlags()
 {
 	mFlags=RenderPassFlags::None;
-	FOR_EACH_COLLECTION(i,mRenderPasses)
+	for (auto pass : mRenderPasses)
 	{
-		const IRenderPass* pass=*i;
 		MEDUSA_FLAG_ADD(mFlags,pass->Flags());
 	}
 }
 
-IRenderPass* EffectTechnique::GetFirstPass() const
+Share<IRenderPass> EffectTechnique::GetFirstPass() const
 {
 	return mRenderPasses.First();
 }

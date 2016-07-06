@@ -25,6 +25,12 @@ bool SirenCustomEnum::SetAttribute(const StringRef& val)
 	return mAttribute.Load(val);
 }
 
+bool SirenCustomEnum::AddAttribute(StringRef name, StringRef val)
+{
+	return mAttribute.AddAttribute(name, val);
+}
+
+
 bool SirenCustomEnum::HasValue(int val) const
 {
 	return mFieldValues.Contains(val);
@@ -110,10 +116,6 @@ bool SirenCustomEnum::ValidateUnderlyType(SirenAssembly& assembly, StringRef val
 
 }
 
-bool SirenCustomEnum::AddAttribute(StringRef name, StringRef val)
-{
-	return mAttribute.AddAttribute(name, val);
-}
 
 bool SirenCustomEnum::Parse(SirenAssembly& assembly, StringRef& refProto)
 {

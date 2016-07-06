@@ -5,5 +5,4 @@
 #include "Core/Pattern/Property/PropertyChangedEventArg.h"
 
 MEDUSA_BEGIN;
-MEDUSA_IMPLEMENT_RTTI(PropertyChangedEventArg, IEventArg);
 MEDUSA_END;

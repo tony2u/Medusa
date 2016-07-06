@@ -7,7 +7,7 @@
 #include "CorePlatform/CommonMarcos.h"
 
 MEDUSA_BEGIN;
-	
+
 
 
 enum class ThreadState
@@ -28,7 +28,7 @@ enum class ExecuteOption
 
 
 typedef HANDLE ThreadHandle;
-typedef DWORD ThreadId;
+typedef uint32 ThreadId;
 typedef HANDLE ThreadNativeHandle;
 
 
@@ -41,19 +41,16 @@ enum class ThreadingSchedulePolicy
 	SCHED_MAX
 };
 
-namespace ThreadPriority	//[IGNORE_PRE_DECLARE]
+enum class ThreadPriority	//[IGNORE_PRE_DECLARE]
 {
-	enum ThreadPriority_t
-	{
-		Idle = THREAD_PRIORITY_IDLE,//-15
-		Lowest = THREAD_PRIORITY_LOWEST,//-2
-		Low = THREAD_PRIORITY_BELOW_NORMAL,//-1
-		Normal = THREAD_PRIORITY_NORMAL,//0
-		High = THREAD_PRIORITY_ABOVE_NORMAL,//1
-		Highest = THREAD_PRIORITY_HIGHEST,//2
-		Critical = THREAD_PRIORITY_TIME_CRITICAL,//15
-	};
-}
+	Idle = THREAD_PRIORITY_IDLE,//-15
+	Lowest = THREAD_PRIORITY_LOWEST,//-2
+	Low = THREAD_PRIORITY_BELOW_NORMAL,//-1
+	Normal = THREAD_PRIORITY_NORMAL,//0
+	High = THREAD_PRIORITY_ABOVE_NORMAL,//1
+	Highest = THREAD_PRIORITY_HIGHEST,//2
+	Critical = THREAD_PRIORITY_TIME_CRITICAL,//15
+};
 
 class MutexImp
 {
@@ -81,7 +78,7 @@ public:
 	ThreadHandle Handle()const { return mThread; }
 protected:
 	ThreadHandle mThread;
-	DWORD mThreadId;
+	ThreadId mThreadId;
 };
 
 #endif
@@ -103,19 +100,16 @@ enum class ThreadingSchedulePolicy
 	SCHED_MAX = RR
 };
 
-namespace ThreadPriority	//[IGNORE_PRE_DECLARE]
+enum class ThreadPriority	//[IGNORE_PRE_DECLARE]
 {
-	enum ThreadPriority_t
-	{
-		Idle,
-		Lowest,
-		Low,
-		Normal,
-		High,
-		Highest,
-		Critical,
-	};
-}
+	Idle,
+	Lowest,
+	Low,
+	Normal,
+	High,
+	Highest,
+	Critical,
+};
 
 
 class MutexImp
@@ -128,9 +122,9 @@ class SemaphoreImp
 {
 protected:
 #ifdef __APPLE__
-    dispatch_semaphore_t    mSem;
+	dispatch_semaphore_t    mSem;
 #else
-    sem_t                   mSem;
+	sem_t                   mSem;
 #endif
 
 };

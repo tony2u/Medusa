@@ -14,7 +14,7 @@ IBrainBody::IBrainBody()
 
 IBrainBody::~IBrainBody(void)
 {
-	SAFE_RELEASE(mBrain);
+	
 }
 
 bool IBrainBody::Behave(void* sender, float dt)

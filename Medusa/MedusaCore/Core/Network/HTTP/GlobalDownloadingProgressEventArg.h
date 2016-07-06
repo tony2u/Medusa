@@ -3,6 +3,7 @@
 // license that can be found in the LICENSE file.
 #pragma once
 #include "MedusaCorePreDeclares.h"
+#ifdef MEDUSA_HTTP
 #include "Core/Network/HTTP/IHTTPDownloader.h"
 #include "Core/Network/HTTP/HTTPClient.h"
 
@@ -39,3 +40,4 @@ protected:
 
 
 MEDUSA_END;
+#endif

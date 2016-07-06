@@ -29,11 +29,6 @@ EffectRenderGroup::~EffectRenderGroup()
 {
 }
 
-void EffectRenderGroup::SetEffect(const IEffect* val)
-{
-	SAFE_ASSIGN_REF(mEffect, val);
-}
-
 
 bool EffectRenderGroup::Initialize()
 {
@@ -42,10 +37,9 @@ bool EffectRenderGroup::Initialize()
 
 bool EffectRenderGroup::Uninitialize()
 {
-	FOR_EACH_ITEM_TO(mGroups, Uninitialize());
+	FOR_EACH_TO(mGroups, Uninitialize());
 
 	FOR_EACH_ITEM_CLEAR(mGroups, MaterialRenderGroupPool::Instance().Recycle);
-	SAFE_RELEASE(mEffect);
 	return true;
 }
 
@@ -80,16 +74,14 @@ void EffectRenderGroup::Draw(IRenderQueue& renderQueue, RenderingFlags rendering
 	EffectTechnique::PassCollectionType& renderPasses = technique->RenderPasses();
 	RenderingStatics::Instance().CountRenderPass(renderPasses.Count());
 
-	FOR_EACH_COLLECTION(i, renderPasses)
+	for (auto renderPass : renderPasses)
 	{
-		IRenderPass* renderPass = *i;
 		RenderingContext::Instance().ApplyRenderPass(renderPass);
 		bool isContinue = renderPass->Draw(renderQueue, renderingFlags);
 		if (isContinue)
 		{
-			FOR_EACH_COLLECTION(j, mGroups)
+			for (auto materialRenderGroup : mGroups)
 			{
-				MaterialRenderGroup* materialRenderGroup = *j;
 				materialRenderGroup->Draw(renderQueue, renderingFlags);
 			}
 		}
@@ -103,9 +95,8 @@ void EffectRenderGroup::Print(HeapString& ioStr, uint level)
 {
 	ioStr.Append('\t', level);
 	ioStr.AppendLine(mEffect->Name().c_str());
-	FOR_EACH_COLLECTION(i, mGroups)
+	for (auto materialRenderList : mGroups)
 	{
-		MaterialRenderGroup* materialRenderList = *i;
 		materialRenderList->Print(ioStr, level + 1);
 	}
 }

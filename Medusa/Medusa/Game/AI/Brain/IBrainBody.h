@@ -14,8 +14,8 @@ protected:
 	IBrainBody();
 	virtual ~IBrainBody(void);
 public:
-	IBrain* Brain() const { return mBrain; }
-	void SetBrain(IBrain* val) { SAFE_ASSIGN_REF(mBrain, val); }
+	const Share<IBrain>& Brain() const { return mBrain; }
+	void SetBrain(const Share<IBrain>& val) { mBrain = val; }
 
 	const IBehavior* CurrentBehavior() const { return mCurrentBehavior; }
 
@@ -25,7 +25,7 @@ public:
 
 	void TransferTo(const IBehavior* val, void* sender);
 protected:
-	IBrain* mBrain;
+	Share<IBrain> mBrain;
 	const IBehavior* mCurrentBehavior;
 };
 

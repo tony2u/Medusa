@@ -34,5 +34,5 @@ bool BaseCaseLayer::Initialize()
 
 
 
-MEDUSA_IMPLEMENT_LAYER(BaseCaseLayer, ILayer, StringRef::Empty, StringRef::Empty);
+MEDUSA_IMPLEMENT_NODE(BaseCaseLayer);
 

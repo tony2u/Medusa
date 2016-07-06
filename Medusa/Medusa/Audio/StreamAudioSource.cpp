@@ -2,6 +2,7 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 #include "MedusaPreCompiled.h"
+#ifdef MEDUSA_AL
 #include "StreamAudioSource.h"
 #include "Audio/Device/AudioDevice.h"
 #include "Resource/Audio/PcmAudio.h"
@@ -18,10 +19,10 @@ StreamAudioSource::StreamAudioSource(const StringRef& name/*=StringRef::Empty*/)
 bool StreamAudioSource::Initialize(uint channelCount,uintp samplerRate,uint bufferCount/*=3*/)
 {
 	mBufferCount=bufferCount;
-	SAFE_RELEASE_COLLECTION(mBuffers);
+	mBuffers.Clear();
 	FOR_EACH_SIZE(i,mBufferCount)
 	{
-		IAudio* buffer=new PcmAudio();
+		Share<IAudio> buffer=new PcmAudio();
 		buffer->SetChannelCount(channelCount);
 		buffer->SetSampleRate(samplerRate);
 		mBuffers.Add(buffer);
@@ -33,7 +34,7 @@ bool StreamAudioSource::Initialize(uint channelCount,uintp samplerRate,uint buff
 StreamAudioSource::~StreamAudioSource()
 {
 	Stop();
-	SAFE_RELEASE_COLLECTION(mBuffers);
+	mBuffers.Clear();
 }
 
 void StreamAudioSource::Play()
@@ -107,7 +108,7 @@ void StreamAudioSource::OnStreamThread(Thread& thread)
 			size_t bufferCount=mBuffers.Count();
 			FOR_EACH_SIZE(i,bufferCount)
 			{
-				IAudio* audioBuffer=mBuffers[i];
+				auto& audioBuffer=mBuffers[i];
 				if (audioBuffer->Buffer()==buffer)
 				{
 					index=i;
@@ -150,7 +151,7 @@ void StreamAudioSource::OnStreamThread(Thread& thread)
 	// Unqueue any buffer left in the queue
 	//delete buffers
 	AudioDevice::Instance().SetSourceBuffer(mSource,0);
-	SAFE_RELEASE_COLLECTION(mBuffers);
+	mBuffers.Clear();
 
 }
 
@@ -185,7 +186,7 @@ bool StreamAudioSource::FillAndQueueBuffer(size_t i)
 
 	if (outData.IsValid())
 	{
-		IAudio* buffer=mBuffers[i];
+		auto& buffer=mBuffers[i];
 		buffer->Upload(outData);
 		AudioDevice::Instance().QueueSourceBuffer(mSource,buffer->Buffer());
 	}
@@ -282,3 +283,5 @@ void StreamAudioSource::SetByteOffset(uint val)
 }
 
 MEDUSA_END;
+
+#endif

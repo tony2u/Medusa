@@ -5,14 +5,14 @@
 #include "MedusaPreDeclares.h"
 #include "Core/Pattern/Singleton.h"
 #include "Core/Pattern/Object/IdObjectCache.h"
-#include "Core/IO/IFileLoadable.h"
+#include "Core/IO/IFileLoadSavable.h"
 #include "Game/AI/Brain/IBrain.h"
 
 
 MEDUSA_BEGIN;
 
 
-class BrainCache :public Singleton < BrainCache >, public IdObjectCache < HeapString, IBrain*>, public IFileLoadable
+class BrainCache :public Singleton < BrainCache >, public IdObjectCache < HeapString, IBrain*>, public IFileLoadSavable
 {
 	friend class Singleton < BrainCache > ;
 	BrainCache() {}

@@ -8,26 +8,24 @@
 
 MEDUSA_BEGIN;
 
-RenderingObject::RenderingObject(IMesh* mesh /*= nullptr*/, IMaterial* material /*= nullptr*/)
+RenderingObject::RenderingObject(const Share<IMesh>& mesh /*= nullptr*/, const Share<IMaterial>& material /*= nullptr*/)
 	:mMesh(mesh),mMaterial(material)
 {
-	SAFE_RETAIN(mMesh);
-	SAFE_RETAIN(mMaterial);
+	
 }
 
 RenderingObject::RenderingObject(const RenderingObject& val)
 	:mMesh(val.mMesh),mMaterial(val.mMaterial)
 {
-	SAFE_RETAIN(mMesh);
-	SAFE_RETAIN(mMaterial);
+	
 }
 
 RenderingObject& RenderingObject::operator=(const RenderingObject& val)
 {
 	if (this!=&val)
 	{
-		SAFE_ASSIGN_REF(mMesh, val.mMesh);
-		SAFE_ASSIGN_REF(mMaterial, val.mMaterial);
+		mMesh = val.mMesh;
+		mMaterial = val.mMaterial;
 	}
 	
 	return *this;
@@ -44,8 +42,8 @@ RenderingObject& RenderingObject::operator=(RenderingObject&& val)
 {
 	if (this != &val)
 	{
-		SAFE_RELEASE(mMesh);
-		SAFE_RELEASE(mMaterial);
+		mMesh = nullptr;
+		mMaterial = nullptr;
 
 		mMesh = val.mMesh;
 		mMaterial = val.mMaterial;
@@ -58,23 +56,23 @@ RenderingObject& RenderingObject::operator=(RenderingObject&& val)
 
 RenderingObject::~RenderingObject()
 {
-	SAFE_RELEASE(mMesh);
-	SAFE_RELEASE(mMaterial);
+	mMesh = nullptr;
+	mMaterial = nullptr;
 }
 
-void RenderingObject::SetMesh(IMesh* val)
+void RenderingObject::SetMesh(const Share<IMesh>& val)
 {
-	SAFE_ASSIGN_REF(mMesh, val);
+	mMesh = val;
 }
 
-void RenderingObject::SetMaterial(IMaterial* val)
+void RenderingObject::SetMaterial(const Share<IMaterial>& val)
 {
-	SAFE_ASSIGN_REF(mMaterial, val);
+	mMaterial = val;
 }
 
 bool RenderingObject::IsValid() const
 {
-	return mMesh != nullptr&&mMaterial != nullptr&&mMaterial->Effect() != nullptr;
+	return mMesh != nullptr&&mMesh->VertexCount()!=0&&mMaterial != nullptr&&mMaterial->Effect() != nullptr;
 }
 
 bool RenderingObject::IsBlend() const

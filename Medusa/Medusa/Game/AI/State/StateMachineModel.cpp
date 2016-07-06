@@ -48,9 +48,8 @@ IState* StateMachineModel::Register(StringRef name)
 
 IState* StateMachineModel::Find(StringRef name) const
 {
-	FOR_EACH_COLLECTION(i, mStates)
+	for (auto state : mStates)
 	{
-		IState* state = *i;
 		if (state->ClassName() == name)
 		{
 			return state;

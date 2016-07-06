@@ -8,7 +8,7 @@
 
 class ParallaxComponentLayer :public BaseCaseLayer
 {
-	MEDUSA_DECLARE_LAYER(ParallaxComponentLayer);
+	MEDUSA_NODE(ParallaxComponentLayer,BaseCaseLayer);
 public:
 	ParallaxComponentLayer(StringRef name=StringRef::Empty,const IEventArg& e=IEventArg::Empty);
 	virtual ~ParallaxComponentLayer(void);

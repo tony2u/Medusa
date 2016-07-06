@@ -9,9 +9,7 @@
 #include "Binding/Lua/Geometry_Binding.h"
 #include "Binding/Lua/Node_Binding.h"
 #include "Binding/Lua/EventArg_Binding.h"
-#include "Binding/Lua/LayerFactory_Binding.h"
 
-#include "Binding/Lua/SceneFactory_Binding.h"
 #include "Binding/Lua/SceneManager_Binding.h"
 #include "Binding/Lua/NodeFactory_Binding.h"
 #include "Binding/Lua/NodeDefines_Binding.h"
@@ -31,13 +29,11 @@ bool Register_Engine()
 
 	MEDUSA_LUA_REGISTER(ILayer);
 	MEDUSA_LUA_REGISTER(NormalLayer);
-	MEDUSA_LUA_REGISTER(LayerFactory);
 
 
 	MEDUSA_LUA_REGISTER(IScene);
 	MEDUSA_LUA_REGISTER(UIScene);
 
-	MEDUSA_LUA_REGISTER(SceneFactory);
 	MEDUSA_LUA_REGISTER(SceneManager);
 
 	MEDUSA_LUA_REGISTER(NodeFactory);

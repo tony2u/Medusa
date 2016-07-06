@@ -13,7 +13,7 @@ class IWaitable
 public:
 	virtual bool Wait() { return true; }
 	virtual bool TryWait() { return true; }
-	virtual bool WaitTimeout(long milliseconds) { return true; }
+	virtual bool WaitFor(long milliseconds) { return true; }
 	virtual void Set() {}
 #ifndef MEDUSA_POSIX_THREADING
 	virtual ThreadNativeHandle NativeHandle()const = 0;

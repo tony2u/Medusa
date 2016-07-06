@@ -114,7 +114,7 @@ size_t IStream::ReadToStream(size_t size, IStream& dest, size_t bufferSize/*=102
 
 }
 
-size_t IStream::ReadDataToString(HeapString& outString, int readCount/*=0*/)const
+size_t IStream::ReadDataToString(HeapString& outString, int readCount/*=0*/, bool withNullTermitated /*= false*/)const
 {
 	RETURN_ZERO_IF_FALSE(CanRead());
 	uintp readSize = 0;
@@ -135,11 +135,15 @@ size_t IStream::ReadDataToString(HeapString& outString, int readCount/*=0*/)cons
 
 	MemoryData outData = MemoryData::FromStatic((const byte*)outString.LeftPtr(), readSize);
 	size_t count = ReadDataTo(outData, DataReadingMode::AlwaysCopy);
+	if (withNullTermitated)
+	{
+		--count;
+	}
 	outString.ForceAppendLength(count);
 	return count;
 }
 
-size_t IStream::ReadDataToString(WHeapString& outString, int readCount/*=0*/)const
+size_t IStream::ReadDataToString(WHeapString& outString, int readCount/*=0*/, bool withNullTermitated /*= false*/)const
 {
 	RETURN_ZERO_IF_FALSE(CanRead());
 
@@ -161,7 +165,14 @@ size_t IStream::ReadDataToString(WHeapString& outString, int readCount/*=0*/)con
 
 	MemoryData outData = MemoryData::FromStatic((const byte*)outString.LeftPtr(), readSize*sizeof(wchar_t));
 	size_t count = ReadDataTo(outData, DataReadingMode::AlwaysCopy);
+
+	if (withNullTermitated)
+	{
+		count -= sizeof(wchar_t);
+	}
+
 	outString.ForceAppendLength(count / sizeof(wchar_t));
+
 	return count;
 }
 
@@ -278,7 +289,7 @@ size_t IStream::WriteLine(const WStringRef& str, bool withNullTermitated /*= fal
 
 bool IStream::ReserveSize(size_t size)
 {
-	if (size >= Length())
+	if (size <= Length())
 	{
 		return true;
 	}

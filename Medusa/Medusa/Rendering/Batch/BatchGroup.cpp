@@ -26,6 +26,53 @@ BatchGroup::BatchGroup(IdType id /*= 0*/) :mId(id)
 
 }
 
+GraphicsDrawMode BatchGroup::DrawMode() const
+{
+	uint drawModeId = (mId&(((1<< StrategyBitSize)<< DrawModeBitSize)-1))>> DrawModeBitSize;
+	switch (drawModeId)
+	{
+	case 0:
+		return GraphicsDrawMode::Points;
+	case 1:
+		return GraphicsDrawMode::Lines;
+	case 2:
+		return GraphicsDrawMode::LineLoop;
+	case 3:
+		return GraphicsDrawMode::LineStrip;
+	case 4:
+		return GraphicsDrawMode::Triangles;
+	case 5:
+		return GraphicsDrawMode::TriangleStrip;
+	case 6:
+		return GraphicsDrawMode::TriangleFan;
+	default:
+		return GraphicsDrawMode::Points;
+	}
+}
+
+bool BatchGroup::IsMatch(const BatchGroup& val) const
+{
+	if (mId!=val.mId)
+	{
+		return false;
+	}
+
+	switch (DrawMode())
+	{
+	case GraphicsDrawMode::Points:
+	case GraphicsDrawMode::Lines:
+	case GraphicsDrawMode::Triangles:
+		return true;
+	case GraphicsDrawMode::LineLoop:
+	case GraphicsDrawMode::LineStrip:
+	case GraphicsDrawMode::TriangleStrip:
+	case GraphicsDrawMode::TriangleFan:
+	default:
+		return false;
+	} 
+
+}
+
 BatchGroup::IdType BatchGroup::Calculate(uint priority, uint effectId, uint materialId, uint stateTreeNodeId, uint drawMode, uint strategy)
 {
 #ifdef MEDUSA_SAFE_CHECK

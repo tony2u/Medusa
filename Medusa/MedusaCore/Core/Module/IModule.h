@@ -7,15 +7,18 @@
 #include "Core/Collection/Dictionary.h"
 #include "Core/String/HeapString.h"
 #include "Core/Pattern/IInitializable.h"
-#include "Core/Command/EventArg/IEventArg.h"
+#include "Core/Event/EventArg/IEventArg.h"
 #include "Core/Pattern/ISharable.h"
+#include "Core/Pattern/Share.h"
 
 
 MEDUSA_BEGIN;
 
 class IModule :public IInitializable, public ISharableSingleThread
 {
-	typedef LinkedList<IModule*> ModuleList;
+public:
+	using ModuleType = Share<IModule>;
+	typedef LinkedList<ModuleType> ModuleList;
 public:
 	IModule(const StringRef& name);
 	virtual ~IModule();
@@ -26,21 +29,21 @@ public:
 	bool Reload(IEventArg& e = IEventArg::Empty);
 	void ClearModules();
 
-	bool AddPrevModule(IModule* item);
-	bool AddPrevModule(IModule* item, bool enabled);
+	bool AddPrevModule(const ModuleType& item);
+	bool AddPrevModule(const ModuleType& item, bool enabled);
 	bool AddPrevLoadModule(const Delegate<bool(IEventArg& e)>& del, const StringRef& name);
 
-	bool AddNextModule(IModule* item);
-	bool AddNextModule(IModule* item, bool enabled);
+	bool AddNextModule(const ModuleType& item);
+	bool AddNextModule(const ModuleType& item, bool enabled);
 	bool AddNextLoadModule(const Delegate<bool(IEventArg& e)>& del, const StringRef& name);
 
 	bool RemoveModule(StringRef name);
 
-	IModule* FindModule(StringRef name)const;
+	ModuleType FindModule(StringRef name)const;
 	bool EnableModule(StringRef name, bool val);
 
-	bool AddModuleBefore(StringRef name, IModule* item);
-	bool AddModuleAfter(StringRef name, IModule* item);
+	bool AddModuleBefore(StringRef name, const ModuleType& item);
+	bool AddModuleAfter(StringRef name, const ModuleType& item);
 
 
 public:
@@ -80,5 +83,10 @@ protected:
 	Dictionary<StringRef, ModuleList::NodePtr> mModuleDict;
 
 };
+
+
+//[PRE_DECLARE_BEGIN]
+typedef Share<IModule> ShareModule;
+//[PRE_DECLARE_END]
 
 MEDUSA_END;

@@ -47,6 +47,9 @@ public:
 	static std::unique_ptr<FileStream> OpenTextReader(StringRef filePath);
 	static std::unique_ptr<FileStream> OpenBinaryReader(StringRef filePath);
 
+	static std::unique_ptr<FileStream> OpenTextWriter(StringRef filePath);
+	static std::unique_ptr<FileStream> OpenBinaryWriter(StringRef filePath);
+
 };
 
 MEDUSA_END;

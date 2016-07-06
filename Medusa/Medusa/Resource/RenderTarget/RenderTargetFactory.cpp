@@ -9,95 +9,99 @@ MEDUSA_BEGIN;
 
 RenderTargetFactory::RenderTargetFactory()
 {
-	mDefault=nullptr;
-	mCurrent=nullptr;
+	mDefault = nullptr;
+	mCurrent = nullptr;
 }
 
 RenderTargetFactory::~RenderTargetFactory()
 {
-	
+	Uninitialize();
 }
 
 bool RenderTargetFactory::Initialize()
 {
-	if (mDefault==nullptr)
+	if (mDefault == nullptr)
 	{
 		mDefault = new DefaultRenderTarget(mDefaultRenderTargetName);
 	}
 
-	mCurrent=mDefault;
+	mCurrent = mDefault;
 	return true;
 }
 
 bool RenderTargetFactory::Uninitialize()
 {
 	Clear();
-	SAFE_RELEASE(mDefault);
+	mDefault = nullptr;
+	mCurrent = nullptr;
 	return true;
 }
 
 void RenderTargetFactory::Clear()
 {
 	BaseResourceFactory<IRenderTarget>::Clear();
-	SAFE_RELEASE(mDefault);
+	mDefault = nullptr;
 }
 
 
-void RenderTargetFactory::SetCurrent( const FileIdRef& fileId )
+void RenderTargetFactory::SetCurrent(const FileIdRef& fileId)
 {
-	IRenderTarget* renderTarget= Find(fileId);
-	if (renderTarget!=nullptr)
+	Share<IRenderTarget> renderTarget = Find(fileId);
+	if (renderTarget != nullptr)
 	{
-		mCurrent=renderTarget;
+		mCurrent = renderTarget;
 	}
 }
 
-CustomRenderTarget* RenderTargetFactory::CreateCustom( const FileIdRef& fileId,bool setCurrent/*=true*/ ,ResourceShareType shareType /*= ResourceShareType::Share*/)
+Share<CustomRenderTarget> RenderTargetFactory::CreateCustom(const FileIdRef& fileId, bool setCurrent/*=true*/, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
-	CustomRenderTarget* renderTarget = nullptr;
+	Share<IRenderTarget> renderTarget = nullptr;
 	if (shareType != ResourceShareType::None)
 	{
-		renderTarget = (CustomRenderTarget*)Find(fileId);
-		RETURN_SELF_IF_NOT_NULL(renderTarget);
+		renderTarget = Find(fileId);
+		if (renderTarget!=nullptr)
+		{
+			return renderTarget.CastPtr<CustomRenderTarget>();
+		}
 	}
 
 
 
-	if (renderTarget==nullptr)
+	if (renderTarget == nullptr)
 	{
-		renderTarget=new CustomRenderTarget(fileId);
+		renderTarget = new CustomRenderTarget(fileId);
 		Add(renderTarget, shareType);
 	}
 
 	if (setCurrent)
 	{
-		mCurrent=renderTarget;
+		mCurrent = renderTarget;
 	}
 
-	return renderTarget;
+	return renderTarget.CastPtr<CustomRenderTarget>();
 }
 
 
 
 void RenderTargetFactory::ResetToDefault()
 {
-	mCurrent=mDefault;
+	mCurrent = mDefault;
 }
 
 void RenderTargetFactory::Resize(const Size2F& newSize)
 {
-	if (mDefault!=nullptr)
+	if (mDefault != nullptr)
 	{
 		mDefault->Resize(newSize);
 	}
 
-	FOR_EACH_COLLECTION(i, mItems)
+	for (auto i : mItems)
 	{
-		IRenderTarget* target = i->Value;
+		auto& target = i.Value;
 		target->Resize(newSize);
 	}
 }
 
-const StringRef RenderTargetFactory::mDefaultRenderTargetName="Default";
+const StringRef RenderTargetFactory::mDefaultRenderTargetName = "Default";
 
 MEDUSA_END;

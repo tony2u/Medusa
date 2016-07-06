@@ -5,7 +5,7 @@
 #include "Core/Pattern/Singleton.h"
 #include "Core/Collection/Stack.h"
 #include "Node/NodeDefines.h"
-#include "Core/Command/EventArg/IEventArg.h"
+#include "Core/Event/EventArg/IEventArg.h"
 #include "Core/Task/FrameTaskStage.h"
 #include "Node/Scene/ChangedNodeCollector.h"
 #include "Core/IO/FileIdRef.h"
@@ -48,7 +48,7 @@ public:
 	bool IsSingle()const { return mScenes.Count() == 1; }
 	const SceneStack& Scenes() const { return mScenes; }
 	SceneStack& MutableScenes() { return mScenes; }
-	void Push(IScene* scene, NodePushFlags pushFlag = NodePushFlags::None);
+	IScene* Push(IScene* scene, NodePushFlags pushFlag = NodePushFlags::None);
 
 protected:
 	bool DeleteScene(IScene* scene, bool isAsync = false);
@@ -57,8 +57,8 @@ public:
 	void ShowActivityIndicator();
 	void HideActivityIndicator();
 
-	void ShowAlertView(StringRef text, Action0 callback = nullptr);
-	void ShowAlertView(WStringRef text, Action0 callback = nullptr);
+	void ShowAlertView(StringRef text, Action callback = nullptr);
+	void ShowAlertView(WStringRef text, Action callback = nullptr);
 
 	void ShowToast(StringRef text, float duration = 2.0f, ToastPosition position = ToastPosition::Center);
 protected:

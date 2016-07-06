@@ -14,10 +14,11 @@
 #include "TiledImageLayer.h"
 #include "TiledTilesetRef.h"
 #include "Geometry/GeometryFactory.h"
-#include "Node/Layer/NormalLayer.h"
-#include "Node/Layer/LayerFactory.h"
 #include "CoreLib/Common/pugixml/pugixml.hpp"
 #include "Core/IO/FileIdRef.h"
+#include "Node/NodeFactory.h"
+#include "Node/Layer/ILayer.h"
+#include "Node/Layer/NormalLayer.h"
 
 MEDUSA_BEGIN;
 
@@ -34,7 +35,6 @@ TmxTiledMap::TmxTiledMap(const FileIdRef& fileId)
 {
 	mVersion = 0.f;
 	mNextObjectId = 0;
-	mInstantiateLayer = NormalLayer::ClassNameStatic();
 }
 
 TmxTiledMap::~TmxTiledMap()
@@ -89,9 +89,8 @@ void TmxTiledMap::Unload()
 
 bool TmxTiledMap::ParseProperties(const pugi::xml_node& node, StringPropertySet& outProperties)
 {
-	FOR_EACH_COLLECTION_STL(i, node.children())
+	for (auto child : node.children())
 	{
-		pugi::xml_node child = *i;
 		StringRef childName = child.name();
 		if (childName == "property")
 		{
@@ -196,9 +195,8 @@ bool TmxTiledMap::Parse(const pugi::xml_node& rootNode)
 		mStaggerIndex = TiledMapStaggerIndex::Odd;
 	}
 
-	FOR_EACH_COLLECTION_STL(i, rootNode.children())
+	for (auto child : rootNode.children())
 	{
-		pugi::xml_node child = *i;
 		StringRef childName = child.name();
 
 		if (childName == "properties")
@@ -256,10 +254,15 @@ ILayer* TmxTiledMap::Instantiate(const StringRef& className/*= StringRef::Empty*
 		layerClassName = mInstantiateLayer;
 	}
 
-	ILayer* curLayer = LayerFactory::Instance().Create(layerClassName, StringRef::Empty);
+	if (layerClassName.IsEmpty())
+	{
+		layerClassName = NormalLayer::ClassNameStatic();
+	}
+
+	ILayer* curLayer = (ILayer*)NodeFactory::Instance().Create(layerClassName);
 	for (auto* layer:mLayers)
 	{
-		INode* layerNode= layer->Instantiate(mode);
+		ILayer* layerNode= layer->Instantiate(mode);
 		if (layerNode!=nullptr)
 		{
 			curLayer->AddChild(layerNode);

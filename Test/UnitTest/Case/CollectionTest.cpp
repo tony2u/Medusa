@@ -68,7 +68,7 @@ struct AAA
 void CollectionTest::TestSortedList()
 {
 	List<AAA*> items;
-	SortedList<AAA*, DefaultCompareForPointer<AAA>, DefaultCompareForPointer<AAA>> mySort;
+	SortedList<AAA*, DefaultCompareForPointer, DefaultCompareForPointer> mySort;
 
 	FOR_EACH_SIZE(i, 100)
 	{

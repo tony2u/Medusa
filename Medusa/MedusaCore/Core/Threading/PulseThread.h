@@ -9,18 +9,24 @@
 MEDUSA_BEGIN;
 
 
-class PulseThread
+class PulseThread:public Thread
 {
 public:
 	PulseThread(const StringRef& name = StringRef::Empty);
 	~PulseThread(void);
 
-	virtual bool Initialize(bool disableThreading = false);
-	virtual bool Uninitialize();
-	void Stop();
 	void Pulse();
 	void WaitForComplete();
-private:
+
+	bool IsThreadingDisabled() const { return mThreadingDisabled; }
+	void DisableThreadingDisabled(bool val) { mThreadingDisabled = val; }
+protected:
+	virtual bool OnBeforeStart()override;
+	virtual bool OnBeforeJoin()override;
+
+	virtual void OnAfterJoin()override;
+	virtual void OnRun()override;
+
 	void OnThreadCallback(Thread& thread);
 
 protected:

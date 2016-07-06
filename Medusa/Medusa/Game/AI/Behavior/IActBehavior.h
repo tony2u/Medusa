@@ -10,7 +10,7 @@ MEDUSA_BEGIN;
 
 class IActBehavior:public IBehavior
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_RTTI(IActBehavior,IBehavior);
 public:
 	IActBehavior();
 	virtual ~IActBehavior(void);

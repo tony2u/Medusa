@@ -2,6 +2,7 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 #include "MedusaPreCompiled.h"
+#ifdef MEDUSA_AL
 #include "Audio/StaticAudioSource.h"
 #include "Resource/Audio/IAudio.h"
 #include "Audio/Device/AudioDevice.h"
@@ -15,11 +16,11 @@ StaticAudioSource::StaticAudioSource(const StringRef& name/*=StringRef::Empty*/)
 
 StaticAudioSource::~StaticAudioSource()
 {
-	SAFE_RELEASE_COLLECTION(mBuffers);
+	mBuffers.Clear();
 }
 
 
-IAudio* StaticAudioSource::GetBuffer() const
+Share<IAudio> StaticAudioSource::GetBuffer() const
 {
 	if (!mBuffers.IsEmpty())
 	{
@@ -28,7 +29,7 @@ IAudio* StaticAudioSource::GetBuffer() const
 	return nullptr;
 }
 
-void StaticAudioSource::SetBuffer(IAudio* val)
+void StaticAudioSource::SetBuffer(const Share<IAudio>& val)
 {
 	if (mBuffers.IsEmpty())
 	{
@@ -36,7 +37,7 @@ void StaticAudioSource::SetBuffer(IAudio* val)
 	}
 	else
 	{
-		SAFE_ASSIGN_REF(mBuffers[0],val);
+		mBuffers[0] = val;
 	}
 }
 
@@ -54,15 +55,14 @@ void StaticAudioSource::OnSetup()
 
 	if (!mBuffers.IsEmpty()&&mBuffers.Count()>1)
 	{
-		FOR_EACH_COLLECTION(i,mBuffers)
+		for(auto buffer:mBuffers)
 		{
-			IAudio* buffer=*i;
 			AudioDevice::Instance().QueueSourceBuffer(mSource,buffer->Buffer());
 		}
 	}
 	else
 	{
-		IAudio* buffer=GetBuffer();
+		auto buffer=GetBuffer();
 		if (buffer!=nullptr)
 		{
 			AudioDevice::Instance().SetSourceIntegerProperty(mSource,AudioSourceIntegerProperty::Buffer,buffer->Buffer());
@@ -75,10 +75,10 @@ void StaticAudioSource::OnSetup()
 
 }
 
-void StaticAudioSource::AddBuffer( IAudio* val )
+void StaticAudioSource::AddBuffer(const Share<IAudio>& val )
 {
-	SAFE_RETAIN(val);
 	mBuffers.Add(val);
 }
 
 MEDUSA_END;
+#endif

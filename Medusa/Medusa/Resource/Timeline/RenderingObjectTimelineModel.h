@@ -16,9 +16,9 @@ public:
 	RenderingObjectTimelineModel(const FileIdRef& fileId, float duration = 0.f);
 	virtual ~RenderingObjectTimelineModel(void);
 
-	bool InitializeWithSingleTexture(IMaterial* material, uint coloumn, uint row, float fps = 24.f);
-	bool InitializeWithTextures(const SortedDictionary<uint, IMaterial*>& materials, float fps = 24.f);
-	bool InitializeWithTextureAtlas(IMaterial* material,const SortedDictionary<uint, IMesh*>& meshes, float fps = 24.f);
+	bool InitializeWithSingleTexture(const Share<IMaterial>& material, uint coloumn, uint row, float fps = 24.f);
+	bool InitializeWithTextures(const SortedDictionary<uint, Share<IMaterial>>& materials, float fps = 24.f);
+	bool InitializeWithTextureAtlas(const Share<IMaterial>& material,const SortedDictionary<uint, Share<IMesh>>& meshes, float fps = 24.f);
 
 	bool InitializeWithObjects(SortedDictionary<uint, RenderingObject>& renderingObjects, float fps = 24.f);
 	bool InitializeWithObjects(List<RenderingObject>& renderingObjects, float fps = 24.f);

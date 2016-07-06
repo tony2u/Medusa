@@ -3,12 +3,16 @@
 // license that can be found in the LICENSE file.
 #include "MedusaCorePreCompiled.h"
 #include "FileLogger.h"
-
+#include "Core/Log/LogMessage.h"
+#include "Core/IO/FileIdRef.h"
+#include "Core/IO/FileSystem.h"
+#include "Core/Pattern/Share.h"
 MEDUSA_BEGIN;
 
-FileLogger::FileLogger(StringRef filePath, StringRef name /*= StringRef::Empty*/,bool isLogHeader/*=true*/):ILogger(name,isLogHeader),mWriter(filePath)
+FileLogger::FileLogger(const StringRef& filePath)
+	:ILogger(filePath)
 {
-	
+	mWriter.Open(filePath, FileOpenMode::AppendReadWriteClearEOFOrCreate, FileDataType::Text);
 }
 
 
@@ -17,14 +21,16 @@ FileLogger::~FileLogger(void)
 	
 }
 
-void FileLogger::OutputLogString( StringRef inString ,LogType logType/*=LogType::Info*/ )
+void FileLogger::Print(const Share<LogMessage>& message)
 {
-	mWriter.WriteString(inString,false);
+	mWriter.WriteString(message->Content());
 }
 
-void FileLogger::OutputLogString( WStringRef inString ,LogType logType/*=LogType::Info*/ )
+void FileLogger::Print(const Share<WLogMessage>& message)
 {
-	mWriter.WriteString(inString,false);
+	mWriter.WriteString(message->Content());
 }
+
+
 
 MEDUSA_END;

@@ -15,15 +15,29 @@ namespace Cocos
 	
 	class LayerReader;
 	
+	class LoadingBarReader;
+	
+	class NodeReader;
+	
 	class ProjectNodeReader;
 	
 	class ReaderFactory;
 	
 	class SceneReader;
 	
+	class SingleNodeReader;
+	
 	class SpriteReader;
 	
+	class TextAtlasReader;
+	
+	class TextBMFontReader;
+	
+	class TextFieldReader;
+	
 	class TextReader;
+	
+	class TmxMapReader;
 	
 }
 class MedusaExtensionModule;

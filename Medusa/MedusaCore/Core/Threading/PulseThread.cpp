@@ -8,7 +8,7 @@
 MEDUSA_BEGIN;
 
 PulseThread::PulseThread(const StringRef& name/*=StringRef::Empty*/)
-	: mThread(name), mThreadingDisabled(false)
+	: Thread(name), mThreadingDisabled(false)
 {
 }
 
@@ -17,46 +17,49 @@ PulseThread::~PulseThread(void)
 
 }
 
-bool PulseThread::Initialize(bool disableThreading /*= false*/)
+bool PulseThread::OnBeforeStart()
 {
-	mThreadingDisabled = disableThreading;
-	mThread.SetCallback(Bind(&PulseThread::OnThreadCallback,this));
-
 	if (!mThreadingDisabled)
 	{
-		mThread.Start();
-		mStartEvent.Initialize(true,false);
+		mStartEvent.Initialize(true, false);
 		mCompleteEvent.Initialize();
 	}
-	return true;
+	
+	return !mThreadingDisabled;
 }
 
-
-bool PulseThread::Uninitialize()
+bool PulseThread::OnBeforeJoin()
 {
 	if (!mThreadingDisabled)
 	{
-		Stop();
+		PrepareToCancel();
+		mStartEvent.Set();
+		mCompleteEvent.Set();
+	}
 
+	return !mThreadingDisabled;
+}
+
+void PulseThread::OnAfterJoin()
+{
+	if (!mThreadingDisabled)
+	{
 		mStartEvent.Uninitialize();
 		mCompleteEvent.Uninitialize();
 	}
-
-	return true;
 }
 
-void PulseThread::OnThreadCallback(Thread& thread)
+void PulseThread::OnRun()
 {
-	while (!thread.IsCancelled())
+	while (!IsCancelled())
 	{
 		mStartEvent.Wait();
-		if (thread.IsCancelled())
+		if (IsCancelled())
 		{
 			break;
 		}
 		OnPulse();
 		mCompleteEvent.Set();
-
 	}
 }
 
@@ -91,25 +94,6 @@ void PulseThread::WaitForComplete()
 	}
 
 }
-
-void PulseThread::Stop()
-{
-	if (!mThreadingDisabled)
-	{
-		mThread.PrepareToCancel();
-		mStartEvent.Set();
-		mCompleteEvent.Set();
-
-		mThread.Join();
-	}
-	else
-	{
-	}
-
-}
-
-
-
 
 
 MEDUSA_END;

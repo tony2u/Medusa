@@ -16,15 +16,8 @@ IPredicateBehavior::IPredicateBehavior(const IPredicate* predicate /*= nullptr*/
 
 IPredicateBehavior::~IPredicateBehavior(void)
 {
-	SAFE_RELEASE(mPredicate);
+	
 }
-
-
-void IPredicateBehavior::SetPredicate(const IPredicate* val)
-{
-	SAFE_ASSIGN_REF(mPredicate, val);
-}
-
 
 bool IPredicateBehavior::EvaluateBool(void* sender) const
 {
@@ -62,6 +55,5 @@ bool IPredicateBehavior::LoadFromXmlNode(const pugi::xml_node& node)
 }
 
 
-MEDUSA_IMPLEMENT_RTTI(IPredicateBehavior, IBehavior);
 
 MEDUSA_END;

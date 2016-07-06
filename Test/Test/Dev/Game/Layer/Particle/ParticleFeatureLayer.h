@@ -7,7 +7,7 @@
 
 class ParticleFeatureLayer :public BaseFeatureLayer
 {
-	MEDUSA_DECLARE_LAYER(ParticleFeatureLayer);
+	MEDUSA_NODE(ParticleFeatureLayer,BaseFeatureLayer);
 public:
 	ParticleFeatureLayer(StringRef name=StringRef::Empty,const IEventArg& e=IEventArg::Empty);
 	virtual ~ParticleFeatureLayer(void);

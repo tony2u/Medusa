@@ -3,25 +3,21 @@
 // license that can be found in the LICENSE file.
 #include "MedusaCorePreCompiled.h"
 #include "WindowsTraceLogger.h"
-
+#include "Core/Log/LogMessage.h"
+#include "Core/Pattern/Share.h"
 MEDUSA_BEGIN;
 
 #ifdef MEDUSA_WINDOWS
 
-
-WindowsTraceLogger::~WindowsTraceLogger(void)
+void WindowsTraceLogger::Print(const Share<LogMessage>& message)
 {
-}
-
-void WindowsTraceLogger::OutputLogString( StringRef inString ,LogType logType/*=LogType::Info*/ )
-{
-	WHeapString text= StringParser::ToW(inString);
+	WHeapString text = StringParser::ToW(message->Content());
 	OutputDebugStringW(text.c_str());
 }
 
-void WindowsTraceLogger::OutputLogString( WStringRef inString ,LogType logType/*=LogType::Info*/ )
+void WindowsTraceLogger::Print(const Share<WLogMessage>& message)
 {
-	OutputDebugStringW(inString.c_str());
+	OutputDebugStringW(message->Content().c_str());
 }
 
 #endif

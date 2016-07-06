@@ -9,7 +9,7 @@
 
 MEDUSA_BEGIN;
 
-BaseRenderStateTreeNode::BaseRenderStateTreeNode(IRenderState* state /*= nullptr*/, RenderStateTreeCompositeNode* parent /*= nullptr*/)
+BaseRenderStateTreeNode::BaseRenderStateTreeNode(const Share<IRenderState>& state /*= nullptr*/, RenderStateTreeCompositeNode* parent /*= nullptr*/)
 	:mParent(parent)
 {
 	if (state != nullptr)
@@ -27,7 +27,6 @@ BaseRenderStateTreeNode::BaseRenderStateTreeNode(IRenderState* state /*= nullptr
 BaseRenderStateTreeNode::~BaseRenderStateTreeNode(void)
 {
 	AutoIncreaseId<BaseRenderStateTreeNode>::Deprecate(mId);
-	SAFE_RELEASE(mState);
 }
 
 void BaseRenderStateTreeNode::Apply()

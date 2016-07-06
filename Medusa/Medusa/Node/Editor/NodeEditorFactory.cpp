@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 #include "MedusaPreCompiled.h"
 #include "NodeEditorFactory.h"
-#include "Node/Editor/TieldLayerEditor.h"
+#include "Node/Editor/TiledLayerEditor.h"
 #include "Core/IO/FileInfo.h"
 #include "Core/Log/Log.h"
 #include "Core/IO/FileIdRef.h"
@@ -14,7 +14,7 @@ MEDUSA_BEGIN;
 
 NodeEditorFactory::NodeEditorFactory()
 {
-
+	Register<TiledLayerEditor>();
 }
 
 NodeEditorFactory::~NodeEditorFactory()
@@ -24,7 +24,7 @@ NodeEditorFactory::~NodeEditorFactory()
 
 bool NodeEditorFactory::Initialize()
 {
-	Register<TieldLayerEditor>();
+	
 
 	return true;
 }
@@ -38,7 +38,7 @@ bool NodeEditorFactory::Uninitialize()
 
 void NodeEditorFactory::Register(INodeEditor* editor)
 {
-	mEditors.TryAdd(editor->Type(), editor);
+	mEditors.TryAdd(editor->ExtensionString(), editor);
 }
 
 INodeEditor* NodeEditorFactory::Find(const StringRef& type) const
@@ -100,7 +100,7 @@ void NodeEditorFactory::EnableAll(bool val)
 	}
 }
 
-INode* NodeEditorFactory::Create(const StringRef& className, const FileIdRef& editorFile, const IEventArg& e /*= IEventArg::Empty*/, NodeCreateFlags flags /*= NodeCreateFlags::None*/) const
+INode* NodeEditorFactory::Create(const StringRef& className, const FileIdRef& editorFile, const FileIdRef& scriptFile, const IEventArg& e /*= IEventArg::Empty*/, NodeCreateFlags flags /*= NodeCreateFlags::None*/) const
 {
 	RETURN_NULL_IF_EMPTY(editorFile);
 
@@ -115,7 +115,7 @@ INode* NodeEditorFactory::Create(const StringRef& className, const FileIdRef& ed
 			return nullptr;
 		}
 
-		INode* node = editor->Create(className, editorFile, e, flags);
+		INode* node = editor->Create(className, editorFile, scriptFile, e, flags);
 		return node;
 	}
 	else
@@ -139,7 +139,7 @@ INode* NodeEditorFactory::Create(const StringRef& className, const FileIdRef& ed
 				editorFileId.Name = editorFile.Name + editorExtension;
 				if (FileSystem::Instance().Exists(editorFileId))
 				{
-					return editor->Create(className, editorFileId, e, flags);
+					return editor->Create(className, editorFileId, scriptFile, e, flags);
 				}
 				editor = nullptr;	//reset to null
 			}

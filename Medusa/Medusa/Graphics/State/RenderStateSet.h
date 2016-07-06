@@ -4,17 +4,21 @@
 #pragma once
 #include "MedusaPreDeclares.h"
 #include "Graphics/GraphicsTypes.h"
-#include "Core/Pattern/Ptr/LazyStrongPtr.h"
+#include "Core/Pattern/LazyStrongPtr.h"
 #include "Core/Pattern/LazyValue.h"
 #include "Graphics/State/RenderStateType.h"
 #include "Core/Pattern/Event.h"
 #include "Core/Collection/Array.h"
 #include "Core/Pattern/INonCopyable.h"
+#include "Graphics/State/IRenderState.h"
+#include "Core/Pattern/Share.h"
+#include "Graphics/State/ScissorRenderState.h"
+#include "Graphics/State/BlendRenderState.h"
 
 MEDUSA_BEGIN;
 
 
-class RenderStateSet:public INonCopyable<RenderStateSet>
+class RenderStateSet:public INonCopyable
 {
 public:
 	RenderStateSet();
@@ -30,26 +34,26 @@ public:
 
 	bool Equals(const RenderStateSet& states)const;
 public:
-	IRenderState* GetState(RenderStateType type)const;
-	IRenderState* AllocState(RenderStateType type);
-	IRenderState* RemoveState(RenderStateType type);
+	Share<IRenderState> GetState(RenderStateType type)const;
+	Share<IRenderState> AllocState(RenderStateType type);
+	Share<IRenderState> RemoveState(RenderStateType type);
 
 	template<typename T>
-	T* GetState()const
+	Share<T> GetState()const
 	{
-		return (T*)GetState(T::GetTypeIdStatic());
+		return GetState(T::GetTypeIdStatic()).CastPtr<T>();
 	}
 
 	template<typename T>
-	T* AllocState()
+	Share<T> AllocState()
 	{
-		return (T*)AllocState(T::GetTypeIdStatic());
+		return AllocState(T::GetTypeIdStatic()).CastPtr<T>();
 	}
 
 	template<typename T>
-	T* RemoveState()
+	Share<T> RemoveState()
 	{
-		return (T*)RemoveState(T::GetTypeIdStatic());
+		return RemoveState(T::GetTypeIdStatic()).CastPtr<T>();
 	}
 public:
 
@@ -60,14 +64,14 @@ public:
 	bool IsBlendEnabled()const;
 	void EnableBlend(bool val);
 	void SetBlendFunc(GraphicsBlendSrcFunc srcFunc, GraphicsBlendDestFunc destFunc);
-	BlendRenderState* RemoveBlend();
+	Share<BlendRenderState> RemoveBlend();
 
 	//scissor
 	bool HasScissorBox()const;
 	bool IsScissorEnabled()const;
 	void SetScissorBox(const Rect2F& val);
 	void EnableScissor(bool val);
-	ScissorRenderState* RemoveScissor();
+	Share<ScissorRenderState> RemoveScissor();
 
 	const Rect2F* TryGetScissorBox() const;
 	const Rect2F& GetScissorBoxOrEmpty() const;
@@ -79,7 +83,7 @@ public:
 protected:
 	void OnStateChangedEvent(IRenderState& state);
 protected:
-	Array<IRenderState*, (uint32)RenderStateType::Count> mItems;
+	Array<Share<IRenderState>, (uint32)RenderStateType::Count> mItems;
 
 };
 

@@ -9,9 +9,10 @@ MEDUSA_BEGIN;
 
 class TextureProgressBar :public IProgressBar
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_NODE(TextureProgressBar,IProgressBar);
 
 public:
+	TextureProgressBar(const StringRef& name = StringRef::Empty, const IEventArg& e = IEventArg::Empty);
 	TextureProgressBar(StringRef name, ProgressType progressType, const FileIdRef& textureName,float percent=1.f);
 	virtual ~TextureProgressBar(void);
 	virtual bool Initialize()override;

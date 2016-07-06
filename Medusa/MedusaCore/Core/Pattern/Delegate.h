@@ -366,7 +366,11 @@ private:
 			if (val != nullptr)
 			{
 				//construct
+#pragma push_macro("new")
+#undef new
 				new (objectPtr) T(*(T*)val);
+#pragma pop_macro("new")
+
 			}
 			else
 			{
@@ -612,8 +616,8 @@ template <typename TFunc, typename TArg1, typename... TArgs,
 
 
 //[PRE_DECLARE_BEGIN]
-typedef Delegate<void()> Action0;
-typedef Delegate<void(void*)> Action1;
+typedef Delegate<void()> Action;
+typedef Delegate<void(void*)> ActionWithUserData;
 typedef Delegate<bool()> PredicateFunc;
 
 //[PRE_DECLARE_END]

@@ -69,6 +69,15 @@ public:
 		return mData != data.mData || mSize != data.mSize || mRefCount != data.mRefCount;
 	}
 
+	bool operator==(std::nullptr_t)const
+	{
+		return IsNull();
+	}
+	bool operator!=(std::nullptr_t)const
+	{
+		return !IsNull();
+	}
+
 	~TMemoryData()
 	{
 		ForceRelease();
@@ -77,6 +86,8 @@ public:
 	const T* Data()const { return mData; }
 	T* MutableData() { return mData; }
 	size_t Size() const { return mSize; }
+	size_t* ForceMutableSizePtr() { return &mSize; }
+
 	size_t ByteSize() const { return mSize*sizeof(T); }
 
 	int RefCount()const { return mRefCount != nullptr ? *mRefCount : 0; }
@@ -156,7 +167,7 @@ public:
 
 	static TMemoryData Take(const T* data, size_t size)
 	{
-		return TMemoryData(data, size, new int(1));
+		return TMemoryData(data, size, new int(0));
 	}
 
 	template<size_t size>
@@ -187,13 +198,24 @@ public:
 
 	static TMemoryData Share(const T* data, size_t size, int* refCount)
 	{
-		if (refCount != nullptr)
-		{
-			++*refCount;
-		}
 		return TMemoryData(data, size, refCount);
 	}
 public:
+	void Realloc(size_t size)
+	{
+		if (IsShared())
+		{
+			TMemoryData newData = Alloc(size);
+			newData.Copy(*this);
+			*this = newData;
+		}
+		else
+		{
+			Memory::Realloc<T>(mData,mSize,size);
+			mSize = size;
+		}
+	}
+
 	void Copy(const TMemoryData& val)
 	{
 		Memory::SafeCopy(mData, mSize, val.Data(), val.Size());
@@ -238,6 +260,10 @@ public:
 	void ForceMakeStatic()
 	{
 		SAFE_DELETE(mRefCount);
+	}
+	bool IsShared()const
+	{
+		return mRefCount != nullptr&&*mRefCount > 1;
 	}
 
 	int* ForceGetRefCountPtr()const { return mRefCount; }

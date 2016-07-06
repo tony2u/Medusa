@@ -4,14 +4,15 @@
 #pragma once
 #include "Core/IO/Stream/IStream.h"
 #include "Core/IO/Stream/MemoryStream.h"
+#include "Core/Pattern/Share.h"
 
 MEDUSA_BEGIN;
 
 class BufferStream :public IStream
 {
 public:
-	BufferStream(IStream& stream, uint bufferSize);
-	BufferStream(const IStream& stream, uint bufferSize);
+	BufferStream(const Share<IStream>& stream, uint bufferSize);
+	BufferStream(const Share<const IStream>& stream, uint bufferSize);
 
 	virtual ~BufferStream(void);
 	virtual StreamType Type()const  override{ return StreamType::Buffer; }
@@ -62,7 +63,7 @@ private:
 
 
 private:
-	IStream* mSourceStream;
+	Share<IStream> mSourceStream;
 	bool mIsSourceReadonly;
 	mutable MemoryStream mBuffer;
 	mutable uintp mBufferLength;

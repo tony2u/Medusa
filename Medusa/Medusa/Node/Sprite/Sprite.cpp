@@ -3,14 +3,8 @@
 // license that can be found in the LICENSE file.
 #include "MedusaPreCompiled.h"
 #include "Sprite.h"
-
+#include "Node/NodeFactory.h"
 MEDUSA_BEGIN;
-
-
-Sprite::Sprite( StringRef name/*=StringRef::Empty*/ ) :INode(name)
-{
-
-}
 
 Sprite::~Sprite( void )
 {
@@ -22,6 +16,6 @@ bool Sprite::Initialize()
 	return true;
 }
 
-MEDUSA_IMPLEMENT_RTTI(Sprite, INode);
+MEDUSA_IMPLEMENT_NODE(Sprite);
 
 MEDUSA_END;

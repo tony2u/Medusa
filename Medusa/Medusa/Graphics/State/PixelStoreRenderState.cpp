@@ -28,9 +28,9 @@ void PixelStoreRenderState::Apply()const
 	Render::Instance().SetPixelStore(GraphicsPixelStoreParameter::UnpackAlignment,mUnpackAlignment);
 }
 
-PixelStoreRenderState* PixelStoreRenderState::Clone() const
+Share<PixelStoreRenderState> PixelStoreRenderState::Clone() const
 {
-	PixelStoreRenderState* state=new PixelStoreRenderState();
+	Share<PixelStoreRenderState> state=new PixelStoreRenderState();
 	state->CopyFrom(*this);
 	return state;
 }
@@ -52,15 +52,14 @@ bool PixelStoreRenderState::Equals(const IRenderState& state) const
 
 }
 
-PixelStoreRenderState* PixelStoreRenderState::Current()
+Share<PixelStoreRenderState> PixelStoreRenderState::Current()
 {
 	IRender& render=Render::Instance();
-	PixelStoreRenderState* pixelState=new PixelStoreRenderState();
+	Share<PixelStoreRenderState> pixelState=new PixelStoreRenderState();
 	pixelState->SetUnpackAlignment(render.GetInteger(GraphicsIntegerName::UnpackAlignment));
 	pixelState->SetPackAlignment(render.GetInteger(GraphicsIntegerName::PackAlignment));
 	return pixelState;
 }
 
-MEDUSA_IMPLEMENT_RTTI(PixelStoreRenderState,IRenderState);
 
 MEDUSA_END;

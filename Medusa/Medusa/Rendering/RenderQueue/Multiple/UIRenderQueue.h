@@ -11,7 +11,7 @@ MEDUSA_BEGIN;
 class UIRenderQueue :public BaseMultipleBatchRenderQueue
 {
 public:
-	UIRenderQueue(IRenderTarget* renderTarget = nullptr, Camera* camera = nullptr);
+	using BaseMultipleBatchRenderQueue::BaseMultipleBatchRenderQueue;
 	~UIRenderQueue(void);
 };
 

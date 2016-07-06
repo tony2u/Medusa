@@ -102,7 +102,7 @@ void FormatTest::TestFormat()
 
 
 	HeapString str = String::Format("{},{},{},{}, {},{},{},{}, {},{:f3},{},{}, {},{},{}",
-		true, 'c', (byte)'B', (short)-123, (ushort)123, -456, (uint)456, (int64)-789, (uint64)789, 123.456f, (double)123.456, "hello", str1,str2, str3);
+		true, 'c', (Medusa::byte)'B', (short)-123, (ushort)123, -456, (uint)456, (int64)-789, (uint64)789, 123.456f, (double)123.456, "hello", str1,str2, str3);
 	printf(str.c_str());
 
 	WStringRef str9(L"world");
@@ -110,12 +110,12 @@ void FormatTest::TestFormat()
 	WStackString<10> str11(L"fuck");
 
 	WHeapString strA = String::Format(L"{},{},{},{}, {},{},{},{}, {},{:f3},{},{} , {},{},{}", 
-		true, 'c', (byte)'B', (short)-123, (ushort)123, -456, (uint)456, (int64)-789, (uint64)789, 123.456f, (double)123.456, L"hello",str9,str10, str11);
+		true, 'c', (Medusa::byte)'B', (short)-123, (ushort)123, -456, (uint)456, (int64)-789, (uint64)789, 123.456f, (double)123.456, L"hello",str9,str10, str11);
 	wprintf(strA.c_str());
 
 
 	str.Format("{},{},{},{}, {},{},{},{}, {},{:f3},{},{}, {},{},{}",
-		true, 'c', (byte)'B', (short)-123, (ushort)123, -456, (uint)456, (int64)-789, (uint64)789, 123.456f, (double)123.456, "hello", str1, str2, str3);
+		true, 'c', (Medusa::byte)'B', (short)-123, (ushort)123, -456, (uint)456, (int64)-789, (uint64)789, 123.456f, (double)123.456, "hello", str1, str2, str3);
 	printf(str.c_str());
 
 }

@@ -16,9 +16,10 @@ INode* ProjectNodeReader::CreateNodeWithFlatBuffers(INodeEditor& editor, const f
 {
 	auto projectNodeOptions = (flatbuffers::ProjectNodeOptions*)nodeOptions;
 	StringRef filePath = projectNodeOptions->fileName()->c_str();
-	filePath = Path::GetFileName(filePath);
-	RETURN_NULL_IF_FALSE(FileSystem::Instance().AssertExists(filePath));
-	INode* node = editor.Create("", filePath,IEventArg::Empty, flags);
+	auto fileId = FileId::ParseFrom(filePath);
+	RETURN_NULL_IF_FALSE(FileSystem::Instance().AssertExists(fileId));
+
+	INode* node = NodeFactory::Instance().Create(fileId, IEventArg::Empty, flags);
 	SetPropsWithFlatBuffers(node, (flatbuffers::Table*)(projectNodeOptions->nodeOptions()), flags);
 	return node;
 }
@@ -27,12 +28,12 @@ INode* ProjectNodeReader::CreateNodeWithJson(INodeEditor& editor, const rapidjso
 {
 	const rapidjson::Value& fileDataNode = nodeTree["FileData"];
 	StringRef filePath = fileDataNode.GetString("Path", nullptr);
-	filePath = Path::GetFileName(filePath);
-	RETURN_NULL_IF_FALSE(FileSystem::Instance().AssertExists(filePath));
-	INode* node = editor.Create("", filePath,IEventArg::Empty,flags);
+	auto fileId = FileId::ParseFrom(filePath);
+	RETURN_NULL_IF_FALSE(FileSystem::Instance().AssertExists(fileId));
+
+	INode* node = NodeFactory::Instance().Create(fileId, IEventArg::Empty, flags);
 	SetPropsWithJson(node, nodeTree, flags);
 	return node;
 }
 
-MEDUSA_IMPLEMENT_COCOS_READER(ProjectNodeReader);
 MEDUSA_COCOS_END;

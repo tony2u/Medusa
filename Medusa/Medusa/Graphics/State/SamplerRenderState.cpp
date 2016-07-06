@@ -43,9 +43,9 @@ void SamplerRenderState::Apply()const
 
 }
 
-SamplerRenderState* SamplerRenderState::Clone() const
+Share<SamplerRenderState> SamplerRenderState::Clone() const
 {
-	SamplerRenderState* state = new SamplerRenderState();
+	Share<SamplerRenderState> state = new SamplerRenderState();
 	state->CopyFrom(*this);
 	return state;
 }
@@ -77,11 +77,11 @@ bool SamplerRenderState::Equals(const IRenderState& state) const
 
 }
 
-SamplerRenderState* SamplerRenderState::Current()
+Share<SamplerRenderState> SamplerRenderState::Current()
 {
 	IRender& render = Render::Instance();
 	GraphicsTextureUnits activeTexture = (GraphicsTextureUnits)render.GetInteger(GraphicsIntegerName::ActiveTexture);
-	SamplerRenderState* samplerState = new SamplerRenderState();
+	Share<SamplerRenderState> samplerState = new SamplerRenderState();
 	samplerState->SetTextureUnit(activeTexture);
 
 	uint cubeMapTexture = render.GetInteger(GraphicsIntegerName::CubeMapTextureBinding);
@@ -119,6 +119,5 @@ SamplerRenderState* SamplerRenderState::Current()
 }
 
 
-MEDUSA_IMPLEMENT_RTTI(SamplerRenderState, IRenderState);
 
 MEDUSA_END;

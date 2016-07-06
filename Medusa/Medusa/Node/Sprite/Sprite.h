@@ -15,9 +15,9 @@ sizof(Sprite)==988
 
 class Sprite :public INode
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_NODE(Sprite,INode);
 public:
-	Sprite(StringRef name=StringRef::Empty);
+	using INode::INode;
 	virtual ~Sprite(void);
 	virtual bool Initialize() override;
 };

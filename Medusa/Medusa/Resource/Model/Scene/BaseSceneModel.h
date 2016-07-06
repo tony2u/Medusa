@@ -8,6 +8,9 @@
 #include "Core/Collection/List.h"
 #include "Resource/Model/Mesh/IMesh.h"
 #include "Resource/Material/IMaterial.h"
+#include "Resource/Light/ILight.h"
+#include "Resource/Camera/Camera.h"
+#include "Resource/Timeline/ITimelineModel.h"
 
 
 MEDUSA_BEGIN;
@@ -26,12 +29,12 @@ public:
 	void AddCamera(BaseCameraModelNode* camera);
 	void AddVirtualNode(VirtualModelNode* node);
 
-	virtual ITimelineModel* CreateSkeletonTimelineModel()const{return nullptr;}
-	virtual ITimelineModel* CreateCameraTimelineModel(StringRef name)const{return nullptr;}
-	virtual ITimelineModel* CreateLightTimelineModel(StringRef name)const{return nullptr;}
+	virtual Share<ITimelineModel> CreateSkeletonTimelineModel()const { return nullptr; }
+	virtual Share<ITimelineModel> CreateCameraTimelineModel(StringRef name)const { return nullptr; }
+	virtual Share<ITimelineModel> CreateLightTimelineModel(StringRef name)const { return nullptr; }
 
-	virtual Camera* CreateCamera(const FileIdRef& fileId, const Size2F& winSize)const { return nullptr; }
-	virtual ILight* CreateLight(const FileIdRef& fileId)const{return nullptr;}
+	virtual Share<Camera> CreateCamera(const FileIdRef& fileId, const Size2F& winSize)const { return nullptr; }
+	virtual Share<ILight> CreateLight(const FileIdRef& fileId)const{return nullptr;}
 
 	virtual void UpdateWorldMatrixRecursively(const Matrix4& parentWorldMatrix=Matrix4::Identity);
 

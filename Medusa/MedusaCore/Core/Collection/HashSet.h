@@ -7,7 +7,7 @@
 
 MEDUSA_BEGIN;
 
-template<typename T, typename THashCoder = DefaultHashCoder<T>, typename TCompare = EqualCompare<T> >
+template<typename T, typename THashCoder = DefaultHashCoder, typename TCompare = EqualCompare >
 class HashSet :public ISet<T, TCompare>
 {
 public:
@@ -38,18 +38,18 @@ public:
 	{
 		Initialize(dict.Count());
 
-		FOR_EACH_COLLECTION(i, dict)
+		for(const auto& i: dict)
 		{
-			Add(*i);
+			Add(i);
 		}
 
 	}
 	HashSet& operator=(const HashSet& dict)
 	{
 		Clear();
-		FOR_EACH_COLLECTION(i, dict)
+		for (const auto& i : dict)
 		{
-			Add(*i);
+			Add(i);
 		}
 		return *this;
 	}
@@ -355,13 +355,23 @@ public:
 
 	virtual void Clear()
 	{
+		Memory::Set(mBuckets, (char)-1, mSize);
+		//destroy all valid objects
+		uint index = 0;
+		while (index < mAddedCount)
+		{
+			if (mEntries[index].HashCode >= 0)
+			{
+				Memory::Destory(&(mEntries[index].Value));
+			}
+			index++;
+		}
+
+
 		mFreeList = -1;
 		mAddedCount = 0;
 		mFreeCount = 0;
 		this->mCount = 0;
-
-		Memory::Set(mBuckets, (char)-1, mSize);
-
 	}
 
 	template<typename T2>
@@ -883,11 +893,11 @@ private:
 
 	void Resize()
 	{
-		mSize = Math::GetPrime(mAddedCount << 1);
-		Memory::Realloc(mBuckets, mSize);
-		Memory::Set(mBuckets, (char)-1, mSize);
-
-		Memory::Realloc(mEntries, mSize);
+		auto newSize = Math::GetPrime(mAddedCount << 1);
+		Memory::Realloc(mBuckets, mSize, newSize);
+		Memory::Set(mBuckets, (char)-1, newSize);
+		Memory::Realloc(mEntries, mSize, newSize);
+		mSize = newSize;
 
 		for (size_t i = 0; i < mAddedCount; i++)
 		{

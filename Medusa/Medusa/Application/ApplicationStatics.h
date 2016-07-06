@@ -8,7 +8,7 @@
 #include "Application/FrameStep.h"
 #include "Core/Collection/HashSet.h"
 #include "Graphics/GraphicsTypes.h"
-#include "Core/Profile/StopWatch.h"
+#include "Core/Chrono/StopWatch.h"
 #include "Rendering/RenderingTypes.h"
 
 MEDUSA_BEGIN;
@@ -66,6 +66,8 @@ public:
 	void AddVisitNodeCount(size_t val);
 
 	void UpdateLabels();
+private:
+	void CreateRenderQueue();
 private:
 	float mElapseds[(uint)FrameStep::Count];
 

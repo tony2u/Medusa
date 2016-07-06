@@ -205,7 +205,7 @@ void FntTextMesh::Apply()
 	ShrinkMesh();
 
 	size_t stride = sizeof(FontCharVertex);
-	BaseProgramRenderPass* pass = RenderingContext::Instance().ProgramRenderPass();
+	auto pass = RenderingContext::Instance().ProgramRenderPass();
 	ShaderAttribute* vertices = pass->FindAttributeByIndex(ShaderAttributeIndex::VertexArray);
 	if (vertices != nullptr)
 	{
@@ -234,7 +234,7 @@ void FntTextMesh::Apply()
 void FntTextMesh::Restore()
 {
 	mIndexBuffer.Restore();
-	BaseProgramRenderPass* pass = RenderingContext::Instance().ProgramRenderPass();
+	auto pass = RenderingContext::Instance().ProgramRenderPass();
 
 	ShaderAttribute* vertices = pass->FindAttributeByIndex(ShaderAttributeIndex::VertexArray);
 	if (vertices != nullptr)

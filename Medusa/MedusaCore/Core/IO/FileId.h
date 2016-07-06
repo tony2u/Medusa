@@ -54,7 +54,7 @@ public:
 	static FileId ParseFrom(const StringRef& name);
 
 	template<typename TChar>
-	THeapString<TChar> ToString(const TChar* formatBegin = nullptr, const TChar* formatEnd = nullptr)const
+	THeapString<TChar> ToString(const TStringRef<TChar>& format= TStringRef<TChar>::Empty)const
 	{
 		HeapString str = ToString(PublishTarget::MatchAll);
 		return StringParser::ToStringT<TChar>(str);

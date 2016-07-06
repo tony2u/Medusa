@@ -32,7 +32,7 @@ void TiledTileRef::Initialize(const Point2I& position, uint globalId, const Tile
 	uint pureGlobalId = globalId & ~(FlippedHorizontallyFlag | FlippedVerticallyFlag | FlippedDiagonallyFlag);
 	uint id = pureGlobalId - tilesetRef->FirstGlobalId();
 
-	const TiledTileset* tileset = tilesetRef->Tileset();
+	const auto& tileset = tilesetRef->Tileset();
 	const TiledTile& tile = tileset->TileAt(id);
 	mTile = &tile;
 }
@@ -57,7 +57,7 @@ INode* TiledTileRef::Instantiate() const
 	if (image != nullptr)
 	{
 		//has separate image
-		ITexture* texture = image->LoadSeparateTexture();;
+		auto texture = image->LoadSeparateTexture();;
 		node = NodeFactory::Instance().CreateSprite(texture);
 	}
 	else if (mTile->Region() != nullptr)

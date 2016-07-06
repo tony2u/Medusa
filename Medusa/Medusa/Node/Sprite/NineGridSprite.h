@@ -9,10 +9,9 @@ MEDUSA_BEGIN;
 
 class NineGridSprite :public INode
 {
-	
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_NODE(NineGridSprite,INode);
 public:
-	NineGridSprite(StringRef name=StringRef::Empty);
+	NineGridSprite(StringRef name=StringRef::Empty, const IEventArg& e = IEventArg::Empty);
 	virtual ~NineGridSprite(void);
 	virtual bool Initialize() override;
 

@@ -5,14 +5,14 @@
 #include "MedusaPreDeclares.h"
 #include "Core/Pattern/Singleton.h"
 #include "Core/Pattern/Object/IdObjectCache.h"
-#include "Core/IO/IFileLoadable.h"
+#include "Core/IO/IFileLoadSavable.h"
 #include "Game/AI/Predicate/IPredicate.h"
 
 
 MEDUSA_BEGIN;
 
 
-class PredicateConfig :public Singleton < PredicateConfig >, public IdObjectCache < uint, IPredicate*>, public IFileLoadable
+class PredicateConfig :public Singleton < PredicateConfig >, public IdObjectCache < uint, IPredicate*>, public IFileLoadSavable
 {
 	friend class Singleton < PredicateConfig > ;
 	PredicateConfig() {}

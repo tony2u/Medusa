@@ -18,7 +18,7 @@ public:
 
 	const List<Point3F>& GetVertices(uint index)const;
 protected:
-	List<List<Point3F>, NoCompare<List<Point3F>> > mVertexList;	//delta
+	List<List<Point3F>, NoCompare > mVertexList;	//delta
 };
 
 MEDUSA_END;

@@ -35,7 +35,7 @@ IGraphicsBuffer::IGraphicsBuffer(GraphicsBufferType bufferType,GraphicsBufferUsa
 IGraphicsBuffer::~IGraphicsBuffer(void)
 {
 	DeleteObject();
-	SAFE_RELEASE(mRenderState);
+	
 }
 
 

@@ -8,6 +8,12 @@
 
 MEDUSA_BEGIN;
 
+SirenEnumAttribute::SirenEnumAttribute(SirenEnumGenerateMode mode, const StringRef& dir)
+	:mMode(mode),mDir(dir)
+{
+
+}
+
 SirenEnumAttribute::~SirenEnumAttribute(void)
 {
 
@@ -15,51 +21,39 @@ SirenEnumAttribute::~SirenEnumAttribute(void)
 
 bool SirenEnumAttribute::OnLoaded()
 {
-	StringPropertySet copy = mKeyValues;
-	if (mKeyValues.Has("Generate"))
+	if (mKeyValues.RemoveKey("Generate"))
 	{
 		MEDUSA_FLAG_ADD(mMode, SirenEnumGenerateMode::Generate);
-		copy.RemoveKey("Generate");
 	}
 
-	if (mKeyValues.Has("Suppress"))
+	if (mKeyValues.RemoveKey("Suppress"))
 	{
 		MEDUSA_FLAG_ADD(mMode, SirenEnumGenerateMode::Suppress);
 		MEDUSA_FLAG_REMOVE(mMode, SirenEnumGenerateMode::Generate);
-
-		copy.RemoveKey("Suppress");
-
 	}
 
-	if (mKeyValues.Has("CustomEnum"))
+	if (mKeyValues.RemoveKey("CustomEnum"))
 	{
 		MEDUSA_FLAG_ADD(mMode, SirenEnumGenerateMode::CustomEnum);
-		copy.RemoveKey("CustomEnum");
-
 	}
 
-	if (mKeyValues.Has("CustomFlag"))
+	if (mKeyValues.RemoveKey("CustomFlag"))
 	{
 		MEDUSA_FLAG_ADD(mMode, SirenEnumGenerateMode::CustomFlag);
-		copy.RemoveKey("CustomFlag");
-
 	}
+
 	if (mKeyValues.Has("Dir"))
 	{
 		mDir = mKeyValues.Get("Dir");
-		copy.RemoveKey("Dir");
+		mKeyValues.RemoveKey("Dir");
 	}
 
-	for (auto& keyValuePair : copy)
-	{
-		Log::FormatError("Invalid attribute:{}={}", keyValuePair.Key, keyValuePair.Value);
-	}
 
 	return true;
 }
-
 bool SirenEnumAttribute::LoadFrom(IStream& stream)
 {
+	RETURN_FALSE_IF_FALSE(ISirenAttribute::LoadFrom(stream));
 	mMode = stream.Read<SirenEnumGenerateMode>();
 	mDir = stream.ReadString();
 	return true;
@@ -67,6 +61,7 @@ bool SirenEnumAttribute::LoadFrom(IStream& stream)
 
 bool SirenEnumAttribute::SaveTo(IStream& stream) const
 {
+	RETURN_FALSE_IF_FALSE(ISirenAttribute::SaveTo(stream));
 	stream.Write(mMode);
 	stream.WriteString(mDir);
 	return true;

@@ -19,7 +19,7 @@ int IRenderableCompareByRenderingPriority::Compare(IRenderable* t1, IRenderable*
 }
 
 
-BaseMultipleBatchRenderQueue::BaseMultipleBatchRenderQueue(IRenderTarget* renderTarget/*=nullptr*/, Camera* camera/*=nullptr*/)
+BaseMultipleBatchRenderQueue::BaseMultipleBatchRenderQueue(const Share<IRenderTarget>& renderTarget/*=nullptr*/, const Share<Camera>& camera/*=nullptr*/)
 {
 	mRenderGroup = new SceneRenderGroup(renderTarget, camera);
 
@@ -27,6 +27,11 @@ BaseMultipleBatchRenderQueue::BaseMultipleBatchRenderQueue(IRenderTarget* render
 
 BaseMultipleBatchRenderQueue::~BaseMultipleBatchRenderQueue(void)
 {
+	BatchList& fontBatches = mBatches.MutableFront();
+	BatchList& backBatches = mBatches.MutableBack();
+	FOR_EACH_ITEM_CLEAR(fontBatches, BatchPool::Instance().Recycle);
+	FOR_EACH_ITEM_CLEAR(backBatches, BatchPool::Instance().Recycle);
+
 	mRenderGroup->Uninitialize();
 	SAFE_DELETE(mRenderGroup);
 }
@@ -37,7 +42,7 @@ void BaseMultipleBatchRenderQueue::Update(RenderableChangedFlags changedFlag)
 	RETURN_IF_EQUAL(changedFlag, RenderableChangedFlags::None);
 	if (mIsNeedToSort)
 	{
-		Linq::InsertSortByOtherCompare<IRenderable*, EqualCompare<IRenderable*>,IRenderableCompareByRenderingPriority>(mNodes);
+		Linq::InsertSortByOtherCompare<IRenderable*, EqualCompare,IRenderableCompareByRenderingPriority>(mNodes);
 		mIsNeedToSort = false;
 	}
 
@@ -51,22 +56,22 @@ void BaseMultipleBatchRenderQueue::Update(RenderableChangedFlags changedFlag)
 	mIsCommandChanged |= OnUpdateBatchData();
 }
 
-void BaseMultipleBatchRenderQueue::SetCamera(Camera* val)
+void BaseMultipleBatchRenderQueue::SetCamera(const Share<Camera>& val)
 {
 	mRenderGroup->SetCamera(val);
 }
 
-Camera* BaseMultipleBatchRenderQueue::GetCamera() const
+const Share<Camera>& BaseMultipleBatchRenderQueue::GetCamera() const
 {
 	return mRenderGroup->GetCamera();
 }
 
-void BaseMultipleBatchRenderQueue::SetRenderTarget(IRenderTarget* val)
+void BaseMultipleBatchRenderQueue::SetRenderTarget(const Share<IRenderTarget>& val)
 {
 	mRenderGroup->SetRenderTarget(val);
 }
 
-IRenderTarget* BaseMultipleBatchRenderQueue::RenderTarget() const
+const Share<IRenderTarget>& BaseMultipleBatchRenderQueue::RenderTarget() const
 {
 	return mRenderGroup->RenderTarget();
 }
@@ -78,9 +83,8 @@ bool BaseMultipleBatchRenderQueue::OnUpdateBatchList()
 
 	BatchGroup currentBatchGroup = 0;
 	IRenderBatch* currentBatch = nullptr;
-	FOR_EACH_COLLECTION(i, mNodes)
+	for(auto node: mNodes)
 	{
-		IRenderable* node = *i;
 		BatchGroup group = node->GetBatchGroup();
 #ifdef MEDUSA_SAFE_CHECK
 		if (group==0)
@@ -89,7 +93,7 @@ bool BaseMultipleBatchRenderQueue::OnUpdateBatchList()
 		}
 #endif
 
-		if (group != currentBatchGroup)
+		if (!group.IsMatch(currentBatchGroup))
 		{
 			BatchList::NodePtr prevBatch = fontBatches.FindFirstWithOtherKey<BatchGroup, IRenderBatchCompareToBatchGroup>(group);
 			if (prevBatch != nullptr)
@@ -143,9 +147,8 @@ bool BaseMultipleBatchRenderQueue::OnUpdateRenderGroup()
 {
 	mRenderGroup->Uninitialize();
 	BatchList& fontBatches = mBatches.MutableFront();
-	FOR_EACH_COLLECTION(i, fontBatches)
+	for(auto batch: fontBatches)
 	{
-		IRenderBatch* batch = *i;
 		mRenderGroup->Add(batch);
 	}
 	return true;
@@ -161,9 +164,8 @@ bool BaseMultipleBatchRenderQueue::OnUpdateCommands(RenderingFlags renderingFlag
 bool BaseMultipleBatchRenderQueue::OnUpdateBatchData()
 {
 	bool isChanged = false;
-	FOR_EACH_COLLECTION(i, mBatches.MutableFront())
+	for(auto batch:mBatches.MutableFront())
 	{
-		IRenderBatch* batch = *i;
 		isChanged|=batch->Update();
 	}
 	return isChanged;

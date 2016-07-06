@@ -10,7 +10,7 @@
 MEDUSA_BEGIN;
 
 
-BlockCodeWriteStream::BlockCodeWriteStream(IStream& stream, uint32 blockSize, const CoderChain& coderChain, FileEntry& fileEntry)
+BlockCodeWriteStream::BlockCodeWriteStream(const Share<IStream>& stream, uint32 blockSize, const CoderChain& coderChain, FileEntry& fileEntry)
 	: BlockWriteStream(stream, blockSize),
 	mFileEntry(&fileEntry),
 	mCoderChain(&coderChain)

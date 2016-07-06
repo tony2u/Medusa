@@ -3,12 +3,12 @@
 // license that can be found in the LICENSE file.
 #pragma once
 #include "MedusaCorePreDeclares.h"
-#include "Core/IO/IFileLoadable.h"
+#include "Core/IO/IFileLoadSavable.h"
 #include "ApplePropertyListNode.h"
 
 MEDUSA_BEGIN;
 
-class ApplePropertyListReader:public IFileLoadable
+class ApplePropertyListReader:public IFileLoadSavable
 {
 public:
 	ApplePropertyListReader();

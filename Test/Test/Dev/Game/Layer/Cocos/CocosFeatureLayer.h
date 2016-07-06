@@ -7,7 +7,7 @@
 
 class CocosFeatureLayer :public BaseFeatureLayer
 {
-	MEDUSA_DECLARE_LAYER(CocosFeatureLayer);
+	MEDUSA_NODE(CocosFeatureLayer, BaseFeatureLayer);
 public:
 	CocosFeatureLayer(StringRef name=StringRef::Empty,const IEventArg& e=IEventArg::Empty);
 	virtual ~CocosFeatureLayer(void);

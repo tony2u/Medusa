@@ -58,5 +58,5 @@ void ParallaxComponentLayer::OnRestart()
 
 }
 
-MEDUSA_IMPLEMENT_LAYER(ParallaxComponentLayer, BaseCaseLayer, StringRef::Empty, StringRef::Empty);
+MEDUSA_IMPLEMENT_NODE(ParallaxComponentLayer);
 

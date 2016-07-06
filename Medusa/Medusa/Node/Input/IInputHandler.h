@@ -65,10 +65,10 @@ public:
 	virtual bool IsFocus()const { return mState == InputState::Valid; }
 
 protected:
-	bool RaiseEvent(InputEventType type, IEventArg* e=nullptr)const;
+	bool RaiseEvent(InputEventType type, IEventArg* e = nullptr)const;
 protected:
 	InputDispatcher* mDispatcher = nullptr;
-	
+
 	INode* mNode = nullptr;
 	FileId mAudioEffect;
 	InputBehaviors mBehaviors = InputBehaviors::None;

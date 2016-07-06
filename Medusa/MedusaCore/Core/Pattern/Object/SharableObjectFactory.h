@@ -33,19 +33,19 @@ public:
 	void Clear()
 	{
 		List<const RTTIClass*> unUsedItems;
-		FOR_EACH_COLLECTION(i, mItems)
+		for(auto i: mItems)
 		{
-			T* item = i->Value;
+			T* item = i.Value;
 			if (!item->IsShared())
 			{
-				unUsedItems.Add(i->Key);
+				unUsedItems.Add(i.Key);
 				item->Release();
 			}
 		}
 
-		FOR_EACH_COLLECTION(i, unUsedItems)
+		for (auto i : unUsedItems)
 		{
-			mItems.RemoveKey(*i);
+			mItems.RemoveKey(i);
 		}
 	}
 protected:

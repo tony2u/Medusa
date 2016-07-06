@@ -12,9 +12,11 @@ vary size child
 */
 class ListPanel :public ScrollPanel
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_NODE(ListPanel,ScrollPanel);
 
 public:
+	ListPanel(StringRef name = StringRef::Empty, const IEventArg& e = IEventArg::Empty);
+
 	ListPanel(StringRef name = StringRef::Empty, ScrollDirection direction = ScrollDirection::VerticalFromTop);
 	virtual ~ListPanel(void);
 	virtual bool Initialize() override;
@@ -37,7 +39,7 @@ public:
 	virtual bool RefreshAll();
 	virtual bool RefreshItem(uint index);
 public:
-	virtual void SetDataSource(IDataSource* dataSource) override;
+	virtual void SetDataSource(const Share<IDataSource>& dataSource) override;
 
 protected:
 	virtual bool ArrangeChildren(const Rect2F& limitRect=Rect2F::Zero,NodeLayoutArrangeFlags arrangeFlags=NodeLayoutArrangeFlags::None)override;

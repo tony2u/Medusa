@@ -19,7 +19,7 @@
 #include "Geometry/Rect2.h"
 #include "Geometry/Quad.h"
 #include "Core/Math/Math.h"
-#include "Core/Utility/Utility.h"
+#include "Core/System/BitConverter.h"
 #include "Core/Assertion/CommonAssert.h"
 #include "Core/Memory/Memory.h"
 

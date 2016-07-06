@@ -8,7 +8,7 @@
 
 extern "C"
 {
-	typedef bool MInitializeApplicationCallback(MedusaWindowHandle parentWindow);
+	typedef bool MInitializeApplicationCallback(HWND parentWindow);
 	typedef bool MGameLoopCallback(float interval);
 	typedef bool MGameResizeCallback();
 

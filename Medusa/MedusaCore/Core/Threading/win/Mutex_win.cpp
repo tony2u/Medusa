@@ -5,13 +5,12 @@
 #ifndef MEDUSA_POSIX_THREADING
 
 #include "Core/Threading/Mutex.h"
-#include "Core/Profile/StopWatch.h"
+#include "Core/Chrono/StopWatch.h"
 #include "Core/Threading/Thread.h"
 
 MEDUSA_BEGIN;
 
 Mutex::Mutex(bool isRecursive /*= true*/, bool isInitializeNow /*= true*/)
-	:mIsInitialized(false)
 {
 	if (isInitializeNow)
 	{
@@ -44,17 +43,12 @@ void Mutex::Lock()
 
 }
 
-bool Mutex::LockTimeout(long milliseconds)
-{
-	return TryLockTimeout(milliseconds);
-}
-
 bool Mutex::TryLock()
 {
-	return TryEnterCriticalSection(&mMutex)==TRUE;
+	return TryEnterCriticalSection(&mMutex) == TRUE;
 }
 
-bool Mutex::TryLockTimeout(long milliseconds)
+bool Mutex::TryLockFor(long milliseconds)
 {
 	const int sleepMillis = 5;
 	StopWatch watch;

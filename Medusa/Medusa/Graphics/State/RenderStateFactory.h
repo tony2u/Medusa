@@ -19,7 +19,7 @@ public:
 	using ArrayObjectFactory<(uint32)RenderStateType::Count, uint32, IRenderState*()>::Register;
 
 	template<typename T>
-	IRenderState* Create()
+	Share<IRenderState> Create()
 	{
 		uint32 index = Math::CountTrailingZero((uint32)T::GetTypeIdStatic());
 		return this->Create(index);

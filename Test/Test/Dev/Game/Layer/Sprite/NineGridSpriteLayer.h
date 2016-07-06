@@ -7,7 +7,7 @@
 
 class NineGridSpriteLayer :public BaseCaseLayer
 {
-	MEDUSA_DECLARE_LAYER(NineGridSpriteLayer);
+	MEDUSA_NODE(NineGridSpriteLayer, BaseCaseLayer);
 public:
 	NineGridSpriteLayer(StringRef name=StringRef::Empty,const IEventArg& e=IEventArg::Empty);
 	virtual ~NineGridSpriteLayer(void);

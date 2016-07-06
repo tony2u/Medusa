@@ -10,13 +10,13 @@ MEDUSA_BEGIN;
 
 class FeatureRenderState:public IRenderState
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_RTTI(FeatureRenderState,IRenderState);
 
 public:
 	FeatureRenderState();
 	virtual ~FeatureRenderState();
 	virtual void Apply()const override;
-	virtual FeatureRenderState* Clone()const override;
+	Share<FeatureRenderState> Clone()const;
 	virtual void CopyFrom(const IRenderState& other)override;
 
 	virtual bool Equals(const IRenderState& state)const override;
@@ -26,7 +26,7 @@ public:
 	bool IsEnabled(GraphicsFeatures feature)const{return mFeatures[(uint)feature];}
 	void Enable(GraphicsFeatures feature,bool val);
 
-	static FeatureRenderState* Current();
+	static Share<FeatureRenderState> Current();
 
 protected:
 	Dictionary<uint,bool> mFeatures;

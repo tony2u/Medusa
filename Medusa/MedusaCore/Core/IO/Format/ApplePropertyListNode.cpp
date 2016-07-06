@@ -7,7 +7,7 @@
 #include "Core/Log/Log.h"
 #include "Core/Coder/Crypt/Base64Decoder.h"
 #include "Core/IO/Stream/MemoryStream.h"
-#include "Core/Utility/Utility.h"
+#include "Core/System/BitConverter.h"
 
 MEDUSA_BEGIN;
 
@@ -122,7 +122,7 @@ bool ApplePropertyListNode::Parse(const pugi::xml_node& node)
 bool ApplePropertyListNode::Parse(MemoryStream& stream, const BinaryHeader& header, int objIndex)
 {
 	auto offset = header.Offsets[objIndex];
-	stream.Seek(offset, SeekOrigin::Head);
+	stream.Seek(offset, SeekOrigin::Begin);
 	int type = stream.ReadChar();
 
 	switch (type & 0xF0)
@@ -146,7 +146,7 @@ bool ApplePropertyListNode::Parse(MemoryStream& stream, const BinaryHeader& head
 	{
 		int byteCount = 1 << (type & 0xf);
 		auto ptr = stream.Ptr();
-		mData = (int64)Utility::ToInt(ptr, byteCount);
+		mData = (int64)BitConverter::ToInt(ptr, byteCount);
 		stream.Skip(byteCount);
 		break;
 	}
@@ -156,12 +156,12 @@ bool ApplePropertyListNode::Parse(MemoryStream& stream, const BinaryHeader& head
 		auto ptr = stream.Ptr();
 		if (byteCount == sizeof(float))
 		{
-			mData = (double)Utility::ToFloat(ptr);
+			mData = (double)BitConverter::ToFloat(ptr);
 			stream.Skip(byteCount);
 		}
 		else if (byteCount == sizeof(double))
 		{
-			mData = Utility::ToDouble(ptr);
+			mData = BitConverter::ToDouble(ptr);
 			stream.Skip(byteCount);
 		}
 		else
@@ -175,16 +175,16 @@ bool ApplePropertyListNode::Parse(MemoryStream& stream, const BinaryHeader& head
 	case 0x30://date
 	{
 		auto ptr = stream.Ptr();
-		Utility::SwapBytes((byte*)ptr, sizeof(double));
+		BitConverter::SwapBytes((byte*)ptr, sizeof(double));
 
 		// Date is stored as Apple Epoch and big endian.
-		double appleTime = Utility::ToDouble(ptr);
+		double appleTime = BitConverter::ToDouble(ptr);
 		stream.Skip(sizeof(double));
 
 		// Apple epoch is # of seconds since  01-01-2001. So we need to add the
 		// number of seconds since 01-01-1970 which is proper unix epoch
 		auto timeVal = time_t(978307200 + appleTime);
-		mData = DateTime(timeVal);
+		mData = DateTime(std::chrono::system_clock::from_time_t(timeVal));
 		break;
 	}
 	case 0x40://data
@@ -196,7 +196,7 @@ bool ApplePropertyListNode::Parse(MemoryStream& stream, const BinaryHeader& head
 			type = stream.ReadChar();
 			byteCount = 1 << (type & 0xf);
 			auto ptr = stream.Ptr();
-			int dataSize = Utility::ToInt(ptr, byteCount);
+			int dataSize = BitConverter::ToInt(ptr, byteCount);
 			stream.Skip(byteCount);
 			byteCount = dataSize;
 		}
@@ -213,7 +213,7 @@ bool ApplePropertyListNode::Parse(MemoryStream& stream, const BinaryHeader& head
 			type = stream.ReadChar();
 			byteCount = 1 << (type & 0xf);
 			auto ptr = stream.Ptr();
-			int dataSize = Utility::ToInt(ptr, byteCount);
+			int dataSize = BitConverter::ToInt(ptr, byteCount);
 			stream.Skip(byteCount);
 			byteCount = dataSize;
 		}
@@ -233,7 +233,7 @@ bool ApplePropertyListNode::Parse(MemoryStream& stream, const BinaryHeader& head
 			type = stream.ReadChar();
 			byteCount = 1 << (type & 0xf);
 			auto ptr = stream.Ptr();
-			int dataSize = Utility::ToInt(ptr, byteCount);
+			int dataSize = BitConverter::ToInt(ptr, byteCount);
 			stream.Skip(byteCount);
 			byteCount = dataSize;
 		}
@@ -253,7 +253,7 @@ bool ApplePropertyListNode::Parse(MemoryStream& stream, const BinaryHeader& head
 			type = stream.ReadChar();
 			itemCount = 1 << (type & 0xf);
 			auto ptr = stream.Ptr();
-			int dataSize = Utility::ToInt(ptr, itemCount);
+			int dataSize = BitConverter::ToInt(ptr, itemCount);
 			stream.Skip(itemCount);
 			itemCount = dataSize;
 		}
@@ -264,7 +264,7 @@ bool ApplePropertyListNode::Parse(MemoryStream& stream, const BinaryHeader& head
 
 		FOR_EACH_INT32(i, itemCount)
 		{
-			int childObjectIndex = Utility::ToInt(ptr, header.ObjectIntByteSize);
+			int childObjectIndex = BitConverter::ToInt(ptr, header.ObjectIntByteSize);
 			ptr += header.ObjectIntByteSize;
 			std::unique_ptr<ApplePropertyListNode> child(new ApplePropertyListNode());
 			RETURN_FALSE_IF_FALSE(child->Parse(stream, header, childObjectIndex));
@@ -280,7 +280,7 @@ bool ApplePropertyListNode::Parse(MemoryStream& stream, const BinaryHeader& head
 			type = stream.ReadChar();
 			itemCount = 1 << (type & 0xf);
 			auto ptr = stream.Ptr();
-			int dataSize = Utility::ToInt(ptr, itemCount);
+			int dataSize = BitConverter::ToInt(ptr, itemCount);
 			stream.Skip(itemCount);
 			itemCount = dataSize;
 		}
@@ -293,10 +293,10 @@ bool ApplePropertyListNode::Parse(MemoryStream& stream, const BinaryHeader& head
 
 		FOR_EACH_INT32(i, itemCount)
 		{
-			int keyObjectIndex = Utility::ToInt(keyPtr, header.ObjectIntByteSize);
+			int keyObjectIndex = BitConverter::ToInt(keyPtr, header.ObjectIntByteSize);
 			keyPtr += header.ObjectIntByteSize;
 
-			int valueObjectIndex = Utility::ToInt(valuePtr, header.ObjectIntByteSize);
+			int valueObjectIndex = BitConverter::ToInt(valuePtr, header.ObjectIntByteSize);
 			valuePtr += header.ObjectIntByteSize;
 
 

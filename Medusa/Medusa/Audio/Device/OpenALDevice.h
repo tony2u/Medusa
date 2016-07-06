@@ -2,6 +2,7 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 #pragma once
+#include "MedusaPreDeclares.h"
 #ifdef MEDUSA_AL
 #include "Audio/AudioTypes.h"
 #include "Audio/Device/IAudioDevice.h"
@@ -13,7 +14,7 @@ public :
     OpenALDevice();
     ~OpenALDevice();
 
-	bool Initialize(const Dictionary<AudioContextAttribute, uint,SafeEnumHashCoder<AudioContextAttribute>>& attributes, const StringRef& deviceName = StringRef::Empty);
+	bool Initialize(const Dictionary<AudioContextAttribute, uint,SafeEnumHashCoder>& attributes, const StringRef& deviceName = StringRef::Empty);
 	virtual bool Initialize()override;
 	virtual bool Uninitialize()override;
 

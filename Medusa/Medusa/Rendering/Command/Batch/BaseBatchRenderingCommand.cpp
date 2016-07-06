@@ -17,6 +17,5 @@ BaseBatchRenderingCommand::~BaseBatchRenderingCommand(void)
 }
 
 
-MEDUSA_IMPLEMENT_RTTI(BaseBatchRenderingCommand,IRenderingCommand);
 
 MEDUSA_END;

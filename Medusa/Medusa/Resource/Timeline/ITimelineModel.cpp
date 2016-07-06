@@ -166,7 +166,7 @@ bool ITimelineModel::TryGetFrameHelper(float time, uint& outPrevFrameIndex, uint
 	RETURN_FALSE_IF_EMPTY(mFrames);
 	RETURN_FALSE_IF(time < 0.f);
 
-	intp index = Algorithm::BinarySearchLastGreaterThan<TimelineFrame, DefaultCompare<TimelineFrame> >(mFrames.Items(), TimelineFrame(time), 0, mFrames.Count() - 1);
+	intp index = Algorithm::BinarySearchLastGreaterThan<TimelineFrame, DefaultCompare >(mFrames.Items(), TimelineFrame(time), 0, mFrames.Count() - 1);
 	if (index == 0)
 	{
 		//time < first frame

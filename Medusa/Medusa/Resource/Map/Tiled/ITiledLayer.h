@@ -11,6 +11,7 @@
 #include "Rendering/RenderingTypes.h"
 #include "Core/Pattern/Runnable/IRunnable.h"
 #include "Resource/ResourceType.h"
+#include "Resource/Map/Tiled/TmxTiledMap.h"
 
 /*
 Features:
@@ -55,8 +56,8 @@ public:
 	StringPropertySet& MutableProperties() { return mProperties; }
 	void SetProperties(const StringPropertySet& val) { mProperties = val; }
 
-	TmxTiledMap* Map() const { return mMap; }
-	void SetMap(TmxTiledMap* val) { mMap = val; }
+	const Share<TmxTiledMap>& Map() const { return mMap; }
+	void SetMap(const Share<TmxTiledMap>& val) { mMap = val; }
 	bool IsCollisionEnabled() const { return mCollisionEnabled; }
 	void EnableCollision(bool val) { mCollisionEnabled = val; }
 
@@ -72,7 +73,7 @@ protected:
 	StringPropertySet mProperties;
 	int mZOrder;
 
-	TmxTiledMap* mMap = nullptr;
+	Share<TmxTiledMap> mMap;
 	InstantiateMode mInstantiateMode;
 	RunningState mRunningState;
 	HeapString mInstantiateLayer;

@@ -15,5 +15,5 @@ CocosFeatureLayer::~CocosFeatureLayer(void)
 }
 
 
-MEDUSA_IMPLEMENT_LAYER(CocosFeatureLayer, BaseFeatureLayer, StringRef::Empty, StringRef::Empty);
+MEDUSA_IMPLEMENT_NODE(CocosFeatureLayer);
 

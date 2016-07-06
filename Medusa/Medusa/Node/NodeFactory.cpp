@@ -12,6 +12,7 @@
 #include "Resource/ResourceNames.h"
 #include "Node/Sprite/Sprite.h"
 #include "Node/Sprite/NineGridSprite.h"
+#include "Node/Shape/LinesShape.h"
 
 #include "Resource/Material/MaterialFactory.h"
 #include "Resource/Effect/EffectFactory.h"
@@ -48,6 +49,10 @@
 #include "Resource/TextureAtlas/TextureAtlasFactory.h"
 #include "Rendering/RenderingObjectFactory.h"
 
+#include "Node/Editor/NodeEditorFactory.h"
+#include "Core/IO/Path.h"
+#include "Core/IO/FileInfo.h"
+#include "Core/IO/FileSystem.h"
 
 MEDUSA_BEGIN;
 
@@ -58,19 +63,139 @@ NodeFactory::NodeFactory()
 
 NodeFactory::~NodeFactory()
 {
-	Clear();
+	SAFE_DELETE_DICTIONARY_VALUE(mClassDict);
 }
 
-void NodeFactory::Clear()
+
+void NodeFactory::RegisterHelper(const StringRef& className, const FileIdRef& editorFile, const FileIdRef& scriptFile)
 {
+	NodeInfo* info = new NodeInfo(className, editorFile, scriptFile);
+	mClassDict.Add(className, info);
+	if (!editorFile.Name.IsEmpty())
+	{
+		mEditorDict.Add(editorFile, info);
+		auto pureName = Path::GetFileNameWithoutExtension(editorFile.Name);
+		mEditorWithoutExtensionDict.Add(pureName, info);
+	}
+
+	if (!scriptFile.Name.IsEmpty())
+	{
+		mScriptDict.Add(scriptFile, info);
+		auto pureName = Path::GetFileNameWithoutExtension(scriptFile.Name);
+		mScriptWithoutExtensionDict.Add(pureName, info);
+	}
+
 }
+
+INode* NodeFactory::Create(const StringRef& className, const FileIdRef& editorFile, const FileIdRef& scriptFile, const IEventArg& e /*= IEventArg::Empty*/, NodeCreateFlags flags /*= LayerCreateFlags::All*/)
+{
+	INode* node = nullptr;
+	if (editorFile.IsValid())
+	{
+		node = NodeEditorFactory::Instance().Create(className, editorFile, scriptFile, e, flags);
+		RETURN_SELF_IF_NOT_NULL(node);
+	}
+
+	if (className.IsEmpty())
+	{
+		Log::AssertFailed("Cannot create layer without name");
+		return nullptr;
+	}
+	else
+	{
+		node = BaseType::Create(className, StringRef::Empty, e);	//create layer only use name
+	}
+
+	if (node == nullptr)
+	{
+		Log::AssertFailedFormat("Cannot create layer by name:{}", className);
+		return nullptr;
+	}
+#ifdef MEDUSA_SCRIPT
+	node->TryAddScriptFile(scriptFile);
+#endif
+	node->Initialize();
+
+	return node;
+}
+
+
+INode* NodeFactory::Create(const FileIdRef& smartName, const IEventArg& e /*= IEventArg::Empty*/, NodeCreateFlags flags /*= NodeCreateFlags::None*/)
+{
+	if (Path::HasExtension(smartName.Name))	//editor file or script file
+	{
+		FileType fileType = FileInfo::ExtractType(smartName.Name);
+		if (FileInfo::IsScriptFile(fileType))
+		{
+			//script file
+			NodeInfo* nodeInfo = mScriptDict.GetOptional(smartName, nullptr);
+			if (nodeInfo != nullptr)
+			{
+				return Create(nodeInfo->ClassName, nodeInfo->EditorFile, nodeInfo->ScriptFile, e, flags);
+			}
+			//unknown class name, use default
+			return Create(StringRef::Empty, FileIdRef::Empty, smartName, e, flags);
+		}
+		else
+		{
+			//editor file
+			NodeInfo* nodeInfo = mEditorDict.GetOptional(smartName, nullptr);
+			if (nodeInfo != nullptr)
+			{
+				return Create(nodeInfo->ClassName, nodeInfo->EditorFile, nodeInfo->ScriptFile, e, flags);
+			}
+			//unknown class name, use default
+			return Create(StringRef::Empty, smartName, FileIdRef::Empty, e, flags);
+		}
+	}
+	else
+	{
+		//try to find a match in layer infos
+		//first try to find in class name
+		NodeInfo* nodeInfo = mClassDict.GetOptional(smartName.Name, nullptr);
+		if (nodeInfo != nullptr)
+		{
+			return Create(nodeInfo->ClassName, nodeInfo->EditorFile, nodeInfo->ScriptFile, e, flags);
+		}
+
+		nodeInfo = mEditorWithoutExtensionDict.GetOptional(smartName.Name, nullptr);
+		if (nodeInfo != nullptr)
+		{
+			return Create(nodeInfo->ClassName, nodeInfo->EditorFile, nodeInfo->ScriptFile, e, flags);
+		}
+
+		nodeInfo = mScriptWithoutExtensionDict.GetOptional(smartName.Name, nullptr);
+		if (nodeInfo != nullptr)
+		{
+			return Create(nodeInfo->ClassName, nodeInfo->EditorFile, nodeInfo->ScriptFile, e, flags);
+		}
+
+		//try to to find editor file in file system
+		const auto& editors = NodeEditorFactory::Instance().Editors();
+		for (const auto& editor : editors)
+		{
+			if (editor.Value->IsEnabled())
+			{
+				auto testFileName = smartName.Name + editor.Value->ExtensionString();
+				if (FileSystem::Instance().Exists(testFileName))
+				{
+					return Create(StringRef::Empty, testFileName, FileIdRef::Empty, e, flags);
+				}
+			}
+		}
+
+		return nullptr;
+	}
+
+}
+
 
 IShape* NodeFactory::CreateRect(const Size2F& rectSize, const Color4F& color)
 {
 
-	ShapeQuadMesh* mesh = MeshFactory::Instance().CreateShapeQuadMesh(rectSize, color);
+	auto mesh = MeshFactory::Instance().CreateShapeQuadMesh(rectSize, color);
 	RETURN_NULL_IF_NULL(mesh);
-	IMaterial* material = MaterialFactory::Instance().CreateShape(MEDUSA_PREFIX(Shape));
+	auto material = MaterialFactory::Instance().CreateShape(MEDUSA_PREFIX(Shape));
 	IShape* sprite = new IShape();
 	sprite->Initialize();
 	sprite->SetSizeToContent(SizeToContent::Mesh);
@@ -81,11 +206,11 @@ IShape* NodeFactory::CreateRect(const Size2F& rectSize, const Color4F& color)
 	return sprite;
 }
 
-IShape* NodeFactory::CreateRect( const Rect2F& rect, const Color4F& color)
+IShape* NodeFactory::CreateRect(const Rect2F& rect, const Color4F& color)
 {
-	ShapeQuadMesh* mesh = MeshFactory::Instance().CreateShapeQuadMesh(rect, color);
+	auto mesh = MeshFactory::Instance().CreateShapeQuadMesh(rect, color);
 	RETURN_NULL_IF_NULL(mesh);
-	IMaterial* material = MaterialFactory::Instance().CreateShape(MEDUSA_PREFIX(Shape));
+	auto material = MaterialFactory::Instance().CreateShape(MEDUSA_PREFIX(Shape));
 
 	IShape* sprite = new IShape();
 	sprite->Initialize();
@@ -100,11 +225,11 @@ IShape* NodeFactory::CreateRect( const Rect2F& rect, const Color4F& color)
 
 IShape* NodeFactory::CreateRectBorder(const Size2F& rectSize, const Color4F& color)
 {
-	ShapeQuadMesh* mesh = MeshFactory::Instance().CreateShapeQuadMesh(rectSize, color);
+	auto mesh = MeshFactory::Instance().CreateShapeQuadMesh(rectSize, color);
 	RETURN_NULL_IF_NULL(mesh);
-	IMaterial* material = MaterialFactory::Instance().CreateShape(MEDUSA_PREFIX(Shape_WireFrame));
+	auto material = MaterialFactory::Instance().CreateShape(MEDUSA_PREFIX(Shape_WireFrame));
 	material->SetDrawMode(GraphicsDrawMode::LineStrip);
-	
+
 	IShape* sprite = new IShape();
 	sprite->Initialize();
 	sprite->SetSizeToContent(SizeToContent::Mesh);
@@ -117,9 +242,9 @@ IShape* NodeFactory::CreateRectBorder(const Size2F& rectSize, const Color4F& col
 
 IShape* NodeFactory::CreateRectBorder(const Rect2F& rect, const Color4F& color)
 {
-	ShapeQuadMesh* mesh = MeshFactory::Instance().CreateShapeQuadMesh(rect, color);
+	auto mesh = MeshFactory::Instance().CreateShapeQuadMesh(rect, color);
 	RETURN_NULL_IF_NULL(mesh);
-	IMaterial* material = MaterialFactory::Instance().CreateShape(MEDUSA_PREFIX(Shape_WireFrame));
+	auto material = MaterialFactory::Instance().CreateShape(MEDUSA_PREFIX(Shape_WireFrame));
 	material->SetDrawMode(GraphicsDrawMode::LineStrip);
 
 	IShape* sprite = new IShape();
@@ -135,9 +260,9 @@ IShape* NodeFactory::CreateRectBorder(const Rect2F& rect, const Color4F& color)
 
 IShape* NodeFactory::CreateTriangle(const Point3F& p1, const Point3F& p2, const Point3F& p3, const Color4F& color)
 {
-	ShapeTriangleMesh* mesh = MeshFactory::Instance().CreateShapeTriangleMesh(p1, p2, p3, color);
+	auto mesh = MeshFactory::Instance().CreateShapeTriangleMesh(p1, p2, p3, color);
 	RETURN_NULL_IF_NULL(mesh);
-	IMaterial* material = MaterialFactory::Instance().CreateShape(MEDUSA_PREFIX(Shape));
+	auto material = MaterialFactory::Instance().CreateShape(MEDUSA_PREFIX(Shape));
 	IShape* sprite = new IShape();
 	sprite->Initialize();
 	sprite->SetSizeToContent(SizeToContent::Mesh);
@@ -150,9 +275,9 @@ IShape* NodeFactory::CreateTriangle(const Point3F& p1, const Point3F& p2, const 
 
 IShape* NodeFactory::CreateTriangle(float width, float height, const Color4F& color)
 {
-	ShapeTriangleMesh* mesh = MeshFactory::Instance().CreateShapeTriangleMesh(width, height, color);
+	auto mesh = MeshFactory::Instance().CreateShapeTriangleMesh(width, height, color);
 	RETURN_NULL_IF_NULL(mesh);
-	IMaterial* material = MaterialFactory::Instance().CreateShape(MEDUSA_PREFIX(Shape));
+	auto material = MaterialFactory::Instance().CreateShape(MEDUSA_PREFIX(Shape));
 	IShape* sprite = new IShape();
 	sprite->Initialize();
 	sprite->SetSizeToContent(SizeToContent::Mesh);
@@ -164,9 +289,9 @@ IShape* NodeFactory::CreateTriangle(float width, float height, const Color4F& co
 
 IShape* NodeFactory::CreateCircle(float radius, float precision, const Color4F& color)
 {
-	ShapeGeneralMesh* mesh = MeshFactory::Instance().CreateShapeCircleMesh(radius, precision, color);
+	auto mesh = MeshFactory::Instance().CreateShapeCircleMesh(radius, precision, color);
 	RETURN_NULL_IF_NULL(mesh);
-	IMaterial* material = MaterialFactory::Instance().CreateShape(MEDUSA_PREFIX(Shape_TrianglesFan));
+	auto material = MaterialFactory::Instance().CreateShape(MEDUSA_PREFIX(Shape_TrianglesFan));
 	material->SetDrawMode(GraphicsDrawMode::TriangleFan);
 	IShape* sprite = new IShape();
 	sprite->Initialize();
@@ -174,10 +299,25 @@ IShape* NodeFactory::CreateCircle(float radius, float precision, const Color4F& 
 	sprite->SetMesh(mesh);
 	sprite->SetMaterial(material);
 	return sprite;
-	
+
 }
 
 
+
+LinesShape* NodeFactory::CreateLine(const Point3F& from, const Point3F& to, const Color4F& color)
+{
+	auto mesh = MeshFactory::Instance().CreateLineMesh(from, to, color);
+	RETURN_NULL_IF_NULL(mesh);
+	auto material = MaterialFactory::Instance().CreateShape(MEDUSA_PREFIX(Shape_WireFrame));
+	material->SetDrawMode(GraphicsDrawMode::LineStrip);
+	LinesShape* sprite = new LinesShape();
+	sprite->Initialize();
+
+	sprite->SetSize(Math::Abs(to.X - from.X), Math::Abs(to.Y - from.Y));
+	sprite->SetMesh(mesh);
+	sprite->SetMaterial(material);
+	return sprite;
+}
 
 Sprite* NodeFactory::CreateEmptySprite()
 {
@@ -200,7 +340,7 @@ Sprite* NodeFactory::CreateSprite(const FileIdRef& textureName, const Rect2F& te
 	return sprite;
 }
 
-Sprite* NodeFactory::CreateSprite(ITexture* texture, const Rect2F& textureRect /*= Rect2F::Zero*/)
+Sprite* NodeFactory::CreateSprite(const Share<ITexture>& texture, const Rect2F& textureRect /*= Rect2F::Zero*/)
 {
 	auto renderingObject = RenderingObjectFactory::Instance().CreateFromTexture(texture, textureRect);
 	RETURN_NULL_IF_NULL(renderingObject);
@@ -215,7 +355,7 @@ Sprite* NodeFactory::CreateSprite(ITexture* texture, const Rect2F& textureRect /
 
 NineGridSprite* NodeFactory::CreateNineGridSprite(const Size2F& targetSize, const FileIdRef& textureName, const ThicknessF& padding, const Rect2F& textureRect/*=Rect2F::Zero*/)
 {
-	auto renderingObject = RenderingObjectFactory::Instance().CreateNineGridTexture(targetSize, textureName,padding,textureRect);
+	auto renderingObject = RenderingObjectFactory::Instance().CreateNineGridTexture(targetSize, textureName, padding, textureRect);
 	RETURN_NULL_IF_NULL(renderingObject);
 
 	NineGridSprite* sprite = new NineGridSprite();
@@ -259,7 +399,7 @@ Sprite* NodeFactory::CreateSpriteFromAtlasRegion(StringRef regionName, const Fil
 
 Sprite* NodeFactory::CreatePODSprite(const FileIdRef& modelName)
 {
-	IModel* model = ModelFactory::Instance().Create(modelName);
+	auto model = ModelFactory::Instance().Create(modelName);
 	RETURN_NULL_IF_NULL(model);
 	return (Sprite*)model->Instantiate();
 }
@@ -267,18 +407,7 @@ Sprite* NodeFactory::CreatePODSprite(const FileIdRef& modelName)
 
 ILabel* NodeFactory::CreateMultipleLineLabel(const FontId& fontId, StringRef text, Alignment alignment/*=Alignment::LeftBottom*/, Size2F restrictSize/*=Size2F::Zero*/, bool isStatic/*=false*/)
 {
-	IFont* font = FontFactory::Instance().Create(fontId);
-	RETURN_NULL_IF_NULL(font);
-	FntLabel* label = new FntLabel(StringRef::Empty,font, alignment, restrictSize, true, isStatic);
-	label->Initialize();
-	label->SetString(text);
-
-	return label;
-}
-
-ILabel* NodeFactory::CreateMultipleLineLabel(const FontId& fontId, WStringRef text, Alignment alignment/*=Alignment::LeftBottom*/, Size2F restrictSize/*=Size2F::Zero*/, bool isStatic/*=false*/)
-{
-	IFont* font = FontFactory::Instance().Create(fontId);
+	auto font = FontFactory::Instance().Create(fontId);
 	RETURN_NULL_IF_NULL(font);
 	FntLabel* label = new FntLabel(StringRef::Empty, font, alignment, restrictSize, true, isStatic);
 	label->Initialize();
@@ -287,9 +416,30 @@ ILabel* NodeFactory::CreateMultipleLineLabel(const FontId& fontId, WStringRef te
 	return label;
 }
 
+ILabel* NodeFactory::CreateMultipleLineLabel(const FontId& fontId, WStringRef text, Alignment alignment/*=Alignment::LeftBottom*/, Size2F restrictSize/*=Size2F::Zero*/, bool isStatic/*=false*/)
+{
+	auto font = FontFactory::Instance().Create(fontId);
+	RETURN_NULL_IF_NULL(font);
+	FntLabel* label = new FntLabel(StringRef::Empty, font, alignment, restrictSize, true, isStatic);
+	label->Initialize();
+	label->SetString(text);
+
+	return label;
+}
+
+ILabel* NodeFactory::CreateSingleLineBMPNumberLabel(const FontId& fontId, StringRef text, wchar_t firstChar /*= L'.'*/, Alignment alignment /*= Alignment::MiddleCenter*/, Size2F restrictSize /*= Size2F::Zero*/, bool isStatic /*= false*/)
+{
+	auto font = FontFactory::Instance().CreateFromSingleTexture(fontId, firstChar);
+	RETURN_NULL_IF_NULL(font);
+	FntLabel* label = new FntLabel(StringRef::Empty, font, alignment, restrictSize, true, isStatic);
+	label->Initialize();
+	label->SetString(text);
+	return label;
+}
+
 ILabel* NodeFactory::CreateSingleLineLabel(const FontId& fontId, StringRef text, Alignment alignment/*=Alignment::LeftBottom*/, Size2F restrictSize/*=Size2F::Zero*/, bool isStatic/*=false*/)
 {
-	IFont* font = FontFactory::Instance().Create(fontId);
+	auto font = FontFactory::Instance().Create(fontId);
 	RETURN_NULL_IF_NULL(font);
 	FntLabel* label = new FntLabel(StringRef::Empty, font, alignment, restrictSize, false, isStatic);
 	label->Initialize();
@@ -299,7 +449,7 @@ ILabel* NodeFactory::CreateSingleLineLabel(const FontId& fontId, StringRef text,
 
 ILabel* NodeFactory::CreateSingleLineLabel(const FontId& fontId, WStringRef text, Alignment alignment/*=Alignment::LeftBottom*/, Size2F restrictSize/*=Size2F::Zero*/, bool isStatic/*=false*/)
 {
-	IFont* font = FontFactory::Instance().Create(fontId);
+	auto font = FontFactory::Instance().Create(fontId);
 	RETURN_NULL_IF_NULL(font);
 	FntLabel* label = new FntLabel(StringRef::Empty, font, alignment, restrictSize, false, isStatic);
 	label->Initialize();
@@ -317,7 +467,7 @@ IPanel* NodeFactory::CreatePanel(PanelType panelType)
 
 ListBox* NodeFactory::CreateStringListBox(const List<WHeapString>& strItems, bool isSingleLine/*=true*/)
 {
-	ListBox* listBox = new ListBox();
+	ListBox* listBox = new ListBox(StringRef::Empty, ScrollDirection::VerticalFromTop);
 	listBox->SetDataSource(new StringListDataSource(strItems, isSingleLine));
 	listBox->Initialize();
 	return listBox;
@@ -382,7 +532,7 @@ MultipleLineEditBox* NodeFactory::CreateMultipleLineEditBox(const Size2F& size, 
 
 SpineSkeleton* NodeFactory::CreateSkeleton(const FileIdRef& skeletonfileId, const FileIdRef& atlasFileId, bool isPreCalculated /*= false*/)
 {
-	SpineSkeletonModel* model = SkeletonModelFactory::Instance().CreateSpineFromJson(skeletonfileId, atlasFileId, isPreCalculated);
+	auto model = SkeletonModelFactory::Instance().CreateSpineFromJson(skeletonfileId, atlasFileId, isPreCalculated);
 	RETURN_NULL_IF_NULL(model);
 	SpineSkeleton* skeleton = new SpineSkeleton(StringRef::Empty, model);
 	skeleton->Initialize();

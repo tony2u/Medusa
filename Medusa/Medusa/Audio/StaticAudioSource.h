@@ -2,7 +2,10 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 #pragma once
+#include "MedusaPreDeclares.h"
+#ifdef MEDUSA_AL
 #include "Audio/IAudioSource.h"
+#include "Resource/Audio/IAudio.h"
 
 MEDUSA_BEGIN;
 
@@ -12,15 +15,16 @@ public:
 	StaticAudioSource(const StringRef& name=StringRef::Empty);
 	virtual ~StaticAudioSource();
 
-	IAudio* GetBuffer() const;
-	void SetBuffer(IAudio* val);
+	Share<IAudio> GetBuffer() const;
+	void SetBuffer(const Share<IAudio>& val);
 
-	void AddBuffer(IAudio* val);
+	void AddBuffer(const Share<IAudio>& val);
 protected:
 	virtual void OnSetup();
 protected:
-	List<IAudio*> mBuffers;
+	List<Share<IAudio>> mBuffers;
 };
 
 
 MEDUSA_END;
+#endif

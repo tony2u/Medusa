@@ -5,6 +5,7 @@
 #include "Resource/Texture/ITexture.h"
 #include "Graphics/PixelType.h"
 
+
 MEDUSA_BEGIN;
 
 class GPUTexture:public ITexture
@@ -14,7 +15,7 @@ public:
 		int level=0,int border=0,StringRef samplerName=StringRef::Empty,GraphicsTextureUnits unit=GraphicsTextureUnits::Texture0);
 	virtual ~GPUTexture(void);
 public:
-	virtual IImage* Image() const{return nullptr;}
+	virtual Share<IImage> Image() const{return nullptr;}
 
 	virtual bool IsBlend()const;
 	virtual Size2U Size() const{return mSize;}

@@ -3,7 +3,6 @@
 #include "Core/IO/FileSystem.h"
 #include "Core/String/StringRef.h"
 #include "Core/IO/FileId.h"
-#include "Node/Layer/LayerFactory.h"
 #include "CocosStudio/Reader/ReaderFactory.h"
 #include "Node/Scene/IScene.h"
 #include "Node/Layer/ILayer.h"
@@ -21,7 +20,7 @@ BinaryEditor::~BinaryEditor()
 
 }
 
-INode* BinaryEditor::Create(const StringRef& className, const FileIdRef& editorFile, const IEventArg& e /*= IEventArg::Empty*/, NodeCreateFlags flags /*= NodeCreateFlags::None*/)
+INode* BinaryEditor::Create(const StringRef& className, const FileIdRef& editorFile, const FileIdRef& scriptFile, const IEventArg& e /*= IEventArg::Empty*/, NodeCreateFlags flags /*= NodeCreateFlags::None*/)
 {
 	auto data = FileSystem::Instance().ReadAllData(editorFile);
 	RETURN_NULL_IF_EMPTY(data);
@@ -84,10 +83,14 @@ StringRef BinaryEditor::GetReaderName(const StringRef& name, const flatbuffers::
 		{
 			return "LayerReader";
 		}
+		else if (widgetName == "Node") 
+		{
+			return "NodeReader";
+		}
 	}
-	if (name == "Panel")
+	if (name == "Panel"|| name == "Layout")
 	{
-		return "LayoutReader";
+		return "PanelReader";
 	}
 	else if (name == "TextArea")
 	{
@@ -109,6 +112,14 @@ StringRef BinaryEditor::GetReaderName(const StringRef& name, const flatbuffers::
 	{
 		return  "TextBMFontReader";
 	}
+	else if (name == "TextBMFont")
+	{
+		return "TextBMFontReader";
+	}
+	else if (name == "TextAtlas")
+	{
+		return "TextAtlasReader";
+	}
 	else if (name == "ProjectNode")
 	{
 		return  "ProjectNodeReader";
@@ -124,6 +135,30 @@ StringRef BinaryEditor::GetReaderName(const StringRef& name, const flatbuffers::
 	else if (name == "Text")
 	{
 		return "TextReader";
+	}
+	else if (name == "SingleNode") 
+	{
+		return "SingleNodeReader";
+	}
+	else if (name == "LoadingBar")
+	{
+		return "LoadingBarReader";
+	}
+	else if (name == "TextField") 
+	{
+		return "TextFieldReader";
+	}
+	else if (name == "ListView")
+	{
+		return "ListViewReader";
+	}
+	else if (name == "ScrollView")
+	{
+		return "ScrollViewReader";
+	}
+	else if (name == "PageView")
+	{
+		return "PageViewReader";
 	}
 
 	Log::AssertFailedFormat("Invalid name:{}", name);

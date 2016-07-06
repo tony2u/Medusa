@@ -10,7 +10,7 @@
 
 MEDUSA_BEGIN;
 
-template<typename T, size_t TSize, typename TCompare = EqualCompare<T> >
+template<typename T, size_t TSize, typename TCompare = EqualCompare >
 class Array :public ICollection < T >
 {
 	typedef Array<T, TSize, TCompare> SelfType;
@@ -201,9 +201,9 @@ public:
 		T* mCurrent;
 	};
 	ConstInterator begin()const { return ConstInterator(this->mItems); }
-	ConstInterator end()const { return ConstInterator(this->mItems + this->mCount); }
+	ConstInterator end()const { return ConstInterator(this->mItems + TSize); }
 	Interator begin() { return Interator(this->mItems); }
-	Interator end() { return Interator(this->mItems + this->mCount); }
+	Interator end() { return Interator(this->mItems + TSize); }
 #pragma endregion IEnumerable interface
 
 #pragma region ICollection interface

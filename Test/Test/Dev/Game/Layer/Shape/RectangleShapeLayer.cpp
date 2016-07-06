@@ -29,5 +29,5 @@ bool RectangleShapeLayer::Initialize()
 
 
 
-MEDUSA_IMPLEMENT_LAYER(RectangleShapeLayer, BaseCaseLayer, StringRef::Empty, StringRef::Empty);
+MEDUSA_IMPLEMENT_NODE(RectangleShapeLayer);
 

@@ -20,6 +20,7 @@
 #include "Node/Input/Gesture/SwipeGestureRecognizer.h"
 #include "Node/Input/Gesture/DoubleTapGestureRecognizer.h"
 #include "Node/Input/Gesture/IGestureRecognizer.h"
+#include "Node/Input/Gesture/StrokeGestureRecognizer.h"
 #include "Node/Input/IMEHandler.h"
 #include "Node/Input/KeyboardHandler.h"
 #include "Node/INode.h"
@@ -46,9 +47,8 @@ InputDispatcher::~InputDispatcher()
 
 IInputHandler* InputDispatcher::FindFocusHandler() const
 {
-	FOR_EACH_COLLECTION(i, mHandlers)
+	for (auto handler : mHandlers)
 	{
-		IInputHandler* handler = *i;
 		if (handler != nullptr&&handler->IsFocus())
 		{
 			return handler;
@@ -73,9 +73,8 @@ void InputDispatcher::TouchesBegan(TouchEventArg& e)
 	}
 
 
-	FOR_EACH_COLLECTION(i, mHandlers)
+	for (auto handler : mHandlers)
 	{
-		IInputHandler* handler = *i;
 		CONTINUE_IF_NULL(handler);
 		handler->TouchesBegan(e);
 		RETURN_IF_TRUE(e.Handled);
@@ -92,9 +91,8 @@ void InputDispatcher::TouchesMoved(TouchEventArg& e)
 		return;
 	}
 
-	FOR_EACH_COLLECTION(i, mHandlers)
+	for (auto handler : mHandlers)
 	{
-		IInputHandler* handler = *i;
 		CONTINUE_IF_NULL(handler);
 		handler->TouchesMoved(e);
 		RETURN_IF_TRUE(e.Handled);
@@ -111,9 +109,8 @@ void InputDispatcher::TouchesEnded(TouchEventArg& e)
 		return;
 	}
 
-	FOR_EACH_COLLECTION(i, mHandlers)
+	for (auto handler : mHandlers)
 	{
-		IInputHandler* handler = *i;
 		CONTINUE_IF_NULL(handler);
 		handler->TouchesEnded(e);
 		RETURN_IF_TRUE(e.Handled);
@@ -123,9 +120,8 @@ void InputDispatcher::TouchesEnded(TouchEventArg& e)
 
 void InputDispatcher::MockTouch(TouchEventArg& e)
 {
-	FOR_EACH_COLLECTION(i, mHandlers)
+	for (auto handler : mHandlers)
 	{
-		IInputHandler* handler = *i;
 		CONTINUE_IF_NULL(handler);
 		handler->MockTouch(e);
 		RETURN_IF_TRUE(e.Handled);
@@ -134,9 +130,8 @@ void InputDispatcher::MockTouch(TouchEventArg& e)
 
 void InputDispatcher::TouchesCancelled(TouchEventArg& e)
 {
-	FOR_EACH_COLLECTION(i, mHandlers)
+	for (auto handler : mHandlers)
 	{
-		IInputHandler* handler = *i;
 		CONTINUE_IF_NULL(handler);
 		handler->TouchesCancelled(e);
 		RETURN_IF_TRUE(e.Handled);
@@ -146,9 +141,8 @@ void InputDispatcher::TouchesCancelled(TouchEventArg& e)
 bool InputDispatcher::Update(float dt)
 {
 	RETURN_TRUE_IF_EMPTY(mHandlers);
-	FOR_EACH_COLLECTION(i, mHandlers)
+	for (auto handler : mHandlers)
 	{
-		IInputHandler* handler = *i;
 		CONTINUE_IF_NULL(handler);
 		RETURN_FALSE_IF_FALSE(handler->Update(dt));
 	}
@@ -160,9 +154,8 @@ bool InputDispatcher::Update(float dt)
 void InputDispatcher::Reset()
 {
 	RETURN_IF_EMPTY(mHandlers);
-	FOR_EACH_COLLECTION(i, mHandlers)
+	for (auto handler : mHandlers)
 	{
-		IInputHandler* handler = *i;
 		CONTINUE_IF_NULL(handler);
 		handler->Reset();
 	}
@@ -173,9 +166,8 @@ void InputDispatcher::KeyDown(KeyDownEventArg& e)
 {
 	RETURN_IF_EMPTY(mHandlers);
 
-	FOR_EACH_COLLECTION(i, mHandlers)
+	for (auto handler : mHandlers)
 	{
-		IInputHandler* handler = *i;
 		CONTINUE_IF_NULL(handler);
 		handler->KeyDown(e);
 		RETURN_IF_TRUE(e.Handled);
@@ -186,9 +178,8 @@ void InputDispatcher::KeyUp(KeyUpEventArg& e)
 {
 	RETURN_IF_EMPTY(mHandlers);
 
-	FOR_EACH_COLLECTION(i, mHandlers)
+	for (auto handler : mHandlers)
 	{
-		IInputHandler* handler = *i;
 		CONTINUE_IF_NULL(handler);
 		handler->KeyUp(e);
 		RETURN_IF_TRUE(e.Handled);
@@ -199,9 +190,8 @@ void InputDispatcher::CharInput(CharInputEventArg& e)
 {
 	RETURN_IF_EMPTY(mHandlers);
 
-	FOR_EACH_COLLECTION(i, mHandlers)
+	for (auto handler : mHandlers)
 	{
-		IInputHandler* handler = *i;
 		CONTINUE_IF_NULL(handler);
 		handler->CharInput(e);
 		RETURN_IF_TRUE(e.Handled);
@@ -212,9 +202,8 @@ void InputDispatcher::Scroll(ScrollEventArg& e)
 {
 	RETURN_IF_EMPTY(mHandlers);
 
-	FOR_EACH_COLLECTION(i, mHandlers)
+	for (auto handler : mHandlers)
 	{
-		IInputHandler* handler = *i;
 		CONTINUE_IF_NULL(handler);
 		handler->Scroll(e);
 		RETURN_IF_TRUE(e.Handled);
@@ -226,9 +215,8 @@ void InputDispatcher::CancelOtherHandlers(IInputHandler* self)
 {
 	RETURN_IF_EMPTY(mHandlers);
 
-	FOR_EACH_COLLECTION(i, mHandlers)
+	for (auto handler : mHandlers)
 	{
-		IInputHandler* handler = *i;
 		CONTINUE_IF_NULL(handler);
 		if (handler != self)
 		{
@@ -295,6 +283,25 @@ PanGestureRecognizer* InputDispatcher::AddPanGestureRecognizer(float minDistance
 	}
 }
 
+
+DragGestureRecognizer* InputDispatcher::AddDragGestureRecognizer(float minDistance /*= 5.f*/)
+{
+	DragGestureRecognizer* recognizer = (DragGestureRecognizer*)mHandlers[(size_t)InputType::Drag];
+	if (recognizer == nullptr)
+	{
+		recognizer = new DragGestureRecognizer(mNode, minDistance);
+		recognizer->AddBehaviors(mBehaviors);
+		recognizer->SetDispatcher(this);
+		mHandlers[(size_t)InputType::Drag] = recognizer;
+		IncreaseHandlerCount();
+
+		return recognizer;
+	}
+	else
+	{
+		return recognizer;
+	}
+}
 
 PinchGestureRecognizer* InputDispatcher::AddPinchGestureRecognizer()
 {
@@ -420,6 +427,22 @@ bool InputDispatcher::RemovePanGestureHandler(PanDelegate handler)
 bool InputDispatcher::RemoveAllPanGestureHandler()
 {
 	SAFE_DELETE(mHandlers[(size_t)InputType::Pan]);
+	DecreaseHandlerCount();
+	return true;
+}
+
+DragGestureRecognizer* InputDispatcher::AddDragGestureHandler(DragBeganDelegate beganHandler, DragingDelegate dragingHandler, DragEndDelegate endHandler, float minDistance /*= 5.f*/)
+{
+	DragGestureRecognizer* recognizer = AddDragGestureRecognizer(minDistance);
+	recognizer->OnDragBegan += beganHandler;
+	recognizer->OnDraging += dragingHandler;
+	recognizer->OnDragEnd += endHandler;
+	return recognizer;
+}
+
+bool InputDispatcher::RemoveAllDragGestureHandler()
+{
+	SAFE_DELETE(mHandlers[(size_t)InputType::Drag]);
 	DecreaseHandlerCount();
 	return true;
 }
@@ -617,6 +640,7 @@ KeyboardHandler* InputDispatcher::AddKeyboardHandler(KeyboardWillShowDelegate wi
 }
 
 
+
 bool InputDispatcher::RemoveAllKeyboardHandler()
 {
 	SAFE_DELETE(mHandlers[(size_t)InputType::Keyboard]);
@@ -627,6 +651,61 @@ bool InputDispatcher::RemoveAllKeyboardHandler()
 void InputDispatcher::Monitor(InputEventType type, StringRef handlerName)
 {
 	Monitor(type).Add(handlerName);
+}
+
+StrokeGestureRecognizer* InputDispatcher::AddStrokeGestureRecognizer()
+{
+	StrokeGestureRecognizer* recognizer = (StrokeGestureRecognizer*)mHandlers[(size_t)InputType::Stroke];
+	if (recognizer == nullptr)
+	{
+		recognizer = new StrokeGestureRecognizer(mNode);
+		recognizer->AddBehaviors(mBehaviors);
+		recognizer->SetDispatcher(this);
+		mHandlers[(size_t)InputType::Stroke] = recognizer;
+		IncreaseHandlerCount();
+		return recognizer;
+	}
+	else
+	{
+		return recognizer;
+	}
+}
+
+
+StrokeGestureRecognizer* InputDispatcher::AddStrokeGestureRecognizer(StrokeDelegate onStroke, StrokeFailedDelegate onStrokeFailed/*=nullptr*/)
+{
+	StrokeGestureRecognizer* recognizer = AddStrokeGestureRecognizer();
+	recognizer->OnStroke += onStroke;
+	if (onStrokeFailed)
+	{
+		recognizer->OnStrokeFailed += onStrokeFailed;
+	}
+	return recognizer;
+}
+
+bool InputDispatcher::RemoveStrokeGestureHandler(StrokeDelegate handler)
+{
+	StrokeGestureRecognizer* recognizer = (StrokeGestureRecognizer*)mHandlers[(size_t)InputType::Stroke];
+	if (recognizer == nullptr)
+	{
+		Log::Error("Cannot find handler");
+		return false;
+	}
+
+	recognizer->OnStroke -= handler;
+	if (!recognizer->HasHandler())
+	{
+		SAFE_DELETE(mHandlers[(size_t)InputType::Stroke]);
+		DecreaseHandlerCount();
+	}
+	return true;
+}
+
+bool InputDispatcher::RemoveAllStrokeGestureHandler()
+{
+	SAFE_DELETE(mHandlers[(size_t)InputType::Stroke]);
+	DecreaseHandlerCount();
+	return true;
 }
 
 List<HeapString>& InputDispatcher::Monitor(InputEventType type)
@@ -701,7 +780,7 @@ bool InputDispatcher::FireEventHelper(InputEventType type, StringRef handlerName
 	return false;
 }
 
-
+#ifdef MEDUSA_SCRIPT
 bool InputDispatcher::FireScriptBinding(InputEventType type, INode* node /*= nullptr*/, IEventArg* e /*= nullptr*/) const
 {
 	const auto* handerNames = mEventMonitors.TryGet(type);
@@ -735,12 +814,12 @@ bool InputDispatcher::FireScriptBinding(InputEventType type, INode* node /*= nul
 			RETURN_TRUE_IF_TRUE(isHit);
 			parent = parent->Parent();
 		}
-		
+
 	}
 	return isHit;
 }
 
-bool InputDispatcher::FireScriptBindingHelper(InputEventType type, StringRef handlerName,INode* node /*= nullptr*/, IEventArg* e /*= nullptr*/) const
+bool InputDispatcher::FireScriptBindingHelper(InputEventType type, StringRef handlerName, INode* node /*= nullptr*/, IEventArg* e /*= nullptr*/) const
 {
 	auto* scriptComponent = mNode->FindComponent<NodeScriptComponent>();
 	if (scriptComponent != nullptr&& scriptComponent->HasMethod(handlerName))
@@ -751,4 +830,5 @@ bool InputDispatcher::FireScriptBindingHelper(InputEventType type, StringRef han
 	return false;
 }
 
+#endif
 MEDUSA_END;

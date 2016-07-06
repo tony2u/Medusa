@@ -3,8 +3,8 @@
 // license that can be found in the LICENSE file.
 #include "MedusaPreCompiled.h"
 #include "Node/INode.h"
-#include "Core/Command/EventArg/IEventArg.h"
-#include "Core/Pattern/Ptr/LazyStrongPtr.inl"
+#include "Core/Event/EventArg/IEventArg.h"
+#include "Core/Pattern/LazyStrongPtr.inl"
 #include "Core/Action/BaseActionRunner.h"
 #include "Resource/Model/IModel.h"
 #include "Node/Input/InputManager.h"
@@ -22,7 +22,7 @@
 #include "Core/Pattern/IVisitor.h"
 #include "Node/Scene/SceneManager.h"
 #include "Application/ApplicationStatics.h"
-#include "Core/Command/EventArg/UserDataEventArg.h"
+#include "Core/Event/EventArg/UserDataEventArg.h"
 #include "Geometry/Geometry.h"
 #include "Core/Script/ScriptEngine.h"
 #include "Node/Component/NodeScriptComponent.h"
@@ -44,7 +44,7 @@ INode::~INode(void)
 	SAFE_DELETE(mInputDispatcher);
 	SAFE_DELETE_COLLECTION(mNodes);
 	mNodeDict.Clear();
-	SAFE_RELEASE(mDataSource);
+	mDataSource = nullptr;
 	mManagedNodes.Clear();
 }
 
@@ -159,31 +159,19 @@ void INode::RemoveAllChilds(NodeRemoveFlags flags /*= NodeRemoveFlags::OnlyChild
 		}
 		else
 		{
-			FOR_EACH_COLLECTION(i, mNodes)
-			{
-				INode* node = *i;
-				node->SetParent(nullptr);
-			}
+			FOR_EACH_TO(mNodes, SetParent(nullptr));
 			mNodes.Clear();
 			mNodeDict.Clear();
 		}
 		break;
 	case NodeRemoveFlags::OnlyManaged:
 		RETURN_IF_FALSE(hasManaged);
-		FOR_EACH_COLLECTION(i, mManagedNodes)
-		{
-			INode* sprite = *i;
-			RemoveChild(sprite);
-		}
+		FOR_EACH_APPLY(mManagedNodes, RemoveChild);
 		mManagedNodes.Clear();
 		break;
 	case NodeRemoveFlags::All:
 		RETURN_IF_FALSE(hasManaged);
-		FOR_EACH_COLLECTION(i, mNodes)
-		{
-			INode* node = *i;
-			node->SetParent(nullptr);
-		}
+		FOR_EACH_TO(mNodes, SetParent(nullptr));
 		mNodes.Clear();
 		mNodeDict.Clear();
 		mManagedNodes.Clear();
@@ -270,11 +258,7 @@ void INode::DeleteAllChilds(NodeRemoveFlags flags /*= NodeRemoveFlags::OnlyChild
 		break;
 	case NodeRemoveFlags::OnlyManaged:
 		RETURN_IF_FALSE(hasManaged);
-		FOR_EACH_COLLECTION(i, mManagedNodes)
-		{
-			INode* sprite = *i;
-			DeleteChild(sprite);
-		}
+		FOR_EACH_APPLY(mManagedNodes, DeleteChild);
 		mManagedNodes.Clear();
 		break;
 	case NodeRemoveFlags::All:
@@ -295,9 +279,8 @@ void INode::DeleteAllChilds(NodeRemoveFlags flags /*= NodeRemoveFlags::OnlyChild
 
 INode* INode::FindChildWithId(uintp id)
 {
-	FOR_EACH_COLLECTION(i, mNodes)
+	for(auto node: mNodes)
 	{
-		INode* node = *i;
 		if (node->Id() == id)
 		{
 			return node;
@@ -335,9 +318,9 @@ bool INode::HasChildRecursively(INode* node) const
 	bool hasChild = HasChild(node);
 	RETURN_TRUE_IF_TRUE(hasChild);
 
-	FOR_EACH_COLLECTION(i, mNodes)
+	for(auto i: mNodes)
 	{
-		hasChild = (*i)->HasChildRecursively(node);
+		hasChild = i->HasChildRecursively(node);
 		RETURN_TRUE_IF_TRUE(hasChild);
 	}
 	return false;
@@ -354,9 +337,9 @@ INode* INode::FindChildRecursively(StringRef name)
 	INode* node = FindChild(name);
 	RETURN_SELF_IF_NOT_NULL(node);
 
-	FOR_EACH_COLLECTION(i, mNodes)
+	for (auto i : mNodes)
 	{
-		node = *i;
+		node = i;
 		node = node->FindChildRecursively(name);
 		RETURN_SELF_IF_NOT_NULL(node);
 	}
@@ -368,9 +351,9 @@ const INode* INode::FindChildRecursively(StringRef name) const
 	const INode* node = FindChild(name);
 	RETURN_SELF_IF_NOT_NULL(node);
 
-	FOR_EACH_COLLECTION(i, mNodes)
+	for (auto i : mNodes)
 	{
-		node = *i;
+		node = i;
 		node = node->FindChildRecursively(name);
 		RETURN_SELF_IF_NOT_NULL(node);
 	}
@@ -432,7 +415,7 @@ void INode::OnMoveableDirty(MoveableChangedFlags changedFlags)
 
 		if (mDebugDrawShape != nullptr)
 		{
-			ShapeGeneralMesh* quadMesh = (ShapeGeneralMesh*)mDebugDrawShape->Mesh();
+			auto quadMesh = mDebugDrawShape->Mesh().CastPtr<ShapeGeneralMesh>();
 			quadMesh->ExpandVertexRectSize(mSize.To2D());	//it will override debugBounding box
 		}
 	}
@@ -445,21 +428,21 @@ void INode::OnMoveableDirty(MoveableChangedFlags changedFlags)
 void INode::SetRenderingPriorityRecursively(RenderingPriority val)
 {
 	SetRenderingPriority(val);
-	FOR_EACH_ITEM_TO(mNodes, SetRenderingPriorityRecursively(val));
+	FOR_EACH_TO(mNodes, SetRenderingPriorityRecursively(val));
 }
 
 
 void INode::SetRenderingStrategyRecursively(RenderingStrategy val)
 {
 	SetRenderingStrategy(val);
-	FOR_EACH_ITEM_TO(mNodes, SetRenderingStrategyRecursively(val));
+	FOR_EACH_TO(mNodes, SetRenderingStrategyRecursively(val));
 }
 
 
 void INode::SetMeshFixTypeRecursively(MeshFixType val)
 {
 	SetMeshFixType(val);
-	FOR_EACH_ITEM_TO(mNodes, SetMeshFixTypeRecursively(val));
+	FOR_EACH_TO(mNodes, SetMeshFixTypeRecursively(val));
 }
 
 bool INode::UpdateRecursively(float dt, const NodeUpdateFlags& flag/*=NodeUpdateFlags::None*/)
@@ -744,9 +727,8 @@ InputDispatcher& INode::MutableInput()
 void INode::ResetInputPassing()
 {
 	mInputPassingEnabled = false;
-	FOR_EACH_COLLECTION(i, mNodes)
+	for (auto node : mNodes)
 	{
-		INode* node = *i;
 		if (!node->IsInputPassingEnabled())
 		{
 			node->ResetInputPassing();
@@ -844,17 +826,30 @@ void INode::OnBeforeMeasure(const Size2F& availableSize)
 		mMeasuredSize = availableSize;
 		break;
 	case Stretch::FillWidth:
+		if (Math::IsZero(mStretchAspectRatio) && !Math::IsZero(mSize.Height))
+		{
+			mStretchAspectRatio = mSize.Width / mSize.Height;
+		}
 		Log::AssertFormat(!Math::IsZero(mStretchAspectRatio), "StretchAspectRatio==0 when Stretch::FillWidth.");
 		mMeasuredSize.Width = availableSize.Width;
 		mMeasuredSize.Height = availableSize.Width / mStretchAspectRatio;
 		break;
 	case Stretch::FillHeight:
+		if (Math::IsZero(mStretchAspectRatio) && !Math::IsZero(mSize.Height))
+		{
+			mStretchAspectRatio = mSize.Width / mSize.Height;
+		}
 		Log::AssertFormat(!Math::IsZero(mStretchAspectRatio), "StretchAspectRatio==0 when Stretch::FillHeight.");
 		mMeasuredSize.Height = availableSize.Height;
 		mMeasuredSize.Width = availableSize.Height*mStretchAspectRatio;
 		break;
 	case Stretch::Uniform:
 	{
+		if (Math::IsZero(mStretchAspectRatio)&&!Math::IsZero(mSize.Height))
+		{
+			mStretchAspectRatio = mSize.Width / mSize.Height;
+		}
+
 		Log::AssertFormat(!Math::IsZero(mStretchAspectRatio), "StretchAspectRatio==0 when Stretch::Uniform.");
 		if (Math::IsZero(mSize.Width) || Math::IsZero(mSize.Height))
 		{
@@ -884,6 +879,10 @@ void INode::OnBeforeMeasure(const Size2F& availableSize)
 	break;
 	case Stretch::UniformToFill:
 	{
+		if (Math::IsZero(mStretchAspectRatio) && !Math::IsZero(mSize.Height))
+		{
+			mStretchAspectRatio = mSize.Width / mSize.Height;
+		}
 		Log::AssertFormat(!Math::IsZero(mStretchAspectRatio), "StretchAspectRatio==0 when Stretch::UniformToFill.");
 		if (Math::IsZero(mSize.Width) || Math::IsZero(mSize.Height))
 		{
@@ -990,10 +989,11 @@ Rect2F INode::ArrangeSelf(const Rect2F& limitRect/*=Rect2F::Zero*/, NodeLayoutAr
 		Geometry::StretchToRect(mSize.To2D(), limitRect, mStretch, mStretchPercent, outScale, resultRect.Size);
 		SetScale(outScale.X, outScale.Y, mScale.Z);
 	}
-	else
+	/*else
 	{
 		resultRect.Size = mSize.To2D();
-	}
+	}*/
+	resultRect.Size = mSize.To2D();	//keep result size as it already has scaled so have to offer children original size
 
 
 	if (mDockPoint != DockPoint::None)
@@ -1109,10 +1109,10 @@ void INode::StretchToRect(const Rect2F& rect, Stretch stretch, const Scale2F& st
 
 #pragma region DataBind
 
-void INode::SetDataSource(IDataSource* val)
+void INode::SetDataSource(const Share<IDataSource>& val)
 {
 	RETURN_IF_EQUAL(mDataSource, val);
-	SAFE_ASSIGN_REF(mDataSource, val);
+	mDataSource = val;
 	if (mDataSource != nullptr)
 	{
 		mDataSource->OnDataChanged += Bind(&INode::OnDataChanged, this);
@@ -1121,7 +1121,7 @@ void INode::SetDataSource(IDataSource* val)
 
 void INode::ReleaseDataSource()
 {
-	SAFE_RELEASE(mDataSource);
+	mDataSource = nullptr;
 }
 
 void INode::OnDataChanged(const IDataSource& dataSource)
@@ -1195,7 +1195,7 @@ bool INode::TryAttachScriptObject(StringRef customName /*= StringRef::Empty*/)
 }
 
 
-ScriptObject INode::AddScriptFile(const FileIdRef& file)
+ScriptObject INode::TryAddScriptFile(const FileIdRef& file)
 {
 	if (file.IsEmpty())
 	{
@@ -1234,6 +1234,5 @@ ScriptObject INode::GetScriptObject() const
 
 #endif
 
-MEDUSA_IMPLEMENT_RTTI_ROOT(INode);
 
 MEDUSA_END;

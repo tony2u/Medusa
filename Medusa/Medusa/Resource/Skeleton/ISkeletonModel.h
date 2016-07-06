@@ -22,7 +22,7 @@ public:
 
 	Size2F GetBoundingSize() const { return mBoundingSize; }
 	void SetBoundingSize(const Size2F& val) { mBoundingSize = val; }
-	TextureAtlas* GetAtlas() const { return mAtlas; }
+	const Share<TextureAtlas>& GetAtlas() const { return mAtlas; }
 
 	const List<SkeletonBoneModel*>& Bones() const { return mBones; }
 	List<SkeletonBoneModel*>& MutableBones() { return mBones; }
@@ -68,7 +68,9 @@ public:
 	void RemovePreCalculated();
 protected:
 	Size2F mBoundingSize;
-	TextureAtlas* mAtlas=nullptr;
+	Share<TextureAtlas> mAtlas=nullptr;
+
+
 	List<SkeletonBoneModel*> mBones;
 	List<SkeletonSlotModel*> mSlots;
 	List<SkeletonAvatarModel*> mAvatars;

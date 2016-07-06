@@ -37,9 +37,9 @@ bool TimelineModelFactory::Uninitialize()
 
 
 
-ITimelineModel* TimelineModelFactory::CreateSkeletonFromModel(const StringRef& modelName, ResourceShareType shareType /*= ResourceShareType::Share*/)
+Share<ITimelineModel> TimelineModelFactory::CreateSkeletonFromModel(const StringRef& modelName, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
-	ITimelineModel* item = nullptr;
+	Share<ITimelineModel> item;
 	if (shareType != ResourceShareType::None)
 	{
 		item = Find(modelName);
@@ -48,7 +48,7 @@ ITimelineModel* TimelineModelFactory::CreateSkeletonFromModel(const StringRef& m
 
 	
 
-	BaseSceneModel* model = (BaseSceneModel*)ModelFactory::Instance().Create(modelName);
+	auto model = ModelFactory::Instance().Create(modelName).CastPtr<BaseSceneModel>();
 	if (model != nullptr)
 	{
 		item = model->CreateSkeletonTimelineModel();
@@ -57,16 +57,16 @@ ITimelineModel* TimelineModelFactory::CreateSkeletonFromModel(const StringRef& m
 	return item;
 }
 
-ITimelineModel* TimelineModelFactory::CreateCameraFromModel(const StringRef& cameraName, const StringRef& modelName, ResourceShareType shareType /*= ResourceShareType::Share*/)
+Share<ITimelineModel> TimelineModelFactory::CreateCameraFromModel(const StringRef& cameraName, const StringRef& modelName, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
-	ITimelineModel* item = nullptr;
+	Share<ITimelineModel> item = nullptr;
 	if (shareType != ResourceShareType::None)
 	{
 		item = Find(cameraName);
 		RETURN_SELF_IF_NOT_NULL(item);
 	}
 
-	BaseSceneModel* model = (BaseSceneModel*)ModelFactory::Instance().Create(modelName);
+	auto model = ModelFactory::Instance().Create(modelName).CastPtr<BaseSceneModel>();
 	if (model != nullptr)
 	{
 		item = model->CreateCameraTimelineModel(cameraName);
@@ -75,16 +75,16 @@ ITimelineModel* TimelineModelFactory::CreateCameraFromModel(const StringRef& cam
 	return item;
 }
 
-ITimelineModel* TimelineModelFactory::CreateLightFromModel(const StringRef& lightName, const StringRef& modelName, ResourceShareType shareType /*= ResourceShareType::Share*/)
+Share<ITimelineModel> TimelineModelFactory::CreateLightFromModel(const StringRef& lightName, const StringRef& modelName, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
-	ITimelineModel* item = nullptr;
+	Share<ITimelineModel> item;
 	if (shareType != ResourceShareType::None)
 	{
 		item = Find(lightName);
 		RETURN_SELF_IF_NOT_NULL(item);
 	}
 
-	BaseSceneModel* model = (BaseSceneModel*)ModelFactory::Instance().Create(modelName);
+	auto model = ModelFactory::Instance().Create(modelName).CastPtr<BaseSceneModel>();
 	if (model != nullptr)
 	{
 		item = model->CreateLightTimelineModel(lightName);
@@ -93,16 +93,16 @@ ITimelineModel* TimelineModelFactory::CreateLightFromModel(const StringRef& ligh
 	return item;
 }
 
-RenderingObjectTimelineModel* TimelineModelFactory::CreateRenderingObjectFromSingleTexture(const StringRef& name, const FileIdRef& textureName, uint coloumn, uint row/*=1*/, float fps/*=24.f*/, ResourceShareType shareType /*= ResourceShareType::Share*/)
+Share<RenderingObjectTimelineModel> TimelineModelFactory::CreateRenderingObjectFromSingleTexture(const StringRef& name, const FileIdRef& textureName, uint coloumn, uint row/*=1*/, float fps/*=24.f*/, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
 	if (shareType != ResourceShareType::None)
 	{
-		ITimelineModel* val = Find(name);
-		RETURN_SELF_IF_NOT_NULL((RenderingObjectTimelineModel*)val);
+		Share<RenderingObjectTimelineModel> val = Find(name).CastPtr<RenderingObjectTimelineModel>();
+		RETURN_SELF_IF_NOT_NULL(val);
 	}
 
-	IMaterial* material = MaterialFactory::Instance().CreateSingleTexture(textureName);
-	RenderingObjectTimelineModel* model = new RenderingObjectTimelineModel(name);
+	auto material = MaterialFactory::Instance().CreateSingleTexture(textureName);
+	Share<RenderingObjectTimelineModel> model = new RenderingObjectTimelineModel(name);
 	model->InitializeWithSingleTexture(material, coloumn, row, fps);
 	Add(model, shareType);
 
@@ -111,7 +111,7 @@ RenderingObjectTimelineModel* TimelineModelFactory::CreateRenderingObjectFromSin
 
 
 
-RenderingObjectTimelineModel* TimelineModelFactory::CreateRenderingObjectFromTextureAtlas(const StringRef& name,
+Share<RenderingObjectTimelineModel> TimelineModelFactory::CreateRenderingObjectFromTextureAtlas(const StringRef& name,
 																				const FileIdRef& atlasFileId,
 																				 const StringRef& regionPattern,
 																				 TextureAtlasType fileFormat /*= TextureAtlasType::None*/,
@@ -121,8 +121,8 @@ RenderingObjectTimelineModel* TimelineModelFactory::CreateRenderingObjectFromTex
 {
 	if (shareType != ResourceShareType::None)
 	{
-		ITimelineModel* val = Find(name);
-		RETURN_SELF_IF_NOT_NULL((RenderingObjectTimelineModel*)val);
+		auto val = Find(name).CastPtr<RenderingObjectTimelineModel>();
+		RETURN_SELF_IF_NOT_NULL(val);
 	}
 
 
@@ -134,19 +134,19 @@ RenderingObjectTimelineModel* TimelineModelFactory::CreateRenderingObjectFromTex
 		return nullptr;
 	}
 
-	RenderingObjectTimelineModel* model = new RenderingObjectTimelineModel(name);
+	Share<RenderingObjectTimelineModel> model = new RenderingObjectTimelineModel(name);
 	model->InitializeWithObjects(outObjects, fps);
 	Add(model, shareType);
 
 	return model;
 }
 
-RenderingObjectTimelineModel* TimelineModelFactory::CreateRenderingObjectFromTextures(const StringRef& name, const StringRef& textureNamePattern, float fps /*= 24.f*/, ResourceShareType shareType /*= ResourceShareType::Share*/)
+Share<RenderingObjectTimelineModel> TimelineModelFactory::CreateRenderingObjectFromTextures(const StringRef& name, const StringRef& textureNamePattern, float fps /*= 24.f*/, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
 	if (shareType != ResourceShareType::None)
 	{
-		ITimelineModel* val = Find(name);
-		RETURN_SELF_IF_NOT_NULL((RenderingObjectTimelineModel*)val);
+		auto val = Find(name).CastPtr<RenderingObjectTimelineModel>();
+		RETURN_SELF_IF_NOT_NULL(val);
 	}
 	List<RenderingObject> outObjects;
 	bool isSuccess = RenderingObjectFactory::Instance().CreateFromTextures(outObjects, textureNamePattern);
@@ -158,7 +158,7 @@ RenderingObjectTimelineModel* TimelineModelFactory::CreateRenderingObjectFromTex
 
 
 
-	RenderingObjectTimelineModel* model = new RenderingObjectTimelineModel(name);
+	Share<RenderingObjectTimelineModel> model = new RenderingObjectTimelineModel(name);
 	model->InitializeWithObjects(outObjects, fps);
 	Add(model, shareType);
 

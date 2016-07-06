@@ -3,6 +3,7 @@
 // license that can be found in the LICENSE file.
 #pragma once
 #include "MedusaPreDeclares.h"
+#ifdef MEDUSA_AL
 #include "Resource/IResource.h"
 #include "Audio/AudioTypes.h"
 MEDUSA_BEGIN;
@@ -67,3 +68,4 @@ private:
 
 
 MEDUSA_END;
+#endif

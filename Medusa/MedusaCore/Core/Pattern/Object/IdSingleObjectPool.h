@@ -8,7 +8,7 @@
 #include "Core/Collection/Stack.h"
 
 MEDUSA_BEGIN;
-template <typename TId, typename TObject, typename TObjectNewer = DefaultNewerById<TId, TObject>, typename THashCoder = DefaultHashCoder<TId>, typename TKeyCompare = DefaultCompare<TId>, typename TObjectCompare = DefaultCompare<TObject> >
+template <typename TId, typename TObject, typename TObjectNewer = DefaultNewerById<TId, TObject>, typename THashCoder = DefaultHashCoder, typename TKeyCompare = DefaultCompare, typename TObjectCompare = DefaultCompare >
 class IdSingleObjectPool
 {
 public:
@@ -38,10 +38,10 @@ public:
 public:
 	void Clear()
 	{
-		FOR_EACH_COLLECTION(i, mItems)
+		for (auto i : mItems)
 		{
-			TId& id = i->Key;
-			ItemStack* stack = i->Value;
+			TId& id = i.Key;
+			ItemStack* stack = i.Value;
 			SAFE_DELETE_COLLECTION(*stack);
 			SAFE_DELETE(stack);
 

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 #include "MedusaPreCompiled.h"
+#ifdef MEDUSA_AL
 #include "Audio/Device/AudioDevice.h"
 #include "IAudio.h"
 MEDUSA_BEGIN;
@@ -71,3 +72,4 @@ bool IAudio::Upload(const MemoryData& data)
 }
 
 MEDUSA_END;
+#endif

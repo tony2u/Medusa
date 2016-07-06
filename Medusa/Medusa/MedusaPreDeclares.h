@@ -47,7 +47,7 @@ class AudioEngine;
 
 class AudioListener;
 
-class  BaseAudioRecorder;
+class BaseAudioRecorder;
 
 class FileStreamAudioSource;
 
@@ -199,6 +199,9 @@ class Point3;
 
 template<typename T>
 class Point4;
+
+template<typename T>
+class PointPath2;
 
 template<typename T>
 class Polygon;
@@ -518,7 +521,7 @@ class INodeEditor;
 
 class NodeEditorFactory;
 
-class TieldLayerEditor;
+class TiledLayerEditor;
 
 class IInputHandler;
 
@@ -560,6 +563,8 @@ class PinchGestureRecognizer;
 
 class RotationGestureRecognizer;
 
+class StrokeGestureRecognizer;
+
 class SwipeGestureRecognizer;
 
 class TapGestureRecognizer;
@@ -588,6 +593,8 @@ class PanGestureEventArg;
 
 class PinchGestureEventArg;
 
+class StrokeGestureEventArg;
+
 class SwipeBeginGestureEventArg;
 
 class SwipeFailedGestureEventArg;
@@ -598,13 +605,17 @@ class SwipeSuccessGestureEventArg;
 
 class TapGestureEventArg;
 
+class IStrokeTemplate;
+
+class SingleStrokeLibrary;
+
+class SingleStrokeTemplate;
+
 class IItemTemplate;
 
 class LabelItemTemplate;
 
 class ILayer;
-
-class LayerFactory;
 
 class NormalLayer;
 
@@ -648,8 +659,6 @@ class ChangedNodeCollector;
 
 class IScene;
 
-class SceneFactory;
-
 class SceneManager;
 
 class SceneSweeper;
@@ -661,6 +670,8 @@ class ISceneGraph;
 class UISceneGraph;
 
 class IShape;
+
+class LinesShape;
 
 class ISkeleton;
 
@@ -1113,6 +1124,8 @@ typedef Point4<float> Point4F;
 typedef Point4I Vector4I;
 typedef Point4U Vector4U;
 typedef Point4F Vector4F;
+typedef PointPath2<int> PointPath2I;
+typedef PointPath2<float> PointPath2F;
 typedef Polygon<int> PolygonI;
 typedef Polygon<float> PolygonF;
 typedef Quad<Color4F> QuadColor;
@@ -1164,9 +1177,9 @@ typedef TScrollByAction<ScrollComponent> ScrollComponentScrollByAction;
 typedef TScrollBySpeedAction<ScrollComponent> ScrollComponentScrollBySpeedAction;
 typedef TScrollByPageAction<ScrollComponent> ScrollComponentScrollByPageAction;
 typedef TScrollToPageAction<ScrollComponent> ScrollComponentScrollToPageAction;
-typedef Delegate<void (IProgressBar* sender, float percent)> ProgressChangedDelegate;
-typedef Event<void (IProgressBar* sender,float percent)> ProgressChangedEvent;
-typedef Delegate<void (void* sender)> ProgressCompletedDelegate;
+typedef Delegate<void(IProgressBar* sender, float percent)> ProgressChangedDelegate;
+typedef Event<void(IProgressBar* sender, float percent)> ProgressChangedEvent;
+typedef Delegate<void(void* sender)> ProgressCompletedDelegate;
 typedef Delegate<void(INode* sender, CharInputEventArg&)> CharInputDelegate;
 typedef Event<void(INode* sender, CharInputEventArg&)> CharInputEvent;
 typedef Delegate<void(INode* sender, KeyboardEventArg&)> KeyboardWillShowDelegate;
@@ -1203,6 +1216,10 @@ typedef Delegate<void (INode* sender,PanGestureEventArg&)> PanDelegate;
 typedef Event<void (INode* sender,PanGestureEventArg&)> PanEvent;
 typedef Delegate<void (INode* sender,PinchGestureEventArg&)> PinchDelegate;
 typedef Event<void (INode* sender,PinchGestureEventArg&)> PinchEvent;
+typedef Delegate<void(INode* sender, StrokeGestureEventArg&)> StrokeDelegate;
+typedef Event<void(INode* sender, StrokeGestureEventArg&)> StrokeEvent;
+typedef Delegate<void(INode* sender)> StrokeFailedDelegate;
+typedef Event<void(INode* sender)> StrokeFailedEvent;
 typedef Delegate<void (INode* sender,SwipeBeginGestureEventArg&)> SwipeBeginDelegate;
 typedef Event<void (INode* sender,SwipeBeginGestureEventArg&)> SwipeBeginEvent;
 typedef Delegate<void (INode* sender,SwipeFailedGestureEventArg&)> SwipeFailedDelegate;

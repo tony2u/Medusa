@@ -15,5 +15,5 @@ MapFeatureLayer::~MapFeatureLayer(void)
 }
 
 
-MEDUSA_IMPLEMENT_LAYER(MapFeatureLayer, BaseFeatureLayer, StringRef::Empty, StringRef::Empty);
+MEDUSA_IMPLEMENT_NODE(MapFeatureLayer);
 

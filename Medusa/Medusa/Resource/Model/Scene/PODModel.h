@@ -39,10 +39,10 @@ struct PODNode
 	List<Quaternion> AnimationRotations;	/*!< 4 floats per frame of animation by quaternion format*/
 
 	List<uint> AnimationScaleIndexes;
-	List<PODScale,NoCompare<PODScale> > AnimationScales;		/*!< 7 floats per frame of animation. */
+	List<PODScale,NoCompare> AnimationScales;		/*!< 7 floats per frame of animation. */
 
 	List<uint>	AnimationMatrixIndexes;
-	List<Matrix4,NoCompare<Matrix4> > AnimationMatrixes;		/*!< 16 floats per frame of animation. */
+	List<Matrix4> AnimationMatrixes;		/*!< 16 floats per frame of animation. */
 
 	MemoryData UserData;
 
@@ -60,12 +60,12 @@ public:
 	PODModel(const FileIdRef& fileId);
 	virtual ~PODModel(void);
 	virtual bool Initialize(ModelLoadingOptions loadingOptions=ModelLoadingOptions::None);
-	virtual ITimelineModel* CreateSkeletonTimelineModel()const;
-	virtual ITimelineModel* CreateCameraTimelineModel(StringRef name)const;
-	virtual ITimelineModel* CreateLightTimelineModel(StringRef name)const;
+	virtual Share<ITimelineModel> CreateSkeletonTimelineModel()const;
+	virtual Share<ITimelineModel> CreateCameraTimelineModel(StringRef name)const;
+	virtual Share<ITimelineModel> CreateLightTimelineModel(StringRef name)const;
 
-	virtual Camera* CreateCamera(const FileIdRef& fileId, const Size2F& winSize)const;
-	virtual ILight* CreateLight(const FileIdRef& fileId)const;
+	virtual Share<Camera> CreateCamera(const FileIdRef& fileId, const Size2F& winSize)const;
+	virtual Share<ILight> CreateLight(const FileIdRef& fileId)const;
 
 
 	static PODModel* CreateFromFile(const FileIdRef& fileId,ModelLoadingOptions loadingOptions=ModelLoadingOptions::None);

@@ -9,10 +9,10 @@ MEDUSA_BEGIN;
 
 class UniformGridPanel :public IPanel
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_NODE(UniformGridPanel,IPanel);
 
 public:
-	UniformGridPanel(StringRef name=StringRef::Empty);
+	using IPanel::IPanel;
 	virtual ~UniformGridPanel(void);
 	virtual PanelType GetPanelType()const override{return PanelType::UniformGrid;}
 protected:

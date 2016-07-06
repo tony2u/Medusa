@@ -16,46 +16,53 @@ public:
 	virtual bool OnValue(bool& obj)override { this->mStream.ReadTo(obj); return true; }
 	virtual bool OnValue(char& obj) override
 	{
-		byte unsignedValue;
+		uint8 unsignedValue;
 		this->ReadVariableUnsigned(unsignedValue);
-		obj = (char)Utility::DecodeZigZag(unsignedValue); 
-		return true; 
-	}
-	virtual bool OnValue(byte& obj) override { this->ReadVariableUnsigned(obj); return true; }
-	virtual bool OnValue(short& obj)override
-	{
-		ushort unsignedValue;
-		this->ReadVariableUnsigned(unsignedValue);
-		obj = (short)Utility::DecodeZigZag(unsignedValue);
+		obj = (char)BitConverter::DecodeZigZag(unsignedValue);
 		return true;
 	}
-	virtual bool OnValue(ushort& obj)override { this->ReadVariableUnsigned(obj); return true; }
-	virtual bool OnValue(int32& obj)override 
+	virtual bool OnValue(int8& obj) override
+	{
+		uint8 unsignedValue;
+		this->ReadVariableUnsigned(unsignedValue);
+		obj = (int8)BitConverter::DecodeZigZag(unsignedValue);
+		return true;
+	}
+	virtual bool OnValue(uint8& obj) override { this->ReadVariableUnsigned(obj); return true; }
+	virtual bool OnValue(int16& obj)override
+	{
+		uint16 unsignedValue;
+		this->ReadVariableUnsigned(unsignedValue);
+		obj = (short)BitConverter::DecodeZigZag(unsignedValue);
+		return true;
+	}
+	virtual bool OnValue(uint16& obj)override { this->ReadVariableUnsigned(obj); return true; }
+	virtual bool OnValue(int32& obj)override
 	{
 		uint32 unsignedValue;
 		this->ReadVariableUnsigned(unsignedValue);
-		obj = (int32)Utility::DecodeZigZag(unsignedValue);
+		obj = (int32)BitConverter::DecodeZigZag(unsignedValue);
 		return true;
 	}
 	virtual bool OnValue(uint32& obj) override { this->ReadVariableUnsigned(obj); return true; }
-	virtual bool OnValue(int64& obj)override 
+	virtual bool OnValue(int64& obj)override
 	{
 		uint64 unsignedValue;
 		this->ReadVariableUnsigned(unsignedValue);
-		obj = (int64)Utility::DecodeZigZag(unsignedValue);
+		obj = (int64)BitConverter::DecodeZigZag(unsignedValue);
 		return true;
 	}
 	virtual bool OnValue(uint64& obj)override { this->ReadVariableUnsigned(obj); return true; }
 	virtual bool OnValue(float& obj)override { this->mStream.ReadTo(obj); return true; }
 	virtual bool OnValue(double& obj)override { this->mStream.ReadTo(obj); return true; }
-	virtual bool OnValue(HeapString& obj)override 
+	virtual bool OnValue(HeapString& obj)override
 	{
 		obj.Clear();
 		uint length;
-		this->ReadVariableUnsigned(length);
-		obj.ReserveLength(length);
-		this->mStream.ReadDataToString(obj,length);
-		return true; 
+		this->ReadVariableUnsigned(length);	//include \0
+		obj.ReserveLength(length - 1);
+		this->mStream.ReadDataToString(obj, length, true);
+		return true;
 	}
 	virtual bool OnValue(MemoryData& obj)override
 	{
@@ -66,7 +73,7 @@ public:
 		return true;
 	}
 
-	
+
 	virtual bool OnStructEnd()override
 	{
 		if (this->mIsFieldWaiting&&this->mCurrentFieldType == (byte)SirenTypeId::Null.ToUInt())
@@ -102,7 +109,7 @@ public:
 		return true;
 	}
 
-	
+
 	virtual int OnFieldBegin(const StringRef& name, ushort id, byte type, ushort& outId, byte& outType)override
 	{
 		/*
@@ -157,7 +164,7 @@ public:
 
 	}
 
-	
+
 	virtual bool OnFieldSkip()override
 	{
 		return SkipFieldHelper(this->mCurrentFieldType);
@@ -166,7 +173,7 @@ public:
 
 
 	template<typename TObject, bool TWithHeader = true>
-	typename std::enable_if<TWithHeader>::type OnField(const StringRef& name,ushort id, TObject& outObj)
+	typename std::enable_if<TWithHeader>::type OnField(const StringRef& name, ushort id, TObject& outObj)
 	{
 		ushort outId;
 		byte outType;
@@ -214,79 +221,79 @@ protected:
 
 		switch (type)
 		{
-			case (byte)SirenTypeId::Bool.IntValue:
-				this->mStream.Skip(sizeof(byte));
-				break;
-			case (byte)SirenTypeId::Int8.IntValue:
-			case (byte)SirenTypeId::UInt8.IntValue:
-				this->mStream.Skip(sizeof(byte));
-				break;
-			case (byte)SirenTypeId::Int16.IntValue:
-			case (byte)SirenTypeId::UInt16.IntValue:
-				this->template SkipVariableUnsigned<ushort>();
-				break;
-			case (byte)SirenTypeId::Int32.IntValue:
-			case (byte)SirenTypeId::UInt32.IntValue:
-				this->template SkipVariableUnsigned<uint>();
-				break;
-			case (byte)SirenTypeId::Int64.IntValue:
-			case (byte)SirenTypeId::UInt64.IntValue:
-				this->template SkipVariableUnsigned<uint64>();
-				break;
-			case (byte)SirenTypeId::Float.IntValue:
-				this->mStream.Skip(sizeof(float));
-				break;
-			case (byte)SirenTypeId::Double.IntValue:
-				this->mStream.Skip(sizeof(double));
-				break;
-			case (byte)SirenTypeId::String.IntValue:
-			{
-				uint length;
-				this->ReadVariableUnsigned(length);
-				this->mStream.Skip(length);
-			}
+		case (byte)SirenTypeId::Bool.IntValue:
+			this->mStream.Skip(sizeof(byte));
 			break;
-			case (byte)SirenTypeId::Blob.IntValue:
-			{
-				uint length;
-				this->ReadVariableUnsigned(length);	
-				this->mStream.Skip(length);
-			}
+		case (byte)SirenTypeId::Int8.IntValue:
+		case (byte)SirenTypeId::UInt8.IntValue:
+			this->mStream.Skip(sizeof(byte));
 			break;
+		case (byte)SirenTypeId::Int16.IntValue:
+		case (byte)SirenTypeId::UInt16.IntValue:
+			this->template SkipVariableUnsigned<ushort>();
+			break;
+		case (byte)SirenTypeId::Int32.IntValue:
+		case (byte)SirenTypeId::UInt32.IntValue:
+			this->template SkipVariableUnsigned<uint>();
+			break;
+		case (byte)SirenTypeId::Int64.IntValue:
+		case (byte)SirenTypeId::UInt64.IntValue:
+			this->template SkipVariableUnsigned<uint64>();
+			break;
+		case (byte)SirenTypeId::Float.IntValue:
+			this->mStream.Skip(sizeof(float));
+			break;
+		case (byte)SirenTypeId::Double.IntValue:
+			this->mStream.Skip(sizeof(double));
+			break;
+		case (byte)SirenTypeId::String.IntValue:
+		{
+			uint length;
+			this->ReadVariableUnsigned(length);
+			this->mStream.Skip(length);
+		}
+		break;
+		case (byte)SirenTypeId::Blob.IntValue:
+		{
+			uint length;
+			this->ReadVariableUnsigned(length);
+			this->mStream.Skip(length);
+		}
+		break;
 
-			case (byte)SirenTypeId::Struct.IntValue:
-				SkipField();
-				this->mStream.Skip(1);	//end mask
-				break;
-			case (byte)SirenTypeId::List.IntValue:
-			{
-				byte valueType;
-				this->mStream.ReadTo(valueType);
-
-				uint count;
-				this->ReadVariableUnsigned(count);
-				FOR_EACH_SIZE(i, count)
-				{
-					SkipFieldHelper(valueType);
-				}
-			}
+		case (byte)SirenTypeId::Struct.IntValue:
+			SkipField();
+			this->mStream.Skip(1);	//end mask
 			break;
-			case (byte)SirenTypeId::Dictionary.IntValue:
-			{
-				byte keyType;
-				this->mStream.ReadTo(keyType);
-				byte valueType;
-				this->mStream.ReadTo(valueType);
+		case (byte)SirenTypeId::List.IntValue:
+		{
+			byte valueType;
+			this->mStream.ReadTo(valueType);
 
-				uint count;
-				this->ReadVariableUnsigned(count);
-				FOR_EACH_SIZE(i, count)
-				{
-					SkipFieldHelper(keyType);
-					SkipFieldHelper(valueType);
-				}
+			uint count;
+			this->ReadVariableUnsigned(count);
+			FOR_EACH_SIZE(i, count)
+			{
+				SkipFieldHelper(valueType);
 			}
-			break;
+		}
+		break;
+		case (byte)SirenTypeId::Dictionary.IntValue:
+		{
+			byte keyType;
+			this->mStream.ReadTo(keyType);
+			byte valueType;
+			this->mStream.ReadTo(valueType);
+
+			uint count;
+			this->ReadVariableUnsigned(count);
+			FOR_EACH_SIZE(i, count)
+			{
+				SkipFieldHelper(keyType);
+				SkipFieldHelper(valueType);
+			}
+		}
+		break;
 		}
 		return true;
 	}

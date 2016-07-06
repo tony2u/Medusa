@@ -7,7 +7,7 @@
 
 class AtlasSpriteLayer :public BaseCaseLayer
 {
-	MEDUSA_DECLARE_LAYER(AtlasSpriteLayer);
+	MEDUSA_NODE(AtlasSpriteLayer, BaseCaseLayer);
 public:
 	AtlasSpriteLayer(StringRef name=StringRef::Empty,const IEventArg& e=IEventArg::Empty);
 	virtual ~AtlasSpriteLayer(void);

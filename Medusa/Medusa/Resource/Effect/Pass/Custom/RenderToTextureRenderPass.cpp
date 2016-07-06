@@ -29,9 +29,9 @@ RenderToTextureRenderPass::~RenderToTextureRenderPass()
 
 bool RenderToTextureRenderPass::Initialize()
 {
-	CustomRenderTarget* renderTarget=RenderTargetFactory::Instance().CreateCustom("RenderToTextureTarget",false);
+	auto renderTarget=RenderTargetFactory::Instance().CreateCustom("RenderToTextureTarget",false);
 	const Size2F& screenSize=ResolutionAdapter::Instance().WinSize();
-	GPUTexture* texture= TextureFactory::Instance().CreateGPUTexture("RenderToTextureTexture",screenSize,GraphicsTextureType::Texture2D,
+	auto texture= TextureFactory::Instance().CreateGPUTexture("RenderToTextureTexture",screenSize,GraphicsTextureType::Texture2D,
 		GraphicsTextureTarget::Texture2D,
 		PixelType::RGBA8888,0,0,ShaderSamplerNames::Texture);
 	texture->SetUnit(GraphicsTextureUnits::Texture0);
@@ -61,7 +61,7 @@ bool RenderToTextureRenderPass::Uninitialize()
 
 void RenderToTextureRenderPass::Apply()
 {
-	IRenderTarget* renderTarget=RenderTargetFactory::Instance().Find("RenderToTextureTarget");
+	auto renderTarget=RenderTargetFactory::Instance().Find("RenderToTextureTarget");
 	renderTarget->Apply();
 	renderTarget->Clear();
 
@@ -70,7 +70,7 @@ void RenderToTextureRenderPass::Apply()
 
 void RenderToTextureRenderPass::Restore()
 {
-	IRenderTarget* renderTarget=RenderTargetFactory::Instance().Find("RenderToTextureTarget");
+	auto renderTarget=RenderTargetFactory::Instance().Find("RenderToTextureTarget");
 	renderTarget->Restore();
 
 	BaseCustomRenderPass::Restore();

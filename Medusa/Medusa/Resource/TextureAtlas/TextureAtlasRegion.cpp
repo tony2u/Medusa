@@ -7,6 +7,8 @@
 #include "Core/Log/Log.h"
 #include "Resource/Model/Mesh/IMesh.h"
 #include "Resource/Material/MaterialFactory.h"
+#include "Core/IO/FileSystem.h"
+#include "Core/IO/Map/FileMapOrderItem.h"
 
 MEDUSA_BEGIN;
 
@@ -128,17 +130,31 @@ bool TextureAtlasRegion::AssertMeshLoaded()
 	}
 }
 
-ITexture* TextureAtlasRegion::Texture() const
+const Share<ITexture>& TextureAtlasRegion::Texture() const
 {
 	return mPage->GetTexture();
 }
 
-IMaterial* TextureAtlasRegion::CreateMaterial()
+Share<IMaterial> TextureAtlasRegion::CreateMaterial()
 {
-	ITexture* texture = mPage->LoadTexture();
+	auto texture = mPage->LoadTexture();
 	return MaterialFactory::Instance().CreateSingleTexture(texture);
 }
 
+
+void TextureAtlasRegion::MapToFileSystem(FileEntry& fileEntry)
+{
+	mMapFileOrderItem = FileSystem::Instance().MapFileReference(mName, fileEntry, this);
+}
+
+void TextureAtlasRegion::UnmapToFileSystem(FileEntry& fileEntry)
+{
+	if (mMapFileOrderItem != nullptr)
+	{
+		mMapFileOrderItem->RemoveFileEntryRegion(fileEntry);
+		mMapFileOrderItem = nullptr;
+	}
+}
 
 RotateDirection TextureAtlasRegion::GetRotateDirection() const
 {
@@ -173,7 +189,7 @@ void TextureAtlasRegion::SetTextureRect(const Rect2U& val)
 
 Rect2U TextureAtlasRegion::ResultTextureRect() const
 {
-	auto textureSize= mPage->LoadTexture()->Size();
+	auto textureSize = mPage->LoadTexture()->Size();
 	Rect2U result = mTextureRect;
 	if (mIsRotate)
 	{
@@ -184,7 +200,7 @@ Rect2U TextureAtlasRegion::ResultTextureRect() const
 
 	if (mPage->IsTexcoordUpSide())
 	{
-		
+
 	}
 	else
 	{
@@ -199,7 +215,7 @@ Rect2U TextureAtlasRegion::ResultTextureRect() const
 
 	}
 
-	
+
 
 	return result;
 }

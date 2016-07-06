@@ -32,10 +32,9 @@ bool MultipleRenderBatch::Update()
 	bool isInterrupted = false;
 	bool isChanged = false;
 
-	FOR_EACH_COLLECTION(i, mNodes)
+	for (auto node : mNodes)
 	{
-		IRenderable* node = *i;
-		IMesh* mesh = node->Mesh();
+		auto mesh = node->Mesh();
 		CONTINUE_IF_NULL(mesh);
 
 		if (!isInterrupted)

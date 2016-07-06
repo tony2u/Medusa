@@ -3,13 +3,14 @@
 // license that can be found in the LICENSE file.
 #pragma once
 #include "MedusaPreDeclares.h"
+#ifdef MEDUSA_AL
 #include "Core/Collection/List.h"
 #include "Core/Threading/Thread.h"
 #include "Core/Threading/ScopedLock.h"
 #include "Core/String/HeapString.h"
 
 MEDUSA_BEGIN;
-class  BaseAudioRecorder
+class BaseAudioRecorder
 {
 public:
 	BaseAudioRecorder(uint sampleRate=44100);
@@ -39,3 +40,4 @@ protected:
 };
 
 MEDUSA_END;
+#endif

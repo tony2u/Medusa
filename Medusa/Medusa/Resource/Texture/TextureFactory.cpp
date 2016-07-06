@@ -31,42 +31,42 @@ bool TextureFactory::Uninitialize()
 }
 
 
-ImageTexture* TextureFactory::CreateFromFile(const FileIdRef& fileId, StringRef samplerName/*=ShaderSamplerNames::Texture*/,
+Share<ImageTexture> TextureFactory::CreateFromFile(const FileIdRef& fileId, StringRef samplerName/*=ShaderSamplerNames::Texture*/,
 	GraphicsTextureUnits unit/*=GraphicsTextureUnits::Texture0*/, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
 
 	if (shareType != ResourceShareType::None)
 	{
-		ImageTexture* result = (ImageTexture*)Find(fileId);
+		Share<ImageTexture> result = Find(fileId).CastPtr<ImageTexture>();
 		RETURN_SELF_IF_NOT_NULL(result);
 	}
 
 
-	IImage* image = ImageFactory::Instance().CreateFromFile(fileId);
+	auto image = ImageFactory::Instance().CreateFromFile(fileId);
 	RETURN_NULL_IF_NULL(image);
 	return CreateFromImage(fileId, image, samplerName, unit, shareType);
 }
 
-ImageTexture* TextureFactory::CreateFromOrderItem(const FileIdRef& fileId, const FileMapOrderItem& orderItem, StringRef samplerName /*= ShaderSamplerNames::Texture*/, GraphicsTextureUnits unit /*= GraphicsTextureUnits::Texture0*/, ResourceShareType shareType /*= ResourceShareType::Share*/)
+Share<ImageTexture> TextureFactory::CreateFromOrderItem(const FileIdRef& fileId, const FileMapOrderItem& orderItem, StringRef samplerName /*= ShaderSamplerNames::Texture*/, GraphicsTextureUnits unit /*= GraphicsTextureUnits::Texture0*/, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
 	if (shareType != ResourceShareType::None)
 	{
-		ImageTexture* result = (ImageTexture*)Find(fileId);
+		Share<ImageTexture> result = Find(fileId).CastPtr<ImageTexture>();
 		RETURN_SELF_IF_NOT_NULL(result);
 	}
 
-	IImage* image = ImageFactory::Instance().CreateFromOrderItem(fileId, orderItem);
+	auto image = ImageFactory::Instance().CreateFromOrderItem(fileId, orderItem);
 	RETURN_NULL_IF_NULL(image);
 	return CreateFromImage(fileId, image, samplerName, unit, shareType);
 }
 
-ImageTexture* TextureFactory::CreateFromImage(const FileIdRef& fileId, IImage* image, StringRef samplerName/*=ShaderSamplerNames::Texture*/,
+Share<ImageTexture> TextureFactory::CreateFromImage(const FileIdRef& fileId, const Share<IImage>& image, StringRef samplerName/*=ShaderSamplerNames::Texture*/,
 	GraphicsTextureUnits unit/*=GraphicsTextureUnits::Texture0*/, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
-	ImageTexture* result = nullptr;
+	Share<ImageTexture> result;
 	if (shareType != ResourceShareType::None)
 	{
-		result = (ImageTexture*)Find(fileId);
+		result = Find(fileId).CastPtr<ImageTexture>();
 		RETURN_SELF_IF_NOT_NULL(result);
 	}
 
@@ -78,17 +78,17 @@ ImageTexture* TextureFactory::CreateFromImage(const FileIdRef& fileId, IImage* i
 }
 
 
-GPUTexture* TextureFactory::CreateGPUTexture(const FileIdRef& fileId, const Size2U& size, GraphicsTextureType textureType/*=GraphicsTextureType::Texture2D*/,
+Share<GPUTexture> TextureFactory::CreateGPUTexture(const FileIdRef& fileId, const Size2U& size, GraphicsTextureType textureType/*=GraphicsTextureType::Texture2D*/,
 	GraphicsTextureTarget textureTarget/*=GraphicsTextureTarget::Texture2D*/,
 	PixelType pixelType /*= PixelType::RGB888*/,
 	int level/*=0*/, int border/*=0*/,
 	StringRef samplerName/*=StringRef::Empty*/,
 	GraphicsTextureUnits unit/*=GraphicsTextureUnits::Texture0*/, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
-	GPUTexture* result = nullptr;
+	Share<GPUTexture> result = nullptr;
 	if (shareType != ResourceShareType::None)
 	{
-		result = (GPUTexture*)Find(fileId);
+		result = Find(fileId).CastPtr<GPUTexture>();
 		RETURN_SELF_IF_NOT_NULL(result);
 	}
 

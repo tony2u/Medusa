@@ -28,7 +28,7 @@ bool ChangedNodeCollector::Visit(INode* node)
 
 void ChangedNodeCollector::Clear()
 {
-	FOR_EACH_ITEM_TO_CLEAR(mNodes, ClearChangedFlag());
+	FOR_EACH_TO_CLEAR(mNodes, ClearChangedFlag());
 }
 
 MEDUSA_END;

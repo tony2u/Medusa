@@ -58,18 +58,18 @@ public:
 	bool operator==(const FileEntry& other)const { return mName ==other.mName; }
 	//SIREN_HEADER_METHOD_BEGIN
 public:
-	SIREN_METHOD(HeapString, Name);
+	SIREN_STRING(HeapString, Name);
 	SIREN_METHOD(FilePermission, Permission);
 	SIREN_METHOD(uint, FirstBlockId);
 	SIREN_METHOD(uint, OriginalSize);
 	SIREN_METHOD(uint, Size);
-	SIREN_METHOD(HeapString, Signature);
+	SIREN_STRING(HeapString, Signature);
 	SIREN_METHOD(EntryOperation, Operations);
 	SIREN_METHOD_LIST(uint, CoderOffsets);
 //SIREN_HEADER_METHOD_END
 public:
 	MemoryData ReadAllData(DataReadingMode mode = DataReadingMode::AlwaysCopy)const;
-	const IStream* Read(FileDataType dataType = FileDataType::Binary)const;
+	Share<const IStream> Read(FileDataType dataType = FileDataType::Binary)const;
 public:
 	StringRef Path() const { return mPath; }
 	void SetPath(StringRef val) { mPath = val; }

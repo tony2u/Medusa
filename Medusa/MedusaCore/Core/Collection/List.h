@@ -12,7 +12,7 @@
 MEDUSA_BEGIN;
 
 
-template<typename T, class TCompare = EqualCompare<T> >
+template<typename T, class TCompare = EqualCompare >
 class List :public IList < T >
 {
 	typedef List<T, TCompare> SelfType;
@@ -657,7 +657,7 @@ public:
 		}
 	}
 #pragma region Unordered
-	virtual void RemoveAtUnordered(size_t index)
+	virtual void RemoveAtSwap(size_t index)
 	{
 		MEDUSA_ASSERT_IF(index < this->mCount, "");
 		Memory::Destory(this->mItems + index);
@@ -669,7 +669,7 @@ public:
 	}
 
 
-	virtual void RemoveRangeUnordered(size_t index, size_t count)
+	virtual void RemoveRangeSwap(size_t index, size_t count)
 	{
 		MEDUSA_ASSERT_IF(index + count <= this->mCount, "");
 		Memory::DestoryRange(this->mItems + index, count);
@@ -685,7 +685,7 @@ public:
 		this->mCount -= count;
 	}
 
-	virtual void RemoveAllUnordered(size_t srcBegin, size_t srcEnd, TParameterType val)
+	virtual void RemoveAllSwap(size_t srcBegin, size_t srcEnd, TParameterType val)
 	{
 		MEDUSA_ASSERT_IF(srcEnd >= srcBegin&&srcEnd < this->mCount, "");
 		while (true)
@@ -693,7 +693,7 @@ public:
 			intp index = IndexOf(srcBegin, srcEnd, val);
 			if (index >= 0)
 			{
-				RemoveAtUnordered(index);
+				RemoveAtSwap(index);
 				srcBegin = index;
 				--srcEnd;
 			}
@@ -704,13 +704,13 @@ public:
 		}
 	}
 
-	virtual bool RemoveUnordered(TParameterType val)
+	virtual bool RemoveSwap(TParameterType val)
 	{
 		RETURN_FALSE_IF_ZERO(this->mCount);
 		intp index = IndexOf(0, this->mCount - 1, val);
 		if (index >= 0)
 		{
-			RemoveAtUnordered(index);
+			RemoveAtSwap(index);
 			return true;
 		}
 		return false;
@@ -876,22 +876,22 @@ public:
 
 	void Merge(const List<T>& items)
 	{
-		FOR_EACH_COLLECTION(i, items)
+		for(const auto& i, items)
 		{
-			if (!Contains(*i))
+			if (!Contains(i))
 			{
-				Add(*i);
+				Add(i);
 			}
 		}
 	}
 
 	void Merge(const IList<T>& items)
 	{
-		FOR_EACH_COLLECTION_VIRTUAL(i, items)
+		for (const auto& i, items)
 		{
-			if (!Contains(*i))
+			if (!Contains(i))
 			{
-				Add(*i);
+				Add(i);
 			}
 		}
 	}
@@ -903,6 +903,10 @@ public:
 		ForceConstructAll();
 	}
 
+	void ForceSetSize(size_t val)
+	{
+		this->mSize = val;
+	}
 	void ForceSetCount(size_t newCount)
 	{
 		MEDUSA_ASSERT_IF(newCount <= mSize, "");
@@ -931,20 +935,21 @@ public:
 		else
 		{
 			RETURN_IF_EQUAL(mSize, this->mCount);
+			Memory::Realloc(this->mItems, mSize, this->mCount);
 			mSize = this->mCount;
-			Memory::Realloc(this->mItems, mSize);
 		}
 	}
 
 	TMemoryData<T> ToData()const { return TMemoryData<T>::FromStatic(this->mItems, this->mCount); }
 
 	T* ForceRelease() { T* items = this->mItems; this->mItems = nullptr; return items; }
+	void ForceSetItems(T* val) { this->mItems = val; }
 private:
 	bool Resize(size_t size)
 	{
 		//always to extend to bigger size
 		RETURN_FALSE_IF(mSize >= size);
-		Memory::Realloc(this->mItems, size);
+		Memory::Realloc(this->mItems, mSize, size);
 		mSize = size;
 		return true;
 	}
@@ -956,5 +961,8 @@ protected:
 
 template<typename T, class TCompare>
 MEDUSA_WEAK_MULTIPLE_DEFINE const List<T, TCompare> List<T, TCompare>::Empty;
+
+template<typename T >
+using NoCompareList = List<T, NoCompare>;
 
 MEDUSA_END;

@@ -8,8 +8,9 @@ MEDUSA_BEGIN;
 
 class TextureButton :public IButton
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_NODE(TextureButton,IButton);
 public:
+	TextureButton(StringRef name = StringRef::Empty, const IEventArg& e = IEventArg::Empty);
 	TextureButton(StringRef name, const FileIdRef& normalTextureName, const FileIdRef& selectedTextureName = FileIdRef::Empty, const FileIdRef& disabledTextureName = FileIdRef::Empty, const FileIdRef& disabledSelectedTextureName = FileIdRef::Empty);
 	virtual ~TextureButton(void);
 	virtual bool Initialize() override;

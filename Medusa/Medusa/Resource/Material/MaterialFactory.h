@@ -21,15 +21,15 @@ public:
 	virtual bool Initialize();
 	virtual bool Uninitialize();
 public:
-	IMaterial* CreateSingleTexture(const FileIdRef& textureFileId,ResourceShareType shareType = ResourceShareType::Share);
-	IMaterial* CreateSingleTexture(ITexture* texture, ResourceShareType shareType = ResourceShareType::Share);
+	Share<IMaterial> CreateSingleTexture(const FileIdRef& textureFileId,ResourceShareType shareType = ResourceShareType::Share);
+	Share<IMaterial> CreateSingleTexture(const Share<ITexture>& texture, ResourceShareType shareType = ResourceShareType::Share);
 
-	IMaterial* CreateCustom(const FileIdRef& fileId, ITexture* texture,IEffect* effect, GraphicsDrawMode drawMode, ResourceShareType shareType = ResourceShareType::Share);
+	Share<IMaterial> CreateCustom(const FileIdRef& fileId, const Share<ITexture>& texture, const Share<IEffect>& effect, GraphicsDrawMode drawMode, ResourceShareType shareType = ResourceShareType::Share);
 
-	IMaterial* CreateEmpty(const FileIdRef& fileId, ResourceShareType shareType = ResourceShareType::Share);
-	IMaterial* CreateShape(const FileIdRef& fileId, ResourceShareType shareType = ResourceShareType::Share);
+	Share<IMaterial> CreateEmpty(const FileIdRef& fileId, ResourceShareType shareType = ResourceShareType::Share);
+	Share<IMaterial> CreateShape(const FileIdRef& fileId, ResourceShareType shareType = ResourceShareType::Share);
 
-	bool CreateTextures(SortedDictionary<uint, IMaterial*>& outMaterials, const StringRef& textureNamePattern);
+	bool CreateTextures(SortedDictionary<uint, Share<IMaterial>>& outMaterials, const StringRef& textureNamePattern);
 
 };
 

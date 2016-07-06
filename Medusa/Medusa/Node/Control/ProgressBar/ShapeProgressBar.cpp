@@ -6,7 +6,7 @@
 #include "Resource/Model/Mesh/MeshFactory.h"
 #include "Resource/Material/IMaterial.h"
 #include "Resource/Model/Mesh/Fixed/ShapeQuadMesh.h"
-
+#include "Node/NodeFactory.h"
 MEDUSA_BEGIN;
 
 ShapeProgressBar::ShapeProgressBar(StringRef name, ProgressType progressType, const Size2F& size, const Color4F& color, float percent/*=1.f*/)
@@ -16,6 +16,12 @@ ShapeProgressBar::ShapeProgressBar(StringRef name, ProgressType progressType, co
 	mColor = color;
 }
 
+ShapeProgressBar::ShapeProgressBar(const StringRef& name /*= StringRef::Empty*/, const IEventArg& e /*= IEventArg::Empty*/)
+	: IProgressBar(name, e)
+{
+
+}
+
 ShapeProgressBar::~ShapeProgressBar(void)
 {
 
@@ -23,7 +29,7 @@ ShapeProgressBar::~ShapeProgressBar(void)
 
 bool ShapeProgressBar::Initialize()
 {
-	ShapeQuadMesh* mesh = MeshFactory::Instance().CreateShapeQuadMesh(mSize.To2D(), mColor);
+	auto mesh = MeshFactory::Instance().CreateShapeQuadMesh(mSize.To2D(), mColor);
 	this->SetMesh(mesh);
 	mVertices = mesh->GetVertices();
 
@@ -33,7 +39,7 @@ bool ShapeProgressBar::Initialize()
 
 void ShapeProgressBar::OnUpdateMesh(bool isProgressTypeChanged/*=false*/)
 {
-	ShapeQuadMesh* mesh = (ShapeQuadMesh*)mRenderingObject.Mesh();
+	auto mesh = mRenderingObject.Mesh().CastPtr<ShapeQuadMesh>();
 
 	if (isProgressTypeChanged)
 	{
@@ -46,6 +52,6 @@ void ShapeProgressBar::OnUpdateMesh(bool isProgressTypeChanged/*=false*/)
 
 }
 
-MEDUSA_IMPLEMENT_RTTI(ShapeProgressBar, IProgressBar);
+MEDUSA_IMPLEMENT_NODE(ShapeProgressBar);
 
 MEDUSA_END;

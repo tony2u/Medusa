@@ -3,29 +3,32 @@
 // license that can be found in the LICENSE file.
 #include "MedusaCorePreCompiled.h"
 #include "WindowsConsoleLogger.h"
-
+#include "Core/Log/LogMessagePool.h"
+#include "Core/Log/LogMessage.h"
+#include "Core/Pattern/Share.h"
 MEDUSA_BEGIN;
 
 #ifdef MEDUSA_WINDOWS
 
 
-WindowsConsoleLogger::~WindowsConsoleLogger(void)
+void WindowsConsoleLogger::Print(const Share<LogMessage>& message)
 {
+	LogLevel level = message->Level();
+	MEDUSA_FLAG_REMOVE(level, LogLevel::WithHeader);
+	SetLogColor(level);
+	printf(message->Content().c_str());
 }
 
-void WindowsConsoleLogger::OutputLogString( StringRef inString ,LogType logType/*=LogType::Info*/ )
+void WindowsConsoleLogger::Print(const Share<WLogMessage>& message)
 {
-	SetLogColor(logType);
-	printf("%s",inString.c_str());
+	LogLevel level = message->Level();
+	MEDUSA_FLAG_REMOVE(level, LogLevel::WithHeader);
+	SetLogColor(level);
+	wprintf(message->Content().c_str());
 }
 
-void WindowsConsoleLogger::OutputLogString( WStringRef inString ,LogType logType/*=LogType::Info*/ )
-{
-	SetLogColor(logType);
-	wprintf(L"%s",inString.c_str());
-}
 
-void WindowsConsoleLogger::SetLogColor(LogType logType)
+void WindowsConsoleLogger::SetLogColor(LogLevel logType)
 {
 	RETURN_IF_EQUAL(mCurrentLogType,logType);
 	mCurrentLogType=logType;
@@ -48,13 +51,13 @@ void WindowsConsoleLogger::SetLogColor(LogType logType)
 	*/
 	switch (mCurrentLogType)
 	{
-	case LogType::Info:
+	case LogLevel::Info:
 		SetConsoleTextAttribute(console,FOREGROUND_INTENSITY);
 		break;
-	case LogType::Error:
+	case LogLevel::Error:
 		SetConsoleTextAttribute(console,FOREGROUND_INTENSITY|FOREGROUND_RED);
 		break;
-	case LogType::Assert:
+	case LogLevel::Assert:
 		SetConsoleTextAttribute(console,FOREGROUND_INTENSITY|FOREGROUND_RED);
 		break;
 	default:

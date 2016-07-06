@@ -7,7 +7,7 @@
 #include "Core/Collection/Dictionary.h"
 
 MEDUSA_BEGIN;
-template <typename TId, typename TObject, typename TKeyHashCoder = DefaultHashCoder<TId>, typename TObjectHashCoder = DefaultHashCoder<TObject>, typename TKeyCompare = DefaultCompare<TId> >
+template <typename TId, typename TObject, typename TKeyHashCoder = DefaultHashCoder, typename TObjectHashCoder = DefaultHashCoder, typename TKeyCompare = DefaultCompare >
 class IdObjectCache
 {
 public:

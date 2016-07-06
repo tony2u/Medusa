@@ -19,5 +19,5 @@ GraphicsFeatureLayer::~GraphicsFeatureLayer(void)
 }
 
 
-MEDUSA_IMPLEMENT_LAYER(GraphicsFeatureLayer, BaseFeatureLayer, StringRef::Empty, StringRef::Empty);
+MEDUSA_IMPLEMENT_NODE(GraphicsFeatureLayer);
 

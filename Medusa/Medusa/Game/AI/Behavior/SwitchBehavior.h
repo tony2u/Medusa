@@ -10,7 +10,7 @@ MEDUSA_BEGIN;
 
 struct SwitchBehavior :public IPredicateBehavior
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_DECLARE_BEHAVIOR(SwitchBehavior,IPredicateBehavior);
 public:
 	virtual ~SwitchBehavior();
 public:

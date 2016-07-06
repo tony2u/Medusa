@@ -85,6 +85,11 @@ bool FileMapTagItem::Contains(StringRef name) const
 	return mItems.ContainsKey(name);
 }
 
+FileMapNameItem* FileMapTagItem::Remove(const StringRef& name)
+{
+	return mItems.RemoveOtherKeyOptional(name, name.HashCode(), nullptr);
+}
+
 int FileMapTagItem::UpdateDiffScore(const PublishTarget& tag)
 {
 	mDiffScore = mTag.GetDiffScore(tag);

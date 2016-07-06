@@ -3,15 +3,6 @@
 // license that can be found in the LICENSE file.
 #include "MedusaPreCompiled.h"
 #include "SkeletonAnimationModel.h"
-#include "Resource/Timeline/ColorTimelineModel.h"
-#include "Resource/Timeline/StringTimelineModel.h"
-#include "Resource/Timeline/RotationTimelineModel.h"
-#include "Resource/Timeline/ScaleTimelineModel.h"
-#include "Resource/Timeline/TranslateTimelineModel.h"
-#include "Resource/Timeline/VertexTimelineModel.h"
-#include "Resource/Timeline/DrawOrderTimelineModel.h"
-#include "Resource/Timeline/TriggerTimelineModel.h"
-#include "Resource/Timeline/IKTimelineModel.h"
 
 
 MEDUSA_BEGIN;
@@ -30,20 +21,13 @@ SkeletonAnimationModel::SkeletonAnimationModel(const StringRef& name)
 
 SkeletonAnimationModel::~SkeletonAnimationModel(void)
 {
-	SAFE_DELETE_DICTIONARY_VALUE(mColorTimelineDict);
-	SAFE_DELETE_DICTIONARY_VALUE(mTextureTimelineDict);
-	SAFE_DELETE_DICTIONARY_VALUE(mRotationTimelineDcit);
-	SAFE_DELETE_DICTIONARY_VALUE(mScaleTimelineDcit);
-	SAFE_DELETE_DICTIONARY_VALUE(mTranslateTimelineDcit);
-	SAFE_DELETE_DICTIONARY_VALUE(mVertexTimelineDcit);
-	SAFE_DELETE_DICTIONARY_VALUE(mIKTimelineDcit);
-
-
-	SAFE_RELEASE(mDrawOrderTimeLine);
-	SAFE_RELEASE(mTriggerTimeline);
-
-
-
+	mColorTimelineDict.Clear();
+	mTextureTimelineDict.Clear();
+	mRotationTimelineDcit.Clear();
+	mScaleTimelineDcit.Clear();
+	mTranslateTimelineDcit.Clear();
+	mVertexTimelineDcit.Clear();
+	mIKTimelineDcit.Clear();
 
 }
 
@@ -55,73 +39,63 @@ bool SkeletonAnimationModel::Initialize()
 	return true;
 }
 
-void SkeletonAnimationModel::AddColorTimeline(SkeletonSlotModel* slot, ColorTimelineModel* timeline)
+void SkeletonAnimationModel::AddColorTimeline(SkeletonSlotModel* slot, const Share<ColorTimelineModel>& timeline)
 {
 	mDuration = Math::Max(mDuration, timeline->Duration());
 	mColorTimelineDict.Add(slot, timeline);
-	SAFE_RETAIN(timeline);
 }
 
-void SkeletonAnimationModel::AddTextureTimeline(SkeletonSlotModel* slot, StringTimelineModel* timeline)
+void SkeletonAnimationModel::AddTextureTimeline(SkeletonSlotModel* slot, const Share<StringTimelineModel>& timeline)
 {
 	mDuration = Math::Max(mDuration, timeline->Duration());
 	mTextureTimelineDict.Add(slot, timeline);
-	SAFE_RETAIN(timeline);
 
 }
 
-void SkeletonAnimationModel::AddRotationTimeline(SkeletonBoneModel* bone, RotationTimelineModel* timeline)
+void SkeletonAnimationModel::AddRotationTimeline(SkeletonBoneModel* bone, const Share<RotationTimelineModel>& timeline)
 {
 	mDuration = Math::Max(mDuration, timeline->Duration());
 	mRotationTimelineDcit.Add(bone, timeline);
-	SAFE_RETAIN(timeline);
-
 }
 
-void SkeletonAnimationModel::AddScaleTimeline(SkeletonBoneModel* bone, ScaleTimelineModel* timeline)
+void SkeletonAnimationModel::AddScaleTimeline(SkeletonBoneModel* bone, const Share<ScaleTimelineModel>& timeline)
 {
 	mDuration = Math::Max(mDuration, timeline->Duration());
 	mScaleTimelineDcit.Add(bone, timeline);
-	SAFE_RETAIN(timeline);
-
 }
 
-void SkeletonAnimationModel::AddTranslateTimeline(SkeletonBoneModel* bone, TranslateTimelineModel* timeline)
+void SkeletonAnimationModel::AddTranslateTimeline(SkeletonBoneModel* bone, const Share<TranslateTimelineModel>& timeline)
 {
 	mDuration = Math::Max(mDuration, timeline->Duration());
 	mTranslateTimelineDcit.Add(bone, timeline);
-	SAFE_RETAIN(timeline);
 
 }
 
 
-void SkeletonAnimationModel::AddVertexTimeline(KeyValuePair<SkeletonSlotModel*, ISkeletonAttachmentModel*> slotAttachment, VertexTimelineModel* timeline)
+void SkeletonAnimationModel::AddVertexTimeline(KeyValuePair<SkeletonSlotModel*, ISkeletonAttachmentModel*> slotAttachment, const Share<VertexTimelineModel>& timeline)
 {
 	mDuration = Math::Max(mDuration, timeline->Duration());
 	mVertexTimelineDcit.Add(slotAttachment, timeline);
-	SAFE_RETAIN(timeline);
 
 }
 
-void SkeletonAnimationModel::SetDrawOrderTimeLine(DrawOrderTimelineModel* val)
+void SkeletonAnimationModel::SetDrawOrderTimeLine(const Share<DrawOrderTimelineModel>& val)
 {
 	mDuration = Math::Max(mDuration, val->Duration());
-	SAFE_ASSIGN_REF(mDrawOrderTimeLine, val);
+	mDrawOrderTimeLine = val;
 
 }
 
-void SkeletonAnimationModel::SetTriggerTimeline(TriggerTimelineModel* val)
+void SkeletonAnimationModel::SetTriggerTimeline(const Share<TriggerTimelineModel>& val)
 {
 	mDuration = Math::Max(mDuration, val->Duration());
-	SAFE_ASSIGN_REF(mTriggerTimeline, val);
+	mTriggerTimeline = val;
 }
 
-void SkeletonAnimationModel::AddIKTimeline(SkeletonIKModel* ik, IKTimelineModel* timeline)
+void SkeletonAnimationModel::AddIKTimeline(SkeletonIKModel* ik, const Share<IKTimelineModel>& timeline)
 {
 	mDuration = Math::Max(mDuration, timeline->Duration());
 	mIKTimelineDcit.Add(ik, timeline);
-	SAFE_RETAIN(timeline);
-
 
 }
 

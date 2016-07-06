@@ -18,7 +18,7 @@ JsonEditor::~JsonEditor()
 
 }
 
-INode* JsonEditor::Create(const StringRef& className, const FileIdRef& editorFile, const IEventArg& e /*= IEventArg::Empty*/, NodeCreateFlags flags /*= NodeCreateFlags::None*/)
+INode* JsonEditor::Create(const StringRef& className, const FileIdRef& editorFile, const FileIdRef& scriptFile, const IEventArg& e /*= IEventArg::Empty*/, NodeCreateFlags flags /*= NodeCreateFlags::None*/)
 {
 	auto data = FileSystem::Instance().ReadAllData(editorFile);
 	RETURN_NULL_IF_EMPTY(data);
@@ -31,7 +31,7 @@ INode* JsonEditor::Create(const StringRef& className, const FileIdRef& editorFil
 		Log::AssertFailedFormat("Invalid json format:{}. ErrorCode:{}", editorFile.Name, errorCode);
 		return nullptr;
 	}
-	return NodeWithJsonRoot(className, root,flags);
+	return NodeWithJsonRoot(className, root, flags);
 }
 
 INode* JsonEditor::NodeWithJsonRoot(const StringRef& className, const rapidjson::Value& root, NodeCreateFlags flags/* = NodeCreateFlags::None*/)
@@ -41,7 +41,7 @@ INode* JsonEditor::NodeWithJsonRoot(const StringRef& className, const rapidjson:
 	auto reader = ReaderFactory::Instance().Create(readerName);
 	RETURN_NULL_IF_NULL(reader);
 
-	INode* node = reader->CreateNodeWithJson(*this, root, className,flags);
+	INode* node = reader->CreateNodeWithJson(*this, root, className, flags);
 	RETURN_NULL_IF_NULL(node);
 	flags = GetChildrenCreateFlags(flags);
 
@@ -51,19 +51,19 @@ INode* JsonEditor::NodeWithJsonRoot(const StringRef& className, const rapidjson:
 	const rapidjson::Value& nodeObjectData = nodeCentent["ObjectData"];
 	const rapidjson::Value& nodeSizeNode = nodeObjectData["Size"];
 	Size2F nodeSize;
-	nodeSize.Width = nodeSizeNode.Get("X",0.f);
-	nodeSize.Height = nodeSizeNode.Get("Y",0.f);
+	nodeSize.Width = nodeSizeNode.Get("X", 0.f);
+	nodeSize.Height = nodeSizeNode.Get("Y", 0.f);
 	node->SetSize(nodeSize);
 
 	const rapidjson::Value* childrenArray = nodeObjectData.GetMember("Children");
-	if (childrenArray!=nullptr)
+	if (childrenArray != nullptr)
 	{
 		for (auto& subNodeTree : *childrenArray)
 		{
-			auto child = NodeWithJson(subNodeTree,flags);
-			if (node->IsA<IScene>()&&child->IsA<ILayer>())
+			auto child = NodeWithJson(subNodeTree, flags);
+			if (node->IsA<IScene>() && child->IsA<ILayer>())
 			{
-				((IScene*)node)->PushLayer((ILayer*)child,NodePushFlags::ShowPrev);
+				((IScene*)node)->PushLayer((ILayer*)child, NodePushFlags::ShowPrev);
 			}
 			else
 			{
@@ -71,7 +71,7 @@ INode* JsonEditor::NodeWithJsonRoot(const StringRef& className, const rapidjson:
 			}
 		}
 	}
-	
+
 
 	return node;
 }
@@ -80,11 +80,15 @@ INode* JsonEditor::NodeWithJsonRoot(const StringRef& className, const rapidjson:
 INode* JsonEditor::NodeWithJson(const rapidjson::Value& jsonNode, NodeCreateFlags flags /*= NodeCreateFlags::None*/)
 {
 	StringRef type = jsonNode.GetString("ctype", nullptr);
-	StringRef readerName = GetReaderName(type,jsonNode);
+	StringRef readerName = GetReaderName(type, jsonNode);
 	auto reader = ReaderFactory::Instance().Create(readerName);
-	RETURN_NULL_IF_NULL(reader);
+	if (reader == nullptr)
+	{
+		Log::AssertFailedFormat("Cannot find reader:{}", readerName);
+		return nullptr;
+	}
 
-	INode* node = reader->CreateNodeWithJson(*this, jsonNode,StringRef::Empty,flags);
+	INode* node = reader->CreateNodeWithJson(*this, jsonNode, StringRef::Empty, flags);
 	RETURN_NULL_IF_NULL(node);
 
 	flags = GetChildrenCreateFlags(flags);
@@ -94,7 +98,7 @@ INode* JsonEditor::NodeWithJson(const rapidjson::Value& jsonNode, NodeCreateFlag
 	{
 		for (auto& subNodeTree : *childrenArray)
 		{
-			auto child = NodeWithJson(subNodeTree,flags);
+			auto child = NodeWithJson(subNodeTree, flags);
 			node->AddChild(child);
 		}
 	}
@@ -127,6 +131,10 @@ StringRef JsonEditor::GetReaderName(const StringRef& name, const rapidjson::Valu
 	else if (name == "ButtonObjectData")
 	{
 		return "ButtonReader";
+	}
+	else if (name == "GameMapObjectData")
+	{
+		return "TmxMapReader";
 	}
 
 

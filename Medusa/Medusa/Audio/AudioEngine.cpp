@@ -2,6 +2,7 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 #include "MedusaPreCompiled.h"
+#ifdef MEDUSA_AL
 #include "AudioEngine.h"
 #include "Audio/Device/AudioDevice.h"
 #include "Audio/IAudioSource.h"
@@ -37,15 +38,15 @@ bool AudioEngine::Uninitialize()
 	StopAllEffect();
 	StopAllMusic();
 
-	SAFE_RELEASE_COLLECTION(mEffectSources);
+	mEffectSources.Clear();
 	mEffectSourceDict.Clear();
 
-
-	SAFE_RELEASE_COLLECTION(mMusicSources);
+	mMusicSources.Clear();
 	mMusicSourceDict.Clear();
 
 	return true;
 }
+
 void AudioEngine::OnUpdate(float dt)
 {
 	{
@@ -54,7 +55,7 @@ void AudioEngine::OnUpdate(float dt)
 		RETURN_IF_ZERO(sourceCount);
 		FOR_EACH_SIZE(i,sourceCount)
 		{
-			IAudioSource* source=mEffectSources[i];
+			auto source=mEffectSources[i];
 			if (source->IsEnd())
 			{
 				source->FireEndEvent();
@@ -80,7 +81,7 @@ void AudioEngine::OnUpdate(float dt)
 		RETURN_IF_ZERO(sourceCount);
 		FOR_EACH_SIZE(i,sourceCount)
 		{
-			IAudioSource* source=mMusicSources[i];
+			auto source=mMusicSources[i];
 			if (!source->IsShared()&&source->IsEnd())
 			{
 				mMusicDeadSourceIndexes.Add(i);
@@ -98,9 +99,9 @@ void AudioEngine::OnUpdate(float dt)
 
 }
 
-IAudioSource* AudioEngine::FindSource(const StringRef& sourceName) const
+Share<IAudioSource> AudioEngine::FindSource(const StringRef& sourceName) const
 {
-	IAudioSource* source=FindEffect(sourceName);
+	auto source=FindEffect(sourceName);
 	RETURN_SELF_IF_NOT_NULL(source);
 	return FindMusic(sourceName);
 }
@@ -108,7 +109,7 @@ IAudioSource* AudioEngine::FindSource(const StringRef& sourceName) const
 
 AudioSourceState AudioEngine::GetSourceState(const StringRef& sourceName) const
 {
-	IAudioSource* source=FindSource(sourceName);
+	auto source=FindSource(sourceName);
 	if (source!=nullptr)
 	{
 		return source->GetState();
@@ -118,12 +119,12 @@ AudioSourceState AudioEngine::GetSourceState(const StringRef& sourceName) const
 
 #pragma region Effect
 
-StaticAudioSource* AudioEngine::PlayEffect( const FileIdRef& fileId,bool isRepeat/*=false*/ ,bool isPlay/*=true*/,const StringRef& sourceName/*=StringRef::Empty*/)
+Share<StaticAudioSource> AudioEngine::PlayEffect( const FileIdRef& fileId,bool isRepeat/*=false*/ ,bool isPlay/*=true*/,const StringRef& sourceName/*=StringRef::Empty*/)
 {
 	RETURN_NULL_IF_FALSE(mEffectEnabled);
 	RETURN_NULL_IF_FALSE(fileId.IsValid());
-	IAudio* buffer=AudioFactory::Instance().CreateFromFile(fileId);
-	StaticAudioSource* source=new StaticAudioSource(sourceName);
+	auto buffer=AudioFactory::Instance().CreateFromFile(fileId);
+	Share<StaticAudioSource> source=new StaticAudioSource(sourceName);
 	source->SetIsLooping(isRepeat);
 	source->SetBuffer(buffer);
 
@@ -139,16 +140,15 @@ StaticAudioSource* AudioEngine::PlayEffect( const FileIdRef& fileId,bool isRepea
 	return source;
 }
 
-StaticAudioSource* AudioEngine::PlayEffectSequence( const List<FileIdRef>& names ,bool isRepeat/*=false*/,bool isPlay/*=true*/,const StringRef& sourceName/*=StringRef::Empty*/)
+Share<StaticAudioSource> AudioEngine::PlayEffectSequence( const List<FileIdRef>& names ,bool isRepeat/*=false*/,bool isPlay/*=true*/,const StringRef& sourceName/*=StringRef::Empty*/)
 {
 	RETURN_NULL_IF_FALSE(mEffectEnabled);
-	StaticAudioSource* source=new StaticAudioSource(sourceName);
+	Share<StaticAudioSource> source=new StaticAudioSource(sourceName);
 	source->SetIsLooping(isRepeat);
 
-	FOR_EACH_COLLECTION(i,names)
+	for (auto fileId : names)
 	{
-		const FileIdRef& fileId=*i;
-		IAudio* buffer=AudioFactory::Instance().CreateFromFile(fileId);
+		auto buffer=AudioFactory::Instance().CreateFromFile(fileId);
 		source->AddBuffer(buffer);
 	}
 
@@ -166,19 +166,19 @@ StaticAudioSource* AudioEngine::PlayEffectSequence( const List<FileIdRef>& names
 
 }
 
-StaticAudioSource* AudioEngine::PlayEffectSequence(const FileIdRef& fileId1,const FileIdRef& fileId2,bool isRepeat/*=false*/,bool isPlay/*=true*/,const StringRef& sourceName/*=StringRef::Empty*/)
+Share<StaticAudioSource> AudioEngine::PlayEffectSequence(const FileIdRef& fileId1,const FileIdRef& fileId2,bool isRepeat/*=false*/,bool isPlay/*=true*/,const StringRef& sourceName/*=StringRef::Empty*/)
 {
 	RETURN_NULL_IF_FALSE(mEffectEnabled);
-	StaticAudioSource* source=new StaticAudioSource(sourceName);
+	Share<StaticAudioSource> source=new StaticAudioSource(sourceName);
 	source->SetIsLooping(isRepeat);
 
 	{
-		IAudio* buffer=AudioFactory::Instance().CreateFromFile(fileId1);
+		auto buffer=AudioFactory::Instance().CreateFromFile(fileId1);
 		source->AddBuffer(buffer);
 	}
 
 	{
-		IAudio* buffer=AudioFactory::Instance().CreateFromFile(fileId2);
+		auto buffer=AudioFactory::Instance().CreateFromFile(fileId2);
 		source->AddBuffer(buffer);
 	}
 
@@ -195,24 +195,24 @@ StaticAudioSource* AudioEngine::PlayEffectSequence(const FileIdRef& fileId1,cons
 	return source;
 }
 
-StaticAudioSource* AudioEngine::PlayEffectSequence(const FileIdRef& fileId1,const FileIdRef& fileId2,const FileIdRef& fileId3,bool isRepeat/*=false*/,bool isPlay/*=true*/,const StringRef& sourceName/*=StringRef::Empty*/)
+Share<StaticAudioSource> AudioEngine::PlayEffectSequence(const FileIdRef& fileId1,const FileIdRef& fileId2,const FileIdRef& fileId3,bool isRepeat/*=false*/,bool isPlay/*=true*/,const StringRef& sourceName/*=StringRef::Empty*/)
 {
 	RETURN_NULL_IF_FALSE(mEffectEnabled);
-	StaticAudioSource* source=new StaticAudioSource(sourceName);
+	Share<StaticAudioSource> source=new StaticAudioSource(sourceName);
 	source->SetIsLooping(isRepeat);
 
 	{
-		IAudio* buffer=AudioFactory::Instance().CreateFromFile(fileId1);
+		auto buffer=AudioFactory::Instance().CreateFromFile(fileId1);
 		source->AddBuffer(buffer);
 	}
 
 	{
-		IAudio* buffer=AudioFactory::Instance().CreateFromFile(fileId2);
+		auto buffer=AudioFactory::Instance().CreateFromFile(fileId2);
 		source->AddBuffer(buffer);
 	}
 
 	{
-		IAudio* buffer=AudioFactory::Instance().CreateFromFile(fileId3);
+		auto buffer=AudioFactory::Instance().CreateFromFile(fileId3);
 		source->AddBuffer(buffer);
 	}
 
@@ -229,42 +229,30 @@ StaticAudioSource* AudioEngine::PlayEffectSequence(const FileIdRef& fileId1,cons
 	return source;
 }
 
-StaticAudioSource* AudioEngine::FindEffect(const StringRef& sourceName)const
+Share<StaticAudioSource> AudioEngine::FindEffect(const StringRef& sourceName)const
 {
 	return mEffectSourceDict.GetOptionalByOtherKey(sourceName,sourceName.HashCode(),nullptr);
 }
 
 void AudioEngine::PauseAllEffect()
 {
-	FOR_EACH_COLLECTION(i,mEffectSources)
-	{
-		StaticAudioSource* source=*i;
-		source->Pause();
-	}
+	FOR_EACH_TO(mEffectSources, Pause());
 }
 
 void AudioEngine::ResumeAllEffect()
 {
 	RETURN_IF_FALSE(mEffectEnabled);
-	FOR_EACH_COLLECTION(i,mEffectSources)
-	{
-		StaticAudioSource* source=*i;
-		source->Resume();
-	}
+	FOR_EACH_TO(mEffectSources, Resume());
 }
 
 void AudioEngine::StopAllEffect()
 {
-	FOR_EACH_COLLECTION(i,mEffectSources)
-	{
-		StaticAudioSource* source=*i;
-		source->Stop();
-	}
+	FOR_EACH_TO(mEffectSources, Stop());
 }
 
 AudioSourceState AudioEngine::GetEffectState(const StringRef& sourceName) const
 {
-	IAudioSource* source=FindEffect(sourceName);
+	auto source=FindEffect(sourceName);
 	if (source!=nullptr)
 	{
 		return source->GetState();
@@ -277,14 +265,14 @@ AudioSourceState AudioEngine::GetEffectState(const StringRef& sourceName) const
 #pragma endregion Effect
 #pragma region Music
 
-StreamAudioSource* AudioEngine::PlayMusic( const FileIdRef& fileId,bool isRepeat/*=false*/ ,bool isPlay/*=true*/,const StringRef& sourceName/*=StringRef::Empty*/)
+Share<StreamAudioSource> AudioEngine::PlayMusic( const FileIdRef& fileId,bool isRepeat/*=false*/ ,bool isPlay/*=true*/,const StringRef& sourceName/*=StringRef::Empty*/)
 {
 	RETURN_NULL_IF_FALSE(mMusicEnabled);
-	FileStreamAudioSource* source=new FileStreamAudioSource(sourceName);
+	Share<FileStreamAudioSource> source=new FileStreamAudioSource(sourceName);
 	source->SetIsLooping(isRepeat);
 	if(!source->OpenFile(fileId))
 	{
-		SAFE_DELETE(source);
+		source = nullptr;
 		return nullptr;
 	}
 
@@ -299,42 +287,30 @@ StreamAudioSource* AudioEngine::PlayMusic( const FileIdRef& fileId,bool isRepeat
 	}
 	return source;
 }
-StreamAudioSource* AudioEngine::FindMusic(const StringRef& sourceName) const
+Share<StreamAudioSource> AudioEngine::FindMusic(const StringRef& sourceName) const
 {
 	return mMusicSourceDict.GetOptionalByOtherKey(sourceName,sourceName.HashCode(),nullptr);
 }
 
 void AudioEngine::PauseAllMusic()
 {
-	FOR_EACH_COLLECTION(i,mMusicSources)
-	{
-		StreamAudioSource* source=*i;
-		source->Pause();
-	}
+	FOR_EACH_TO(mMusicSources, Pause());
 }
 
 void AudioEngine::ResumeAllMusic()
 {
 	RETURN_IF_FALSE(mMusicEnabled);
-	FOR_EACH_COLLECTION(i,mMusicSources)
-	{
-		StreamAudioSource* source=*i;
-		source->Resume();
-	}
+	FOR_EACH_TO(mMusicSources, Resume());
 }
 
 void AudioEngine::StopAllMusic()
 {
-	FOR_EACH_COLLECTION(i,mMusicSources)
-	{
-		StreamAudioSource* source=*i;
-		source->Stop();
-	}
+	FOR_EACH_TO(mMusicSources, Stop());
 }
 
 AudioSourceState AudioEngine::GetMusicState(const StringRef& sourceName) const
 {
-	IAudioSource* source=FindMusic(sourceName);
+	auto source=FindMusic(sourceName);
 	if (source!=nullptr)
 	{
 		return source->GetState();
@@ -345,3 +321,4 @@ AudioSourceState AudioEngine::GetMusicState(const StringRef& sourceName) const
 #pragma endregion Music
 
 MEDUSA_END;
+#endif

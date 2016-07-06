@@ -9,7 +9,7 @@
 MEDUSA_BEGIN;
 
 
-template<typename T, typename TCompare = EqualCompare<T> >
+template<typename T, typename TCompare = EqualCompare >
 class LinkedList :public ILinkedList < T >
 {
 public:
@@ -432,6 +432,16 @@ public:
 		node = Remove(node);
 		SAFE_DELETE(oldNode);
 		return node;
+	}
+
+	NodePtr Delete(TParameterType val)
+	{
+		NodePtr node = FindFirst(val);
+		if (node != nullptr)
+		{
+			return Delete(node);
+		}
+		return nullptr;
 	}
 
 

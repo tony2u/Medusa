@@ -24,6 +24,7 @@ public:
 	FileMapNameItem* FindOrCreate(StringRef name);
 
 	bool Contains(StringRef name)const;
+	FileMapNameItem* Remove(const StringRef& name);
 
 	const FileMapOrderItem* FindOrderItem(const FileIdRef& fileId)const;
 	FileMapOrderItem* FindOrderItem(const FileIdRef& fileId);

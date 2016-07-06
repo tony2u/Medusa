@@ -7,7 +7,7 @@
 #include "Rendering/RenderingObjectFactory.h"
 #include "Resource/Material/IMaterial.h"
 #include "Resource/Model/Mesh/Fixed/TextureNineGridMesh.h"
-
+#include "Node/NodeFactory.h"
 MEDUSA_BEGIN;
 
 
@@ -26,6 +26,12 @@ TextureButton::TextureButton(StringRef name,
 
 }
 
+
+TextureButton::TextureButton(StringRef name /*= StringRef::Empty*/, const IEventArg& e /*= IEventArg::Empty*/)
+	:IButton(name, e), mTexturePadding(ThicknessF::Zero)
+{
+
+}
 
 TextureButton::~TextureButton(void)
 {
@@ -144,7 +150,7 @@ void TextureButton::SetImage(const FileIdRef& image)
 
 	if (mIsNineGridEnabled)
 	{
-		TextureNineGridMesh* mesh = (TextureNineGridMesh*)mRenderingObject.Mesh();
+		auto mesh = mRenderingObject.Mesh().CastPtr<TextureNineGridMesh>();
 		RETURN_IF_NULL(mesh);
 		mesh->UpdateToNewTargetSize(mSize.To2D());
 	}
@@ -156,5 +162,5 @@ void TextureButton::OnButtonStateChanged()
 	OnUpdateMesh();
 }
 
-MEDUSA_IMPLEMENT_RTTI(TextureButton, IButton);
+MEDUSA_IMPLEMENT_NODE(TextureButton);
 MEDUSA_END;

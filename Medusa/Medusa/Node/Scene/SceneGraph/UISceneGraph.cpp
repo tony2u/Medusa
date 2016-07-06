@@ -5,7 +5,7 @@
 #include "UISceneGraph.h"
 #include "Rendering/RenderEngine.h"
 #include "Node/Scene/IScene.h"
-#include "Core/Profile/ProfileSample.h"
+#include "Core/Chrono/ProfileSample.h"
 #include "Rendering/RenderQueue/Multiple/UIRenderQueue.h"
 
 MEDUSA_BEGIN;

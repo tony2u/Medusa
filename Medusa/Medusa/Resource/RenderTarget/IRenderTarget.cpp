@@ -23,7 +23,7 @@ IRenderTarget::IRenderTarget(const FileIdRef& fileId/*=FileId::Empty*/):IResourc
 
 IRenderTarget::~IRenderTarget()
 {
-	SAFE_RELEASE(mRenderTargetRenderState);
+	
 }
 
 

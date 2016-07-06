@@ -5,15 +5,15 @@
 #include "Core/Pattern/RTTI/RTTIObject.h"
 #include "Graphics/GraphicsTypes.h"
 #include "Core/Pattern/LazyValue.h"
-#include "Core/Pattern/IClone.h"
 #include "Core/Pattern/ISharable.h"
 #include "Graphics/State/RenderStateType.h"
 #include "Core/Pattern/Event.h"
+#include "Core/Pattern/Share.h"
 MEDUSA_BEGIN;
 
-class IRenderState :public RTTIObject, public IClone<IRenderState>, public ISharableSingleThread
+class IRenderState :public RTTIObject, public ISharableSingleThread
 {
-	MEDUSA_DECLARE_RTTI_ROOT;
+	MEDUSA_RTTI_ROOT(IRenderState);
 
 public:
 	Event<void(IRenderState&)> OnChanged;
@@ -26,9 +26,9 @@ public:
 
 	virtual void Apply()const = 0;
 
-	virtual IRenderState* Clone()const;
+	Share<IRenderState> Clone()const;
 	virtual void CopyFrom(const IRenderState& other){}
-	virtual void UpdateWorldState(const IRenderState* selfRenderState, const IRenderState* parentRenderState, const Matrix4& selfWorldMatrix);
+	virtual void UpdateWorldState(const Share<IRenderState>& selfRenderState, const Share<IRenderState>& parentRenderState, const Matrix4& selfWorldMatrix);
 
 protected:
 	void OnStateChanged();

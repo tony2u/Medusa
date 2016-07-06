@@ -5,7 +5,7 @@
 #include "MedusaCorePreDeclares.h"
 #include "Core/Compile/TypeTraits.h"
 #include "Core/Pattern/Event.h"
-#include "Core/Pattern/Ptr/NotNullPtr.h"
+#include "Core/Pattern/NotNullPtr.h"
 
 MEDUSA_BEGIN;
 

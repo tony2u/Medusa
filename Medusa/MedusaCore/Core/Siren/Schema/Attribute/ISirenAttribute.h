@@ -22,8 +22,12 @@ public:
 	StringPropertySet& MutalbeKeyValues() { return mKeyValues; }
 
 	bool Load(const StringRef& str);
-	virtual bool AddAttribute(StringRef name, StringRef val);
+	bool AddAttribute(StringRef name, StringRef val);
 
+	HeapString ToString()const
+	{
+		return mKeyValues.ToString();
+	}
 public:
 	virtual bool LoadFrom(IStream& stream)override;
 	virtual bool SaveTo(IStream& stream)const override;

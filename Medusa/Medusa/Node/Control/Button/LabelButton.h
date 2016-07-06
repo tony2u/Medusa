@@ -9,16 +9,17 @@ MEDUSA_BEGIN;
 
 class LabelButton :public IButton
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_NODE(LabelButton,IButton);
 public:
-	LabelButton(ILabel* label, StringRef name=StringRef::Empty);
+	LabelButton(StringRef name = StringRef::Empty, const IEventArg& e = IEventArg::Empty);
+	LabelButton(ILabel* label, StringRef name=StringRef::Empty, const IEventArg& e = IEventArg::Empty);
 	virtual ~LabelButton(void);
 	virtual bool Initialize() override;
 
 	ILabel* Label() const { return mLabel; }
 	void SetLabel(ILabel* val) { mLabel = val; }
 protected:
-	ILabel* mLabel;
+	ILabel* mLabel=nullptr;
 	
 };
 

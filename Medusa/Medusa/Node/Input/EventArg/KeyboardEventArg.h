@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 #pragma once
-#include "Core/Command/EventArg/IEventArg.h"
+#include "Core/Event/EventArg/IEventArg.h"
 #include "Geometry/Rect2.h"
 #include "Core/Pattern/Event.h"
 
@@ -10,7 +10,7 @@ MEDUSA_BEGIN;
 
 class KeyboardEventArg:public IEventArg
 {
-	MEDUSA_DECLARE_RTTI;
+	MEDUSA_RTTI(KeyboardEventArg,IEventArg);
 public:
 	KeyboardEventArg(){}
 	virtual ~KeyboardEventArg(void){}

@@ -46,7 +46,7 @@ void CustomDrawMeshRenderBatch::Clear()
 
 void CustomDrawMeshRenderBatch::Apply()
 {
-	IMesh* mesh = mNode->Mesh();
+	auto mesh = mNode->Mesh();
 
 	if (mesh != nullptr)
 	{
@@ -56,7 +56,7 @@ void CustomDrawMeshRenderBatch::Apply()
 
 void CustomDrawMeshRenderBatch::Restore()
 {
-	IMesh* mesh = mNode->Mesh();
+	auto mesh = mNode->Mesh();
 
 	if (mesh != nullptr)
 	{
@@ -82,7 +82,7 @@ void CustomDrawMeshRenderBatch::Prepare()
 
 void CustomDrawMeshRenderBatch::Draw(IRenderQueue& renderQueue, RenderingFlags renderingFlags/*=RenderingFlags::None*/)
 {
-	IMesh* mesh = mNode->Mesh();
+	auto mesh = mNode->Mesh();
 	if (mesh != nullptr)
 	{
 		mesh->Draw(renderQueue, renderingFlags);

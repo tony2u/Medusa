@@ -21,5 +21,5 @@ ShapeFeatureLayer::~ShapeFeatureLayer(void)
 }
 
 
-MEDUSA_IMPLEMENT_LAYER(ShapeFeatureLayer, BaseFeatureLayer, StringRef::Empty, StringRef::Empty);
+MEDUSA_IMPLEMENT_NODE(ShapeFeatureLayer);
 

@@ -3,100 +3,84 @@
 // license that can be found in the LICENSE file.
 #include "MedusaCorePreCompiled.h"
 #include "IMessage.h"
-#include "Core/Network/Message/MessageDispatcher.h"
-#include "Core/Network/Message/MessageEventArg.h"
+#include "Core/Log/Log.h"
 
 MEDUSA_BEGIN;
 
 
-IMessage::IMessage()
+IMessage::IMessage(uint fromServiceId/* = 0*/, uint toServcieId /*= 0*/)
+	:ICommand(fromServiceId, toServcieId)
 {
-	mError=MessageError::Success;
-	mState=MessageState::None;
-	mRefCount=1;
-	mTimeout=10.f;//default is 10s
-	mTimeLeft=mTimeout;
-	mServiceId=0;
-	mSocketError=0;
-	mIsProfileEnabled=true;
-	mSendElapsedMilliseconds=0.f;
-	mReceiveElapsedMilliseconds=0.f;
+	mTimeoutWatch.Start();
 }
 
 
 IMessage::~IMessage(void)
 {
-	mRefCount=0;
 }
 
-void IMessage::Send()
+bool IMessage::CheckTimeout()
 {
-#ifdef MEDUSA_DEBUG
-	mTotalStopWatch.Enable(mIsProfileEnabled);
-#else
-	mTotalStopWatch.Enable(false);
-#endif
-
-	mTotalStopWatch.Start();
-	MessageDispatcher::Instance().Send(this);
-	
+	return mTimeoutWatch.ElapsedMilliseconds() >= mMillisecondsTimeout;
 }
 
-void IMessage::Send( MessageEventHandler handler)
+bool IMessage::IsRequest() const
 {
-	SetCompleteHandler(handler);
-	Send();
+	return !IsResponse();
 }
 
-void IMessage::SetError( SocketError val )
+bool IMessage::IsResponse() const
 {
-	switch(val)
+	return Behavior() == MessageBehavior::Response;
+}
+
+
+MessageBehavior IMessage::Behavior() const
+{
+	/*
+	Id!=0 && SessionId!=0 : Request need response
+	Id!=0 && SessionId==0 : Request without response
+
+	Id==0 && SessionId!=0 : Reponse to request
+	Id==0 && SessionId==0 : Heartbeat without response
+	*/
+
+	if (mId == 0)
 	{
-	case SocketError::Success:
-		mError=MessageError::Success;
-		break;
-	default:
-		mError=MessageError::ConnectFail;
+		if (mSessionId == 0)
+		{
+			return MessageBehavior::HeartbeatWithoutResponse;
+		}
+		return MessageBehavior::Response;
+	}
+	else
+	{
+		if (mSessionId == 0)
+		{
+			return MessageBehavior::RequestWithoutResponse;
+		}
+		return MessageBehavior::RequestResponse;
 	}
 }
 
-void IMessage::Retain()
+bool IMessage::OnSend(MessageSocketConnection& connection)
 {
-	++mRefCount;
+	OnSendEvent(*this, connection);
+	return true;
 }
 
-void IMessage::Release()
+bool IMessage::OnRequest(MessageSocketConnection& connection)
 {
-	--mRefCount;
-	if (mRefCount==0)
-	{
-		delete this;
-	}
+	OnRequestEvent(*this, connection);
+	return true;
 }
 
-void IMessage::Update( float dt )
+bool IMessage::OnResponse(MessageSocketConnection& connection)
 {
-	mTimeLeft-=dt;
-	if (IsTimeout())
-	{
-		mState=MessageState::ConnectFail;
-	}
+	OnResponseEvent(*this, connection);
+	return true;
 }
 
 
-void IMessage::BeforeEnd()
-{
-	mTotalStopWatch.Shot();
-
-	if (mCompleteHandler)
-	{
-		MessageEventArg eventArg(this);
-		mCompleteHandler(this,eventArg);
-	}
-	
-}
-
-
-MEDUSA_IMPLEMENT_RTTI_ROOT(IMessage);
 
 MEDUSA_END;

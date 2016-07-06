@@ -38,7 +38,7 @@ IRenderBatch::~IRenderBatch()
 
 bool IRenderBatch::IsAvailableFor(const IRenderable& node) const
 {
-	IMesh* mesh = node.Mesh();
+	auto mesh = node.Mesh();
 	return IsAvailableFor(mesh->VertexCount(), mesh->IndexCount());
 }
 
@@ -46,9 +46,6 @@ bool IRenderBatch::Initialize()
 {
 	mModelMatrix = Matrix4::Identity;
 	mIsFreezed = false;
-	SAFE_RELEASE(mEffect);
-	SAFE_RELEASE(mMaterial);
-	SAFE_RELEASE(mStateTreeNode);
 	mDrawMode = GraphicsDrawMode::Triangles;
 	mRecycleFrameCount = 0;
 
@@ -59,9 +56,9 @@ bool IRenderBatch::Uninitialize()
 {
 	mModelMatrix = Matrix4::Identity;
 	mIsFreezed = false;
-	SAFE_RELEASE(mEffect);
-	SAFE_RELEASE(mMaterial);
-	SAFE_RELEASE(mStateTreeNode);
+	mEffect = nullptr;
+	mMaterial = nullptr;
+	mStateTreeNode = nullptr;
 	mDrawMode = GraphicsDrawMode::Triangles;
 	mRecycleFrameCount = 0;
 
@@ -69,19 +66,19 @@ bool IRenderBatch::Uninitialize()
 }
 
 
-void IRenderBatch::SetEffect(const IEffect* val)
+void IRenderBatch::SetEffect(const Share<IEffect>& val)
 {
-	SAFE_ASSIGN_REF(mEffect, val);
+	mEffect = val;
 }
 
-void IRenderBatch::SetMaterial(const IMaterial* val)
+void IRenderBatch::SetMaterial(const Share<IMaterial>& val)
 {
-	SAFE_ASSIGN_REF(mMaterial, val);
+	mMaterial = val;
 }
 
-void IRenderBatch::SetStateTreeNode(RenderStateTreeLeafNode* val)
+void IRenderBatch::SetStateTreeNode(const Share<RenderStateTreeLeafNode>& val)
 {
-	SAFE_ASSIGN_REF(mStateTreeNode, val);
+	mStateTreeNode = val;
 }
 
 void IRenderBatch::CustomDraw(IRenderQueue& renderQueue, RenderingFlags renderingFlags /*= RenderingFlags::None*/)
@@ -94,9 +91,8 @@ void IRenderBatch::CustomDraw(IRenderQueue& renderQueue, RenderingFlags renderin
 	RenderingStatics::Instance().CountMaterial(mMaterial);
 	RenderingStatics::Instance().CountMaterialTextures(mMaterial);
 
-	FOR_EACH_COLLECTION(i, renderPasses)
+	for(auto renderPass: renderPasses)
 	{
-		IRenderPass* renderPass = *i;
 		RenderingContext::Instance().ApplyRenderPass(renderPass);
 		RenderingContext::Instance().ApplyMaterial(mMaterial);
 		RenderingContext::Instance().ApplyState(mStateTreeNode);

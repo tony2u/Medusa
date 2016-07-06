@@ -23,6 +23,5 @@ void BaseSingleListDataSource::SetItemTemplate(IItemTemplate* val)
 	SAFE_ASSIGN(mItemTemplate,val);
 }
 
-MEDUSA_IMPLEMENT_RTTI(BaseSingleListDataSource,IListDataSource);
 
 MEDUSA_END;
