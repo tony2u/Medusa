@@ -425,7 +425,7 @@
 
 
 
-
+#define MEDUSA_DISABLE_VLD
 #ifndef MEDUSA_DISABLE_VLD
 #define MEDUSA_VLD
 #endif

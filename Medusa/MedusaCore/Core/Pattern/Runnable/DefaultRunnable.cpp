@@ -15,12 +15,28 @@ DefaultRunnable::DefaultRunnable(RunningState state/*=RunningState::None*/) :mSt
 
 DefaultRunnable::~DefaultRunnable()
 {
-	
+
 }
 
 bool DefaultRunnable::Start()
 {
-	mState = RunningState::Running;
+	switch (mState)
+	{
+	case RunningState::None:
+		mState = RunningState::Running;
+		OnStart();
+	case RunningState::Running:
+		return true;
+	case RunningState::Paused:
+		Resume();
+		return true;
+	case RunningState::Done:
+		Reset();
+		mState = RunningState::Running;
+		OnStart();
+		return true;
+	}
+
 	return true;
 }
 
@@ -28,15 +44,16 @@ bool DefaultRunnable::Pause()
 {
 	switch (mState)
 	{
-		case RunningState::None:
-			return false;
-		case RunningState::Running:
-			mState = RunningState::Paused;
-			return true;
-		case RunningState::Paused:
-			return true;
-		case RunningState::Done:
-			return false;
+	case RunningState::None:
+		return false;
+	case RunningState::Running:
+		mState = RunningState::Paused;
+		OnPause();
+		return true;
+	case RunningState::Paused:
+		return true;
+	case RunningState::Done:
+		return false;
 	}
 	return false;
 }
@@ -45,15 +62,16 @@ bool DefaultRunnable::Resume()
 {
 	switch (mState)
 	{
-		case RunningState::None:
-			return false;
-		case RunningState::Paused:
-			mState = RunningState::Running;
-			return true;
-		case RunningState::Running:
-			return true;
-		case RunningState::Done:
-			return false;
+	case RunningState::None:
+		return false;
+	case RunningState::Paused:
+		mState = RunningState::Running;
+		OnResume();
+		return true;
+	case RunningState::Running:
+		return true;
+	case RunningState::Done:
+		return false;
 	}
 	return false;
 }
@@ -62,12 +80,12 @@ bool DefaultRunnable::Stop()
 {
 	switch (mState)
 	{
-		case RunningState::Done:
-			return false;
-		case RunningState::Running:
-		default:
-			mState = RunningState::Done;
-			return true;
+	case RunningState::Done:
+		return true;
+	default:
+		mState = RunningState::Done;
+		OnStop();
+		return true;
 	}
 
 }
@@ -76,17 +94,35 @@ bool DefaultRunnable::Reset()
 {
 	switch (mState)
 	{
-		case RunningState::Running:
-		default:
-			mState = RunningState::None;
-			return true;
+	case RunningState::None:
+		return true;
+	default:
+		mState = RunningState::None;
+		OnReset();
+		return true;
 	}
 
 }
 
-void DefaultRunnable::ForceSetState(RunningState val)
+bool DefaultRunnable::SetState(RunningState val)
 {
-	mState = val;
+	switch (val)
+	{
+	case RunningState::Running:
+		if (mState==RunningState::Paused)
+		{
+			return Resume();
+		}
+		return Start();
+	case RunningState::None:
+		return Reset();
+	case RunningState::Paused:
+		return Pause();
+	case RunningState::Done:
+		return Stop();
+	}
+
+	return true;
 }
 
 

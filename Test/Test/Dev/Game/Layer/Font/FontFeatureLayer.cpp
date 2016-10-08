@@ -4,9 +4,12 @@
 #include "TestPreCompiled.h"
 #include "FontFeatureLayer.h"
 #include "TTFLayer.h"
+#include "TypewriterLayer.h"
+
 
 FontFeatureLayer::FontFeatureLayer(StringRef name/*=StringRef::Empty*/, const IEventArg& e/*=IEventArg::Empty*/) :BaseFeatureLayer(name, e)
 {
+	Register<TypewriterLayer>();
 	Register<TTFLayer>();
 }
 

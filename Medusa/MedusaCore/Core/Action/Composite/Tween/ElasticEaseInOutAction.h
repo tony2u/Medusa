@@ -14,7 +14,7 @@ public:
 public:
 	virtual ElasticEaseInOutAction* Clone()const override
 	{
-		return new ElasticEaseInOutAction(this->mInnerAction, mPeriod);
+		return new ElasticEaseInOutAction((BaseFiniteAction*)this->mInnerAction, mPeriod);
 	}
 	virtual ElasticEaseInOutAction* Reverse()const override
 	{

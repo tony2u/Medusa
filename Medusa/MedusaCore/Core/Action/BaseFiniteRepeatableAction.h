@@ -9,14 +9,20 @@ class BaseFiniteRepeatableAction :public BaseFiniteAction
 {
 public:
 	BaseFiniteRepeatableAction(float duration, intp repeatCount, const StringRef& name = StringRef::Empty)
-		:BaseFiniteAction(duration, name),  mCurrentCount(repeatCount), mRepeatCount(repeatCount)
+		:BaseFiniteAction(duration, name), mCurrentCount(repeatCount), mRepeatCount(repeatCount)
 	{
 	}
 
-	BaseFiniteRepeatableAction(float duration, bool isRepeatForever, const StringRef& name = StringRef::Empty)
-		:BaseFiniteAction(duration, name),  mCurrentCount(isRepeatForever ? -1 : 0), mRepeatCount(isRepeatForever ? -1 : 0)
+	BaseFiniteRepeatableAction(float duration, bool isRepeatForever=false, const StringRef& name = StringRef::Empty)
+		:BaseFiniteAction(duration, name), mCurrentCount(isRepeatForever ? -1 : 0), mRepeatCount(isRepeatForever ? -1 : 0)
 	{
 	}
+
+	BaseFiniteRepeatableAction(float duration, intp currentCount, intp repeatCount, const StringRef& name = StringRef::Empty)
+		:BaseFiniteAction(duration, name), mCurrentCount(currentCount), mRepeatCount(repeatCount)
+	{
+	}
+
 
 	virtual ~BaseFiniteRepeatableAction(void) {}
 
@@ -69,8 +75,8 @@ public:
 
 			if (mCurrentCount == 0)
 			{
-				this->ForceSetState(RunningState::Done);
-				return OnUpdate(prevElapsed, dt-exceed, blend);
+				this->Stop();
+				return OnUpdate(prevElapsed, dt - exceed, blend);
 			}
 
 			if (mCurrentCount > 0)
@@ -88,9 +94,16 @@ public:
 
 protected:
 	virtual bool OnUpdate(float prevElapsed, float dt, float blend = 1.f) = 0;
+	virtual void BuildClone(IAction& obj) override
+	{
+		BaseFiniteAction::BuildClone(obj);
+		auto& t = (BaseFiniteRepeatableAction&)obj;
+		t.mCurrentCount = mCurrentCount;
+		t.mRepeatCount = mRepeatCount;
+	}
 protected:
-	intp mCurrentCount;
-	intp mRepeatCount;	//<0:repeat forever  =0:don't repeat	>0:repeat count
+	intp mCurrentCount=0;
+	intp mRepeatCount=0;	//<0:repeat forever  =0:don't repeat	>0:repeat count
 };
 
 MEDUSA_END;

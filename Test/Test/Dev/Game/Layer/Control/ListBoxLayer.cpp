@@ -3,12 +3,10 @@
 // license that can be found in the LICENSE file.
 #include "TestPreCompiled.h"
 #include "ListBoxLayer.h"
-
+#include "Resource/DataSource/DataSourceFactory.h"
 
 ListBoxLayer::ListBoxLayer(StringRef name/*=StringRef::Empty*/, const IEventArg& e/*=IEventArg::Empty*/) :BaseCaseLayer(name, e)
 {
-
-
 
 }
 
@@ -20,21 +18,24 @@ bool ListBoxLayer::Initialize()
 {
 	RETURN_FALSE_IF_FALSE(BaseCaseLayer::Initialize());
 
-	List<WHeapString> strItems;
+	List<FileId> strItems;
 
 	FOR_EACH_SIZE(i,100)
 	{
-		WHeapString str=StringParser::ToWString(i);
-		strItems.Add(str);
+		strItems.NewAdd() = "test2.png";
 	}
 
-	ListBox* listBox=NodeFactory::Instance().CreateStringListBox(strItems,false);
+	auto dataSource= DataSourceFactory::Instance().CreateFileIdList("testList", strItems);
+
+	ListBox* listBox=NodeFactory::Instance().CreateListBox();
 	listBox->SetStretch(Medusa::Stretch::Fill);
+	auto binding = listBox->BindTo<SpriteTemplate>(dataSource);
+	auto nodeTemplate=(SpriteTemplate*)binding->GetTemplate(0);
+	nodeTemplate->SetAnchor(AnchorPoint::MiddleCenter);
+	nodeTemplate->SetDock(DockPoint::MiddleCenter);
+
 	//listBox->SetVerticalScrollBarVisibility(ScrollBarVisibility::Disabled);
 	//listBox->SetHorizontalScrollBarVisibility(ScrollBarVisibility::Disabled);
-	auto dataSource=listBox->DataSource().CastPtr<StringListDataSource>();
-	LabelItemTemplate* labelItemTemplate=(LabelItemTemplate*)dataSource->ItemTemplate();
-	labelItemTemplate->SetAlignment(Alignment::MiddleCenter);
 	AddChild(listBox);
 
 	listBox->OnItemSelected+=Bind(&ListBoxLayer::OnItemSelected,this);

@@ -8,47 +8,43 @@
 MEDUSA_BEGIN;
 
 
-ListBoxItem::ListBoxItem( )
-	:Node(nullptr),Index(0),Type(0),BoundingBox(Rect2F::Zero)
+ListBoxItem::ListBoxItem()
+	:BoundingBox(Rect2F::Zero)
 {
 
 }
 
-ListBoxItem::~ListBoxItem( void )
+ListBoxItem::~ListBoxItem(void)
 {
 
 }
 
 int ListBoxItem::Compare(const ListBoxItem& item) const
 {
-	if (Index>item.Index)
+	if (Index > item.Index)
 	{
 		return 1;
 	}
-	else if(Index<item.Index)
+	else if (Index < item.Index)
 	{
 		return -1;
 	}
 	return 0;
 }
 
-void ListBoxItem::ApplyBoundingBox()
-{
-	RETURN_IF_NULL(Node);
-	Node->SetPosition(BoundingBox.Origin);
-}
 
-void ListBoxItem::ArrangeNode(const Point2F& movement,NodeLayoutArrangeFlags arrangeFlags/*=NodeLayoutArrangeFlags::None*/)
+void ListBoxItem::ArrangeNode(const Point2F& movement, NodeLayoutArrangeFlags arrangeFlags/*=NodeLayoutArrangeFlags::None*/)
 {
 	RETURN_IF_NULL(Node);
-	Node->ArrangeRecursively(BoundingBox,arrangeFlags);
-	Node->SetPosition(BoundingBox.Origin+movement);
+	Node->ArrangeRecursively(Rect2F(Point2F::Zero, BoundingBox.Size), arrangeFlags);
+	mOffset = Node->Position2D();
+	Node->SetPosition(BoundingBox.Origin + mOffset + movement);
 }
 
 void ListBoxItem::ApplyMovement(const Point2F& movement)
 {
 	RETURN_IF_NULL(Node);
-	Node->SetPosition(BoundingBox.Origin+movement);
+	Node->SetPosition(BoundingBox.Origin + mOffset + movement);
 }
 
 MEDUSA_END;

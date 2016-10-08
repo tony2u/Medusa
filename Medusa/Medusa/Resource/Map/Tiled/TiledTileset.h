@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 #pragma once
 #include "MedusaPreDeclares.h"
-#include "Core/Pattern/Property/StringPropertySet.h"
+#include "Core/Pattern/Property/VariantPropertySet.h"
 #include "Geometry/Point2.h"
 #include "Geometry/Size2.h"
 #include "Core/Collection/List.h"
@@ -43,9 +43,9 @@ public:
 	TiledImage* Image() const { return mImage; }
 	void SetImage(TiledImage* val);
 
-	const StringPropertySet& Properties() const { return mProperties; }
-	StringPropertySet& MutableProperties() { return mProperties; }
-	void SetProperties(const StringPropertySet& val) { mProperties = val; }
+	const VariantPropertySet& Properties() const { return mProperties; }
+	VariantPropertySet& MutableProperties() { return mProperties; }
+	void SetProperties(const VariantPropertySet& val) { mProperties = val; }
 
 	TiledTerrain& NewTerrain();
 
@@ -63,7 +63,7 @@ private:
 	
 	List< TiledTerrain > mTerrains;
 	List< TiledTile > mTiles;
-	StringPropertySet mProperties;
+	VariantPropertySet mProperties;
 	
 
 };

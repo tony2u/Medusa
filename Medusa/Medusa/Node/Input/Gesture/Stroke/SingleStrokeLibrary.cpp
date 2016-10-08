@@ -22,12 +22,30 @@ SingleStrokeLibrary::~SingleStrokeLibrary()
 }
 
 
+SingleStrokeTemplate* SingleStrokeLibrary::Find(const StringRef& name) const
+{
+	for (auto& t:mTemplates)
+	{
+		if (t->Name()==name)
+		{
+			return t;
+		}
+	}
+
+	return nullptr;
+}
+
 void SingleStrokeLibrary::Add(SingleStrokeTemplate* val)
 {
 	val->Normalize(StrokePointCount, SquareSize, mIgnoreRotation);
 	mTemplates.Add(val);
 }
 
+
+void SingleStrokeLibrary::Clear()
+{
+	SAFE_DELETE_COLLECTION(mTemplates);
+}
 
 double SingleStrokeLibrary::DistanceAtAngle(const PointPath2F& from, const PointPath2F& to, float rotation)const
 {

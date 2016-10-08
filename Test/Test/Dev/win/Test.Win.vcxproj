@@ -200,7 +200,7 @@
       <IgnoreAllDefaultLibraries>
       </IgnoreAllDefaultLibraries>
       <IgnoreSpecificDefaultLibraries>libcmt.lib;libcmtd.lib;msvcrt.lib</IgnoreSpecificDefaultLibraries>
-      <Profile>true</Profile>
+      <Profile>false</Profile>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /Y /Q  /E /I "$(ProjectDir)..\Resource" "$(OutDir)Resource"</Command>

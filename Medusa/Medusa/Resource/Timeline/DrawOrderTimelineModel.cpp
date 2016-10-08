@@ -44,22 +44,22 @@ const List<uint>& DrawOrderTimelineModel::GetDrawOrder(float time) const
 }
 
 
-void DrawOrderTimelineModel::RemovePreCalculated()
+void DrawOrderTimelineModel::RemovePrecomputed()
 {
-	ITimelineModel::RemovePreCalculated();
-	mPreCalculatedDrawOrderList.Clear();
+	ITimelineModel::RemovePrecomputed();
+	mPrecomputedDrawOrderList.Clear();
 }
 
-void DrawOrderTimelineModel::OnPreCalculateBegin()
+void DrawOrderTimelineModel::OnPrecomputeBegin()
 {
-	mPreCalculatedDrawOrderList.Clear();
+	mPrecomputedDrawOrderList.Clear();
 }
 
-void DrawOrderTimelineModel::AddPreCalcuatedItem(bool isFound, uint prevFrameIndex, uint nextFrameIndex, float percent)
+void DrawOrderTimelineModel::AddPrecomputedItem(bool isFound, uint prevFrameIndex, uint nextFrameIndex, float percent)
 {
 	if (isFound)
 	{
-		mPreCalculatedDrawOrderList.Add(mDrawOrderList[prevFrameIndex]);
+		mPrecomputedDrawOrderList.Add(mDrawOrderList[prevFrameIndex]);
 	}
 }
 

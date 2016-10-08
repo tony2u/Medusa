@@ -4,7 +4,7 @@
 #pragma once
 #include "Geometry/Point2.h"
 #include "Geometry/Rect2.h"
-#include "Geometry/Range.h"
+#include "Core/Math/Range.h"
 #include "Geometry/Scale2.h"
 #include "Core/Collection/List.h"
 #include "Core/Math/Math.h"
@@ -20,7 +20,7 @@ class PointPath2
 
 public:
 	PointPath2(void) {}
-
+	bool IsEmpty()const { return mPoints.IsEmpty(); }
 	const List<PointType >& Points() const { return mPoints; }
 	List<PointType >& MutablePoints() { return mPoints; }
 

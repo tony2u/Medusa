@@ -7,7 +7,7 @@
 #include "Graphics/GraphicsTypes.h"
 #include "Geometry/Color4.h"
 #include "Geometry/Rect2.h"
-#include "Geometry/Range.h"
+#include "Core/Math/Range.h"
 #include "Core/Collection/Stack.h"
 #include "Core/Collection/Array.h"
 #include "Core/Collection/Dictionary.h"

@@ -31,7 +31,7 @@ protected:
 	virtual void OnAfterMeasure(const Size2F& availableSize)=0;
 
 	virtual void OnLayoutChanged(const ILayoutable& sender,NodeLayoutChangedFlags changedFlag)=0;
-	virtual bool IsSensitiveToChildLayoutChanged(const ILayoutable& sender,NodeLayoutChangedFlags changedFlag){return true;}
+	virtual bool IsSensitiveToChildLayoutChanged(const ILayoutable& sender,NodeLayoutChangedFlags changedFlag){return false;}
 
 public:
 	const Point2F& RelativePosition() const { return mRelativePosition; }

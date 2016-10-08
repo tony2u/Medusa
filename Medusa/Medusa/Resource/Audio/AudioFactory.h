@@ -19,6 +19,7 @@ protected:
 	~AudioFactory(void);
 
 public:
+	virtual StringRef Name()const override { return "AudioFactory"; }
 	virtual bool Initialize();
 	virtual bool Uninitialize();
 

@@ -363,13 +363,13 @@ struct DefaultNewer
 
 };
 
-template<typename TId,typename TObject>
+template<typename TObject>
 struct DefaultNewerById
 {
-	typedef typename Compile::TypeTraits<TId>::ParameterType TIdParameterType;
 	typedef typename Compile::TypeTraits<TObject>::UnderlyingType TObjectPointeeType;
 
-	static TObject New(TIdParameterType id)
+	template<typename T>
+	static TObject New(const T& id)
 	{
 		return new TObjectPointeeType(id);
 	}
@@ -377,5 +377,6 @@ struct DefaultNewerById
 };
 
 #pragma endregion New Delete
+
 
 MEDUSA_END;

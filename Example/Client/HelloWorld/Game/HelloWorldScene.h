@@ -17,3 +17,4 @@ public:
 
 };
 
+MEDUSA_ENABLE_STATIC_CONSTRUCTOR(HelloWorldScene);

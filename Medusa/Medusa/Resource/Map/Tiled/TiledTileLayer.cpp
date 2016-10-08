@@ -7,11 +7,13 @@
 #include "Core/Coder/Crypt/Base64Decoder.h"
 #include "Core/Log/Log.h"
 #include "TiledTilesetRef.h"
-#include "TmxTiledMap.h"
+#include "TiledMap.h"
 #include "Node/Layer/NormalLayer.h"
 #include "TiledTileset.h"
 #include "Node/NodeFactory.h"
 #include "CoreLib/Common/pugixml/pugixml.hpp"
+#include "TiledMapInstantiateInfo.h"
+#include "Node/Input/InputDispatcher.h"
 
 MEDUSA_BEGIN;
 TiledTileLayer::TiledTileLayer()
@@ -46,7 +48,7 @@ bool TiledTileLayer::Parse(const pugi::xml_node& node)
 		if (compressionStr == "gzip")
 		{
 #ifdef MEDUSA_UNZIP
-			resultData = ZipReader::DecompressGZIP(data, mSize.Area()*sizeof(uint));
+			resultData = ZipReader::DecompressGZIP(data, mSize.Area() * sizeof(uint));
 #endif
 
 		}
@@ -54,7 +56,7 @@ bool TiledTileLayer::Parse(const pugi::xml_node& node)
 		{
 #ifdef MEDUSA_ZLIB
 			// Use zlib to uncompress the tile layer into the temporary array of tiles.
-			uLongf outlen = mSize.Area()*sizeof(uint);
+			uLongf outlen = mSize.Area() * sizeof(uint);
 			resultData = MemoryData::Alloc(outlen);
 			int err = uncompress(resultData.MutableData(), &outlen, data.Data(), data.Size());
 			if (err != 0)
@@ -85,7 +87,8 @@ bool TiledTileLayer::Parse(const pugi::xml_node& node)
 			TiledTileRef& tileRef = MutableTile(i);
 
 			const TiledTilesetRef* tilesetRef = mMap->FindTilesetContainsGlobalId(globalId);
-			tileRef.Initialize(Point2I(i%mSize.Width, i / mSize.Height), globalId, tilesetRef);
+			tileRef.Initialize(Point2I(i%mSize.Width, AdjustY(i / mSize.Height)), globalId, tilesetRef);
+			tileRef.SetLayer(this);
 		}
 	}
 	else if (encodingStr == "csv")
@@ -93,11 +96,12 @@ bool TiledTileLayer::Parse(const pugi::xml_node& node)
 		int index = 0;
 		List<uint> outValues;
 		StringParser::SplitToValues(text, StringRef(","), outValues);
-		for(auto globalId: outValues)
+		for (auto globalId : outValues)
 		{
 			TiledTileRef& tileRef = MutableTile(index);
 			const TiledTilesetRef* tileset = mMap->FindTilesetContainsGlobalId(globalId);
-			tileRef.Initialize(Point2I(index%mSize.Width, index / mSize.Height), globalId, tileset);
+			tileRef.Initialize(Point2I(index%mSize.Width, AdjustY(index / mSize.Height)), globalId, tileset);
+			tileRef.SetLayer(this);
 			++index;
 		}
 
@@ -110,7 +114,8 @@ bool TiledTileLayer::Parse(const pugi::xml_node& node)
 			uint globalId = tileNode.attribute("gid").as_uint(0);
 			TiledTileRef& tileRef = MutableTile(index);
 			const TiledTilesetRef* tileset = mMap->FindTilesetContainsGlobalId(globalId);
-			tileRef.Initialize(Point2I(index%mSize.Width, index / mSize.Height), globalId, tileset);
+			tileRef.Initialize(Point2I(index%mSize.Width, AdjustY(index / mSize.Height)), globalId, tileset);
+			tileRef.SetLayer(this);
 			++index;
 		}
 	}
@@ -129,72 +134,6 @@ void TiledTileLayer::InitializeTiles()
 {
 	mTiles.ForceReserveCount(mSize.Area());
 }
-
-ILayer* TiledTileLayer::Instantiate(InstantiateMode mode /*= InstantiateMode::None*/)const
-{
-	if (mode == InstantiateMode::None)
-	{
-		mode = mInstantiateMode;	//use config rendering mode
-	}
-
-	if (!mHasSingleTexture)
-	{
-		mode = InstantiateMode::Sprite;
-	}
-
-	ILayer* curLayer = (ILayer*)NodeFactory::Instance().Create(mInstantiateLayer);
-	if (curLayer==nullptr)
-	{
-
-	}
-	switch (mode)
-	{
-	case InstantiateMode::None:
-	case InstantiateMode::Mesh:
-	{
-		//create quad mesh
-		/*for (const auto& tileRef : mTiles)
-		{
-
-		}*/
-	}
-
-	break;
-	case InstantiateMode::Sprite:
-		for (const auto& tileRef : mTiles)
-		{
-			INode* node = tileRef.Instantiate();
-			if (node != nullptr)
-			{
-				curLayer->AddChild(node);
-				Point2F pos = mPosition;
-				pos.X += tileRef.X()*mMap->TileSize().Width;
-				pos.Y += (mSize.Height - tileRef.Y() - 1)*mMap->TileSize().Height;	//from top down
-				node->SetPosition(pos);
-			}
-		}
-		break;
-	default:
-		break;
-	}
-
-	curLayer->SetName(mName);
-	curLayer->SetOpacity(mOpacity);
-	curLayer->ForceSetState(mRunningState);
-	curLayer->SetVisible(mIsVisible);
-
-#ifdef MEDUSA_SCRIPT
-	if (!mScriptFile.IsEmpty())
-	{
-		curLayer->TryAddScriptFile(mScriptFile);
-	}
-#endif
-
-	return curLayer;
-
-}
-
-
 
 void TiledTileLayer::AnalyzeTiles()
 {
@@ -220,5 +159,110 @@ void TiledTileLayer::AnalyzeTiles()
 	}
 
 }
+
+INode* TiledTileLayer::Instantiate(NodeInstantiateInfo* instantiateInfo /*= nullptr*/)const
+{
+	TiledMapInstantiateInfo* mapInstantiateInfo = (TiledMapInstantiateInfo*)instantiateInfo;
+
+	InstantiateMode mode = InstantiateMode::None;
+	if (instantiateInfo != nullptr)
+	{
+		mode = instantiateInfo->Mode;
+	}
+
+	if (mode == InstantiateMode::None)
+	{
+		mode = mInstantiateMode;	//use config rendering mode
+	}
+
+	if (!mHasSingleTexture)
+	{
+		mode = InstantiateMode::Sprite;
+	}
+
+
+	INode* curLayer = nullptr;
+	if (instantiateInfo != nullptr)
+	{
+		curLayer = instantiateInfo->ParentNode;
+	}
+
+	if (curLayer == nullptr)
+	{
+		StringRef layerClassName = mInstantiateLayer;
+		if (layerClassName.IsEmpty())
+		{
+			layerClassName = NormalLayer::ClassNameStatic();
+		}
+
+		curLayer = NodeFactory::Instance().Create(layerClassName);
+	}
+
+	Point2I offset = Point2I::Zero;
+	if (instantiateInfo != nullptr)
+	{
+		offset = mapInstantiateInfo->Offset;
+	}
+	switch (mode)
+	{
+	case InstantiateMode::None:
+	case InstantiateMode::Mesh:
+	{
+		//create quad mesh
+		/*for (const auto& tileRef : mTiles)
+		{
+
+		}*/
+	}
+
+	break;
+	case InstantiateMode::Sprite:
+		for (const auto& tileRef : mTiles)
+		{
+			INode* node = tileRef.Instantiate(instantiateInfo);
+			if (node != nullptr)
+			{
+				Point2I tilePos = tileRef.Position()+offset;
+				curLayer->AddChild(node);
+				Point2F pos = mPosition;
+				pos.X += tilePos.X*mMap->TileSize().Width;
+				pos.Y += tilePos.Y*mMap->TileSize().Height;	//from top down
+				node->SetPosition(pos);
+			}
+		}
+		break;
+	default:
+		break;
+	}
+
+	curLayer->SetName(mName);
+	curLayer->SetOpacity(mOpacity);
+	curLayer->SetState(mRunningState);
+	curLayer->SetVisible(mIsVisible);
+	curLayer->MutableInput().Enable(mInputEnabled);
+
+	if (mapInstantiateInfo != nullptr&&mapInstantiateInfo->UpdateSize)
+	{
+		Size2F newSize = mMap->PixelSize();
+		newSize.Width += mapInstantiateInfo->Offset.X*mMap->Width();
+		newSize.Height += mapInstantiateInfo->Offset.Y*mMap->Height();
+		curLayer->SetSize(newSize);
+		curLayer->SetStretch(Stretch::None);	//not stretch 
+	}
+
+
+#ifdef MEDUSA_SCRIPT
+	if (!mScriptFile.IsEmpty())
+	{
+		curLayer->TryAddScriptFile(mScriptFile);
+	}
+#endif
+
+	return curLayer;
+
+}
+
+
+
 
 MEDUSA_END;

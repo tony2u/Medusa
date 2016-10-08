@@ -50,7 +50,7 @@ public:
 			auto& item = i.Value;
 			if (item->IsShared())
 			{
-				Log::FormatError("Not zero ref count", item->RefCount());
+				Log::FormatError("{}:{} Not zero ref count",Name(), i.Key,item->RefCount());
 			}
 		}
 #endif

@@ -9,6 +9,8 @@
 #include "Node/NodeFactory.h"
 #include "Node/Sprite/Sprite.h"
 #include "TiledImage.h"
+#include "Rendering/RenderingObjectFactory.h"
+#include "TiledMapInstantiateInfo.h"
 
 MEDUSA_BEGIN;
 
@@ -43,26 +45,51 @@ uint TiledTileRef::TileId() const
 	return mTile->Id();
 }
 
-int TiledTileRef::Collision() const
+int TiledTileRef::Capability() const
 {
-	return mTile->Collision();
+	return mTile->Capability();
 }
 
-INode* TiledTileRef::Instantiate() const
+MoveDirection TiledTileRef::DirectionCapability() const
+{
+	return mTile->DirectionCapability();
+}
+
+INode* TiledTileRef::Instantiate(NodeInstantiateInfo* instantiateInfo /*= nullptr*/) const
 {
 	RETURN_NULL_IF_NULL(mTile);
 
+	TiledMapInstantiateInfo* mapInstantiateInfo = (TiledMapInstantiateInfo*)instantiateInfo;
+
 	INode* node = nullptr;
 	const auto* image = mTile->Image();
-	if (image != nullptr)
+	if (mapInstantiateInfo != nullptr&&mapInstantiateInfo->OnTileRefInstantiate!=nullptr)
 	{
-		//has separate image
-		auto texture = image->LoadSeparateTexture();;
-		node = NodeFactory::Instance().CreateSprite(texture);
+		if (image != nullptr)
+		{
+			//has separate image
+			auto texture = image->LoadSeparateTexture();
+			auto renderingObject = RenderingObjectFactory::Instance().CreateFromTexture(texture);
+			node = mapInstantiateInfo->OnTileRefInstantiate(*this, renderingObject, mapInstantiateInfo);
+		}
+		else if (mTile->Region() != nullptr)
+		{
+			auto renderingObject = RenderingObjectFactory::Instance().CreateFromTextureAtlasRegion(mTile->Region());
+			node = mapInstantiateInfo->OnTileRefInstantiate(*this, renderingObject, mapInstantiateInfo);
+		}
 	}
-	else if (mTile->Region() != nullptr)
+	else
 	{
-		node = NodeFactory::Instance().CreateSpriteFromAtlasRegion(mTile->Region());
+		if (image != nullptr)
+		{
+			//has separate image
+			auto texture = image->LoadSeparateTexture();
+			node = NodeFactory::Instance().CreateSprite(texture);
+		}
+		else if (mTile->Region() != nullptr)
+		{
+			node = NodeFactory::Instance().CreateSpriteFromAtlasRegion(mTile->Region());
+		}
 	}
 
 	if (node != nullptr)
@@ -70,7 +97,6 @@ INode* TiledTileRef::Instantiate() const
 		node->SetUserData((void*)mTile);
 	}
 
-	
 	return node;
 }
 

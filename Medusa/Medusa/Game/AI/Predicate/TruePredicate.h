@@ -13,6 +13,7 @@ struct TruePredicate :public IPredicate
 public:
 	virtual int Evaluate(void*)const override { return 1; }
 };
+MEDUSA_ENABLE_STATIC_CONSTRUCTOR(TruePredicate);
 
 
 MEDUSA_END;

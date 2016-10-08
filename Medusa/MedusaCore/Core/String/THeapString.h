@@ -64,11 +64,20 @@ public:
 
 	}
 
-	explicit THeapString(const TMemoryData<T>& data) :BaseString<T>(nullptr, (size_t)0, size_t(0))
+	explicit THeapString(const TMemoryData<T>& data) :THeapString((T*)data.Data(), data.ByteSize()-1)
 	{
-		this->mBuffer = (T*)data.Data();
-		this->mBufferSize = data.ByteSize();
-		this->mLength = data.LengthAsString();
+
+	}
+
+	template<typename T2>
+	static THeapString Take(TMemoryData<T2>& data)
+	{
+		THeapString temp;
+		temp.ForceSetBuffer((T*)data.Data());
+		temp.ForceSetBufferSize(data.ByteSize());
+		temp.ForceSetLength(data.ByteSize() - 1);
+		data.ForceSetDataAndSize(nullptr, 0);
+		return temp;
 	}
 
 	virtual ~THeapString()

@@ -11,6 +11,15 @@
 
 MEDUSA_BEGIN;
 
+#ifdef MEDUSA_WINDOWS
+typedef HWND MedusaWindowHandle;
+typedef UINT_PTR MedusaFileDescriptor;
+
+#elif defined (MEDUSA_IOS) || defined( MEDUSA_ANDROID )|| defined( MEDUSA_LINUX)
+typedef intp MedusaWindowHandle;
+typedef int MedusaFileDescriptor;
+#endif
+
 class IWindow :public IInitializable,public RTTIObject,public DefaultRunnable
 {
 	MEDUSA_RTTI_ROOT(IWindow);

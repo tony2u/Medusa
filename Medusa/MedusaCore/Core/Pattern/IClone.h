@@ -16,6 +16,8 @@ struct IClone
 		MEDUSA_ASSERT_NOT_IMPLEMENT();
 		return nullptr;
 	}
+protected:
+	virtual void BuildClone(T& obj){}
 };
 
 MEDUSA_END;

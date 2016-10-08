@@ -19,7 +19,7 @@
 #include "Game/Layer/3D/ThreeDFeatureLayer.h"
 #include "Game/Layer/Map/MapFeatureLayer.h"
 #include "Game/Layer/Cocos/CocosFeatureLayer.h"
-
+#include "Game/Layer/Game/GameFeatureLayer.h"
 #include "CocosStudio/BinaryEditor.h"
 
 
@@ -40,7 +40,7 @@ enum class TestItem
 	Graphics,
 	ThreeD,
 	Map,
-
+	Game,
 
 };
 
@@ -62,6 +62,7 @@ TestLayer::TestLayer(StringRef name/*=StringRef::Empty*/,const IEventArg& e/*=IE
 	mItems.Emplace(L"Graphics");
 	mItems.Emplace(L"3D");
 	mItems.Emplace(L"Map");
+	mItems.Emplace(L"Game");
 
 
 
@@ -77,13 +78,17 @@ bool TestLayer::Initialize()
 {
 	RETURN_FALSE_IF_FALSE(ILayer::Initialize());
 
-	ListBox* listBox=NodeFactory::Instance().CreateStringListBox(mItems,true);
+	auto dataSource = DataSourceFactory::Instance().CreateWStringList("MainList", mItems, true);
+
+
+	ListBox* listBox = NodeFactory::Instance().CreateListBox();
 	listBox->SetStretch(Medusa::Stretch::Fill);
-	auto dataSource=listBox->DataSource().CastPtr<StringListDataSource>();
-	LabelItemTemplate* labelItemTemplate=(LabelItemTemplate*)dataSource->ItemTemplate();
-	labelItemTemplate->SetAlignment(Alignment::MiddleCenter);
-	//labelItemTemplate->MutableFontId().SetSize(88);
-	labelItemTemplate->MutableFontId().Name="arial88.fnt";
+	auto binding = listBox->BindTo<LabelTemplate>(dataSource,true);
+	auto nodeTemplate = (LabelTemplate*)binding->GetTemplate(0);
+	nodeTemplate->MutableFontId().Name="arial88.fnt";
+	nodeTemplate->SetAlignment(Alignment::LeftBottom);
+	nodeTemplate->SetDock(DockPoint::MiddleBottom);
+	nodeTemplate->SetAnchor(AnchorPoint::MiddleBottom);
 
 	AddChild(listBox);
 	listBox->OnItemClicked+=Bind(&TestLayer::OnItemClicked,this);
@@ -141,6 +146,9 @@ void TestLayer::OnItemClicked(ListBox& sender,const ListBoxItem& item)
 		break;
 	case TestItem::Cocos:
 		SceneManager::Instance().Current()->PushLayer<CocosFeatureLayer>();
+		break;
+	case TestItem::Game:
+		SceneManager::Instance().Current()->PushLayer<GameFeatureLayer>();
 		break;
 	default:
 		break;

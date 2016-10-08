@@ -20,6 +20,20 @@ public:
 	InputDispatcher(INode* node);
 	~InputDispatcher();
 public:
+	bool IsModal()const { return mIsModal; }
+	void EnabelModal(bool val) { mIsModal = val; }
+
+	bool IsSwallow()const { return mIsSwallow; }
+	void EnableSwallow(bool val) { mIsSwallow = val; }
+
+	bool IsEnabled() const { return mEnabled; }
+	void Enable(bool val) { mEnabled = val; }
+
+	bool IsPassingEnabled() const { return mEnabled&&mPassingEnabled; }
+	void EnablePassing();
+	void ResetPassing();
+
+public:
 	virtual void TouchesBegan(TouchEventArg& e);
 	virtual void TouchesMoved(TouchEventArg& e);
 	virtual void TouchesEnded(TouchEventArg& e);
@@ -121,6 +135,12 @@ private:
 
 	Dictionary<InputEventType, List<HeapString>, DefaultHashCoder, NoHashCoder, EqualCompare, NoCompare> mEventMonitors;
 	Dictionary<HeapString, NodeInputEvent> mEventBindings;
+
+	bool mEnabled = true;
+	bool mPassingEnabled = true;	//true means to need to check all children' input dispatcher recursively.
+
+	bool mIsModal = false;	//block all inputs under current node
+	bool mIsSwallow = false;	//swallow all inputs on self
 
 };
 

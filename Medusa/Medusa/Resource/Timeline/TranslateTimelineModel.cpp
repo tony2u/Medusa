@@ -27,10 +27,10 @@ void TranslateTimelineModel::AddTranslate(float time, const Point3F& translate, 
 
 Point3F TranslateTimelineModel::GetTranslate(float time) const
 {
-	if (mIsPreCalculated)
+	if (mIsPrecomputed)
 	{
-		intp index = GetPreCalculatedIndex(time);
-		return mPreCalculatedTranslates[index];
+		intp index = GetPrecomputedIndex(time);
+		return mPrecomputedTranslates[index];
 	}
 
 	uint outPrevFrameIndex;
@@ -51,18 +51,18 @@ Point3F TranslateTimelineModel::GetTranslate(float time) const
 	return Point3F::Zero;
 }
 
-void TranslateTimelineModel::RemovePreCalculated()
+void TranslateTimelineModel::RemovePrecomputed()
 {
-	ITimelineModel::RemovePreCalculated();
-	mPreCalculatedTranslates.Clear();
+	ITimelineModel::RemovePrecomputed();
+	mPrecomputedTranslates.Clear();
 }
 
-void TranslateTimelineModel::OnPreCalculateBegin()
+void TranslateTimelineModel::OnPrecomputeBegin()
 {
-	mPreCalculatedTranslates.Clear();
+	mPrecomputedTranslates.Clear();
 }
 
-void TranslateTimelineModel::AddPreCalcuatedItem(bool isFound, uint prevFrameIndex, uint nextFrameIndex, float percent)
+void TranslateTimelineModel::AddPrecomputedItem(bool isFound, uint prevFrameIndex, uint nextFrameIndex, float percent)
 {
 	Point3F pos = Point3F::Zero;
 	if (nextFrameIndex != prevFrameIndex)
@@ -73,7 +73,7 @@ void TranslateTimelineModel::AddPreCalcuatedItem(bool isFound, uint prevFrameInd
 	{
 		pos = mTranslates[nextFrameIndex];
 	}
-	mPreCalculatedTranslates.Add(pos);
+	mPrecomputedTranslates.Add(pos);
 }
 
 MEDUSA_END;

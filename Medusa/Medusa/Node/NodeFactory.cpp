@@ -21,20 +21,19 @@
 #include "Resource/Model/Mesh/Fixed/ShapeQuadMesh.h"
 #include "Resource/Model/Mesh/Fixed/ShapeTriangleMesh.h"
 #include "Resource/Model/Mesh/General/ShapeGeneralMesh.h"
-
-
 #include "Resource/Model/Mesh/Fixed/TextureNineGridMesh.h"
 #include "Resource/Model/Mesh/Fixed/TextureQuadMesh.h"
-
-
 #include "Node/Shape/IShape.h"
 #include "Node/Control/ListBox/ListBox.h"
+#include "Node/Control/Table/TableBox.h"
+
 
 
 #include "Node/Panel/PanelFactory.h"
-#include "Node/DataSource/StringListDataSource.h"
 #include "Node/Control/Button/TextureButton.h"
 #include "Node/Control/Button/NodeButton.h"
+#include "Node/Control/Button/LabelButton.h"
+
 
 #include "Node/Control/ProgressBar/ShapeProgressBar.h"
 #include "Node/Control/ProgressBar/TextureProgressBar.h"
@@ -308,8 +307,8 @@ LinesShape* NodeFactory::CreateLine(const Point3F& from, const Point3F& to, cons
 {
 	auto mesh = MeshFactory::Instance().CreateLineMesh(from, to, color);
 	RETURN_NULL_IF_NULL(mesh);
-	auto material = MaterialFactory::Instance().CreateShape(MEDUSA_PREFIX(Shape_WireFrame));
-	material->SetDrawMode(GraphicsDrawMode::LineStrip);
+	auto material = MaterialFactory::Instance().CreateShape(MEDUSA_PREFIX(Shape_Lines));
+	material->SetDrawMode(GraphicsDrawMode::Lines);
 	LinesShape* sprite = new LinesShape();
 	sprite->Initialize();
 
@@ -332,12 +331,7 @@ Sprite* NodeFactory::CreateSprite(const FileIdRef& textureName, const Rect2F& te
 	auto renderingObject = RenderingObjectFactory::Instance().CreateFromTexture(textureName, textureRect);
 	RETURN_NULL_IF_NULL(renderingObject);
 
-	Sprite* sprite = new Sprite();
-	sprite->SetRenderingObject(renderingObject);
-	sprite->SetSize(renderingObject.Mesh()->Size());
-	sprite->Initialize();
-
-	return sprite;
+	return CreateSprite(renderingObject);
 }
 
 Sprite* NodeFactory::CreateSprite(const Share<ITexture>& texture, const Rect2F& textureRect /*= Rect2F::Zero*/)
@@ -345,6 +339,11 @@ Sprite* NodeFactory::CreateSprite(const Share<ITexture>& texture, const Rect2F& 
 	auto renderingObject = RenderingObjectFactory::Instance().CreateFromTexture(texture, textureRect);
 	RETURN_NULL_IF_NULL(renderingObject);
 
+	return CreateSprite(renderingObject);
+}
+
+Sprite* NodeFactory::CreateSprite(const RenderingObject& renderingObject)
+{
 	Sprite* sprite = new Sprite();
 	sprite->SetRenderingObject(renderingObject);
 	sprite->SetSize(renderingObject.Mesh()->Size());
@@ -465,23 +464,23 @@ IPanel* NodeFactory::CreatePanel(PanelType panelType)
 	return PanelFactory::Instance().Create(panelType);
 }
 
-ListBox* NodeFactory::CreateStringListBox(const List<WHeapString>& strItems, bool isSingleLine/*=true*/)
+
+
+ListBox* NodeFactory::CreateListBox()
 {
 	ListBox* listBox = new ListBox(StringRef::Empty, ScrollDirection::VerticalFromTop);
-	listBox->SetDataSource(new StringListDataSource(strItems, isSingleLine));
 	listBox->Initialize();
 	return listBox;
 }
 
-
-ListBox* NodeFactory::CreateEmptyListBox()
+TableBox* NodeFactory::CreateTableBox()
 {
-	ListBox* listBox = new ListBox();
-	listBox->Initialize();
-	return listBox;
+	TableBox* box = new TableBox(StringRef::Empty, ScrollDirection::VerticalFromTop);
+	box->Initialize();
+	return box;
 }
 
-TextureButton* Medusa::NodeFactory::CreateTextureButton(const FileIdRef& normalTextureName, const FileIdRef& selectedTextureName /*= FileIdRef::Empty*/, const FileIdRef& disabledTextureName /*= FileIdRef::Empty*/, const FileIdRef& disabledSelectedTextureName /*= FileIdRef::Empty*/)
+TextureButton* NodeFactory::CreateTextureButton(const FileIdRef& normalTextureName, const FileIdRef& selectedTextureName /*= FileIdRef::Empty*/, const FileIdRef& disabledTextureName /*= FileIdRef::Empty*/, const FileIdRef& disabledSelectedTextureName /*= FileIdRef::Empty*/)
 {
 	TextureButton* button = new TextureButton(StringRef::Empty, normalTextureName, selectedTextureName, disabledTextureName, disabledSelectedTextureName);
 	button->Initialize();
@@ -496,6 +495,18 @@ NodeButton* NodeFactory::CreateNodeButton(const FileIdRef& normalTextureName, co
 	Sprite* disabledSelectedSprite = CreateSprite(disabledSelectedTextureName);
 
 	NodeButton* button = new NodeButton(StringRef::Empty, normalSprite, selectedSprite, disabledSprite, disabledSelectedSprite);
+	button->Initialize();
+	return button;
+}
+
+LabelButton* NodeFactory::CreateLabelButton(const FontId& fontId, StringRef text, Alignment alignment /*= Alignment::LeftBottom*/, Size2F restrictSize /*= Size2F::Zero*/, bool isStatic /*= false*/)
+{
+	auto label = CreateSingleLineLabel(fontId, text, alignment, restrictSize, isStatic);
+	if (label==nullptr)
+	{
+		Log::AssertFailedFormat("Cannot find font:{}", fontId);
+	}
+	LabelButton* button = new LabelButton(label);
 	button->Initialize();
 	return button;
 }
@@ -530,23 +541,23 @@ MultipleLineEditBox* NodeFactory::CreateMultipleLineEditBox(const Size2F& size, 
 	return val;
 }
 
-SpineSkeleton* NodeFactory::CreateSkeleton(const FileIdRef& skeletonfileId, const FileIdRef& atlasFileId, bool isPreCalculated /*= false*/)
+SpineSkeleton* NodeFactory::CreateSkeleton(const FileIdRef& skeletonfileId, const FileIdRef& atlasFileId, bool isPrecomputed /*= false*/)
 {
-	auto model = SkeletonModelFactory::Instance().CreateSpineFromJson(skeletonfileId, atlasFileId, isPreCalculated);
+	auto model = SkeletonModelFactory::Instance().CreateSpineFromJson(skeletonfileId, atlasFileId, isPrecomputed);
 	RETURN_NULL_IF_NULL(model);
 	SpineSkeleton* skeleton = new SpineSkeleton(StringRef::Empty, model);
 	skeleton->Initialize();
 	return skeleton;
 }
 
-SpineSkeleton* NodeFactory::CreateSkeletonDefault(const FileIdRef& name, bool isPreCalculated /*= false*/)
+SpineSkeleton* NodeFactory::CreateSkeletonDefault(const FileIdRef& name, bool isPrecomputed /*= false*/)
 {
 	FileId skeletonfileId = name;
 	FileId atlasFileId = name;
 	skeletonfileId.Name += ".json";
 	atlasFileId.Name += ".atlas";
 
-	return CreateSkeleton(skeletonfileId.ToRef(), atlasFileId.ToRef(), isPreCalculated);
+	return CreateSkeleton(skeletonfileId.ToRef(), atlasFileId.ToRef(), isPrecomputed);
 
 }
 

@@ -1,5 +1,7 @@
 #pragma once
-
+//prevent compile error
+#undef min
+#undef max
 #include "rapidjson/rapidjson.h"
 #include "rapidjson/document.h"
 #include "rapidjson/reader.h"

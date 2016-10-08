@@ -13,3 +13,4 @@ public:
 	virtual ~SpriteFeatureLayer(void);
 };
 
+MEDUSA_ENABLE_STATIC_CONSTRUCTOR(SpriteFeatureLayer);

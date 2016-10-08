@@ -188,14 +188,14 @@ ISkeletonAttachmentModel* ISkeletonModel::FindAttachment(const StringRef attachm
 	return mDefaultAvatar->FindAttachment(attachmentName);
 }
 
-void ISkeletonModel::PreCalculate(float fps)
+void ISkeletonModel::Precompute(float fps)
 {
-	FOR_EACH_TO(mAnimations, PreCalculate(fps));
+	FOR_EACH_TO(mAnimations, Precompute(fps));
 }
 
-void ISkeletonModel::RemovePreCalculated()
+void ISkeletonModel::RemovePrecomputed()
 {
-	FOR_EACH_TO(mAnimations, RemovePreCalculated());
+	FOR_EACH_TO(mAnimations, RemovePrecomputed());
 }
 
 

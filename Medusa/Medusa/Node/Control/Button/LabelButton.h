@@ -22,5 +22,6 @@ protected:
 	ILabel* mLabel=nullptr;
 	
 };
+MEDUSA_ENABLE_STATIC_CONSTRUCTOR(LabelButton);
 
 MEDUSA_END;

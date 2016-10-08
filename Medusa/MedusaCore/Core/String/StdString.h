@@ -367,6 +367,7 @@ namespace StdString
 		static bool IsNewLine(char c) { return c == Return || c == LineSeparator; }
 		static bool IsEmptyChar(char c) { return c == Space || IsControlChar(c); }
 		static bool IsControlChar(char c) { return c == Return || c == LineSeparator || c == Tab || c == '\f' || c == '\v'; }
+		static bool IsPeriod(char c) { return c == '.' || c == '?' || c == '!' || c == ','; }
 
 		constexpr static char Zero = '\0';
 		constexpr static char Return = '\r';
@@ -407,6 +408,7 @@ namespace StdString
 		static bool IsNewLine(wchar_t c) { return c == Return || c == LineSeparator; }
 		static bool IsEmptyChar(wchar_t c) { return c == Space || IsControlChar(c); }
 		static bool IsControlChar(wchar_t c) { return c == Return || c == LineSeparator || c == Tab || c == L'\f' || c == L'\v'; }
+		static bool IsPeriod(wchar_t c) { return c == L'.' || c == L'?' || c == L'!' || c == L','|| c == L'¡£' || c == L'£¿' || c == L'£¡' || c == L'£¬'; }
 
 		constexpr static wchar_t Zero = L'\0';
 		constexpr static wchar_t Return = L'\r';

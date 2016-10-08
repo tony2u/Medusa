@@ -25,6 +25,11 @@ bool ScriptEngine::Initialize()
 {
 #ifdef MEDUSA_LUA
 	mCurrent = new LuaMachine();
+	mCurrent->Initialize();
+	if (!mPath.IsEmpty())
+	{
+		mCurrent->SetPackagePath(mPath);
+	}
 #endif
 	return true;
 }
@@ -37,15 +42,7 @@ bool ScriptEngine::Uninitialize()
 
 bool ScriptEngine::OnLoad(IEventArg& e /*= IEventArg::Empty*/)
 {
-#ifdef MEDUSA_LUA
-	mCurrent->Initialize();
-	if (!mPath.IsEmpty())
-	{
-		mCurrent->SetPackagePath(mPath);
-	}
-#endif
-
-	return true;
+	return Initialize();
 }
 
 bool ScriptEngine::OnUnload(IEventArg& e /*= IEventArg::Empty*/)

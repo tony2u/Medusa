@@ -37,5 +37,6 @@ protected:
 	INode* mDisabledSelectedNode = nullptr;
 
 };
+MEDUSA_ENABLE_STATIC_CONSTRUCTOR(NodeButton);
 
 MEDUSA_END;

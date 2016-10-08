@@ -17,7 +17,7 @@
 #include "TextAtlasReader.h"
 #include "LoadingBarReader.h"
 #include "TextFieldReader.h"
-#include "TmxMapReader.h"
+#include "TiledMapReader.h"
 #include "PanelReader.h"
 #include "ScrollViewReader.h"
 #include "PageViewReader.h"
@@ -42,7 +42,7 @@ ReaderFactory::ReaderFactory()
 	Register<TextAtlasReader>();
 	Register<LoadingBarReader>();
 	Register<TextFieldReader>();
-	Register<TmxMapReader>();
+	Register<TiledMapReader>();
 	Register<PanelReader>();
 	Register<ScrollViewReader>();
 	Register<PageViewReader>();

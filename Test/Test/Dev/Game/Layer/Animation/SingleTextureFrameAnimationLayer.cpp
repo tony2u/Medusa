@@ -14,11 +14,11 @@ SingleTextureFrameAnimationLayer::~SingleTextureFrameAnimationLayer(void)
 {
 }
 
-bool SingleTextureFrameAnimationLayer::Initialize()
+bool SingleTextureFrameAnimationLayer::Initialize() 
 {
 	RETURN_FALSE_IF_FALSE(BaseCaseLayer::Initialize());
 
-	ITimeline* timeline= TimelineFactory::Instance().CreateRenderingObjectTimelineFromSingleTexture("Walking", "StudentWalking.png", 4, 4, 4.f, true);
+	ITimeline* timeline= TimelineFactory::Instance().CreateRenderingObjectTimelineFromSingleTexture("Walking", "StudentWalking.png", 4, 4,0,Math::UIntMaxValue, 4.f, true);
 	Sprite* sprite = new Sprite("Walking");
 	sprite->SetSizeToContent(SizeToContent::Mesh);
 

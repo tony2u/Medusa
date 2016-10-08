@@ -8,7 +8,7 @@
 MEDUSA_BEGIN;
 
 ITimelineModel::ITimelineModel(const FileIdRef& fileId, float duration /*= 0.f*/)
-	:IResource(fileId), mDuration(duration), mIsPreCalculated(false), mFPS(0.f), mFrameCount(0)
+	:IResource(fileId), mDuration(duration)
 {
 
 }
@@ -36,13 +36,13 @@ void ITimelineModel::Clear()
 	mDuration = 0.f;
 	mFrames.Clear();
 	mFrameCount = 0;
-	mIsPreCalculated = false;
+	mIsPrecomputed = false;
 	mFPS = 0.f;
 }
 
-bool ITimelineModel::TryGetFrame(float time, uint& outPrevFrameIndex, uint& outNextFrameIndex, float& outPercent) const
+bool ITimelineModel::TryGetFrame(float time, uint& outPrevFrameIndex, uint& outNextFrameIndex, float& outPercent, uint startIndex /*= 0*/) const
 {
-	if (mIsPreCalculated)
+	if (mIsPrecomputed)
 	{
 		RETURN_FALSE_IF(time < 0.f);
 
@@ -54,7 +54,7 @@ bool ITimelineModel::TryGetFrame(float time, uint& outPrevFrameIndex, uint& outN
 	}
 	else
 	{
-		return TryGetFrameHelper(time, outPrevFrameIndex, outNextFrameIndex, outPercent);
+		return TryGetFrameHelper(time, outPrevFrameIndex, outNextFrameIndex, outPercent, startIndex);
 	}
 	return true;
 
@@ -83,9 +83,9 @@ void ITimelineModel::AddFrameWithInterval(float frameInterval, uint index, Math:
 
 intp ITimelineModel::GetSteppedFrameIndex(float time) const
 {
-	if (mIsPreCalculated)
+	if (mIsPrecomputed)
 	{
-		return GetPreCalculatedIndex(time);
+		return GetPrecomputedIndex(time);
 	}
 	else
 	{
@@ -101,7 +101,7 @@ intp ITimelineModel::GetSteppedFrameIndex(float time) const
 
 }
 
-intp ITimelineModel::GetPreCalculatedIndex(float time) const
+intp ITimelineModel::GetPrecomputedIndex(float time) const
 {
 	if (time < 0.f)
 	{
@@ -115,21 +115,22 @@ intp ITimelineModel::GetPreCalculatedIndex(float time) const
 	return (intp)Math::Floor(time*mFPS);
 }
 
-void ITimelineModel::PreCalculate(float fps)
+void ITimelineModel::Precompute(float fps)
 {
-	RETURN_IF_TRUE(mIsPreCalculated);
+	RETURN_IF_FALSE(SupportPrecompute());
+	RETURN_IF_TRUE(mIsPrecomputed);
 	RETURN_IF(fps < 0.f);
 	RETURN_IF_EMPTY(mFrames);
 
-	mIsPreCalculated = true;
+	mIsPrecomputed = true;
 	mFPS = fps;
-	int preCalculateframeCount = (int)Math::Ceil(mDuration * fps);
-	RETURN_IF(preCalculateframeCount <= 0);
-	mFrameCount = (uint)preCalculateframeCount;
+	int preCalculatedframeCount = (int)Math::Ceil(mDuration * fps);
+	RETURN_IF(preCalculatedframeCount <= 0);
+	mFrameCount = (uint)preCalculatedframeCount;
 
-	OnPreCalculateBegin();
+	OnPrecomputeBegin();
 	float firstTime = mFrames.First().Time;
-	AddPreCalcuatedItem(Math::IsZero(firstTime), 0U, 0U, 0.f);	//add zero frame
+	AddPrecomputedItem(Math::IsZero(firstTime), 0U, 0U, 0.f);	//add zero frame
 
 
 	const float frameInterval = 1.f / mFPS;
@@ -138,26 +139,31 @@ void ITimelineModel::PreCalculate(float fps)
 	uint outNextFrameIndex;
 	float outPercent;
 
+	uint prevIndex = 0;
 	FOR_EACH_SIZE(i, mFrameCount)
 	{
 		time += frameInterval;
-		bool isFound = TryGetFrameHelper(time, outPrevFrameIndex, outNextFrameIndex, outPercent);
-		AddPreCalcuatedItem(isFound, outPrevFrameIndex, outNextFrameIndex, outPercent);
+		bool isFound = TryGetFrameHelper(time, outPrevFrameIndex, outNextFrameIndex, outPercent, prevIndex);
+		if (isFound)
+		{
+			prevIndex = outPrevFrameIndex;
+		}
+		AddPrecomputedItem(isFound, outPrevFrameIndex, outNextFrameIndex, outPercent);
 	}
 
-	OnPreCalculateEnd();
+	OnPrecomputeEnd();
 }
 
-void ITimelineModel::RemovePreCalculated()
+void ITimelineModel::RemovePrecomputed()
 {
-	RETURN_IF_FALSE(mIsPreCalculated);
-	mIsPreCalculated = false;
+	RETURN_IF_FALSE(mIsPrecomputed);
+	mIsPrecomputed = false;
 	mFPS = 0.f;
 	mFrameCount = mFrames.Count();
 }
 
 
-bool ITimelineModel::TryGetFrameHelper(float time, uint& outPrevFrameIndex, uint& outNextFrameIndex, float& outPercent) const
+bool ITimelineModel::TryGetFrameHelper(float time, uint& outPrevFrameIndex, uint& outNextFrameIndex, float& outPercent, uint startIndex/* = 0*/) const
 {
 	outPrevFrameIndex = 0;
 	outNextFrameIndex = 0;
@@ -166,7 +172,7 @@ bool ITimelineModel::TryGetFrameHelper(float time, uint& outPrevFrameIndex, uint
 	RETURN_FALSE_IF_EMPTY(mFrames);
 	RETURN_FALSE_IF(time < 0.f);
 
-	intp index = Algorithm::BinarySearchLastGreaterThan<TimelineFrame, DefaultCompare >(mFrames.Items(), TimelineFrame(time), 0, mFrames.Count() - 1);
+	intp index = Algorithm::BinarySearchLastGreaterThan<TimelineFrame, DefaultCompare >(mFrames.Items(), TimelineFrame(time), startIndex, mFrames.Count() - 1);
 	if (index == 0)
 	{
 		//time < first frame

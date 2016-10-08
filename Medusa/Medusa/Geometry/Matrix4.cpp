@@ -919,7 +919,7 @@ Matrix4 Matrix4::CreateRotateXYZ(const Rotation3F& rotation)
 	//rotate order: x,y,z
 	uint t = Math::IsZero(rotation.X) ? 0 : 1;
 	t |= Math::IsZero(rotation.Y) ? 0 : 2;
-	t |= Math::IsZero(rotation.Y) ? 0 : 4;
+	t |= Math::IsZero(rotation.Z) ? 0 : 4;
 
 	RotationType type = (RotationType)t;
 	switch (type)
@@ -1838,20 +1838,20 @@ Matrix4 Matrix4::CreateConstrainedBillboard(const Vector3F& objectPosition, cons
 	float num = rotateAxis.Dot(cameraLook);
 	if (Math::Abs(num) > dotValue)	//Don't know why,copy from XNA.Matrix
 	{
-		if (objectForward != Vector3F::ForWard)
+		if (objectForward != Vector3F::Forward)
 		{
 			newCameraUp = objectForward;
 			num = rotateAxis.Dot(newCameraUp);
 			if (Math::Abs(num) > dotValue)
 			{
-				num = rotateAxis.Dot(Vector3F::ForWard);
-				newCameraUp = Math::Abs(dotValue) > dotValue ? Vector3F::Right : Vector3F::ForWard;
+				num = rotateAxis.Dot(Vector3F::Forward);
+				newCameraUp = Math::Abs(dotValue) > dotValue ? Vector3F::Right : Vector3F::Forward;
 			}
 		}
 		else
 		{
-			num = rotateAxis.Dot(Vector3F::ForWard);
-			newCameraUp = Math::Abs(dotValue) > dotValue ? Vector3F::Right : Vector3F::ForWard;
+			num = rotateAxis.Dot(Vector3F::Forward);
+			newCameraUp = Math::Abs(dotValue) > dotValue ? Vector3F::Right : Vector3F::Forward;
 		}
 
 		cameraRight = rotateAxis.Cross(newCameraUp);

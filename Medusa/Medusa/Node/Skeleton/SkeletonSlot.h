@@ -42,5 +42,6 @@ protected:
 
 
 };
+MEDUSA_ENABLE_STATIC_CONSTRUCTOR(SkeletonSlot);
 
 MEDUSA_END;

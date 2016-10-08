@@ -17,6 +17,7 @@
 #include "Core/Module/DelegateModule.h"
 #include "Core/Module/SingletonModule.h"
 #include "Core/Threading/MainThreadPool.h"
+#include "Core/Siren/Schema/SirenMachine.h"
 
 MEDUSA_BEGIN;
 
@@ -76,6 +77,9 @@ bool MedusaCoreModule::Initialize()
 		return true;
 	};
 	AddPrevModule(module,false);
+
+	AddNextModule(new SingletonModule<SirenMachine>("SirenMachine"));
+
 
 	AddNextModule(new SingletonModule<FileSystem>("FileSystem"));
 #ifdef MEDUSA_SCRIPT

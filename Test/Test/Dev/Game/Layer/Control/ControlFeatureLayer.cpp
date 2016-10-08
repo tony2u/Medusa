@@ -8,6 +8,8 @@
 
 #include "ProgressBarLayer.h"
 #include "ListBoxLayer.h"
+#include "TableBoxLayer.h"
+
 #include "EditBoxLayer.h"
 
 
@@ -18,6 +20,7 @@ ControlFeatureLayer::ControlFeatureLayer(StringRef name/*=StringRef::Empty*/, co
 
 	Register<ProgressBarLayer>();
 	Register<ListBoxLayer>();
+	Register<TableBoxLayer>();
 	Register<EditBoxLayer>();
 
 }

@@ -14,7 +14,7 @@ public:
 public:
 	virtual QuinticEaseOutAction* Clone()const override
 	{
-		return new QuinticEaseOutAction(this->mInnerAction);
+		return new QuinticEaseOutAction((BaseFiniteAction*)this->mInnerAction);
 	}
 	virtual QuinticEaseOutAction* Reverse()const override
 	{

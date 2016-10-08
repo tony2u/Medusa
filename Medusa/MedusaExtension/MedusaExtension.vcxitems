@@ -45,7 +45,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\TextBMFontReader.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\TextFieldReader.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\TextReader.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\TmxMapReader.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\TiledMapReader.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ExtensionLib\android\ExtensionLib_android.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ExtensionLib\Common\flatbuffers.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ExtensionLib\ExtensionLib.h" />
@@ -85,7 +85,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\TextBMFontReader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\TextFieldReader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\TextReader.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\TmxMapReader.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)CocosStudio\Reader\TiledMapReader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MedusaExtensionPreCompiled.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
       <PrecompiledHeaderFile>MedusaExtensionPreCompiled.h</PrecompiledHeaderFile>

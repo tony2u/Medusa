@@ -99,6 +99,11 @@ public:
 	friend Rotation2 operator*(T1 delta,const Rotation2<T>& rotation){return Rotation2(delta*rotation.X,delta*rotation.Y);}
 	Rotation2 operator-()const { return Point2<T>(-X, -Y); }
 
+	bool IsNearlyZero(float tolerance = 1.e-4f)const
+	{
+		return Math::Abs(X) <= tolerance &&	Math::Abs(Y) <= tolerance;
+	}
+
 	Rotation2 ToDegree()const{return Rotation2(Math::ToDegree(X),Math::ToDegree(Y));}
 	Rotation2 ToRadian()const{return Rotation2(Math::ToRadian(X),Math::ToRadian(Y));}
 	Rotation2 CreateInverse()const{return Rotation2(-X,-Y);}

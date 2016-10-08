@@ -86,7 +86,7 @@ typedef Share<IMessage> ShareMessage;
 
 #define MEDUSA_DECLARE_MESSAGE(className,baseClassName) 													\
 		MEDUSA_RTTI(className,baseClassName);\
-private:																				\
+public:																				\
 	const static StaticConstructor mStaticConstructor;							
 
 #define MEDUSA_IMPLEMENT_MESSAGE(className) 																					 \

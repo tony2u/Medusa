@@ -14,3 +14,4 @@ public:
 	virtual ~AudioFeatureLayer(void);
 };
 
+MEDUSA_ENABLE_STATIC_CONSTRUCTOR(AudioFeatureLayer);

@@ -29,7 +29,7 @@ MeshTimeline::~MeshTimeline()
 
 bool MeshTimeline::OnUpdate(float prevElapsed,float dt, float blend /*= 1.f*/)
 {
-	uint frame=CurrentFrameIndex();
+	uint frame= UpdateFrameIndex();
 	auto model = mModel.CastPtr<MeshTimelineModel>();
 	auto mesh = model->GetMeshByIndex(frame);
 	INode* node = (INode*)mTarget;

@@ -55,7 +55,7 @@ protected:
 
 #define MEDUSA_DECLARE_BRAIN(className,baseClassName) 													\
 		MEDUSA_RTTI(className,baseClassName);\
-private:																				\
+public:																				\
 	const static StaticConstructor mStaticConstructor;							
 
 #define MEDUSA_IMPLEMENT_BRAIN(className) 																					 \

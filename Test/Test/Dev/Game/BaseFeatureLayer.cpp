@@ -67,7 +67,7 @@ bool BaseFeatureLayer::OnEnter()
 	mCurrentLayer = (BaseCaseLayer*)NodeFactory::Instance().Create(layerName, editorFile,StringRef::Empty);
 	mCurrentLayer->SetDepth(-1);
 	AddChild(mCurrentLayer);
-	mCurrentLayer->OnEnter();
+	mCurrentLayer->EnterRecursively();
 
 	return true;
 }
@@ -101,6 +101,8 @@ void BaseFeatureLayer::OnLeft(INode* sender, TapGestureEventArg& e)
 	mCurrentLayer = (BaseCaseLayer*)NodeFactory::Instance().Create(layerName, editorFile, StringRef::Empty);
 	mCurrentLayer->SetDepth(-1);
 	AddChild(mCurrentLayer);
+	mCurrentLayer->EnterRecursively();
+
 }
 
 void BaseFeatureLayer::OnRight(INode* sender, TapGestureEventArg& e)
@@ -119,6 +121,8 @@ void BaseFeatureLayer::OnRight(INode* sender, TapGestureEventArg& e)
 	mCurrentLayer = (BaseCaseLayer*)NodeFactory::Instance().Create(layerName, editorFile, StringRef::Empty);
 	mCurrentLayer->SetDepth(-1);
 	AddChild(mCurrentLayer);
+	mCurrentLayer->EnterRecursively();
+
 }
 
 void BaseFeatureLayer::OnRefresh(INode* sender, TapGestureEventArg& e)

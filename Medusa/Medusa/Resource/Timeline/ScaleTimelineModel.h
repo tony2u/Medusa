@@ -16,13 +16,13 @@ public:
 	void AddScale(float time, const Scale3F& scale, Math::TweenType tweenType, const List<float>& args);
 	Scale3F GetScale(float time)const;
 
-	virtual void RemovePreCalculated()override;
+	virtual void RemovePrecomputed()override;
 protected:
-	virtual void OnPreCalculateBegin()override;
-	virtual void AddPreCalcuatedItem(bool isFound, uint prevFrameIndex, uint nextFrameIndex, float percent) override;
+	virtual void OnPrecomputeBegin()override;
+	virtual void AddPrecomputedItem(bool isFound, uint prevFrameIndex, uint nextFrameIndex, float percent) override;
 protected:
 	List<Scale3F> mScales;
-	List<Scale3F> mPreCalculatedScales;
+	List<Scale3F> mPrecomputedScales;
 
 };
 

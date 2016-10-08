@@ -30,6 +30,7 @@ ILabel::~ILabel(void)
 
 bool ILabel::Initialize()
 {
+	OnUpdateFont();
 	return true;
 }
 

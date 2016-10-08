@@ -112,6 +112,10 @@ public:
 	bool IsEmpty()const{return Math::IsZero(Width)||Math::IsZero(Height)||Math::IsZero(Depth);}
 	T Volume()const{return Width*Height*Depth;}
 	intp HashCode()const{return HashUtility::Hash(Buffer);}
+	bool IsNearlyZero(float tolerance = 1.e-4f)const
+	{
+		return Math::Abs(Width) <= tolerance &&	Math::Abs(Height) <= tolerance&&Math::Abs(Depth) <= tolerance;
+	}
 
 	static Size3 LinearInterpolate(const Size3& begin,const Size3& end,float blend)
 	{

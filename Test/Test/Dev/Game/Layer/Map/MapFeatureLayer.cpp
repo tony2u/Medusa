@@ -3,11 +3,11 @@
 // license that can be found in the LICENSE file.
 #include "TestPreCompiled.h"
 #include "MapFeatureLayer.h"
-#include "TMXMapLayer.h"
+#include "TiledMapLayer.h"
 
 MapFeatureLayer::MapFeatureLayer(StringRef name/*=StringRef::Empty*/, const IEventArg& e/*=IEventArg::Empty*/) :BaseFeatureLayer(name, e)
 {
-	Register<TMXMapLayer>();
+	Register<TiledMapLayer>();
 }
 
 MapFeatureLayer::~MapFeatureLayer(void)

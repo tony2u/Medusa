@@ -46,7 +46,7 @@ protected:
 public:\
 virtual uint GetIndex()const override { return index; }\
 const static uint Index = index;\
-private:																				\
+public:																				\
 	const static StaticConstructor mStaticConstructor;							
 
 #define MEDUSA_IMPLEMENT_STATE(className) 																					 \

@@ -217,8 +217,8 @@ public:
 
 
 
-	static Matrix4 CreateBillboard(const Vector3F& objectPosition, const Vector3F& cameraPosition, const Vector3F& cameraUp, const Vector3F& cameraForward = Vector3F::ForWard, bool isRightHand = MEDUSA_IS_RIGHT_HAND, GraphicsSDK sdk = MEDUSA_DEFAULT_GRAPHICS_SDK);
-	static Matrix4 CreateConstrainedBillboard(const Vector3F& objectPosition, const Vector3F& cameraPosition, const Vector3F& rotateAxis, const Vector3F& cameraForward = Vector3F::ForWard, const Vector3F& objectForward = Vector3F::ForWard, bool isRightHand = MEDUSA_IS_RIGHT_HAND, GraphicsSDK sdk = MEDUSA_DEFAULT_GRAPHICS_SDK);
+	static Matrix4 CreateBillboard(const Vector3F& objectPosition, const Vector3F& cameraPosition, const Vector3F& cameraUp, const Vector3F& cameraForward = Vector3F::Forward, bool isRightHand = MEDUSA_IS_RIGHT_HAND, GraphicsSDK sdk = MEDUSA_DEFAULT_GRAPHICS_SDK);
+	static Matrix4 CreateConstrainedBillboard(const Vector3F& objectPosition, const Vector3F& cameraPosition, const Vector3F& rotateAxis, const Vector3F& cameraForward = Vector3F::Forward, const Vector3F& objectForward = Vector3F::Forward, bool isRightHand = MEDUSA_IS_RIGHT_HAND, GraphicsSDK sdk = MEDUSA_DEFAULT_GRAPHICS_SDK);
 
 
 	static Matrix4 LookAtLH(const Vector3F& eyes, const Vector3F& target, const Vector3F& up);

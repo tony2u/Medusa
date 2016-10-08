@@ -22,16 +22,27 @@ RenderingObjectTimeline::RenderingObjectTimeline(const Share<RenderingObjectTime
 }
 
 
+RenderingObjectTimeline::RenderingObjectTimeline(const Share<RenderingObjectTimelineModel>& model, intp currentCount, intp repeatCount, float beforeDelay /*= 0.f*/, float repeatDuration /*= 0.f*/, float afterDelay /*= 0.f*/, const StringRef& name /*= StringRef::Empty*/)
+	: ITimeline(model, currentCount, repeatCount, beforeDelay, repeatDuration, afterDelay, name)
+{
+
+}
+
 RenderingObjectTimeline::~RenderingObjectTimeline()
 {
 }
 
-
-bool RenderingObjectTimeline::OnUpdate(float prevElapsed,float dt, float blend /*= 1.f*/)
+RenderingObjectTimeline* RenderingObjectTimeline::Clone() const
 {
-	uint frame=CurrentFrameIndex();
+	Share<RenderingObjectTimelineModel> model = mModel.CastPtr<RenderingObjectTimelineModel>();
+	return new RenderingObjectTimeline(model, mCurrentCount, mRepeatCount, mBeforeDelay, mRepeatDuration, mAfterDelay, mName);
+}
+
+bool RenderingObjectTimeline::OnUpdate(float prevElapsed, float dt, float blend /*= 1.f*/)
+{
+	uint frame = UpdateFrameIndex();
 	auto model = mModel.CastPtr<RenderingObjectTimelineModel>();
-	auto* obj= model->GetItemByIndex(frame);
+	auto* obj = model->GetItemByIndex(frame);
 	INode* node = (INode*)mTarget;
 	node->SetRenderingObject(*obj);
 

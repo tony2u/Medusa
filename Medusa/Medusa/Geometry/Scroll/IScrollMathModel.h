@@ -6,8 +6,9 @@
 
 #include "Geometry/Rect2.h"
 #include "Geometry/Point2.h"
-#include "Geometry/Range.h"
+#include "Core/Math/Range.h"
 #include "Geometry/ScrollDirection.h"
+#include "Core/Pattern/Event.h"
 
 MEDUSA_BEGIN;
 
@@ -27,6 +28,7 @@ public:
 public:
 	IScrollMathModel(ScrollDirection direction = ScrollDirection::FreeFromCurrent);
 	virtual ~IScrollMathModel(void);
+	ActionEvent OnScrollEvent;
 public:
 	void Initialize(const Size2F& containerSize, const Rect2F& window);
 	void Initialize(const Size2F& containerSize, const Size2F& windowSize);
@@ -40,6 +42,8 @@ public:
 
 	ScrollState State() const { return mState; }
 	const Rect2F& CurrentWindow() const { return mCurrentWindow; }
+	const Rect2F& Container() const { return mContainer; }
+
 
 	Point2F Movement()const { return mCurrentWindow.Origin - mPrevWindow.Origin; }
 	void ApplyMovement() { mPrevWindow = mCurrentWindow; }
@@ -99,7 +103,7 @@ protected:
 	virtual void OnUpdate();
 	virtual void OnRestrictScroll();
 	virtual void OnScrollingEnd();
-	virtual void OnScroll() {}
+	virtual void OnScroll();
 
 protected:
 	ScrollDirection mDirection;

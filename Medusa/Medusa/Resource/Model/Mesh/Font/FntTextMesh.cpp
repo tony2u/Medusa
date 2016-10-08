@@ -47,10 +47,15 @@ FntTextMesh::~FntTextMesh(void)
 
 void FntTextMesh::Clear()
 {
-	mCharIndex = 0;
-	OnAllComponentChanged();
+	BaseFontMesh::Clear();
+	mVertexTexcoordBuffer.ClearData();
+	mPositions.Clear();
+	mChars.Clear();
 
-	
+	mIndexBuffer.ClearData();
+	mCharIndex = 0;
+	mCharCount = 0;
+	OnAllComponentChanged();
 }
 
 INode* FntTextMesh::CreateCloneInstance()const
@@ -75,9 +80,9 @@ void FntTextMesh::ReserveMesh(uint charCount)
 
 	if (mVertexTexcoordBuffer.ReserveData(mCharCount, outOriginalCount))
 	{
-		OnVertexChanged();
+		OnVertexChanged(mCharCount*4);
 		OnTexcoordChanged();
-
+		OnColorChanged();
 		isChanged = true;
 	}
 
@@ -111,7 +116,7 @@ void FntTextMesh::ShrinkMesh()
 		mIndexBuffer.ForceSetCount(mCharIndex * 6);
 		mCharCount = mCharIndex;
 
-		OnVertexChanged();
+		OnVertexChanged((mCharIndex-mCharCount)*4);
 		OnTexcoordChanged();
 		OnIndexChanged();
 
@@ -139,6 +144,7 @@ void FntTextMesh::AddFontChar(const IFont& font, const FontChar& fontChar, const
         //new char
         mChars.Add(fontChar.Id);
         mPositions.Add(origin);
+		OnIndexChanged();
     }
 	else
 	{
@@ -193,7 +199,7 @@ void FntTextMesh::AddFontChar(const IFont& font, const FontChar& fontChar, const
 
 		mVertexTexcoordBuffer.SetSingleDirtyIndex(mCharIndex - 1);
 
-		OnVertexChanged();
+		OnVertexChanged(0);
 
 	}
 

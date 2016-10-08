@@ -16,6 +16,8 @@ public:
 	RenderTargetFactory();
 	~RenderTargetFactory();
 public:
+	virtual StringRef Name()const override { return "RenderTargetFactory"; }
+
 	virtual bool Initialize();
 	virtual bool Uninitialize();
 	virtual void Clear();

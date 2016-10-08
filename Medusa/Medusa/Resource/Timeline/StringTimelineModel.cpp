@@ -28,52 +28,15 @@ void StringTimelineModel::AddString(float time, const StringRef& val)
 
 StringRef StringTimelineModel::GetString(intp index) const
 {
-	if (mIsPreCalculated)
-	{
-		return mPreCalculatedStrings[index];
-	}
 	const StringRef& str = mStrings[index];
 	return str;
 }
 
 StringRef StringTimelineModel::GetString(float time) const
 {
-	if (mIsPreCalculated)
-	{
-		intp index = GetPreCalculatedIndex(time);
-		return mPreCalculatedStrings[index];
-	}
-
 	intp index = GetSteppedFrameIndex(time);
 	return mStrings[index];
 }
-
-void StringTimelineModel::RemovePreCalculated()
-{
-	ITimelineModel::RemovePreCalculated();
-	mPreCalculatedStrings.Clear();
-}
-
-void StringTimelineModel::OnPreCalculateBegin()
-{
-	mPreCalculatedStrings.Clear();
-}
-
-void StringTimelineModel::AddPreCalcuatedItem(bool isFound, uint prevFrameIndex, uint nextFrameIndex, float percent)
-{
-	StringRef val;
-	if (isFound)
-	{
-		val = mStrings[nextFrameIndex];
-	}
-	else
-	{
-		val = mStrings[prevFrameIndex];
-	}
-	mPreCalculatedStrings.Add(val);
-}
-
-
 
 
 MEDUSA_END;

@@ -16,6 +16,8 @@ public:
 	ModelFactory();
 	~ModelFactory();
 public:
+	virtual StringRef Name()const override { return "ModelFactory"; }
+
 	virtual bool Initialize();
 	virtual bool Uninitialize();
 public:

@@ -24,6 +24,7 @@ public:
 	FileIdRef GetFileId()const { return mFileId.ToRef(); }
 	uint Id() const { return mId; }
 
+	virtual INode* Instantiate(NodeInstantiateInfo* instantiateInfo = nullptr)const { return nullptr; }
 protected:
 	FileId mFileId;
 	uint mId;

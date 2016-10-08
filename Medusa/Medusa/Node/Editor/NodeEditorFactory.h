@@ -23,7 +23,7 @@ public:
 	void Register() { Register(new T()); }
 	void Register(INodeEditor* editor);
 
-	const Medusa::Dictionary<HeapString, INodeEditor*>& Editors() const { return mEditors; }
+	const Dictionary<HeapString, INodeEditor*>& Editors() const { return mEditors; }
 public:
 	INodeEditor* Find(FileType type)const;
 	INodeEditor* Find(const StringRef& type)const;

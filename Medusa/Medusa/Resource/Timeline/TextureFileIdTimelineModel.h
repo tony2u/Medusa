@@ -17,13 +17,13 @@ public:
 
 	FileIdRef GetFileId(float time)const;
 
-	virtual void RemovePreCalculated()override;
+	virtual void RemovePrecomputed()override;
 protected:
-	virtual void OnPreCalculateBegin()override;
-	virtual void AddPreCalcuatedItem(bool isFound, uint prevFrameIndex, uint nextFrameIndex, float percent) override;
+	virtual void OnPrecomputeBegin()override;
+	virtual void AddPrecomputedItem(bool isFound, uint prevFrameIndex, uint nextFrameIndex, float percent) override;
 protected:
 	List<FileId> mFileIds;
-	List<FileId> mPreCalculatedFileIds;
+	List<FileId> mPrecomputedFileIds;
 
 };
 

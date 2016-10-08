@@ -23,5 +23,6 @@ protected:
 };
 
 
+MEDUSA_ENABLE_STATIC_CONSTRUCTOR(StackPanel);
 
 MEDUSA_END;

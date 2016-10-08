@@ -4,23 +4,25 @@
 #pragma once
 #include "Core/Pattern/Singleton.h"
 #include "Resource/BaseResourceFactory.h"
-#include "Resource/Map/Tiled/TmxTiledMap.h"
+#include "Resource/Map/Tiled/TiledMap.h"
 
 MEDUSA_BEGIN;
 
 
 
-class TiledMapFactory :public Singleton<TiledMapFactory>, public BaseResourceFactory < TmxTiledMap >
+class TiledMapFactory :public Singleton<TiledMapFactory>, public BaseResourceFactory < TiledMap >
 {
 	friend class Singleton < TiledMapFactory > ;
 public:
 	TiledMapFactory();
 	~TiledMapFactory();
 public:
+	virtual StringRef Name()const override { return "TiledMapFactory"; }
+
 	virtual bool Initialize()override;
 	virtual bool Uninitialize()override;
 public:
-	Share<TmxTiledMap> Create(const FileIdRef& fileId, ResourceShareType shareType = ResourceShareType::Share);
+	Share<TiledMap> Create(const FileIdRef& fileId, ResourceShareType shareType = ResourceShareType::Share);
 private:
 
 };

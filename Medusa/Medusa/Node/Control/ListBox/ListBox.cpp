@@ -3,29 +3,31 @@
 // license that can be found in the LICENSE file.
 #include "MedusaPreCompiled.h"
 #include "ListBox.h"
-#include "Node/DataSource/IListDataSource.h"
 #include "Geometry/Scroll/IScrollMathModel.h"
 #include "Core/Log/Log.h"
 #include "Node/Input/Gesture/SwipeGestureRecognizer.h"
 #include "Node/Input/Gesture/EventArg/SwipeBeginGestureEventArg.h"
 #include "Node/Input/Gesture/EventArg/SwipeFailedGestureEventArg.h"
+#include "Node/Input/InputDispatcher.h"
+#include "Node/Binding/BaseListDataBinding.h"
 #include "Node/NodeFactory.h"
-
 MEDUSA_BEGIN;
 
 
 ListBox::ListBox(StringRef name, ScrollDirection direction)
-	:ScrollPanel(name,direction),mSelectedItem(nullptr),
-	mCacheEnabed(false)
+	:ScrollPanel(name, direction), mSelectedItem(nullptr),
+	mCacheEnabed(false),
+	mValidRange(RangeI::Init)
 {
-	SetSizeToContent(SizeToContent::WidthAndHeight);
-	Log::AssertFormat(!direction.IsFreeOrNone(),"ListBox only support one-way scroll");
+	Log::AssertFormat(!direction.IsFreeOrNone(), "ListBox only support one-way scroll");
+
+	MutableInput().Enable(true);
+
 }
 
 ListBox::ListBox(StringRef name /*= StringRef::Empty*/, const IEventArg& e /*= IEventArg::Empty*/)
 	:ScrollPanel(name, e)
 {
-	SetSizeToContent(SizeToContent::WidthAndHeight);
 }
 
 ListBox::~ListBox(void)
@@ -43,7 +45,7 @@ void ListBox::ClearCache()
 	SAFE_DELETE_COLLECTION(mSingleTypeItemCache);
 	for (auto i : mMultipleTypeItemCache)
 	{
-		Queue<INode*>* nodes=i.Value;
+		Queue<INode*>* nodes = i.Value;
 		SAFE_DELETE_COLLECTION(*nodes);
 		SAFE_DELETE(nodes);
 	}
@@ -58,129 +60,49 @@ void ListBox::SetScrollDirection(ScrollDirection direction)
 }
 
 
-void ListBox::SetDataSource(const Share<IDataSource>& dataSource)
+bool ListBox::SetBinding(IDataBinding* val)
 {
-	Log::AssertFormat(dataSource->IsA<IListDataSource>(),"ListBox only support DataSource inherit from IListDataSource.");
-
-	RETURN_IF_EQUAL(mDataSource,dataSource);
-
+	RETURN_FALSE_IF_FALSE(INode::SetBinding(val));
 	ClearCache();
 	Clear();
 	mItems.Clear();
 
-	mDataSource = dataSource;
-
-	auto listDataSource=dataSource.CastPtr<IListDataSource>();
-	listDataSource->OnItemAdded+=Bind(&ListBox::OnItemAdded,this);
-	listDataSource->OnItemRemoved+=Bind(&ListBox::OnItemRemoved, this);
-	listDataSource->OnItemUpdated+=Bind(&ListBox::OnItemUpdated, this);
-	listDataSource->OnDataChanged+=Bind(&ListBox::OnDataChanged, this);
-
-	if (mParent!=nullptr)
-	{
-		OnDataChanged(*mDataSource);
-	}
+	BaseListDataBinding* listDataBinding = (BaseListDataBinding*)val;
+	listDataBinding->OnItemAdded += Bind(&ListBox::OnItemAdded, this);
+	listDataBinding->OnItemRemoved += Bind(&ListBox::OnItemRemoved, this);
+	listDataBinding->OnItemUpdated += Bind(&ListBox::OnItemUpdated, this);
+	listDataBinding->OnTotalChanged += Bind(&ListBox::OnTotalChanged, this);
+	return true;
 }
 
-bool ListBox::IsSensitiveToChildLayoutChanged(const ILayoutable& sender,NodeLayoutChangedFlags changedFlag)
+
+bool ListBox::IsSensitiveToChildLayoutChanged(const ILayoutable& sender, NodeLayoutChangedFlags changedFlag)
 {
 	return false;
 }
 
-bool ListBox::ArrangeChildren(const Rect2F& limitRect/*=Rect2F::Zero*/,NodeLayoutArrangeFlags arrangeFlags/*=NodeLayoutArrangeFlags::None*/)
+bool ListBox::ArrangeChildren(const Rect2F& limitRect/*=Rect2F::Zero*/, NodeLayoutArrangeFlags arrangeFlags/*=NodeLayoutArrangeFlags::None*/)
 {
-	static bool isDebug = false;
-	if (isDebug)
-	{
-		return true;
-	}
-	RETURN_TRUE_IF_NULL(mDataSource);
-	auto listDataSource = mDataSource.CastPtr<IListDataSource>();
-	size_t itemCount=listDataSource->Count();
+	RETURN_TRUE_IF_NULL(mBinding);
+	BaseListDataBinding* listDataBinding = (BaseListDataBinding*)mBinding;
+	size_t itemCount = listDataBinding->Count();
 
-	if (mItems.IsEmpty()&&itemCount!=0)
+	if (mItems.IsEmpty() && itemCount != 0)
 	{
-		OnDataChanged(*mDataSource);
+		OnTotalChanged();
 	}
 	else
 	{
 
-		Point2F totalMovment=mScrollModel->Offset();
-		Rect2F targetBoundingBox=Rect2F::Zero;
-		RETURN_TRUE_IF_ZERO(itemCount);
-		//at this point, self size is changed
-
-		if(IsVertical())
-		{
-			targetBoundingBox.Size.Width=mSize.Width;
-			float origin=mSize.Height;
-
-			Size2F limitSize=mSize.To2D();
-			limitSize.Height=0.f;
-
-			FOR_EACH_SIZE(i,itemCount)
-			{
-				ListBoxItem& item=mItems[i];
-
-				item.BoundingBox.Size=CalculateBoundingBoxSize((uint)i);
-				origin-=item.BoundingBox.Size.Height;
-				item.BoundingBox.Origin.Y=origin;
-				targetBoundingBox.Size.Height+=item.BoundingBox.Size.Height;
-
-			}
-
-			targetBoundingBox.Origin.Y=origin;
-		}
-		else
-		{
-			Size2F limitSize=mSize.To2D();
-			limitSize.Width=0.f;
-
-			targetBoundingBox.Size.Height=mSize.Height;
-			float origin=0.f;
-			FOR_EACH_SIZE(i,itemCount)
-			{
-				ListBoxItem& item=mItems[i];
-				item.BoundingBox.Size=CalculateBoundingBoxSize((uint)i);
-				item.BoundingBox.Origin.X=origin;
-
-				targetBoundingBox.Size.Width+=item.BoundingBox.Size.Width;
-				origin+=item.BoundingBox.Size.Width;
-			}
-		}
-
-		mScrollModel->Initialize(mSize.To2D(),targetBoundingBox);
+		Point2F totalMovment = mScrollModel->Offset();
+		SetupItems();
 		mScrollModel->ScrollBy(totalMovment);
 
 		//check items
-		FOR_EACH_SIZE(i,itemCount)
+		FOR_EACH_SIZE(i, itemCount)
 		{
-			ListBoxItem& item=mItems[i];
-
-			if (mScrollModel->IsRectVisible(item.BoundingBox))
-			{
-				if (item.Node==nullptr)
-				{
-					CreateItemNode(item);
-				}
-				else
-				{
-					ReloadItemNode(item);
-				}
-			}
-			else
-			{
-				if (item.Node!=nullptr)
-				{
-					RecycleItemNode(item);
-				}
-				item.Node=nullptr;
-			}
-
-			if (item.Node!=nullptr)
-			{
-				item.ArrangeNode(totalMovment,arrangeFlags);
-			}
+			ListBoxItem& item = mItems[i];
+			BREAK_IF_FALSE(TryLoadOrRecycleItem(item));
 		}
 
 	}
@@ -190,516 +112,297 @@ bool ListBox::ArrangeChildren(const Rect2F& limitRect/*=Rect2F::Zero*/,NodeLayou
 }
 
 
-void ListBox::OnItemAdded(size_t index)
-{
-	mScrollModel->ApplyMovement();
-
-	auto listDataSource = mDataSource.CastPtr<IListDataSource>();
-
-	size_t itemCount=mItems.Count();
-	if(index<itemCount)
-	{
-		//insert
-		ListBoxItem newItem;
-		newItem.Index=index;
-		newItem.Type=listDataSource->GetItemType(index);
-		newItem.BoundingBox.Size=CalculateBoundingBoxSize(index);
-		newItem.BoundingBox.Origin=mItems[index].BoundingBox.Origin;
-
-		mItems.Insert(index,newItem);
-
-		//update next items' bounding box
-		Point2F totalMovemnt=mScrollModel->Offset();
-
-		if (IsVertical())
-		{
-			FOR_EACH_UINT_BEGIN_END(i,index+1,itemCount-1)
-			{
-				ListBoxItem& item=mItems[i];
-				++item.Index;
-				item.BoundingBox.Origin.Y-=newItem.BoundingBox.Size.Height;
-
-				if (mScrollModel->IsRectVisible(item.BoundingBox))
-				{
-					if (item.Node==nullptr)
-					{
-						CreateItemNode(item);
-					}
-				}
-				else
-				{
-					if (item.Node!=nullptr)
-					{
-						RecycleItemNode(item);
-					}
-					item.Node=nullptr;
-				}
-
-				item.ApplyMovement(totalMovemnt);
-			}
-		}
-		else
-		{
-			FOR_EACH_UINT_BEGIN_END(i,index+1,itemCount-1)
-			{
-				ListBoxItem& item=mItems[i];
-				++item.Index;
-				item.BoundingBox.Origin.X+=newItem.BoundingBox.Size.Width;
-				if (mScrollModel->IsRectVisible(item.BoundingBox))
-				{
-					if (item.Node==nullptr)
-					{
-						CreateItemNode(item);
-					}
-				}
-				else
-				{
-					if (item.Node!=nullptr)
-					{
-						RecycleItemNode(item);
-					}
-					item.Node=nullptr;
-				}
-				item.ApplyMovement(totalMovemnt);
-			}
-		}
-
-		mScrollModel->UpdateWindow(newItem.BoundingBox.Size);
-
-		if (mScrollModel->IsRectVisible(newItem.BoundingBox))
-		{
-			CreateItemNode(newItem);
-		}
-
-	}
-	else
-	{
-		//append
-		ListBoxItem& newItem=mItems.NewAdd();
-		newItem.Index=index;
-		newItem.Type=listDataSource->GetItemType(index);
-		newItem.BoundingBox.Size=CalculateBoundingBoxSize(index);
-		newItem.BoundingBox.Origin=mItems[index-1].BoundingBox.Origin;
-
-		if (IsVertical())
-		{
-			newItem.BoundingBox.Origin.Y-=newItem.BoundingBox.Size.Height;
-		}
-		else
-		{
-			newItem.BoundingBox.Origin.X+=newItem.BoundingBox.Size.Width;
-		}
-
-		mScrollModel->UpdateWindow(newItem.BoundingBox.Size);
-
-		if (mScrollModel->IsRectVisible(newItem.BoundingBox))
-		{
-			CreateItemNode(newItem);
-		}
-
-	}
-
-
-}
-
-void ListBox::OnItemRemoved(size_t index)
-{
-	mScrollModel->ApplyMovement();
-
-	size_t itemCount=mItems.Count();
-	RETURN_IF_FALSE(index<itemCount);
-	if (index<itemCount-1)
-	{
-		//remove item in middle
-		ListBoxItem& itemRemoved=mItems[index];
-		mScrollModel->UpdateWindow(-itemRemoved.BoundingBox.Size);
-
-
-		//update next items' bounding box
-		Point2F totalMovemnt=mScrollModel->Offset();
-
-		if (IsVertical())
-		{
-			FOR_EACH_UINT_BEGIN_END(i,index,itemCount-1)
-			{
-				ListBoxItem& item=mItems[i];
-				--item.Index;
-				item.BoundingBox.Origin.Y+=itemRemoved.BoundingBox.Size.Height;
-				if (mScrollModel->IsRectVisible(item.BoundingBox))
-				{
-					if (item.Node==nullptr)
-					{
-						CreateItemNode(item);
-					}
-				}
-				else
-				{
-					if (item.Node!=nullptr)
-					{
-						RecycleItemNode(item);
-					}
-					item.Node=nullptr;
-				}
-
-				item.ApplyMovement(totalMovemnt);
-			}
-		}
-		else
-		{
-			FOR_EACH_UINT_BEGIN_END(i,index,itemCount-1)
-			{
-				ListBoxItem& item=mItems[i];
-				--item.Index;
-				item.BoundingBox.Origin.X-=itemRemoved.BoundingBox.Size.Width;
-				if (mScrollModel->IsRectVisible(item.BoundingBox))
-				{
-					if (item.Node==nullptr)
-					{
-						CreateItemNode(item);
-					}
-				}
-				else
-				{
-					if (item.Node!=nullptr)
-					{
-						RecycleItemNode(item);
-					}
-					item.Node=nullptr;
-				}
-
-				item.ApplyMovement(totalMovemnt);
-			}
-		}
-
-		RecycleItemNode(itemRemoved);
-		mItems.RemoveAt(index);
-	}
-	else
-	{
-		//remove the last
-		ListBoxItem& itemRemoved=mItems[index];
-		mScrollModel->UpdateWindow(-itemRemoved.BoundingBox.Size);
-
-		RecycleItemNode(itemRemoved);
-		mItems.RemoveAt(index);
-
-	}
-
-
-}
-
-void ListBox::OnItemUpdated(size_t index, size_t length)
-{
-	mScrollModel->ApplyMovement();
-	auto listDataSource = mDataSource.CastPtr<IListDataSource>();
-
-	size_t newCount=listDataSource->Count();
-	size_t itemCount=mItems.Count();
-	if(itemCount!=newCount)
-	{
-		if (itemCount==0||newCount==0)
-		{
-			OnDataChanged(*mDataSource);
-			return;
-		}
-	}
-
-	//reload updated item
-	if (index+length<=itemCount)
-	{
-
-		if (IsVertical())
-		{
-			ListBoxItem& beginItem=mItems[index];
-			float origin=beginItem.BoundingBox.Origin.Y;
-			origin+=beginItem.BoundingBox.Size.Height;	//get prev origin
-			Size2F deltaSize = Size2F::Zero;
-
-			FOR_EACH_SIZE_BEGIN_END(i,index,index+length-1)
-			{
-				ListBoxItem& item=mItems[i];
-				Size2F originalSize=item.BoundingBox.Size;
-
-				item.BoundingBox.Size=CalculateBoundingBoxSize(index);
-				origin-=item.BoundingBox.Size.Height;
-				item.BoundingBox.Origin.Y=origin;
-				
-				Size2F sizeChanged = item.BoundingBox.Size - originalSize;
-				deltaSize += sizeChanged;
-				mScrollModel->UpdateWindow(sizeChanged);
-
-				if (mScrollModel->IsRectVisible(item.BoundingBox))
-				{
-					if (item.Node==nullptr)
-					{
-						CreateItemNode(item);
-					}
-					else
-					{
-						ReloadItemNode(item);
-					}
-				}
-				else
-				{
-					if (item.Node!=nullptr)
-					{
-						RecycleItemNode(item);
-					}
-					item.Node=nullptr;
-				}
-
-			}
-
-
-			Point2F totalMovemnt=mScrollModel->Offset();
-			//update next items pos
-			FOR_EACH_UINT_BEGIN_END(i,index+length,itemCount-1)
-			{
-				ListBoxItem& item=mItems[i];
-				item.BoundingBox.Origin.X -= deltaSize.Width;
-				item.BoundingBox.Origin.Y -= deltaSize.Height;
-
-				if (mScrollModel->IsRectVisible(item.BoundingBox))
-				{
-					if (item.Node==nullptr)
-					{
-						CreateItemNode(item);
-					}
-				}
-				else
-				{
-					if (item.Node!=nullptr)
-					{
-						RecycleItemNode(item);
-					}
-				}
-
-				item.ApplyMovement(totalMovemnt);
-			}
-
-			AssertValid();
-		}
-		else
-		{
-			ListBoxItem& beginItem=mItems[index];
-			float origin=beginItem.BoundingBox.Origin.X;
-			origin-=beginItem.BoundingBox.Size.Width;	//get prev origin
-			Size2F deltaSize = Size2F::Zero;
-
-
-			FOR_EACH_SIZE_BEGIN_END(i,index,index+length-1)
-			{
-				ListBoxItem& item=mItems[i];
-				Size2F originalSize=item.BoundingBox.Size;
-
-				item.BoundingBox.Size=CalculateBoundingBoxSize(index);
-				origin+=item.BoundingBox.Size.Width;
-				item.BoundingBox.Origin.X=origin;
-
-				Size2F sizeChanged = item.BoundingBox.Size - originalSize;
-				deltaSize += sizeChanged;
-				mScrollModel->UpdateWindow(sizeChanged);
-
-				ReloadItemNode(item);
-				if (mScrollModel->IsRectVisible(item.BoundingBox))
-				{
-					if (item.Node==nullptr)
-					{
-						CreateItemNode(item);
-					}
-					else
-					{
-						ReloadItemNode(item);
-					}
-				}
-				else
-				{
-					if (item.Node!=nullptr)
-					{
-						RecycleItemNode(item);
-					}
-					item.Node=nullptr;
-				}
-			}
-
-			Point2F totalMovemnt=mScrollModel->Offset();
-			//update next items pos
-			FOR_EACH_UINT_BEGIN_END(i,index+length,itemCount-1)
-			{
-				ListBoxItem& item=mItems[i];
-				item.BoundingBox.Origin.X += deltaSize.Width;
-				item.BoundingBox.Origin.Y += deltaSize.Height;
-
-				if (mScrollModel->IsRectVisible(item.BoundingBox))
-				{
-					if (item.Node==nullptr)
-					{
-						CreateItemNode(item);
-					}
-				}
-				else
-				{
-					if (item.Node!=nullptr)
-					{
-						RecycleItemNode(item);
-					}
-				}
-
-				item.ApplyMovement(totalMovemnt);
-			}
-
-			AssertValid();
-		}
-	}
-
-	//remove items
-	if (newCount<itemCount)
-	{
-		FOR_EACH_SIZE_BEGIN_END(i,newCount-1,itemCount-1)
-		{
-			//remove the last
-			ListBoxItem& itemRemoved=mItems[i];
-			mScrollModel->UpdateWindow(-itemRemoved.BoundingBox.Size);
-
-			RecycleItemNode(itemRemoved);
-			mItems.RemoveAt(i);
-			Log::FormatInfo("Reload remove:{}",(int)i);
-		}
-	}
-	else if (newCount>itemCount)
-	{
-		//or add new items
-		FOR_EACH_SIZE_BEGIN_END(i,itemCount-1,newCount-1)
-		{
-			ListBoxItem& newItem=mItems.NewAdd();
-			newItem.Index=(uint)i;
-			newItem.Type=listDataSource->GetItemType((uint)i);
-			newItem.BoundingBox.Size=CalculateBoundingBoxSize((uint)i);
-			newItem.BoundingBox.Origin=mItems[i-1].BoundingBox.Origin;
-
-			if (IsVertical())
-			{
-				newItem.BoundingBox.Origin.Y-=newItem.BoundingBox.Size.Height;
-			}
-			else
-			{
-				newItem.BoundingBox.Origin.X+=newItem.BoundingBox.Size.Width;
-			}
-
-			mScrollModel->UpdateWindow(newItem.BoundingBox.Size);
-			CreateItemNode(newItem);
-			Log::FormatInfo("Reload create:{}",(uint)i);
-
-		}
-	}
-}
-
-void ListBox::OnDataChanged(const IDataSource& dataSource)
+void ListBox::OnTotalChanged()
 {
 	mScrollModel->ApplyMovement();
 
 	//clear current items
 	for (auto& item : mItems)
 	{
-		if (item.Node!=nullptr)
+		if (item.Node != nullptr)
 		{
 			RecycleItemNode(item);
 		}
 	}
 	mItems.Clear();
-
+	mValidRange = RangeI::Init;
 	//create new items
-	auto listDataSource = mDataSource.CastPtr<IListDataSource>();
-	size_t count=listDataSource->Count();
-	Rect2F targetBoundingBox=Rect2F::Zero;
-	Size2F limitSize=mSize.To2D();
-
-	if(IsVertical())
+	BaseListDataBinding* listDataBinding = (BaseListDataBinding*)mBinding;
+	//update item fixed size
+	if (!Math::IsZero(mItemFixedSize))
 	{
-		targetBoundingBox.Size.Width=mSize.Width;
-		float origin=mSize.Height;
-		limitSize.Height=0.f;
-		FOR_EACH_SIZE(i,count)
+		mResultItemFixedSize = mItemFixedSize;
+	}
+	else if (listDataBinding->IsFixedSize())
+	{
+		if (IsVertical())
 		{
-			ListBoxItem& item=mItems.NewAdd();
-
-			item.Index=(uint)i;
-			item.BoundingBox.Size=CalculateBoundingBoxSize((uint)i);
-			origin-=item.BoundingBox.Size.Height;
-
-			item.BoundingBox.Origin.Y=origin;
-
-			item.Type=listDataSource->GetItemType((uint)i);
-			item.Node=nullptr;
-
-			targetBoundingBox.Size.Height+=item.BoundingBox.Size.Height;
-
+			mResultItemFixedSize = listDataBinding->GetFixedSize(GetItemLimitSize()).Height;
 		}
-
-		targetBoundingBox.Origin.Y=origin;
+		else
+		{
+			mResultItemFixedSize = listDataBinding->GetFixedSize(GetItemLimitSize()).Width;
+		}
 	}
 	else
 	{
-		targetBoundingBox.Size.Height=mSize.Height;
-		float origin=0.f;
-		limitSize.Width=0.f;
-		FOR_EACH_SIZE(i,count)
+		mResultItemFixedSize = 0.f;
+	}
+
+	mItems.ForceReserveCount(listDataBinding->Count());
+	SetupItems();
+
+	//load nodes for items
+	for (auto& item : mItems)
+	{
+		BREAK_IF_FALSE(TryLoadOrRecycleItem(item));
+	}
+
+}
+
+void ListBox::OnItemAdded(size_t index)
+{
+	mScrollModel->ApplyMovement();
+	size_t itemCount = mItems.Count();
+
+	BaseListDataBinding* listDataBinding = (BaseListDataBinding*)mBinding;
+	ListBoxItem newItem;
+	newItem.Index = index;
+	newItem.Tag = listDataBinding->GetTemplateTag(index);
+	newItem.BoundingBox.Size = CalculateBoundingBoxSize(index);
+
+	Rect2F originBoundingBox = Rect2F::Zero;
+	if (index < itemCount)
+	{
+		ListBoxItem& originItem = mItems[index];
+		originBoundingBox = originItem.BoundingBox;
+	}
+	else
+	{
+		if (index > 0)
 		{
-			ListBoxItem& item=mItems.NewAdd();
-			item.Index=(uint)i;
-			item.BoundingBox.Size=CalculateBoundingBoxSize((uint)i);
-			item.BoundingBox.Origin.X=origin;
-
-			item.Type=listDataSource->GetItemType((uint)i);
-			item.Node=nullptr;
-
-			targetBoundingBox.Size.Width+=item.BoundingBox.Size.Width;
-			origin+=item.BoundingBox.Size.Width;
+			ListBoxItem& originItem = mItems[index - 1];
+			originBoundingBox = originItem.BoundingBox;
 		}
 	}
 
-
-	mScrollModel->Initialize(mSize.To2D(),targetBoundingBox);
-
-	//load nodes for items
-	for(auto& item:mItems)
+	auto deltaSize = newItem.BoundingBox.Size - originBoundingBox.Size;
+	if (IsVertical())
 	{
-		if (mScrollModel->IsRectVisible(item.BoundingBox))
+		deltaSize.Width = 0.f;
+	}
+	else
+	{
+		deltaSize.Height = 0.f;
+	}
+
+	newItem.BoundingBox.Origin = originBoundingBox.Origin;
+	newItem.BoundingBox.Origin.X += deltaSize.Width;
+	newItem.BoundingBox.Origin.Y -= deltaSize.Height;
+
+	TryLoadOrRecycleItem(newItem, true);
+	mItems.Insert(index, newItem);
+	mScrollModel->UpdateWindow(deltaSize);
+
+	if (index < itemCount)
+	{
+		//update next items' bounding box
+		FOR_EACH_UINT_BEGIN_END(i, index + 1, itemCount - 1)
 		{
-			if (item.Node==nullptr)
+			ListBoxItem& item = mItems[i];
+			++item.Index;
+			item.BoundingBox.Origin.X += deltaSize.Width;
+			item.BoundingBox.Origin.Y -= deltaSize.Height;
+		}
+
+		FOR_EACH_UINT_BEGIN_END(i, index + 1, itemCount - 1)
+		{
+			ListBoxItem& item = mItems[i];
+			BREAK_IF_FALSE(TryLoadOrRecycleItem(item));
+		}
+	}
+	
+}
+
+void ListBox::OnItemRemoved(size_t index)
+{
+	mScrollModel->ApplyMovement();
+
+	intp itemCount = (intp)mItems.Count();
+	RETURN_IF_FALSE((intp)index < itemCount - 1);
+
+	//remove item in middle
+	ListBoxItem& itemRemoved = mItems[index];
+	RecycleItemNode(itemRemoved);
+	Size2F deltaSize = itemRemoved.BoundingBox.Size;
+	if (IsVertical())
+	{
+		deltaSize.Width = 0.f;
+	}
+	else
+	{
+		deltaSize.Height = 0.f;
+	}
+
+	mScrollModel->UpdateWindow(-deltaSize);
+	mItems.RemoveAt(index);
+	--itemCount;
+
+	//update next items' bounding box
+	FOR_EACH_INT_BEGIN_END(i, (intp)index, (intp)itemCount - 1)
+	{
+		ListBoxItem& item = mItems[i];
+		--item.Index;
+		item.BoundingBox.Origin.X -= deltaSize.Width;
+		item.BoundingBox.Origin.Y += deltaSize.Height;
+		TryLoadOrRecycleItem(item);
+	}
+
+}
+
+void ListBox::OnItemUpdated(size_t index)
+{
+	mScrollModel->ApplyMovement();
+	size_t itemCount = mItems.Count();
+
+	//reload updated item
+	ListBoxItem& updatedItem = mItems[index];
+	auto originSize = updatedItem.BoundingBox.Size;
+	updatedItem.BoundingBox.Size = CalculateBoundingBoxSize(index);
+	Size2F deltaSize = updatedItem.BoundingBox.Size - originSize;
+	if (IsVertical())
+	{
+		deltaSize.Width = 0.f;
+	}
+	else
+	{
+		deltaSize.Height = 0.f;
+	}
+
+
+	updatedItem.BoundingBox.Origin.X += deltaSize.Width;
+	updatedItem.BoundingBox.Origin.Y -= deltaSize.Height;
+
+	if (!deltaSize.IsNearlyZero())
+	{
+		mScrollModel->UpdateWindow(deltaSize);
+		TryLoadOrRecycleItem(updatedItem, true);
+
+		//update next items pos
+		FOR_EACH_UINT_BEGIN_END(i, index + 1, itemCount - 1)
+		{
+			ListBoxItem& item = mItems[i];
+			item.BoundingBox.Origin.X += deltaSize.Width;
+			item.BoundingBox.Origin.Y -= deltaSize.Height;
+			TryLoadOrRecycleItem(item);
+		}
+	}
+	else
+	{
+		TryLoadOrRecycleItem(updatedItem, true);
+	}
+
+}
+
+void ListBox::LoadItemNode(ListBoxItem& item, bool forceReload /*= false*/, bool forceApplyMovement /*= false*/)
+{
+	BaseListDataBinding* listDataBinding = (BaseListDataBinding*)mBinding;
+	int newType = listDataBinding->GetTemplateTag(item.Index);
+	if (item.Tag != newType)
+	{
+		RecycleItemNode(item);
+		forceApplyMovement = true;
+	}
+	bool isArrange = false;
+
+	if (item.Node == nullptr)
+	{
+		if (mCacheEnabed)
+		{
+			Queue<INode*>* nodeQueue = nullptr;
+			if (!listDataBinding->HasMultipleTag())
 			{
-				CreateItemNode(item);
+				nodeQueue = &mSingleTypeItemCache;
 			}
+			else
+			{
+				nodeQueue = mMultipleTypeItemCache.GetOptional(item.Tag, nullptr);
+			}
+
+			if (nodeQueue != nullptr && !nodeQueue->IsEmpty())
+			{
+				item.Node = nodeQueue->Head();
+				nodeQueue->Pop();
+				mValidRange.Expand(item.Index);
+			}
+		}
+
+		if (item.Node == nullptr)
+		{
+			item.Node = listDataBinding->Load(item.Index, GetItemLimitSize());
+		}
+
+		AddChild(item.Node);
+		mValidRange.Expand(item.Index);
+		isArrange = true;
+		
+	}
+	else if (forceReload)
+	{
+		listDataBinding->Load(item.Index, GetItemLimitSize(), item.Node);
+		isArrange = true;
+	}
+
+	if (isArrange)
+	{
+		auto nodeSize = item.Node->Size2D();
+		if (IsVertical())
+		{
+			item.BoundingBox.Size.Height = nodeSize.Height;
 		}
 		else
 		{
-			if (item.Node!=nullptr)
-			{
-				RecycleItemNode(item);
-			}
+			item.BoundingBox.Size.Width = nodeSize.Width;
 		}
+
+		item.ArrangeNode(mScrollModel->Offset());
+	}
+	else if (forceApplyMovement)
+	{
+		item.ApplyMovement(mScrollModel->Offset());
 	}
 }
 
+
+
 void ListBox::RecycleItemNode(ListBoxItem& item)
 {
+	RETURN_IF_NULL(item.Node);
+	if (mValidRange.Min == (int)item.Index)
+	{
+		++mValidRange.Min;
+	}
+	else if (mValidRange.Max == (int)item.Index)
+	{
+		--mValidRange.Max;
+	}
+
 	if (mCacheEnabed)
 	{
 		RemoveChild(item.Node);
-
-		auto listDataSource = mDataSource.CastPtr<IListDataSource>();
-		Queue<INode*>* nodeQueue=nullptr;
-		if (listDataSource->IsFixedType())
+		BaseListDataBinding* listDataBinding = (BaseListDataBinding*)mBinding;
+		Queue<INode*>* nodeQueue = nullptr;
+		if (!listDataBinding->HasMultipleTag())
 		{
-			nodeQueue=&mSingleTypeItemCache;
+			nodeQueue = &mSingleTypeItemCache;
 		}
 		else
 		{
-			nodeQueue=mMultipleTypeItemCache.GetOptional(item.Type,nullptr);
-			if (nodeQueue==nullptr)
+			nodeQueue = mMultipleTypeItemCache.GetOptional(item.Tag, nullptr);
+			if (nodeQueue == nullptr)
 			{
-				nodeQueue=new Queue<INode*>();
-				mMultipleTypeItemCache.Add(item.Type,nodeQueue);
+				nodeQueue = new Queue<INode*>();
+				mMultipleTypeItemCache.Add(item.Tag, nodeQueue);
 			}
 		}
 
@@ -710,239 +413,210 @@ void ListBox::RecycleItemNode(ListBoxItem& item)
 		DeleteChild(item.Node);
 	}
 
-	item.Node=nullptr;
+	item.Node = nullptr;
 
 }
 
-void ListBox::CreateItemNode(ListBoxItem& item)
+bool ListBox::TryLoadOrRecycleItem(ListBoxItem& item, bool forceReload /*= false*/, bool forceApplyMovement /*= false*/)
 {
-	auto listDataSource = mDataSource.CastPtr<IListDataSource>();
-
-	if (mCacheEnabed)
+	if (mScrollModel->IsRectVisible(item.BoundingBox))
 	{
-		Queue<INode*>* nodeQueue=nullptr;
-		if (listDataSource->IsFixedType())
-		{
-			nodeQueue=&mSingleTypeItemCache;
-		}
-		else
-		{
-			nodeQueue=mMultipleTypeItemCache.GetOptional(item.Type,nullptr);
-		}
-
-		if (nodeQueue!=nullptr&&!nodeQueue->IsEmpty())
-		{
-			item.Node=nodeQueue->Head();
-			nodeQueue->Pop();
-		}
-	}
-
-	Size2F limitSize=GetItemLimitSize();
-
-	if(item.Node==nullptr)
-	{
-		item.Node=listDataSource->CreateItem(item.Index,limitSize);
-		item.Node->EnableLayout(false);
-	}
-	else
-	{
-		listDataSource->ReloadItem(item.Node,item.Index,limitSize);
-	}
-
-	AddChild(item.Node);
-	item.ArrangeNode(mScrollModel->Offset());
-}
-
-
-void ListBox::ReloadItemNode(ListBoxItem& item)
-{
-	auto listDataSource = mDataSource.CastPtr<IListDataSource>();
-	int newType=listDataSource->GetItemType(item.Index);
-	if (item.Type==newType)
-	{
-
-		Size2F limitSize=GetItemLimitSize();
-		if(item.Node==nullptr)
-		{
-			item.Node=listDataSource->CreateItem(item.Index,limitSize);
-			AddChild(item.Node);
-		}
-		else
-		{
-			listDataSource->ReloadItem(item.Node,item.Index,limitSize);
-		}
-
-		item.ArrangeNode(mScrollModel->Offset());
-
+		LoadItemNode(item, forceReload,forceApplyMovement);
+		return true;
 	}
 	else
 	{
 		RecycleItemNode(item);
-		CreateItemNode(item);
+		return false;
+	}
+}
+
+
+void ListBox::OnBeforeMeasure(const Size2F& availableSize)
+{
+	ScrollPanel::OnBeforeMeasure(availableSize);
+
+	RETURN_IF_NOT_EQUAL(mStretch, Stretch::None);
+	RETURN_IF_EQUAL(mSizeToContent, SizeToContent::None);
+	RETURN_IF_EQUAL(mSizeToContent, SizeToContent::Mesh);
+
+	//create new items
+	BaseListDataBinding* listDataBinding = (BaseListDataBinding*)mBinding;
+	size_t count = listDataBinding->Count();
+	Size2F maxSize = Size2F::Zero;
+
+	if (IsVertical())
+	{
+		if (!Math::IsZero(mResultItemFixedSize))
+		{
+			maxSize.Height = mResultItemFixedSize*count;
+		}
+		else
+		{
+			FOR_EACH_SIZE(i, count)
+			{
+				Size2F size = mItems[i].BoundingBox.Size;
+				maxSize.Height += size.Height;
+				maxSize.Width = Math::Max(maxSize.Width, size.Width);
+			}
+		}
+
+
+	}
+	else
+	{
+		if (!Math::IsZero(mResultItemFixedSize))
+		{
+			maxSize.Width = mResultItemFixedSize*count;
+		}
+		else
+		{
+			FOR_EACH_SIZE(i, count)
+			{
+				Size2F size = mItems[i].BoundingBox.Size;
+				maxSize.Width += size.Width;
+				maxSize.Height = Math::Max(maxSize.Height, size.Height);
+			}
+		}
+	}
+
+
+	switch (mSizeToContent)
+	{
+	case SizeToContent::Width:
+		SetWidth(maxSize.Width);
+		break;
+	case SizeToContent::Height:
+		SetHeight(maxSize.Height);
+		break;
+	case SizeToContent::WidthAndHeight:
+		SetSize(maxSize);
+		break;
+	default:
+		break;
 	}
 
 }
 
 void ListBox::OnMoveChildren()
 {
-	
-
 	mScrollModel->ApplyMovement();
-	Point2F totalMovement=mScrollModel->Offset();
-
 	for (auto& item : mItems)
 	{
-		if (mScrollModel->IsRectVisible(item.BoundingBox))
+		TryLoadOrRecycleItem(item,false,true);
+	}
+
+}
+
+
+void ListBox::OnSwipeBegin(INode* sender, SwipeBeginGestureEventArg& e)
+{
+	ScrollPanel::OnSwipeBegin(sender, e);
+
+	SwipeGestureRecognizer* recognizer = (SwipeGestureRecognizer*)e.Recognizer;
+	const Point2F& pos = recognizer->BeginPos();
+	Point2F modelPos = mScrollModel->ConvertToWindowSpace(pos);
+	mSelectedItem = GetSelectedItem(modelPos);
+	if (mSelectedItem != nullptr)
+	{
+		OnItemSelected(*this, *mSelectedItem);
+	}
+
+}
+
+void ListBox::OnSwipeMoved(INode* sender, SwipeMovedGestureEventArg& e)
+{
+	ScrollPanel::OnSwipeMoved(sender, e);
+
+	if (mSelectedItem != nullptr)
+	{
+		OnItemUnselected(*this, *mSelectedItem);
+		mSelectedItem = nullptr;
+	}
+}
+
+void ListBox::OnSwipeFailed(INode* sender, SwipeFailedGestureEventArg& e)
+{
+	ScrollPanel::OnSwipeFailed(sender, e);
+
+	if (mSelectedItem != nullptr)
+	{
+		OnItemUnselected(*this, *mSelectedItem);
+		mSelectedItem = nullptr;
+	}
+
+	if (e.Recognizer->State() == InputState::End)
+	{
+		SwipeGestureRecognizer* recognizer = (SwipeGestureRecognizer*)e.Recognizer;
+		const Point2F& pos = recognizer->CurPos();
+		Point2F modelPos = mScrollModel->ConvertToWindowSpace(pos);
+		const ListBoxItem* item = GetSelectedItem(modelPos);
+		if (item != nullptr)
 		{
-			if (item.Node==nullptr)
-			{
-				CreateItemNode(item);
-			}
+			OnItemClicked(*this, *item);
 		}
-		else
-		{
-			if (item.Node!=nullptr)
-			{
-				RecycleItemNode(item);
-			}
-		}
-
-		item.ApplyMovement(totalMovement);
-
 	}
+
+
 
 }
 
-
-void ListBox::OnSwipeBegin(INode* sender,SwipeBeginGestureEventArg& e)
+void ListBox::OnSwipeSuccess(INode* sender, SwipeSuccessGestureEventArg& e)
 {
-	ScrollPanel::OnSwipeBegin(sender,e);
+	ScrollPanel::OnSwipeSuccess(sender, e);
 
-	SwipeGestureRecognizer* recognizer=(SwipeGestureRecognizer*)e.Recognizer;
-	const Point2F& pos=recognizer->BeginPos();
-	Point2F modelPos=mScrollModel->ConvertToWindowSpace(pos);
-	mSelectedItem=GetSelectedItem(modelPos);
-	if(mSelectedItem!=nullptr)
+	if (mSelectedItem != nullptr)
 	{
-		OnItemSelected(*this,*mSelectedItem);
-	}
-
-}
-
-void ListBox::OnSwipeMoved(INode* sender,SwipeMovedGestureEventArg& e)
-{
-	ScrollPanel::OnSwipeMoved(sender,e);
-
-	if (mSelectedItem!=nullptr)
-	{
-		OnItemUnselected(*this,*mSelectedItem);
-		mSelectedItem=nullptr;
-	}
-}
-
-void ListBox::OnSwipeFailed(INode* sender,SwipeFailedGestureEventArg& e)
-{
-	ScrollPanel::OnSwipeFailed(sender,e);
-
-	if (mSelectedItem!=nullptr)
-	{
-		OnItemUnselected(*this,*mSelectedItem);
-		mSelectedItem=nullptr;
-	}
-
-	SwipeGestureRecognizer* recognizer=(SwipeGestureRecognizer*)e.Recognizer;
-	const Point2F& pos=recognizer->CurPos();
-	Point2F modelPos=mScrollModel->ConvertToWindowSpace(pos);
-	const ListBoxItem* item=GetSelectedItem(modelPos);
-	if(item!=nullptr)
-	{
-		OnItemClicked(*this,*item);
-	}
-
-}
-
-void ListBox::OnSwipeSuccess(INode* sender,SwipeSuccessGestureEventArg& e)
-{
-	ScrollPanel::OnSwipeSuccess(sender,e);
-
-	if (mSelectedItem!=nullptr)
-	{
-		OnItemUnselected(*this,*mSelectedItem);
-		mSelectedItem=nullptr;
+		OnItemUnselected(*this, *mSelectedItem);
+		mSelectedItem = nullptr;
 	}
 }
 Size2F ListBox::GetItemLimitSize()const
 {
+	Size2F size = mSize.To2D();
 	if (IsVertical())
 	{
-		return msize(mSize.Width,0.f);
+		size.Height = 0.f;
 	}
 	else
 	{
-		return msize(0.f,mSize.Height);
+		size.Width = 0.f;
 	}
-}
-
-bool ListBox::AssertValid() const
-{
-#ifdef MEDUSA_SAFE_CHECK
-	Point3F totalMovement=mScrollModel->Offset();
-	float origin=mSize.Height;
-	size_t count=mItems.Count();
-	FOR_EACH_SIZE(i,count)
-	{
-		const ListBoxItem& item=mItems[i];
-		origin-=item.BoundingBox.Size.Height;
-
-		if(!Math::IsEqual(item.BoundingBox.Origin.Y,origin))
-		{
-			Log::AssertFailedFormat("Error");
-			return false;
-		}
-
-		if (item.Node!=nullptr)
-		{
-			Point3F pos=item.Node->Position();
-			pos-=totalMovement;
-			pos.Y-=origin;
-			if (pos!=Point3F::Zero)
-			{
-				Log::AssertFailedFormat("Error");
-				return false;
-			}
-		}
-	}
-#endif
-
-	return true;
-
-	
+	return size;
 }
 
 Size2F ListBox::CalculateBoundingBoxSize(size_t index) const
 {
+	if (!Math::IsZero(mResultItemFixedSize))
+	{
+		if (IsVertical())
+		{
+			return Size2F(mSize.Width, mResultItemFixedSize);
+		}
+		else
+		{
+			return Size2F(mResultItemFixedSize, mSize.Height);
+		}
+	}
+	BaseListDataBinding* listDataBinding = (BaseListDataBinding*)mBinding;
+	Size2F resultSize= listDataBinding->Measure(index, GetItemLimitSize());
 	if (IsVertical())
 	{
-		auto listDataSource = mDataSource.CastPtr<IListDataSource>();
-		Size2F size=listDataSource->CalculateItemSize(index,msize(mSize.Width,0.f));
-		size.Width=mSize.Width;
-		return size;
+		resultSize.Width = mSize.Width;
 	}
 	else
 	{
-		auto listDataSource = mDataSource.CastPtr<IListDataSource>();
-		Size2F size=listDataSource->CalculateItemSize(index,msize(0.f,mSize.Height));
-		size.Height=mSize.Height;
-		return size;
+		resultSize.Height = mSize.Height;
 	}
+	return resultSize;
 }
 
 void ListBox::ScrollToIndex(uint index)
 {
-	const ListBoxItem& item=mItems[index];
+	const ListBoxItem& item = mItems[index];
 	if (IsVertical())
 	{
-		Point2F offset(item.BoundingBox.Origin.X,mSize.Height-(item.BoundingBox.Origin.Y+item.BoundingBox.Size.Height));
+		Point2F offset(item.BoundingBox.Origin.X, mSize.Height - (item.BoundingBox.Origin.Y + item.BoundingBox.Size.Height));
 		ScrollTo(offset);
 	}
 	else
@@ -955,20 +629,20 @@ void ListBox::ScrollByIndex(int index)
 {
 	RETURN_IF_ZERO(index);
 	RETURN_IF_EMPTY(mItems);
-	uint currentIndex=CurrentIndex();
+	uint currentIndex = CurrentIndex();
 
-	if (index>0)
+	if (index > 0)
 	{
-		currentIndex+=index;
-		currentIndex=Math::Min(currentIndex,(uint)mItems.Count()-1);
+		currentIndex += index;
+		currentIndex = Math::Min(currentIndex, (uint)mItems.Count() - 1);
 		ScrollToIndex(currentIndex);
 	}
 	else
 	{
-		index+=currentIndex;
-		if (index<0)
+		index += currentIndex;
+		if (index < 0)
 		{
-			index=0;
+			index = 0;
 		}
 		ScrollToIndex(index);
 	}
@@ -976,18 +650,7 @@ void ListBox::ScrollByIndex(int index)
 
 uint ListBox::CurrentIndex() const
 {
-	//not often used, and item's count is usually not big, so the perf is ok.
-	//to maintain a index var is improving a lot complexity.
-
-	size_t count=mItems.Count();
-	FOR_EACH_SIZE(i,count)
-	{
-		if (mItems[i].Node!=nullptr)
-		{
-			return (uint)i;
-		}
-	}
-	return 0;
+	return mValidRange.Min;
 }
 
 INode* ListBox::GetNodeByIndex(uint index) const
@@ -997,18 +660,78 @@ INode* ListBox::GetNodeByIndex(uint index) const
 
 const ListBoxItem* ListBox::GetSelectedItem(Point2F pos) const
 {
-	size_t count=mItems.Count();
-	FOR_EACH_SIZE(i,count)
+	FOR_EACH_INT_BEGIN_END(i, mValidRange.Min, mValidRange.Max)
 	{
-		const ListBoxItem& item=mItems[i];
-		if (item.Node!=nullptr&&item.BoundingBox.Contains(pos))
+		auto& item = mItems[i];
+		
+		if (item.Node != nullptr&&item.BoundingBox.Contains(pos))
 		{
-			return &item;
+			if (item.Node->HitTestParent(pos))
+			{
+				return &item;
+			}
 		}
+		
 	}
 
 	return nullptr;
 }
+
+
+
+void ListBox::SetupItems()
+{
+	BaseListDataBinding* listDataBinding = (BaseListDataBinding*)mBinding;
+	size_t count = listDataBinding->Count();
+	Rect2F targetBoundingBox = Rect2F::Zero;
+	Size2F limitSize = mSize.To2D();
+
+	if (IsVertical())
+	{
+		targetBoundingBox.Size.Width = mSize.Width;
+		float origin = mSize.Height;
+		limitSize.Height = 0.f;
+		FOR_EACH_SIZE(i, count)
+		{
+			ListBoxItem& item = mItems[i];
+
+			item.Index = (uint)i;
+			item.BoundingBox.Size = CalculateBoundingBoxSize(i);
+			origin -= item.BoundingBox.Size.Height;
+
+			item.BoundingBox.Origin.Y = origin;
+
+			item.Tag = listDataBinding->GetTemplateTag((uint)i);
+			targetBoundingBox.Size.Height += item.BoundingBox.Size.Height;
+
+		}
+
+		targetBoundingBox.Origin.Y = origin;
+	}
+	else
+	{
+		targetBoundingBox.Size.Height = mSize.Height;
+		float origin = 0.f;
+		limitSize.Width = 0.f;
+		FOR_EACH_SIZE(i, count)
+		{
+			ListBoxItem& item = mItems[i];
+			item.Index = (uint)i;
+			item.BoundingBox.Size = CalculateBoundingBoxSize(i);
+			item.BoundingBox.Origin.X = origin;
+
+			item.Tag = listDataBinding->GetTemplateTag((uint)i);
+			targetBoundingBox.Size.Width += item.BoundingBox.Size.Width;
+			origin += item.BoundingBox.Size.Width;
+		}
+	}
+
+
+	mScrollModel->Initialize(mSize.To2D(), targetBoundingBox);
+
+	
+}
+
 MEDUSA_IMPLEMENT_NODE(ListBox);
 
 MEDUSA_END;

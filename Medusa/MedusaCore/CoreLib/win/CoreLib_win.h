@@ -16,6 +16,7 @@
 //#endif
 //#pragma comment(lib,"wsock32.lib")		//add socket lib, or it'll be failed
 
+#define NOMINMAX
 #define _WINSOCKAPI_
 #include <Windows.h>
 

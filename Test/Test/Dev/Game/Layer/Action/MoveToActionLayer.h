@@ -15,3 +15,4 @@ public:
 	virtual void RestartSelfAction()override;
 };
 
+MEDUSA_ENABLE_STATIC_CONSTRUCTOR(MoveToActionLayer);

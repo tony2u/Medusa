@@ -41,6 +41,15 @@ public:
 	};
 
 public:
+	template<typename T>
+	static const T& RandSelect(const IList<T>& items)
+	{
+		MEDUSA_ASSERT_NOT_EMPTY(items,"invalid items");
+		size_t count = items.Count();
+		int index=Random::Global().Next(0, (int)count - 1);
+		return items[index];
+	}
+
 	template<typename TKey, typename TValue, typename TKeyValuePair, typename TKeyCompare, typename TValueCompare >
 	static bool IsEqual(const IDictionary<TKey, TValue, TKeyValuePair>& first, const IDictionary<TKey, TValue, TKeyValuePair>& second)
 	{
@@ -144,6 +153,25 @@ public:
 
 		srcItems.RemoveIndexes(deadIndices);
 	}
+
+	template<typename T>
+	static void DeleteIndexesIf(IList<T>& items, const Delegate<bool(const T& item)>& predicate)
+	{
+		size_t count = items.Count();
+		RETURN_IF_ZERO(count);
+		List<size_t> indices;
+		FOR_EACH_SIZE(i, count)
+		{
+			typename IList<T>::TReferenceType item = items[i];
+			if (predicate(item))
+			{
+				indices.Add(i);
+				Memory::Delete(item);
+			}
+		}
+		items.RemoveIndexes(indices);
+	}
+
 
 	template<typename T>
 	static T FirstOrDefault(const IList<T>& items)

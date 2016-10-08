@@ -17,6 +17,8 @@
 #include "Core/IO/FileInfo.h"
 #include "Node/Editor/NodeEditorFactory.h"
 #include "Node/NodeFactory.h"
+#include "Node/Input/InputDispatcher.h"
+
 MEDUSA_BEGIN;
 
 SceneManager::SceneManager(void)
@@ -71,7 +73,7 @@ IScene* SceneManager::Push(IScene* scene, NodePushFlags pushFlag /*= NodePushFla
 				{
 					prevScene->SetVisible(false);
 					prevScene->ExitRecursively();
-					prevScene->EnableInput(false);
+					prevScene->MutableInput().Enable(false);
 				}
 			}
 		}
@@ -81,7 +83,7 @@ IScene* SceneManager::Push(IScene* scene, NodePushFlags pushFlag /*= NodePushFla
 			originalScene->SetVisible(false);
 			originalScene->ExitRecursively();
 		}
-		originalScene->EnableInput(MEDUSA_FLAG_HAS(pushFlag, NodePushFlags::ShowPrev));
+		originalScene->MutableInput().Enable(MEDUSA_FLAG_HAS(pushFlag, NodePushFlags::ShowPrev));
 	}
 
 	mScenes.Push(scene);
@@ -93,10 +95,9 @@ IScene* SceneManager::Push(IScene* scene, NodePushFlags pushFlag /*= NodePushFla
 		scene->UpdateLogicRecursively();
 	}
 
-	scene->EnableInput(!MEDUSA_FLAG_HAS(pushFlag, NodePushFlags::DisableTouch));
+	scene->MutableInput().Enable(!MEDUSA_FLAG_HAS(pushFlag, NodePushFlags::DisableTouch));
 
 	mIsSceneChanged = true;
-
 	return scene;
 }
 
@@ -109,7 +110,7 @@ IScene* SceneManager::Pop(NodePopFlags popFlag /*= NodePopFlags::None*/)
 	{
 		scene->SetVisible(false);
 		scene->ExitRecursively();
-		scene->EnableInput(false);
+		scene->MutableInput().Enable(false);
 	}
 
 	mScenes.Pop();
@@ -127,7 +128,7 @@ IScene* SceneManager::Pop(NodePopFlags popFlag /*= NodePopFlags::None*/)
 		if (prevScene != nullptr)
 		{
 			prevScene->SetVisible(true);
-			prevScene->EnableInput(!MEDUSA_FLAG_HAS(popFlag, NodePopFlags::DisableTouch));
+			prevScene->MutableInput().Enable(!MEDUSA_FLAG_HAS(popFlag, NodePopFlags::DisableTouch));
 			if (!MEDUSA_FLAG_HAS(popFlag, NodePopFlags::SuppressUpdateLogic))
 			{
 				prevScene->UpdateLogicRecursively();

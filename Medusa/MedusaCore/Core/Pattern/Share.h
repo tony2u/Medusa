@@ -4,6 +4,7 @@
 #pragma  once
 #include "MedusaCorePreDeclares.h"
 #include "Core/Assertion/CommonAssert.h"
+//[IGNORE_PRE_DECLARE_FILE]
 
 MEDUSA_BEGIN;
 

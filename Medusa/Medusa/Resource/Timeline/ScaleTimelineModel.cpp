@@ -28,10 +28,10 @@ void ScaleTimelineModel::AddScale(float time, const Scale3F& scale, Math::TweenT
 
 Scale3F ScaleTimelineModel::GetScale(float time) const
 {
-	if (mIsPreCalculated)
+	if (mIsPrecomputed)
 	{
-		intp index = GetPreCalculatedIndex(time);
-		return mPreCalculatedScales[index];
+		intp index = GetPrecomputedIndex(time);
+		return mPrecomputedScales[index];
 	}
 
 	uint outPrevFrameIndex;
@@ -52,18 +52,18 @@ Scale3F ScaleTimelineModel::GetScale(float time) const
 	return Scale3F::One;
 }
 
-void ScaleTimelineModel::RemovePreCalculated()
+void ScaleTimelineModel::RemovePrecomputed()
 {
-	ITimelineModel::RemovePreCalculated();
-	mPreCalculatedScales.Clear();
+	ITimelineModel::RemovePrecomputed();
+	mPrecomputedScales.Clear();
 }
 
-void ScaleTimelineModel::OnPreCalculateBegin()
+void ScaleTimelineModel::OnPrecomputeBegin()
 {
-	mPreCalculatedScales.Clear();
+	mPrecomputedScales.Clear();
 }
 
-void ScaleTimelineModel::AddPreCalcuatedItem(bool isFound, uint prevFrameIndex, uint nextFrameIndex, float percent)
+void ScaleTimelineModel::AddPrecomputedItem(bool isFound, uint prevFrameIndex, uint nextFrameIndex, float percent)
 {
 	Scale3F scale = Scale3F::One;
 	if (nextFrameIndex != prevFrameIndex)
@@ -75,7 +75,7 @@ void ScaleTimelineModel::AddPreCalcuatedItem(bool isFound, uint prevFrameIndex, 
 		scale = mScales[nextFrameIndex];
 	}
 
-	mPreCalculatedScales.Add(scale);
+	mPrecomputedScales.Add(scale);
 }
 
 MEDUSA_END;

@@ -16,11 +16,12 @@ public:
 	SkeletonModelFactory();
 	~SkeletonModelFactory();
 public:
+	virtual StringRef Name()const override { return "SkeletonModelFactory"; }
 	virtual bool Initialize()override;
 	virtual bool Uninitialize()override;
 public:
-	Share<SpineSkeletonModel> CreateSpineFromJson(const FileIdRef& skeletonfileId, const FileIdRef& atlasFileId, bool isPreCalculated = false, ResourceShareType shareType = ResourceShareType::Share);
-	Share<SpineSkeletonModel> CreateSpineFromJson(const FileIdRef& name, bool isPreCalculated = false, ResourceShareType shareType = ResourceShareType::Share);
+	Share<SpineSkeletonModel> CreateSpineFromJson(const FileIdRef& skeletonfileId, const FileIdRef& atlasFileId, bool isPrecomputed = false, ResourceShareType shareType = ResourceShareType::Share);
+	Share<SpineSkeletonModel> CreateSpineFromJson(const FileIdRef& name, bool isPrecomputed = false, ResourceShareType shareType = ResourceShareType::Share);
 
 };
 

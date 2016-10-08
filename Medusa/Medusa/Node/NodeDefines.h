@@ -376,6 +376,8 @@ enum class NodePopFlags
 };
 
 
+
+
 namespace NodeProperties
 {
 	const extern StringRef FrameEvent;	//string

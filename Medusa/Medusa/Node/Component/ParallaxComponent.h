@@ -36,6 +36,7 @@ protected:
 	
 };
 
+MEDUSA_ENABLE_STATIC_CONSTRUCTOR(ParallaxComponent);
 
 //[PRE_DECLARE_BEGIN]
 typedef TMoveToAction<ParallaxComponent> ParallaxComponentMoveToAction;

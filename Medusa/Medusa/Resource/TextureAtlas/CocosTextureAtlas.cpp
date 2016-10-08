@@ -103,8 +103,8 @@ TextureAtlasPage* CocosTextureAtlas::OnCreatePage(FileEntry& fileEntry, const Fi
 				FOR_EACH_SIZE(i, vertexCount)
 				{
 					auto& newVertex = region->MutableVertices().NewAdd();
-					newVertex.X = vertices[i * 2];
-					newVertex.Y = spriteSize.Height- vertices[i * 2 + 1];
+					newVertex.X = (float)vertices[i * 2];
+					newVertex.Y = (float)(spriteSize.Height- vertices[i * 2 + 1]);
 					newVertex.Z = 0.f;
 
 					auto& newTexcoord = region->MutableTexcoords().NewAdd();

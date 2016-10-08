@@ -14,7 +14,7 @@ public:
 public:
 	virtual BezierAction* Clone()const override
 	{
-		return new BezierAction(this->mInnerAction, mP0, mP1, mP2, mP3);
+		return new BezierAction((BaseFiniteAction*)this->mInnerAction, mP0, mP1, mP2, mP3);
 	}
 	virtual BezierAction* Reverse()const override
 	{

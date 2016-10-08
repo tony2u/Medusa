@@ -23,6 +23,8 @@ public:
 	TextureAtlasFactory();
 	~TextureAtlasFactory();
 public:
+	virtual StringRef Name()const override { return "TextureAtlasFactory"; }
+
 	virtual bool Initialize()override;
 	virtual bool Uninitialize()override;
 public:

@@ -8,6 +8,7 @@ MEDUSA_BEGIN;
 class SirenJsonOutputStream
 {
 public:
+	typedef char Ch;
 	SirenJsonOutputStream(IStream& output)
 		: mOutput(output)
 	{

@@ -25,4 +25,6 @@ protected:
 	Array<Point2F, 4> mTexcoords;	//initial data
 };
 
+MEDUSA_ENABLE_STATIC_CONSTRUCTOR(TextureProgressBar);
+
 MEDUSA_END;

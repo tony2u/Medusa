@@ -18,6 +18,7 @@
 #include "Core/IO/Path.h"
 #include "Core/IO/FileInfo.h"
 #include "Node/NodeFactory.h"
+#include "Node/Input/InputDispatcher.h"
 
 MEDUSA_BEGIN;
 
@@ -33,6 +34,8 @@ IScene::IScene(const StringRef& name/*=StringRef::Empty*/, const IEventArg& e /*
 	SetStretch(ResolutionAdapter::Instance().GetStretch());
 	//SetSizeToContent(SizeToContent::WidthAndHeight);
 	Start();
+
+	MutableInput().Enable(true);	//default enable input
 }
 
 
@@ -98,6 +101,7 @@ bool IScene::DeleteLayer(ILayer* layer, NodeDeleteFlags deleteFlags /*= LayerDel
 {
 	if (MEDUSA_FLAG_HAS(deleteFlags,NodeDeleteFlags::Async))
 	{
+		RemoveChild(layer);
 		NodeSweeper::Instance().Add(layer);
 		return layer != nullptr;
 	}
@@ -155,7 +159,7 @@ ILayer* IScene::PushLayer(ILayer* layer, NodePushFlags pushFlags/*=NodePushFlags
 				{
 					prevLayer->SetVisible(false);
 					prevLayer->ExitRecursively();
-					prevLayer->EnableInput(false);
+					prevLayer->MutableInput().Enable(false);
 				}
 			}
 		}
@@ -165,7 +169,7 @@ ILayer* IScene::PushLayer(ILayer* layer, NodePushFlags pushFlags/*=NodePushFlags
 			originalLayer->SetVisible(false);
 			originalLayer->ExitRecursively();
 		}
-		originalLayer->EnableInput(MEDUSA_FLAG_HAS(pushFlags,NodePushFlags::ShowPrev));
+		originalLayer->MutableInput().Enable(MEDUSA_FLAG_HAS(pushFlags,NodePushFlags::ShowPrev));
 	}
 
 	AddChild(layer);
@@ -178,7 +182,7 @@ ILayer* IScene::PushLayer(ILayer* layer, NodePushFlags pushFlags/*=NodePushFlags
 		layer->UpdateLogicRecursively();
 	}
 
-	layer->EnableInput(!MEDUSA_FLAG_HAS(pushFlags,NodePushFlags::DisableTouch));
+	layer->MutableInput().Enable(!MEDUSA_FLAG_HAS(pushFlags,NodePushFlags::DisableTouch));
 	return layer;
 }
 
@@ -228,10 +232,9 @@ ILayer* IScene::PopLayer(NodePopFlags popFlags/*=NodePopFlags::None*/)
 	{
 		layer->SetVisible(false);
 		layer->ExitRecursively();
-		layer->EnableInput(false);
+		layer->MutableInput().Enable(false);
 	}
 
-	RemoveChild(layer);
 
 	if (MEDUSA_FLAG_HAS(popFlags,NodePopFlags::DeleteCurrent) || MEDUSA_FLAG_HAS(popFlags,NodePopFlags::DeleteCurrentAsync))
 	{
@@ -244,6 +247,10 @@ ILayer* IScene::PopLayer(NodePopFlags popFlags/*=NodePopFlags::None*/)
 		DeleteLayer(layer, deleteFlags);
 		layer = nullptr;
 	}
+	else
+	{
+		RemoveChild(layer);
+	}
 
 	if (!MEDUSA_FLAG_HAS(popFlags,NodePopFlags::IgnorePrev))
 	{
@@ -251,7 +258,7 @@ ILayer* IScene::PopLayer(NodePopFlags popFlags/*=NodePopFlags::None*/)
 		if (prevLayer != nullptr)
 		{
 			prevLayer->SetVisible(true);
-			prevLayer->EnableInput(!MEDUSA_FLAG_HAS(popFlags,NodePopFlags::DisableTouch));
+			prevLayer->MutableInput().Enable(!MEDUSA_FLAG_HAS(popFlags,NodePopFlags::DisableTouch));
 			if (!MEDUSA_FLAG_HAS(popFlags,NodePopFlags::SuppressUpdateLogic))
 			{
 				prevLayer->UpdateLogicRecursively();
@@ -300,7 +307,7 @@ void IScene::OnSaveStatus()
 	mLayerStatusDict.Clear();
 	for (auto layer : mNodes)
 	{
-		mLayerStatusDict.Add(layer->Name(), NodeStatus(layer->IsVisible(), layer->IsInputEnabled()));
+		mLayerStatusDict.Add(layer->Name(), NodeStatus(layer->IsVisible(), layer->Input().IsEnabled()));
 	}
 }
 
@@ -312,7 +319,7 @@ void IScene::OnRestoreStatus()
 		if (statusPtr != nullptr)
 		{
 			layer->SetVisible(statusPtr->IsVisible);
-			layer->EnableInput(statusPtr->InputEnabled);
+			layer->MutableInput().Enable(statusPtr->InputEnabled);
 			if (layer->IsVisible())
 			{
 				layer->EnterRecursively();

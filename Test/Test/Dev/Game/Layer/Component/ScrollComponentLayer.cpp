@@ -24,7 +24,7 @@ bool ScrollComponentLayer::Initialize()
 
 	FOR_EACH_UINT32(i, mChildCount)
 	{
-		Sprite* child = NodeFactory::Instance().CreateSprite(FileIdRef("Background.png", i));
+		Sprite* child = NodeFactory::Instance().CreateSprite(FileIdRef("Background.jpg", i));
 		child->SetPositionX(winWidth*i);
 		normalLayer->AddChild(child);
 	}
@@ -35,12 +35,12 @@ bool ScrollComponentLayer::Initialize()
 	AddChild(normalLayer);
 	normalLayer->AddComponent(mComponent);
 
-	/*ScrollComponentScrollByPageAction* moveby = new ScrollComponentScrollByPageAction(mpp(4.f, 0.f), 4.f);
+	ScrollComponentScrollByPageAction* moveby = new ScrollComponentScrollByPageAction(mpp(4.f, 0.f), 4.f);
 	ScrollComponentScrollByPageAction* moveback = moveby->Reverse();
 	SequenceAction* seq = new SequenceAction(moveby, moveback);
-	RepeatedForeverAction* rep = new RepeatedForeverAction(seq);*/
+	RepeatedForeverAction* rep = new RepeatedForeverAction(seq);
 
-	//mComponent->RunAction(rep);
+	mComponent->RunAction(rep);
 	return true;
 }
 

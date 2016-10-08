@@ -39,7 +39,7 @@ bool BaseFiniteRepeatableCountDownDelayAction::Update(float dt, float blend /*= 
 					}
 					else
 					{
-						this->ForceSetState(RunningState::Done);
+						this->Stop();
 						return OnUpdate(prevElapsed, dt - exceed, blend);
 					}
 				}
@@ -74,7 +74,7 @@ bool BaseFiniteRepeatableCountDownDelayAction::Update(float dt, float blend /*= 
 						}
 						else
 						{
-							this->ForceSetState(RunningState::Done);
+							this->Stop();
 							return true;
 						}
 					}
@@ -94,7 +94,7 @@ bool BaseFiniteRepeatableCountDownDelayAction::Update(float dt, float blend /*= 
 			mAfterDelayElapsed += dt;
 			if (mAfterDelayElapsed > mAfterDelay)
 			{
-				this->ForceSetState(RunningState::Done);
+				this->Stop();
 				return true;
 			}
 			break;
@@ -125,6 +125,26 @@ float BaseFiniteRepeatableCountDownDelayAction::ElapsedExceed() const
 	}
 
 	return 0.f;
+}
+
+
+void BaseFiniteRepeatableCountDownDelayAction::BuildClone(IAction& obj)
+{
+	BaseFiniteRepeatableAction::BuildClone(obj);
+	auto& t = (BaseFiniteRepeatableCountDownDelayAction&)obj;
+	t.mBeforeDelay = mBeforeDelay;
+	t.mRepeatDuration = mRepeatDuration;
+	t.mAfterDelay = mAfterDelay;
+
+	t.mBeforeDelayElapsed = mBeforeDelayElapsed;
+	t.mAfterDelayElapsed = mAfterDelayElapsed;
+	t.mRepeatElapsed = mRepeatElapsed;
+
+	t.mHasRepeatDuration = mHasRepeatDuration;
+	t.mHasAfterDelay = mHasAfterDelay;
+	t.mHasBeforeDelay = mHasBeforeDelay;
+
+	t.mMode = mMode;
 }
 
 MEDUSA_END;

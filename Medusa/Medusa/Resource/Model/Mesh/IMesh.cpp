@@ -25,7 +25,7 @@ IMesh::IMesh(bool isStatic/*=false*/)
 
 IMesh::~IMesh(void)
 {
-	
+
 }
 
 void IMesh::SetIsStatic(bool val)
@@ -35,9 +35,7 @@ void IMesh::SetIsStatic(bool val)
 
 bool IMesh::CopyFrom(const IMesh& val)
 {
-
 	OnAllComponentChanged();
-
 	return true;
 }
 
@@ -48,11 +46,35 @@ bool IMesh::HasBlend() const
 
 void IMesh::Clear()
 {
+	if (IsValid())
+	{
+		OnRenderQueueChanged();
+	}
 
+	mSize = Size3F::Zero;
+	OnAllComponentChanged();
 }
 
-void IMesh::OnVertexChanged()
+void IMesh::OnVertexChanged(int vertexCount)
 {
+	if (vertexCount > 0)
+	{
+		//new add all
+		if ((uint)vertexCount == VertexCount())
+		{
+			OnRenderQueueChanged();
+		}
+	}
+	else if (vertexCount < 0)
+	{
+		//reduce vertex
+		if (!IsValid())
+		{
+			OnRenderQueueChanged();
+		}
+	}
+
+
 	++mVersion.VertexMesion;
 	OnMeshChanged(RenderableChangedFlags::NewVertex);
 }
@@ -87,6 +109,12 @@ void IMesh::OnAllComponentChanged()
 	OnMeshChanged(RenderableChangedFlags::DataTotalChanged);
 }
 
+
+void IMesh::OnRenderQueueChanged()
+{
+	mVersion.IncreaseAll();
+	OnMeshChanged(RenderableChangedFlags::RenderQueueAndBatchChanged);
+}
 
 bool IMesh::TryUpdateVertex(VertexGraphicsBuffer& bufferObject, size_t vertexIndex, const ICollection<Point3F>& vertices, const Matrix4& matrix) const
 {

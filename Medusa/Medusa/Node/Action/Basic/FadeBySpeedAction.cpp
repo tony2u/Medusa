@@ -25,7 +25,7 @@ bool FadeBySpeedAction::Update(float dt, float blend /*= 1.f*/)
 	if (opacity<=0.f||opacity>=1.f)
 	{
 		opacity=Math::Clamp(opacity,0.f,1.f);
-		ForceSetState(RunningState::Done);
+		Stop();
 	}
 	
 	node->SetOpacity(opacity);

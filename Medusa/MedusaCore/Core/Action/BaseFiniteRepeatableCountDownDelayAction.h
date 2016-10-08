@@ -9,19 +9,25 @@ class BaseFiniteRepeatableCountDownDelayAction :public BaseFiniteRepeatableActio
 {
 	enum class RepeateModeStep
 	{
-		Before=0,
-		Repeat=1,
-		After=2
+		Before = 0,
+		Repeat = 1,
+		After = 2
 	};
 public:
-	BaseFiniteRepeatableCountDownDelayAction(float duration, intp repeatCount, float beforeDelay = 0.f,float repeatDuration = 0.f,  float afterDelay = 0.f, const StringRef& name = StringRef::Empty)
+	BaseFiniteRepeatableCountDownDelayAction(float duration, intp repeatCount, float beforeDelay = 0.f, float repeatDuration = 0.f, float afterDelay = 0.f, const StringRef& name = StringRef::Empty)
 		:BaseFiniteRepeatableAction(duration, repeatCount, name), mBeforeDelay(beforeDelay), mRepeatDuration(repeatDuration), mAfterDelay(afterDelay)
 	{
 		Init();
 	}
 
-	BaseFiniteRepeatableCountDownDelayAction(float duration, bool isRepeatForever, float beforeDelay = 0.f,float repeatDuration = 0.f, float afterDelay = 0.f, const StringRef& name = StringRef::Empty)
+	BaseFiniteRepeatableCountDownDelayAction(float duration, bool isRepeatForever=false, float beforeDelay = 0.f, float repeatDuration = 0.f, float afterDelay = 0.f, const StringRef& name = StringRef::Empty)
 		:BaseFiniteRepeatableAction(duration, isRepeatForever, name), mBeforeDelay(beforeDelay), mRepeatDuration(repeatDuration), mAfterDelay(afterDelay)
+	{
+		Init();
+	}
+
+	BaseFiniteRepeatableCountDownDelayAction(float duration, intp currentCount, intp repeatCount, float beforeDelay = 0.f, float repeatDuration = 0.f, float afterDelay = 0.f, const StringRef& name = StringRef::Empty)
+		:BaseFiniteRepeatableAction(duration, currentCount, repeatCount, name), mBeforeDelay(beforeDelay), mRepeatDuration(repeatDuration), mAfterDelay(afterDelay)
 	{
 		Init();
 	}
@@ -46,13 +52,6 @@ public:
 		Init();
 	}
 public:
-	virtual bool Stop()override
-	{
-		RETURN_FALSE_IF_FALSE(BaseFiniteRepeatableAction::Stop());
-		Init2();
-		return true;
-	}
-
 	virtual bool Reset()override
 	{
 		RETURN_FALSE_IF_FALSE(BaseFiniteRepeatableAction::Reset());
@@ -63,7 +62,7 @@ public:
 	virtual bool Update(float dt, float blend = 1.f)override;
 public:
 	float BeforeDelay() const { return mBeforeDelay; }
-	void SetBeforeDelay(float val) { mBeforeDelay = val; mHasBeforeDelay = !Math::IsZero(mBeforeDelay);  }
+	void SetBeforeDelay(float val) { mBeforeDelay = val; mHasBeforeDelay = !Math::IsZero(mBeforeDelay); }
 
 	float RepeatDuration() const { return mRepeatDuration; }	//other limit repeat duration, even in repeat forever mode, will stop when reaching this duration
 	void SetRepeatDuration(float val) { mRepeatDuration = val; mHasRepeatDuration = !Math::IsZero(mRepeatDuration); }
@@ -72,7 +71,9 @@ public:
 	void SetAfterDelay(float val) { mAfterDelay = val; mHasAfterDelay = !Math::IsZero(mAfterDelay); }
 
 	virtual float ElapsedExceed()const override;
+protected:
 
+	virtual void BuildClone(IAction& obj) override;
 private:
 	void Init()
 	{
@@ -91,11 +92,10 @@ private:
 		mMode = mHasBeforeDelay ? RepeateModeStep::Before : RepeateModeStep::Repeat;
 	}
 protected:
-
 	float mBeforeDelay;
 	float mRepeatDuration;
 	float mAfterDelay;
-	
+
 	float mBeforeDelayElapsed;
 	float mAfterDelayElapsed;
 	float mRepeatElapsed;
@@ -104,9 +104,7 @@ protected:
 	bool mHasAfterDelay;
 	bool mHasBeforeDelay;
 
-
 	RepeateModeStep mMode;
-
 };
 
 MEDUSA_END;

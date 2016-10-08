@@ -6,12 +6,12 @@
 #include "Core/String/HeapString.h"
 #include "Geometry/Size2.h"
 #include "Geometry/Point2.h"
-#include "Core/Pattern/Property/StringPropertySet.h"
+#include "Core/Pattern/Property/VariantPropertySet.h"
 #include "TiledDefines.h"
 #include "Rendering/RenderingTypes.h"
 #include "Core/Pattern/Runnable/IRunnable.h"
 #include "Resource/ResourceType.h"
-#include "Resource/Map/Tiled/TmxTiledMap.h"
+#include "Resource/Map/Tiled/TiledMap.h"
 
 /*
 Features:
@@ -52,17 +52,22 @@ public:
 	bool IsVisible() const { return mIsVisible; }
 	void SetVisible(bool val) { mIsVisible = val; }
 
-	const StringPropertySet& Properties() const { return mProperties; }
-	StringPropertySet& MutableProperties() { return mProperties; }
-	void SetProperties(const StringPropertySet& val) { mProperties = val; }
+	const VariantPropertySet& Properties() const { return mProperties; }
+	VariantPropertySet& MutableProperties() { return mProperties; }
+	void SetProperties(const VariantPropertySet& val) { mProperties = val; }
 
-	const Share<TmxTiledMap>& Map() const { return mMap; }
-	void SetMap(const Share<TmxTiledMap>& val) { mMap = val; }
+	TiledMap* Map() const { return mMap; }
+	void SetMap(TiledMap* val) { mMap = val; }
 	bool IsCollisionEnabled() const { return mCollisionEnabled; }
 	void EnableCollision(bool val) { mCollisionEnabled = val; }
 
-	virtual ILayer* Instantiate(InstantiateMode mode = InstantiateMode::None)const { return nullptr; }
+	bool IsInputEnabled() const { return mInputEnabled; }
+	void EnableInput(bool val) { mInputEnabled = val; }
 
+	virtual INode* Instantiate(NodeInstantiateInfo* instantiateInfo = nullptr)const { return nullptr; }
+
+protected:
+	int AdjustY(int y)const { return mSize.Height - y - 1; }
 protected:
 	HeapString mName;
 	Point2I mPosition;
@@ -70,14 +75,16 @@ protected:
 	float mOpacity;
 	bool mIsVisible;
 
-	StringPropertySet mProperties;
+	VariantPropertySet mProperties;
 	int mZOrder;
 
-	Share<TmxTiledMap> mMap;
+	TiledMap* mMap = nullptr;	//weak ptr
 	InstantiateMode mInstantiateMode;
 	RunningState mRunningState;
 	HeapString mInstantiateLayer;
 	bool mCollisionEnabled = false;
+	bool mInputEnabled = false;
+
 	HeapString mScriptFile;
 
 	bool mHasSingleTexture = true;

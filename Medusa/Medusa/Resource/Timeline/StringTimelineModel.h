@@ -12,6 +12,7 @@ class StringTimelineModel:public ITimelineModel
 public:
 	StringTimelineModel(const FileIdRef& fileId, float duration = 0.f);
 	virtual ~StringTimelineModel(void);
+	virtual bool SupportPrecompute()const override{ return false; }
 
 	void AddString(float time, const StringRef& val);
 
@@ -19,14 +20,8 @@ public:
 	StringRef GetString(float time)const;
 
 
-	virtual void RemovePreCalculated()override;
-protected:
-	virtual void OnPreCalculateBegin()override;
-	virtual void AddPreCalcuatedItem(bool isFound, uint prevFrameIndex, uint nextFrameIndex, float percent) override;
-
 protected:
 	List<HeapString> mStrings;
-	List<HeapString> mPreCalculatedStrings;
 
 };
 

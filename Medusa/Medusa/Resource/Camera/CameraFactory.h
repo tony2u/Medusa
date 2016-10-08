@@ -16,6 +16,8 @@ public:
 	CameraFactory();
 	~CameraFactory();
 public:
+	virtual StringRef Name()const override { return "CameraFactory"; }
+
 	virtual bool Initialize();
 	virtual bool Uninitialize();
 public:

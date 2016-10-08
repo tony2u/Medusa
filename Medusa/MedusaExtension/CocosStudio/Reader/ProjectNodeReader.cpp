@@ -27,7 +27,7 @@ INode* ProjectNodeReader::CreateNodeWithFlatBuffers(INodeEditor& editor, const f
 INode* ProjectNodeReader::CreateNodeWithJson(INodeEditor& editor, const rapidjson::Value& nodeTree, const StringRef& className /*= StringRef::Empty*/, NodeCreateFlags flags /*= NodeCreateFlags::None*/)
 {
 	const rapidjson::Value& fileDataNode = nodeTree["FileData"];
-	StringRef filePath = fileDataNode.GetString("Path", nullptr);
+	StringRef filePath = fileDataNode.GetMember("Path", nullptr);
 	auto fileId = FileId::ParseFrom(filePath);
 	RETURN_NULL_IF_FALSE(FileSystem::Instance().AssertExists(fileId));
 

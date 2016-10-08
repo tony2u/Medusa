@@ -7,17 +7,26 @@
 #include "SirenAssembly.h"
 #include "Core/Siren/Schema/Type/SirenBuildinType.h"
 #include "Core/Siren/Schema/Type/BaseSirenCustomType.h"
+#include "Core/Module/IModule.h"
 
 MEDUSA_BEGIN;
 
 
-class SirenMachine :public Singleton<SirenMachine>
+class SirenMachine :public Singleton<SirenMachine>,public IModule
 {
 	using AssemblyDictionary = Dictionary<StringRef, SirenAssembly*>;
 	using BuildinTypeDictionary= Dictionary<StringRef, SirenBuildinType*>;
 	friend class Singleton<SirenMachine>;
 	SirenMachine();
 	~SirenMachine(void);
+
+public:
+	virtual bool Initialize() override;
+	virtual bool Uninitialize()override;
+protected:
+	virtual bool OnLoad(IEventArg& e = IEventArg::Empty)override;
+	virtual bool OnUnload(IEventArg& e = IEventArg::Empty)override;
+
 public:
 	SirenAssembly* FindAssembly(const StringRef& name)const;
 	SirenAssembly* NewAssembly(const StringRef& name);

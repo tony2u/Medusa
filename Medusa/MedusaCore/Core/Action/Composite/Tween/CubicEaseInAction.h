@@ -14,7 +14,7 @@ public:
 public:
 	virtual CubicEaseInAction* Clone()const override
 	{
-		return new CubicEaseInAction(this->mInnerAction);
+		return new CubicEaseInAction((BaseFiniteAction*)this->mInnerAction);
 	}
 	virtual CubicEaseInAction* Reverse()const override
 	{

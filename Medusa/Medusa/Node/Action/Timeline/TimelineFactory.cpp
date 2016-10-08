@@ -34,20 +34,23 @@ RenderingObjectTimeline* TimelineFactory::CreateRenderingObjectTimelineFromTextu
 {
 	auto model = TimelineModelFactory::Instance().CreateRenderingObjectFromTextures(modelName, textureNamePattern, fps);
 	RenderingObjectTimeline* ani = new RenderingObjectTimeline(model, isRepeatForever);
+	ani->SetName(modelName);
 	return ani;
 }
 
-RenderingObjectTimeline* TimelineFactory::CreateRenderingObjectTimelineFromSingleTexture(const StringRef& modelName, const FileIdRef& textureName, uint coloumn, uint row/*=1*/, float fps/*=24.f*/, bool isRepeatForever /*= false*/)
+RenderingObjectTimeline* TimelineFactory::CreateRenderingObjectTimelineFromSingleTexture(const StringRef& modelName, const FileIdRef& textureName, uint coloumn, uint row/*=1*/, uint startIndex /*= 0*/, uint endIndex /*= Math::UIntMaxValue*/, float fps/*=24.f*/, bool isRepeatForever /*= false*/)
 {
-	auto model = TimelineModelFactory::Instance().CreateRenderingObjectFromSingleTexture(modelName, textureName, coloumn, row, fps);
+	auto model = TimelineModelFactory::Instance().CreateRenderingObjectFromSingleTexture(modelName, textureName, coloumn, row, startIndex, endIndex, fps);
 	RenderingObjectTimeline* ani = new RenderingObjectTimeline(model, isRepeatForever);
+	ani->SetName(modelName);
 	return ani;
 }
 
-RenderingObjectTimeline* TimelineFactory::CreateRenderingObjectTimelineFromTextureAtlas(const FileIdRef& atlasFileId, const StringRef& regionPattern, TextureAtlasType fileFormat /*= TextureAtlasFileFormat::Spine*/,  const Color4F& color /*= Color4F::White*/, float fps /*= 24.f*/, bool isRepeatForever /*= false*/)
+RenderingObjectTimeline* TimelineFactory::CreateRenderingObjectTimelineFromTextureAtlas(const FileIdRef& atlasFileId, const StringRef& regionPattern, TextureAtlasType fileFormat /*= TextureAtlasFileFormat::Spine*/, const Color4F& color /*= Color4F::White*/, float fps /*= 24.f*/, bool isRepeatForever /*= false*/)
 {
-	auto model = TimelineModelFactory::Instance().CreateRenderingObjectFromTextureAtlas(atlasFileId.Name, atlasFileId, regionPattern,fileFormat, color, fps);
+	auto model = TimelineModelFactory::Instance().CreateRenderingObjectFromTextureAtlas(atlasFileId.Name, atlasFileId, regionPattern, fileFormat, color, fps);
 	RenderingObjectTimeline* ani = new RenderingObjectTimeline(model, isRepeatForever);
+	ani->SetName(atlasFileId.Name);
 	return ani;
 }
 

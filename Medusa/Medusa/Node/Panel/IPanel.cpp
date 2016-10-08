@@ -4,12 +4,14 @@
 #include "MedusaPreCompiled.h"
 #include "IPanel.h"
 #include "Node/NodeFactory.h"
+#include "Node/Input/InputDispatcher.h"
 MEDUSA_BEGIN;
 
 IPanel::IPanel(StringRef name/*=StringRef::Empty*/, const IEventArg& e /*= IEventArg::Empty*/)
 	:INode(name,e)
 {
 	SetSizeToContent(SizeToContent::WidthAndHeight);
+	MutableInput().Enable(true);
 }
 
 IPanel::~IPanel(void)

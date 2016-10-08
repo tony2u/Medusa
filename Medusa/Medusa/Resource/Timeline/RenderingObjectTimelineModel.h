@@ -10,21 +10,21 @@
 
 MEDUSA_BEGIN;
 
-class RenderingObjectTimelineModel:public ITimelineModel
+class RenderingObjectTimelineModel :public ITimelineModel
 {
 public:
 	RenderingObjectTimelineModel(const FileIdRef& fileId, float duration = 0.f);
 	virtual ~RenderingObjectTimelineModel(void);
-
-	bool InitializeWithSingleTexture(const Share<IMaterial>& material, uint coloumn, uint row, float fps = 24.f);
+	//from bottom to top
+	bool InitializeWithSingleTexture(const Share<IMaterial>& material, uint coloumn, uint row, uint startIndex = 0, uint endIndex = Math::UIntMaxValue, float fps = 24.f);
 	bool InitializeWithTextures(const SortedDictionary<uint, Share<IMaterial>>& materials, float fps = 24.f);
-	bool InitializeWithTextureAtlas(const Share<IMaterial>& material,const SortedDictionary<uint, Share<IMesh>>& meshes, float fps = 24.f);
+	bool InitializeWithTextureAtlas(const Share<IMaterial>& material, const SortedDictionary<uint, Share<IMesh>>& meshes, float fps = 24.f);
 
 	bool InitializeWithObjects(SortedDictionary<uint, RenderingObject>& renderingObjects, float fps = 24.f);
 	bool InitializeWithObjects(List<RenderingObject>& renderingObjects, float fps = 24.f);
 
 
-	
+
 	void AddRenderingObject(float time, const RenderingObject& val);
 	void AddRenderingObjectWithInterval(float frameInterval, const RenderingObject& val);
 

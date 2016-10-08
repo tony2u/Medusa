@@ -4,15 +4,24 @@
 #include "MedusaCorePreCompiled.h"
 #include "Core/Math/Random/Random.h"
 #include "Core/Memory/MemoryData.h"
+#include "Core/Math/Range.h"
 
 MEDUSA_BEGIN;
-
-
 
 Random::Random(uint32 seed/*=0*/)
 {
 	auto ticks = std::chrono::high_resolution_clock::now().time_since_epoch().count();
 	mSeed = seed == 0 ? (int)ticks : seed;
+}
+
+int Random::Next(const RangeI& range)
+{
+	return Next(range.Min, range.Max);
+}
+
+float Random::NextFloat(const RangeF& range)
+{
+	return NextFloat(range.Min, range.Max);
 }
 
 void Random::SetSeedFromTick()

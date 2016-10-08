@@ -93,7 +93,7 @@ Share<ITimelineModel> TimelineModelFactory::CreateLightFromModel(const StringRef
 	return item;
 }
 
-Share<RenderingObjectTimelineModel> TimelineModelFactory::CreateRenderingObjectFromSingleTexture(const StringRef& name, const FileIdRef& textureName, uint coloumn, uint row/*=1*/, float fps/*=24.f*/, ResourceShareType shareType /*= ResourceShareType::Share*/)
+Share<RenderingObjectTimelineModel> TimelineModelFactory::CreateRenderingObjectFromSingleTexture(const StringRef& name, const FileIdRef& textureName, uint coloumn, uint row/*=1*/, uint startIndex /*= 0*/, uint endIndex /*= Math::UIntMaxValue*/,float fps/*=24.f*/, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
 	if (shareType != ResourceShareType::None)
 	{
@@ -103,7 +103,7 @@ Share<RenderingObjectTimelineModel> TimelineModelFactory::CreateRenderingObjectF
 
 	auto material = MaterialFactory::Instance().CreateSingleTexture(textureName);
 	Share<RenderingObjectTimelineModel> model = new RenderingObjectTimelineModel(name);
-	model->InitializeWithSingleTexture(material, coloumn, row, fps);
+	model->InitializeWithSingleTexture(material, coloumn, row,startIndex,endIndex, fps);
 	Add(model, shareType);
 
 	return model;

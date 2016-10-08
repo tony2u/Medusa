@@ -172,7 +172,7 @@ bool WinWindow::Start()
 				}
 				else
 				{
-					Sleep(0);
+					Sleep(1);
 				}
 			}
 			else if (IsDone())
@@ -181,7 +181,7 @@ bool WinWindow::Start()
 			}
 			else
 			{
-				Sleep(0);	//not active
+				Sleep(1);	//not active
 			}
 
 		}

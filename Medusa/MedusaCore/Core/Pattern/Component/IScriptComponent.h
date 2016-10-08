@@ -26,6 +26,7 @@ protected:
 	ScriptObject mScriptObject;
 };
 
+MEDUSA_ENABLE_STATIC_CONSTRUCTOR(IScriptComponent);
 
 MEDUSA_END;
 

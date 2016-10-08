@@ -34,7 +34,6 @@ struct TimelineFrame
 
 class ITimelineModel :public IResource
 {
-
 public:
 	ITimelineModel(const FileIdRef& fileId, float duration = 0.f);
 	virtual ~ITimelineModel();
@@ -42,46 +41,39 @@ public:
 
 	virtual ResourceType Type()const override{ return ResourceType::Timeline; }
 	static ResourceType ClassGetResourceType() { return ResourceType::Timeline; }
+	virtual bool SupportPrecompute()const { return true; }
 
 	virtual void Clear();
 	uintp FrameCount()const { return mFrameCount; }
 	float Duration() const { return mDuration; }
 	void SetDuration(float val) { mDuration = val; }
 
-	//************************************
-	// Method:    TryGetFrame
-	// Returns:   bool
-	// Parameter: float time	
-	// Parameter: uint & outPrevFrameIndex	
-	// Parameter: uint & outNextFrameIndex
-	// Parameter: float & outPercent	0.f~1.f
-	//************************************
-	bool TryGetFrame(float time, uint& outPrevFrameIndex, uint& outNextFrameIndex, float& outPercent)const;
+	bool TryGetFrame(float time, uint& outPrevFrameIndex, uint& outNextFrameIndex, float& outPercent, uint startIndex = 0)const;
 
 	intp GetSteppedFrameIndex(float time)const;
 
-	void PreCalculate(float fps);
-	virtual void RemovePreCalculated();
+	void Precompute(float fps);
+	virtual void RemovePrecomputed();
 protected:
 	void AddFrame(float time, uint index, Math::TweenType tweenType = Math::TweenType::Linear);
 	void AddFrame(float time, uint index, Math::TweenType tweenType, const List<float>& args);
 
-	intp GetPreCalculatedIndex(float time)const;
+	intp GetPrecomputedIndex(float time)const;
 
-	bool TryGetFrameHelper(float time, uint& outPrevFrameIndex, uint& outNextFrameIndex, float& outPercent)const;
+	bool TryGetFrameHelper(float time, uint& outPrevFrameIndex, uint& outNextFrameIndex, float& outPercent,uint startIndex=0)const;
 	void AddFrameWithInterval(float frameInterval, uint index, Math::TweenType tweenType = Math::TweenType::Linear);
 
-	virtual void OnPreCalculateBegin() {}
-	virtual void AddPreCalcuatedItem(bool isFound, uint prevFrameIndex, uint nextFrameIndex, float percent) {}
-	virtual void OnPreCalculateEnd() {}
+	virtual void OnPrecomputeBegin() {}
+	virtual void AddPrecomputedItem(bool isFound, uint prevFrameIndex, uint nextFrameIndex, float percent) {}
+	virtual void OnPrecomputeEnd() {}
 
 protected:
 	SortedList<TimelineFrame> mFrames;	//frame time-data index
 	float mDuration;
 
-	bool mIsPreCalculated;
-	float mFPS;
-	uintp mFrameCount;
+	bool mIsPrecomputed=false;
+	float mFPS=0.f;
+	uintp mFrameCount=0;
 
 };
 

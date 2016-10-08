@@ -10,14 +10,13 @@ MEDUSA_BEGIN;
 class BaseFiniteAction :public IAction
 {
 public:
-
-	BaseFiniteAction(float duration, const StringRef& name = StringRef::Empty) :IAction(name), mDuration(duration), mElapsed(0.f)
+	BaseFiniteAction(float duration=0.f, const StringRef& name = StringRef::Empty) 
+		:IAction(name), mDuration(duration)
 	{
 
 	}
 	virtual ~BaseFiniteAction(void) {}
 	virtual ActionType Type()const override{ return ActionType::Finite; }
-
 public:
 	virtual bool Start()override
 	{
@@ -46,7 +45,7 @@ public:
 		mElapsed += dt;
 		if (mElapsed > mDuration)
 		{
-			this->ForceSetState(RunningState::Done);
+			this->Stop();
 		}
 		return true;
 	}
@@ -82,8 +81,16 @@ public:
 
 	virtual float ElapsedExceed()const override{ return Math::ClampAboveZero(mElapsed - mDuration); }
 protected:
-	float mDuration;
-	float mElapsed;
+	virtual void BuildClone(IAction& obj) override
+	{
+		IAction::BuildClone(obj);
+		auto& t = (BaseFiniteAction&)obj;
+		t.mDuration = mDuration;
+		t.mElapsed = mElapsed;
+	}
+protected:
+	float mDuration=0.f;
+	float mElapsed=0.f;
 };
 
 MEDUSA_END;

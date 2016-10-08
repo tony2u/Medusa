@@ -13,7 +13,7 @@ public:
 public:
 	virtual RateEaseOutAction* Clone()const override
 	{
-		return new RateEaseOutAction(this->mInnerAction, mRate);
+		return new RateEaseOutAction((BaseFiniteAction*)this->mInnerAction, mRate);
 	}
 	virtual RateEaseOutAction* Reverse()const override
 	{

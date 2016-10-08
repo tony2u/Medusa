@@ -21,6 +21,8 @@ public:
 	FontFactory();
 	~FontFactory();
 public:
+	virtual StringRef Name()const override { return "FontFactory"; }
+
 	virtual bool Initialize();
 	virtual bool Uninitialize();
 	virtual void Shrink();

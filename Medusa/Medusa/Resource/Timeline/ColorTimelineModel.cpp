@@ -26,10 +26,10 @@ void ColorTimelineModel::AddColor(float time, const Color4F& color)
 
 Color4F ColorTimelineModel::GetColor(float time) const
 {
-	if (mIsPreCalculated)
+	if (mIsPrecomputed)
 	{
-		intp index = GetPreCalculatedIndex(time);
-		return mPreCalculatedColors[index];
+		intp index = GetPrecomputedIndex(time);
+		return mPrecomputedColors[index];
 	}
 
 	uint outPrevFrameIndex;
@@ -50,13 +50,13 @@ Color4F ColorTimelineModel::GetColor(float time) const
 	return Color4F::White;
 }
 
-void ColorTimelineModel::OnPreCalculateBegin()
+void ColorTimelineModel::OnPrecomputeBegin()
 {
-	mPreCalculatedColors.Clear();
+	mPrecomputedColors.Clear();
 }
 
 
-void ColorTimelineModel::AddPreCalcuatedItem(bool isFound, uint prevFrameIndex, uint nextFrameIndex, float percent)
+void ColorTimelineModel::AddPrecomputedItem(bool isFound, uint prevFrameIndex, uint nextFrameIndex, float percent)
 {
 	Color4F color = Color4F::White;
 	if (isFound)
@@ -70,14 +70,14 @@ void ColorTimelineModel::AddPreCalcuatedItem(bool isFound, uint prevFrameIndex, 
 			color = mColors[nextFrameIndex];
 		}
 	}
-	mPreCalculatedColors.Add(color);
+	mPrecomputedColors.Add(color);
 
 }
 
-void ColorTimelineModel::RemovePreCalculated()
+void ColorTimelineModel::RemovePrecomputed()
 {
-	ITimelineModel::RemovePreCalculated();
-	mPreCalculatedColors.Clear();
+	ITimelineModel::RemovePrecomputed();
+	mPrecomputedColors.Clear();
 }
 
 

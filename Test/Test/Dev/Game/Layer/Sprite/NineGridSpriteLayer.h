@@ -14,3 +14,4 @@ public:
 	virtual bool Initialize()override;
 };
 
+MEDUSA_ENABLE_STATIC_CONSTRUCTOR(NineGridSpriteLayer);

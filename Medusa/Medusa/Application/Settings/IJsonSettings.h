@@ -34,19 +34,19 @@ public:
 	T Get(const StringRef& name)const
 	{
 		T defaultVal{};
-		return mJsonValue->Get(name.c_str(), defaultVal);
+		return mJsonValue->GetMember(name.c_str(), defaultVal);
 	}
 
 	template<typename T>
 	T Optional(const StringRef& name, const T& defaultVal)const
 	{
-		return mJsonValue->Get(name.c_str(), defaultVal);
+		return mJsonValue->GetMember(name.c_str(), defaultVal);
 	}
 
 	template<>
 	StringRef Optional(const StringRef& name, const StringRef& defaultVal)const
 	{
-		return mJsonValue->GetString(name.c_str(), defaultVal.c_str());
+		return mJsonValue->GetMember(name.c_str(), defaultVal.c_str());
 	}
 public:
 	rapidjson::Value* JsonValue() const { return mJsonValue; }

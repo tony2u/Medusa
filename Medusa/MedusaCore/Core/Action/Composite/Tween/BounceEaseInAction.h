@@ -14,7 +14,7 @@ public:
 public:
 	virtual BounceEaseInAction* Clone()const override
 	{
-		return new BounceEaseInAction(this->mInnerAction);
+		return new BounceEaseInAction((BaseFiniteAction*)this->mInnerAction);
 	}
 	virtual BounceEaseInAction* Reverse()const override
 	{

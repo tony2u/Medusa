@@ -18,7 +18,7 @@ public:
 	TiledImage* Image() const { return mImage; }
 	void SetImage(TiledImage* val);
 private:
-	TiledImage* mImage;
+	TiledImage* mImage=nullptr;
 	
 };
 

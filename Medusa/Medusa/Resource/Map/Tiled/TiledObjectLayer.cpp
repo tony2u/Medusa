@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 #include "MedusaPreCompiled.h"
 #include "TiledObjectLayer.h"
-#include "TmxTiledMap.h"
+#include "TiledMap.h"
 #include "CoreLib/Common/pugixml/pugixml.hpp"
 
 MEDUSA_BEGIN;
@@ -24,12 +24,13 @@ bool TiledObjectLayer::Parse(const pugi::xml_node& node)
 {
 	RETURN_FALSE_IF_FALSE(ITiledLayer::Parse(node));
 	const char* colorStr = node.attribute("color").as_string(nullptr);
-	mColor = TmxTiledMap::ParseColor(colorStr);
+	mColor = TiledMap::ParseColor(colorStr);
 
 	for (auto objectNode:node.children())
 	{
 		TiledObject& obj = NewObject();
 		obj.Parse(objectNode);
+		obj.SetLayer(this);
 	}
 
 

@@ -10,7 +10,6 @@
 MEDUSA_BEGIN;
 
 TiledImageLayer::TiledImageLayer()
-	:mImage(nullptr)
 {
 }
 
@@ -36,6 +35,10 @@ bool TiledImageLayer::Parse(const pugi::xml_node& node)
 void TiledImageLayer::SetImage(TiledImage* val)
 {
 	SAFE_ASSIGN(mImage, val);
+	if (mImage!=nullptr)
+	{
+		mImage->SetLayer(this);
+	}
 }
 
 MEDUSA_END;

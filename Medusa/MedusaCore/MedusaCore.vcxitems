@@ -73,6 +73,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)CoreLib\Common\rapidjson\error\error.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)CoreLib\Common\rapidjson\filereadstream.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)CoreLib\Common\rapidjson\filewritestream.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)CoreLib\Common\rapidjson\fwd.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)CoreLib\Common\rapidjson\internal\biginteger.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)CoreLib\Common\rapidjson\internal\diyfp.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)CoreLib\Common\rapidjson\internal\dtoa.h" />
@@ -80,16 +81,23 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)CoreLib\Common\rapidjson\internal\itoa.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)CoreLib\Common\rapidjson\internal\meta.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)CoreLib\Common\rapidjson\internal\pow10.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)CoreLib\Common\rapidjson\internal\regex.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)CoreLib\Common\rapidjson\internal\stack.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)CoreLib\Common\rapidjson\internal\strfunc.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)CoreLib\Common\rapidjson\internal\strtod.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)CoreLib\Common\rapidjson\internal\swap.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)CoreLib\Common\rapidjson\istreamwrapper.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)CoreLib\Common\rapidjson\memorybuffer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)CoreLib\Common\rapidjson\memorystream.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)CoreLib\Common\rapidjson\msinttypes\inttypes.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)CoreLib\Common\rapidjson\msinttypes\stdint.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)CoreLib\Common\rapidjson\ostreamwrapper.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)CoreLib\Common\rapidjson\pointer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)CoreLib\Common\rapidjson\prettywriter.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)CoreLib\Common\rapidjson\rapidjson.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)CoreLib\Common\rapidjson\reader.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)CoreLib\Common\rapidjson\schema.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)CoreLib\Common\rapidjson\stream.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)CoreLib\Common\rapidjson\stringbuffer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)CoreLib\Common\rapidjson\writer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)CoreLib\Common\simplexnoise\simplexnoise.h" />
@@ -483,6 +491,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Core\Math\MathStrategy.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Core\Math\Random\Random.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Core\Math\Random\RandomAlgorithm.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Core\Math\Range.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Core\Memory\ByteBuffer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Core\Memory\NetworkBuffer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Core\Memory\Memory.h" />
@@ -563,6 +572,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Core\Pattern\Property\PropertySet.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Core\Pattern\Property\PropertyUnit.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Core\Pattern\Property\StringPropertySet.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Core\Pattern\Property\VariantPropertySet.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Core\Pattern\RTTI\RTTIClass.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Core\Pattern\RTTI\RTTIObject.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Core\Pattern\RTTI\TRTTIClass.h" />
@@ -907,6 +917,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Core\Pattern\ISettings.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Core\Pattern\Property\PropertyChangedEventArg.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Core\Pattern\Property\StringPropertySet.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Core\Pattern\Property\VariantPropertySet.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Core\Pattern\RTTI\RTTIClass.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Core\Pattern\RTTI\RTTIObject.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Core\Pattern\Runnable\DefaultRunnable.cpp" />

@@ -13,7 +13,6 @@
 #include "Core/Log/Log.h"
 #include "Graphics/ResolutionAdapter.h"
 #include "Node/Input/InputDispatcher.h"
-#include "Node/DataSource/IDataSource.h"
 #include "Core/Collection/STLPort.h"
 #include "Core/Math/Random/Random.h"
 #include "Node/NodeFactory.h"
@@ -26,6 +25,7 @@
 #include "Geometry/Geometry.h"
 #include "Core/Script/ScriptEngine.h"
 #include "Node/Component/NodeScriptComponent.h"
+#include "Node/Binding/IDataBinding.h"
 
 MEDUSA_BEGIN;
 
@@ -33,7 +33,7 @@ INode::INode(const StringRef& name/*=StringRef::Empty*/, const IEventArg& e /*= 
 	:IRenderable(name), DefaultRunnable(RunningState::None)
 {
 	Start();
-	SetSender(this);
+	MutableInput().Enable(false);	//default disable input
 }
 
 
@@ -44,8 +44,9 @@ INode::~INode(void)
 	SAFE_DELETE(mInputDispatcher);
 	SAFE_DELETE_COLLECTION(mNodes);
 	mNodeDict.Clear();
-	mDataSource = nullptr;
 	mManagedNodes.Clear();
+
+	SAFE_DELETE(mBinding);
 }
 
 
@@ -74,6 +75,7 @@ void INode::DeleteFromParent()
 void INode::AddChild(INode* node)
 {
 	MEDUSA_ASSERT_NULL(node->Parent(), "");
+	MEDUSA_ASSERT(node!=this, "");
 
 	mNodes.Add(node);
 	node->SetParent(this);
@@ -509,8 +511,6 @@ bool INode::Update(float dt, NodeUpdateFlags flag/*=NodeUpdateFlags::None*/)
 		BaseActionRunner::UpdateActions(dt);
 	}
 	return OnUpdate(dt, flag);
-
-	return true;
 }
 
 void INode::VisitRecursively(IVisitor < INode* >& visitor, RenderableChangedFlags& outFlag, NodeVisitFlags nodeFlag /*= NodeVisitFlags::None*/, RenderStateType renderStateFlag /*= RenderStateUpdateFlags::None*/)
@@ -715,6 +715,15 @@ void INode::OnMeshChanged(RenderableChangedFlags flag)
 
 #pragma region Event
 
+const InputDispatcher& INode::Input() const
+{
+	if (mInputDispatcher == nullptr)
+	{
+		mInputDispatcher = new InputDispatcher((INode*)this);
+	}
+	return *mInputDispatcher;
+}
+
 InputDispatcher& INode::MutableInput()
 {
 	if (mInputDispatcher == nullptr)
@@ -724,26 +733,8 @@ InputDispatcher& INode::MutableInput()
 	return *mInputDispatcher;
 }
 
-void INode::ResetInputPassing()
-{
-	mInputPassingEnabled = false;
-	for (auto node : mNodes)
-	{
-		if (!node->IsInputPassingEnabled())
-		{
-			node->ResetInputPassing();
-		}
-	}
-}
 
-void INode::EnableInputPassing()
-{
-	mInputPassingEnabled = true;
-	if (mParent != nullptr && !mParent->IsInputPassingEnabled())
-	{
-		mParent->EnableInputPassing();
-	}
-}
+
 
 #pragma endregion Event
 
@@ -781,7 +772,7 @@ void INode::UpdateLayout(const Size2F& availableSize/*=Size2F::Zero*/)
 void INode::OnLayoutChanged(const ILayoutable& sender, NodeLayoutChangedFlags changedFlag)
 {
 	RETURN_IF_FALSE(mLayoutEnabled);
-	RETURN_IF_FALSE(IsSensitiveToChildLayoutChanged(sender, changedFlag));
+	//RETURN_IF_FALSE(IsSensitiveToChildLayoutChanged(sender, changedFlag));
 
 	bool isNewAdd = ResolutionAdapter::Instance().TryAddDirytNode(this);
 	RETURN_IF_FALSE(isNewAdd);
@@ -1109,24 +1100,22 @@ void INode::StretchToRect(const Rect2F& rect, Stretch stretch, const Scale2F& st
 
 #pragma region DataBind
 
-void INode::SetDataSource(const Share<IDataSource>& val)
+bool INode::SetBinding(IDataBinding* val)
 {
-	RETURN_IF_EQUAL(mDataSource, val);
-	mDataSource = val;
-	if (mDataSource != nullptr)
+	RETURN_FALSE_IF_EQUAL(mBinding, val);
+	if (val!=nullptr&&!val->IsValid())
 	{
-		mDataSource->OnDataChanged += Bind(&INode::OnDataChanged, this);
+		Log::AssertFailedFormat("{}:SetBinding should accpet a valid binding with both data source and node template.", mName);
+		return false;
 	}
-}
 
-void INode::ReleaseDataSource()
-{
-	mDataSource = nullptr;
-}
-
-void INode::OnDataChanged(const IDataSource& dataSource)
-{
-
+	SAFE_ASSIGN(mBinding, val);
+	if (mBinding!=nullptr)
+	{
+		mBinding->SetNode(this);
+		mBinding->Push();
+	}
+	return true;
 }
 
 #pragma endregion DataBind

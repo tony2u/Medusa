@@ -20,12 +20,14 @@
 #include "Resource/Skeleton/SkeletonModelFactory.h"
 #include "Resource/Map/Tiled/TiledMapFactory.h"
 #include "Resource/Map/Tiled/TiledTilesetFactory.h"
+#include "Resource/DataSource/DataSourceFactory.h"
+
 
 MEDUSA_BEGIN;
 
 ResourceManager::ResourceManager(void)
 {
-	mResourceFactories.Add(&TimelineModelFactory::Instance());
+	//Order is important,init in this order and uninit in reverse order
 	mResourceFactories.Add(&CameraFactory::Instance());
 	mResourceFactories.Add(&ShaderFactory::Instance());
 	mResourceFactories.Add(&RenderPassFactory::Instance());
@@ -37,6 +39,7 @@ ResourceManager::ResourceManager(void)
 	mResourceFactories.Add(&ModelFactory::Instance());
 	mResourceFactories.Add(&RenderTargetFactory::Instance());
 	mResourceFactories.Add(&FontFactory::Instance());
+	mResourceFactories.Add(&TimelineModelFactory::Instance());
 
 #ifdef MEDUSA_AL
 	mResourceFactories.Add(&AudioFactory::Instance());
@@ -45,9 +48,9 @@ ResourceManager::ResourceManager(void)
 	mResourceFactories.Add(&TextureAtlasFactory::Instance());
 	mResourceFactories.Add(&SkeletonModelFactory::Instance());
 
-	mResourceFactories.Add(&TiledMapFactory::Instance());
 	mResourceFactories.Add(&TiledTilesetFactory::Instance());
-
+	mResourceFactories.Add(&TiledMapFactory::Instance());
+	mResourceFactories.Add(&DataSourceFactory::Instance());
 
 }
 
@@ -91,7 +94,7 @@ void ResourceManager::Clear()
 
 void ResourceManager::Shrink()
 {
-	FOR_EACH_TO(mResourceFactories, Shrink());
+	//FOR_EACH_TO(mResourceFactories, Shrink());
 }
 
 

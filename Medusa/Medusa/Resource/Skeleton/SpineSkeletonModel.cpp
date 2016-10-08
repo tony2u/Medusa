@@ -93,8 +93,8 @@ SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& file
 
 	std::unique_ptr<SpineSkeletonModel> model(new SpineSkeletonModel(fileId));
 	const rapidjson::Value& skeletonItem = root["skeleton"];
-	float width = skeletonItem.Get("width", 0.f);
-	float height = skeletonItem.Get("height", 0.f);
+	float width = skeletonItem.GetMember("width", 0.f);
+	float height = skeletonItem.GetMember("height", 0.f);
 
 	model->SetBoundingSize(msize(width, height));
 
@@ -102,32 +102,32 @@ SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& file
 	const rapidjson::Value& bonesArray = root["bones"];
 	for (const auto& bone : bonesArray)
 	{
-		const char* name = bone.GetString("name", nullptr);
-		const char* parentBoneName = bone.GetString("parent", nullptr);
+		const char* name = bone.GetMember("name", nullptr);
+		const char* parentBoneName = bone.GetMember("parent", nullptr);
 
 		SkeletonBoneModel* boneModel = new SkeletonBoneModel(name, parentBoneName);
 
-		boneModel->SetLength(bone.Get("length", 0));
+		boneModel->SetLength(bone.GetMember("length", 0));
 
 		Point3F pos = Point3F::Zero;
-		pos.X = bone.Get("x", 0.f);
-		pos.Y = bone.Get("y", 0.f);
+		pos.X = bone.GetMember("x", 0.f);
+		pos.Y = bone.GetMember("y", 0.f);
 		boneModel->SetPosition(pos);
 
 		Rotation3F rotation = Rotation3F::Zero;
-		rotation.Z = Math::WrapToPI(Math::ToRadian(bone.Get("rotation", 0.f)));
+		rotation.Z = Math::WrapToPI(Math::ToRadian(bone.GetMember("rotation", 0.f)));
 		boneModel->SetRotation(rotation);
 
 
 		Scale3F scale = Scale3F::One;
-		scale.X = bone.Get("scaleX", 1.f);
-		scale.Y = bone.Get("scaleY", 1.f);
+		scale.X = bone.GetMember("scaleX", 1.f);
+		scale.Y = bone.GetMember("scaleY", 1.f);
 		boneModel->SetScale(scale);
 
-		boneModel->EnableInheritScale(bone.Get("inheritScale", true));
-		boneModel->EnableInheritRotation(bone.Get("inheritRotation", true));
+		boneModel->EnableInheritScale(bone.GetMember("inheritScale", true));
+		boneModel->EnableInheritRotation(bone.GetMember("inheritRotation", true));
 
-		const char* colorStr = bone.GetString("color", nullptr);
+		const char* colorStr = bone.GetMember("color", nullptr);
 		Color4F color = Color4F::White;
 		if (colorStr != nullptr)
 		{
@@ -141,12 +141,12 @@ SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& file
 	}
 
 	//ik
-	const rapidjson::Value* ikArray = root.GetMember("ik");
+	const rapidjson::Value* ikArray = root.GetMemberValue("ik");
 	if (ikArray != nullptr)
 	{
 		for (const auto& ik : *ikArray)
 		{
-			const char* name = ik.GetString("name", nullptr);
+			const char* name = ik.GetMember("name", nullptr);
 			SkeletonIKModel* ikModel = new SkeletonIKModel(name);
 
 			const rapidjson::Value& boneArray = ik["bones"];
@@ -158,11 +158,11 @@ SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& file
 				ikModel->AddBone(boneModel);
 			}
 
-			const char* targetName = ik.GetString("target", nullptr);
+			const char* targetName = ik.GetMember("target", nullptr);
 			SkeletonBoneModel* targetBoneModel = model->FindBone(targetName);
 			ikModel->SetTargetBone(targetBoneModel);
-			ikModel->EnableBendPositive(ik.Get("bendPositive", 1) == 1);
-			ikModel->SetMix(ik.Get("mix", 1));
+			ikModel->EnableBendPositive(ik.GetMember("bendPositive", 1) == 1);
+			ikModel->SetMix(ik.GetMember("mix", 1.f));
 
 			model->AddIK(ikModel);
 		}
@@ -173,8 +173,8 @@ SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& file
 	const rapidjson::Value& slotArray = root["slots"];
 	for (const auto& slot : slotArray)
 	{
-		const char* name = slot.GetString("name", nullptr);
-		const char* boneName = slot.GetString("bone", nullptr);
+		const char* name = slot.GetMember("name", nullptr);
+		const char* boneName = slot.GetMember("bone", nullptr);
 		SkeletonBoneModel* bone = model->FindBone(boneName);
 		if (bone == nullptr)
 		{
@@ -186,13 +186,13 @@ SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& file
 		bone->AddSlot(slotModel);
 		model->AddSlot(slotModel);
 
-		const char* attachmentName = slot.GetString("attachment", nullptr);
+		const char* attachmentName = slot.GetMember("attachment", nullptr);
 		if (attachmentName != nullptr)
 		{
 			slotModel->SetAttachmentName(attachmentName);
 		}
 
-		const char* colorStr = slot.GetString("color", nullptr);
+		const char* colorStr = slot.GetMember("color", nullptr);
 		Color4F color = Color4F::White;
 		if (colorStr != nullptr)
 		{
@@ -202,13 +202,13 @@ SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& file
 		}
 		slotModel->SetColor(color);
 
-		bool isAdditiveBlending = slot.Get("additive", false);
+		bool isAdditiveBlending = slot.GetMember("additive", false);
 		slotModel->EnableAdditiveBlending(isAdditiveBlending);
 
 	}
 
 
-	const rapidjson::Value* skinArray = root.GetMember("skins");
+	const rapidjson::Value* skinArray = root.GetMemberValue("skins");
 	if (skinArray != nullptr)
 	{
 		FOR_EACH_JSON(i, *skinArray)
@@ -227,8 +227,8 @@ SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& file
 				{
 					const rapidjson::Value& attachemnt = k->value;
 					const char* attachemntName = k->name.GetString();
-					const char* regionName = attachemnt.GetString("name", attachemntName);
-					const char* type = attachemnt.GetString("type", "region");
+					const char* regionName = attachemnt.GetMember("name", attachemntName);
+					const char* type = attachemnt.GetMember("type", "region");
 					StringRef typeString = type;
 					SkeletonAttachmentType outAttachmentType = SkeletonAttachmentType::Region;
 
@@ -241,222 +241,224 @@ SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& file
 					TextureAtlasRegion* region = nullptr;
 					switch (outAttachmentType)
 					{
-						case SkeletonAttachmentType::Region:
-						case SkeletonAttachmentType::Mesh:
-						case SkeletonAttachmentType::SkinnedMesh:
+					case SkeletonAttachmentType::Region:
+					case SkeletonAttachmentType::Mesh:
+					case SkeletonAttachmentType::SkinnedMesh:
+					{
+						HeapString regionNameCopy(regionName);
+						regionNameCopy += FileExtensions::png;
+						region = atlas->FindRegion(regionNameCopy);
+						if (region == nullptr)
 						{
-							region = atlas->FindRegion(regionName);
-							if (region == nullptr)
-							{
-								Log::AssertFailedFormat("Cannot find region:{}", regionName);
-								return nullptr;
-							}
-
-							break;
+							Log::AssertFailedFormat("Cannot find region:{}", regionNameCopy);
+							return nullptr;
 						}
-						case SkeletonAttachmentType::BoundingBox:
-						default:
-							break;
+
+						break;
+					}
+					case SkeletonAttachmentType::BoundingBox:
+					default:
+						break;
 					}
 
 
 					switch (outAttachmentType)
 					{
-						case SkeletonAttachmentType::Region:
+					case SkeletonAttachmentType::Region:
+					{
+						SkeletonRegionAttachmentModel* attachemntModel = new SkeletonRegionAttachmentModel(attachemntName, region);
+						Point3F pos = Point3F::Zero;
+						pos.X = attachemnt.GetMember("x", 0.f);
+						pos.Y = attachemnt.GetMember("y", 0.f);
+						attachemntModel->SetPosition(pos);
+
+						Rotation3F rotation = Rotation3F::Zero;
+						rotation.Z = Math::WrapToPI(Math::ToRadian(attachemnt.GetMember("rotation", 0.f)));
+						attachemntModel->SetRotation(rotation);
+
+
+						Scale3F scale = Scale3F::One;
+						scale.X = attachemnt.GetMember("scaleX", 1.f);
+						scale.Y = attachemnt.GetMember("scaleY", 1.f);
+						attachemntModel->SetScale(scale);
+
+						Size3F size = Size3F::Zero;
+						size.Width = attachemnt.GetMember("width", 32.f);
+						size.Height = attachemnt.GetMember("height", 32.f);
+						attachemntModel->SetSize(size);
+
+						const char* colorStr = attachemnt.GetMember("color", nullptr);
+						Color4F color = Color4F::White;
+						if (colorStr != nullptr)
 						{
-							SkeletonRegionAttachmentModel* attachemntModel = new SkeletonRegionAttachmentModel(attachemntName, region);
-							Point3F pos = Point3F::Zero;
-							pos.X = attachemnt.Get("x", 0.f);
-							pos.Y = attachemnt.Get("y", 0.f);
-							attachemntModel->SetPosition(pos);
-
-							Rotation3F rotation = Rotation3F::Zero;
-							rotation.Z = Math::WrapToPI(Math::ToRadian(attachemnt.Get("rotation", 0.f)));
-							attachemntModel->SetRotation(rotation);
-
-
-							Scale3F scale = Scale3F::One;
-							scale.X = attachemnt.Get("scaleX", 1.f);
-							scale.Y = attachemnt.Get("scaleY", 1.f);
-							attachemntModel->SetScale(scale);
-
-							Size3F size = Size3F::Zero;
-							size.Width = attachemnt.Get("width", 32.f);
-							size.Height = attachemnt.Get("height", 32.f);
-							attachemntModel->SetSize(size);
-
-							const char* colorStr = attachemnt.GetString("color", nullptr);
-							Color4F color = Color4F::White;
-							if (colorStr != nullptr)
-							{
-								uint val = StringParser::StringTo<uint32>(colorStr, 16);
-								val = BitConverter::ToLittle(val);//0x00ff04ff means rgba in spine,so we have to swap it
-								color = Color4F(val);
-							}
-							attachemntModel->SetColor(color);
-
-							attachemntModel->Initialize();
-							avatarModel->AddSlotAttachment(slotModel, attachemntModel);
-							break;
+							uint val = StringParser::StringTo<uint32>(colorStr, 16);
+							val = BitConverter::ToLittle(val);//0x00ff04ff means rgba in spine,so we have to swap it
+							color = Color4F(val);
 						}
-						case SkeletonAttachmentType::Mesh:
-						{
-							SkeletonMeshAttachmentModel* attachemntModel = new SkeletonMeshAttachmentModel(attachemntName, region);
-							rapidjson::Value::ConstMemberIterator itr = attachemnt.FindMember("vertices");
-							if (itr != attachemnt.MemberEnd())
-							{
-								const rapidjson::Value& vertices = itr->value;
-								uint count = vertices.Size();
-								for (uint m = 0; m < count; m += 2)
-								{
-									Point3F& pos = attachemntModel->MutableVertices().NewAdd();
-									pos.X = vertices[m].GetFloat();
-									pos.Y = vertices[m + 1].GetFloat();
-									pos.Z = 0.f;
-								}
-							}
+						attachemntModel->SetColor(color);
 
-							itr = attachemnt.FindMember("uvs");
-							if (itr != attachemnt.MemberEnd())
-							{
-								const rapidjson::Value& texcoords = itr->value;
-
-								size_t count = texcoords.Size();
-								for (uint m = 0; m < count; m += 2)
-								{
-									Point2F& texcoord = attachemntModel->MutableTexcoords().NewAdd();
-									texcoord.X = texcoords[m].GetFloat();
-									texcoord.Y = texcoords[m + 1].GetFloat();
-								}
-							}
-
-							itr = attachemnt.FindMember("triangles");
-							if (itr != attachemnt.MemberEnd())
-							{
-								const rapidjson::Value& triangles = itr->value;
-								for (const auto& m : triangles)
-								{
-									attachemntModel->AddIndex(m.GetUint());
-								}
-							}
-
-							const char* colorStr = attachemnt.GetString("color", nullptr);
-							Color4F color = Color4F::White;
-							if (colorStr != nullptr)
-							{
-								uint val = StringParser::StringTo<uint32>(colorStr, 16);
-								val = BitConverter::ToLittle(val);//0x00ff04ff means rgba in spine,so we have to swap it
-								color = Color4F(val);
-							}
-							attachemntModel->SetColor(color);
-
-							Size3F size = Size3F::Zero;
-							size.Width = attachemnt.Get("width", 32.f);
-							size.Height = attachemnt.Get("height", 32.f);
-							attachemntModel->SetSize(size);
-
-
-							attachemntModel->Initialize();
-							avatarModel->AddSlotAttachment(slotModel, attachemntModel);
-
-							break;
-
-						}
-						case SkeletonAttachmentType::SkinnedMesh:
-						{
-							SkeletonSkinnedMeshAttachmentModel* attachemntModel = new SkeletonSkinnedMeshAttachmentModel(attachemntName, region);
-
-							//format: {boneCount:{boneIndex,x,y,weight}}
-
-							rapidjson::Value::ConstMemberIterator itr = attachemnt.FindMember("vertices");
-							if (itr != attachemnt.MemberEnd())
-							{
-								const rapidjson::Value& vertices = itr->value;
-								uint count = vertices.Size();
-								for (uint m = 0; m < count;)
-								{
-									uint boneCountOfThisVertex = vertices[m++].GetUint();
-
-									FOR_EACH_SIZE(n, boneCountOfThisVertex)
-									{
-										VertexWeightInfo& weightInfo = attachemntModel->MutableWeights().NewAdd();
-										weightInfo.BoneIndex = vertices[m++].GetUint();
-										weightInfo.X = vertices[m++].GetFloat();
-										weightInfo.Y = vertices[m++].GetFloat();
-										weightInfo.Weight = vertices[m++].GetFloat();
-									}
-								}
-
-							}
-
-
-							itr = attachemnt.FindMember("uvs");
-							if (itr != attachemnt.MemberEnd())
-							{
-								const rapidjson::Value& texcoords = itr->value;
-								size_t count = texcoords.Size();
-								for (uint m = 0; m < count; m += 2)
-								{
-									Point2F& texcoord = attachemntModel->MutableTexcoords().NewAdd();
-									texcoord.X = texcoords[m].GetFloat();
-									texcoord.Y = texcoords[m + 1].GetFloat();
-								}
-							}
-
-							itr = attachemnt.FindMember("triangles");
-							if (itr != attachemnt.MemberEnd())
-							{
-								const rapidjson::Value& triangles = itr->value;
-								for (const auto& m : triangles)
-								{
-									attachemntModel->AddIndex(m.GetUint());
-								}
-							}
-
-							const char* colorStr = attachemnt.GetString("color", nullptr);
-							Color4F color = Color4F::White;
-							if (colorStr != nullptr)
-							{
-								uint val = StringParser::StringTo<uint32>(colorStr, 16);
-								val = BitConverter::ToLittle(val);//0x00ff04ff means rgba in spine,so we have to swap it
-								color = Color4F(val);
-							}
-							attachemntModel->SetColor(color);
-
-							Size3F size = Size3F::Zero;
-							size.Width = attachemnt.Get("width", 32.f);
-							size.Height = attachemnt.Get("height", 32.f);
-							attachemntModel->SetSize(size);
-
-							attachemntModel->Initialize();
-							avatarModel->AddSlotAttachment(slotModel, attachemntModel);
-						}
+						attachemntModel->Initialize();
+						avatarModel->AddSlotAttachment(slotModel, attachemntModel);
 						break;
-						case SkeletonAttachmentType::BoundingBox:
+					}
+					case SkeletonAttachmentType::Mesh:
+					{
+						SkeletonMeshAttachmentModel* attachemntModel = new SkeletonMeshAttachmentModel(attachemntName, region);
+						rapidjson::Value::ConstMemberIterator itr = attachemnt.FindMember("vertices");
+						if (itr != attachemnt.MemberEnd())
 						{
-							SkeletonBoundingBoxAttachmentModel* attachemntModel = new SkeletonBoundingBoxAttachmentModel(attachemntName);
-
-							rapidjson::Value::ConstMemberIterator itr = attachemnt.FindMember("vertices");
-							if (itr != attachemnt.MemberEnd())
+							const rapidjson::Value& vertices = itr->value;
+							uint count = vertices.Size();
+							for (uint m = 0; m < count; m += 2)
 							{
-								const rapidjson::Value& vertices = itr->value;
-								uint count = vertices.Size();
-								for (uint m = 0; m < count; m += 2)
-								{
-									Point2F& pos = attachemntModel->MutablePolygon().NewVertex();
-									pos.X = vertices[m].GetFloat();
-									pos.Y = vertices[m + 1].GetFloat();
-								}
+								Point3F& pos = attachemntModel->MutableVertices().NewAdd();
+								pos.X = vertices[m].GetFloat();
+								pos.Y = vertices[m + 1].GetFloat();
+								pos.Z = 0.f;
+							}
+						}
 
+						itr = attachemnt.FindMember("uvs");
+						if (itr != attachemnt.MemberEnd())
+						{
+							const rapidjson::Value& texcoords = itr->value;
+
+							size_t count = texcoords.Size();
+							for (uint m = 0; m < count; m += 2)
+							{
+								Point2F& texcoord = attachemntModel->MutableTexcoords().NewAdd();
+								texcoord.X = texcoords[m].GetFloat();
+								texcoord.Y = texcoords[m + 1].GetFloat();
+							}
+						}
+
+						itr = attachemnt.FindMember("triangles");
+						if (itr != attachemnt.MemberEnd())
+						{
+							const rapidjson::Value& triangles = itr->value;
+							for (const auto& m : triangles)
+							{
+								attachemntModel->AddIndex(m.GetUint());
+							}
+						}
+
+						const char* colorStr = attachemnt.GetMember("color", nullptr);
+						Color4F color = Color4F::White;
+						if (colorStr != nullptr)
+						{
+							uint val = StringParser::StringTo<uint32>(colorStr, 16);
+							val = BitConverter::ToLittle(val);//0x00ff04ff means rgba in spine,so we have to swap it
+							color = Color4F(val);
+						}
+						attachemntModel->SetColor(color);
+
+						Size3F size = Size3F::Zero;
+						size.Width = attachemnt.GetMember("width", 32.f);
+						size.Height = attachemnt.GetMember("height", 32.f);
+						attachemntModel->SetSize(size);
+
+
+						attachemntModel->Initialize();
+						avatarModel->AddSlotAttachment(slotModel, attachemntModel);
+
+						break;
+
+					}
+					case SkeletonAttachmentType::SkinnedMesh:
+					{
+						SkeletonSkinnedMeshAttachmentModel* attachemntModel = new SkeletonSkinnedMeshAttachmentModel(attachemntName, region);
+
+						//format: {boneCount:{boneIndex,x,y,weight}}
+
+						rapidjson::Value::ConstMemberIterator itr = attachemnt.FindMember("vertices");
+						if (itr != attachemnt.MemberEnd())
+						{
+							const rapidjson::Value& vertices = itr->value;
+							uint count = vertices.Size();
+							for (uint m = 0; m < count;)
+							{
+								uint boneCountOfThisVertex = vertices[m++].GetUint();
+
+								FOR_EACH_SIZE(n, boneCountOfThisVertex)
+								{
+									VertexWeightInfo& weightInfo = attachemntModel->MutableWeights().NewAdd();
+									weightInfo.BoneIndex = vertices[m++].GetUint();
+									weightInfo.X = vertices[m++].GetFloat();
+									weightInfo.Y = vertices[m++].GetFloat();
+									weightInfo.Weight = vertices[m++].GetFloat();
+								}
 							}
 
-							attachemntModel->Initialize();
-							avatarModel->AddSlotAttachment(slotModel, attachemntModel);
+						}
+
+
+						itr = attachemnt.FindMember("uvs");
+						if (itr != attachemnt.MemberEnd())
+						{
+							const rapidjson::Value& texcoords = itr->value;
+							size_t count = texcoords.Size();
+							for (uint m = 0; m < count; m += 2)
+							{
+								Point2F& texcoord = attachemntModel->MutableTexcoords().NewAdd();
+								texcoord.X = texcoords[m].GetFloat();
+								texcoord.Y = texcoords[m + 1].GetFloat();
+							}
+						}
+
+						itr = attachemnt.FindMember("triangles");
+						if (itr != attachemnt.MemberEnd())
+						{
+							const rapidjson::Value& triangles = itr->value;
+							for (const auto& m : triangles)
+							{
+								attachemntModel->AddIndex(m.GetUint());
+							}
+						}
+
+						const char* colorStr = attachemnt.GetMember("color", nullptr);
+						Color4F color = Color4F::White;
+						if (colorStr != nullptr)
+						{
+							uint val = StringParser::StringTo<uint32>(colorStr, 16);
+							val = BitConverter::ToLittle(val);//0x00ff04ff means rgba in spine,so we have to swap it
+							color = Color4F(val);
+						}
+						attachemntModel->SetColor(color);
+
+						Size3F size = Size3F::Zero;
+						size.Width = attachemnt.GetMember("width", 32.f);
+						size.Height = attachemnt.GetMember("height", 32.f);
+						attachemntModel->SetSize(size);
+
+						attachemntModel->Initialize();
+						avatarModel->AddSlotAttachment(slotModel, attachemntModel);
+					}
+					break;
+					case SkeletonAttachmentType::BoundingBox:
+					{
+						SkeletonBoundingBoxAttachmentModel* attachemntModel = new SkeletonBoundingBoxAttachmentModel(attachemntName);
+
+						rapidjson::Value::ConstMemberIterator itr = attachemnt.FindMember("vertices");
+						if (itr != attachemnt.MemberEnd())
+						{
+							const rapidjson::Value& vertices = itr->value;
+							uint count = vertices.Size();
+							for (uint m = 0; m < count; m += 2)
+							{
+								Point2F& pos = attachemntModel->MutablePolygon().NewVertex();
+								pos.X = vertices[m].GetFloat();
+								pos.Y = vertices[m + 1].GetFloat();
+							}
 
 						}
+
+						attachemntModel->Initialize();
+						avatarModel->AddSlotAttachment(slotModel, attachemntModel);
+
+					}
+					break;
+					default:
 						break;
-						default:
-							break;
 					}
 				}
 
@@ -467,7 +469,7 @@ SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& file
 	}
 
 
-	const rapidjson::Value* eventArray = root.GetMember("events");
+	const rapidjson::Value* eventArray = root.GetMemberValue("events");
 	if (eventArray != nullptr)
 	{
 		FOR_EACH_JSON(i, *eventArray)
@@ -475,16 +477,16 @@ SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& file
 			const rapidjson::Value& eventData = i->value;
 			SkeletonTriggerModel* triggerModel = new SkeletonTriggerModel(i->name.GetString());
 			TriggerEventArg& eventArg = triggerModel->MutableEventArg();
-			eventArg.SetInt(eventData.Get("int", 0));
-			eventArg.SetFloat(eventData.Get("float", 0.f));
-			const char* stringJson = eventData.GetString("string", nullptr);
+			eventArg.SetInt(eventData.GetMember("int", 0));
+			eventArg.SetFloat(eventData.GetMember("float", 0.f));
+			const char* stringJson = eventData.GetMember("string", nullptr);
 			eventArg.SetString(stringJson);
 			model->AddTrigger(triggerModel);
 		}
 
 	}
 
-	const rapidjson::Value* animationArray = root.GetMember("animations");
+	const rapidjson::Value* animationArray = root.GetMemberValue("animations");
 	if (animationArray != nullptr)
 	{
 		FOR_EACH_JSON(i, *animationArray)
@@ -493,7 +495,7 @@ SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& file
 			model->AddAnimation(animationModel);
 
 			//slot
-			const rapidjson::Value* slotArray2 = i->value.GetMember("slots");
+			const rapidjson::Value* slotArray2 = i->value.GetMemberValue("slots");
 			if (slotArray2 != nullptr)
 			{
 				FOR_EACH_JSON(j, *slotArray2)
@@ -512,9 +514,9 @@ SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& file
 
 							for (const auto& frame : timeline)
 							{
-								float time = frame.Get("time", 0.f);
+								float time = frame.GetMember("time", 0.f);
 
-								const char* colorStr = frame.GetString("color", nullptr);
+								const char* colorStr = frame.GetMember("color", nullptr);
 								Color4F color = Color4F::White;
 								if (colorStr != nullptr)
 								{
@@ -534,14 +536,14 @@ SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& file
 
 							for (const auto& frame : timeline)
 							{
-								float time = frame.Get("time", 0.f);
+								float time = frame.GetMember("time", 0.f);
 								//if (timelineModel->FrameCount()==0&&!Math::IsZero(time))
 								//{
 								//	//add first string
 								//	//timelineModel->AddString(0.f, slotModel->AttachmentName());
 								//}
 
-								const char* name = frame.GetString("name", nullptr);
+								const char* name = frame.GetMember("name", nullptr);
 								StringRef textureName = name;
 								timelineModel->AddString(time, textureName);
 							}
@@ -561,7 +563,7 @@ SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& file
 			}
 
 			//bones
-			const rapidjson::Value* boneArray = i->value.GetMember("bones");
+			const rapidjson::Value* boneArray = i->value.GetMemberValue("bones");
 			if (boneArray != nullptr)
 			{
 				FOR_EACH_JSON(j, *boneArray)
@@ -579,8 +581,8 @@ SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& file
 							Share<RotationTimelineModel> timelineModel = new RotationTimelineModel(FileIdRef::Empty);
 							for (const auto& frame : timeline)
 							{
-								float time = frame.Get("time", 0.f);
-								float angle = frame.Get("angle", 0.f);
+								float time = frame.GetMember("time", 0.f);
+								float angle = frame.GetMember("angle", 0.f);
 								Math::TweenType outTweenType;
 								List<float> outTweenArgs;
 								ParseCurve(frame, outTweenType, outTweenArgs);
@@ -597,10 +599,10 @@ SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& file
 							Share<ScaleTimelineModel> timelineModel = new ScaleTimelineModel(FileIdRef::Empty);
 							for (const auto& frame : timeline)
 							{
-								float time = frame.Get("time", 0.f);
+								float time = frame.GetMember("time", 0.f);
 								Scale3F scale = Scale3F::One;
-								scale.X = frame.Get("x", 0.f);
-								scale.Y = frame.Get("y", 0.f);
+								scale.X = frame.GetMember("x", 0.f);
+								scale.Y = frame.GetMember("y", 0.f);
 
 								Math::TweenType outTweenType;
 								List<float> outTweenArgs;
@@ -616,10 +618,10 @@ SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& file
 							Share<TranslateTimelineModel> timelineModel = new TranslateTimelineModel(FileIdRef::Empty);
 							for (const auto& frame : timeline)
 							{
-								float time = frame.Get("time", 0.f);
+								float time = frame.GetMember("time", 0.f);
 								Point3F pos = Point3F::Zero;
-								pos.X = frame.Get("x", 0.f);
-								pos.Y = frame.Get("y", 0.f);
+								pos.X = frame.GetMember("x", 0.f);
+								pos.Y = frame.GetMember("y", 0.f);
 
 								Math::TweenType outTweenType;
 								List<float> outTweenArgs;
@@ -641,7 +643,7 @@ SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& file
 			}
 
 			//ik
-			const rapidjson::Value* ikArray2 = i->value.GetMember("ik");
+			const rapidjson::Value* ikArray2 = i->value.GetMemberValue("ik");
 			if (ikArray2 != nullptr)
 			{
 				FOR_EACH_JSON(j, *ikArray2)
@@ -653,9 +655,9 @@ SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& file
 					Share<IKTimelineModel> timelineModel = new IKTimelineModel(FileIdRef::Empty);
 					for (const auto& frame : timeline)
 					{
-						float time = frame.Get("time", 0.f);
-						float mix = frame.Get("mix", 0.f);
-						bool isBendPositive = frame.Get("bendPositive", 1) == 1;
+						float time = frame.GetMember("time", 0.f);
+						float mix = frame.GetMember("mix", 0.f);
+						bool isBendPositive = frame.GetMember("bendPositive", 1) == 1;
 
 						Math::TweenType outTweenType;
 						List<float> outTweenArgs;
@@ -670,7 +672,7 @@ SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& file
 
 			}
 
-			const rapidjson::Value* ffdArray = i->value.GetMember("ffd");
+			const rapidjson::Value* ffdArray = i->value.GetMemberValue("ffd");
 			if (ffdArray != nullptr)
 			{
 
@@ -702,7 +704,7 @@ SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& file
 
 							for (const auto& frame : timeline)
 							{
-								float time = frame.Get("time", 0.f);
+								float time = frame.GetMember("time", 0.f);
 								rapidjson::Value::ConstMemberIterator itr = frame.FindMember("vertices");
 								List<Point3F>& vertices = timelineModel->NewAddVertexList();
 
@@ -710,7 +712,7 @@ SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& file
 								{
 									const rapidjson::Value& verticesJson = itr->value;
 
-									int offset = frame.Get("offset", 0);
+									int offset = frame.GetMember("offset", 0);
 									vertices.Add(Point3F::Zero, offset / 2);
 									size_t count = verticesJson.Size();
 									for (uint p = 0; p < count; p += 2)
@@ -776,7 +778,7 @@ SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& file
 			}
 
 
-			const rapidjson::Value* drawOrderArray = i->value.GetMember("drawOrder");
+			const rapidjson::Value* drawOrderArray = i->value.GetMemberValue("drawOrder");
 			if (drawOrderArray != nullptr)
 			{
 				uint drawOrderCount = drawOrderArray->Size();
@@ -790,61 +792,61 @@ SpineSkeletonModel* SpineSkeletonModel::CreateFromJsonData(const FileIdRef& file
 						setupDrawOrders.Add((uint)j);
 					}
 
-				{
-					//at setup draw order list at 0.f time
-					List<uint>& drawOrders = drawOrderTimelineModel->NewDrawOrderList();
-					drawOrders = setupDrawOrders;
-					drawOrderTimelineModel->AddDrawOrderFrame(0.f);
-				}
-
-				for (const auto& drawOrder : *drawOrderArray)
-				{
-					float time = drawOrder.Get("time", 0.f);
-					const rapidjson::Value* offsets = drawOrder.GetMember("offsets");
-
-					if (offsets != nullptr)
 					{
+						//at setup draw order list at 0.f time
 						List<uint>& drawOrders = drawOrderTimelineModel->NewDrawOrderList();
 						drawOrders = setupDrawOrders;
-
-						for (const auto& offset : *offsets)
-						{
-							const char* slotName = offset.GetString("slot", "");
-							SkeletonSlotModel* slotModel = model->FindSlot(slotName);
-							intp orginalIndex = model->FindSlotIndex(slotModel);
-							int offsetValue = offset.Get("offset", 0);
-							drawOrders.Offset(orginalIndex, offsetValue);
-							//drawOrders[orginalIndex + offsetValue] = (uint)orginalIndex;
-
-						}
+						drawOrderTimelineModel->AddDrawOrderFrame(0.f);
 					}
 
-					drawOrderTimelineModel->AddDrawOrderFrame(time);
+					for (const auto& drawOrder : *drawOrderArray)
+					{
+						float time = drawOrder.GetMember("time", 0.f);
+						const rapidjson::Value* offsets = drawOrder.GetMemberValue("offsets");
 
-				}
-				drawOrderTimelineModel->Initialize();
-				animationModel->SetDrawOrderTimeLine(drawOrderTimelineModel);
+						if (offsets != nullptr)
+						{
+							List<uint>& drawOrders = drawOrderTimelineModel->NewDrawOrderList();
+							drawOrders = setupDrawOrders;
+
+							for (const auto& offset : *offsets)
+							{
+								const char* slotName = offset.GetMember("slot", "");
+								SkeletonSlotModel* slotModel = model->FindSlot(slotName);
+								intp orginalIndex = model->FindSlotIndex(slotModel);
+								int offsetValue = offset.GetMember("offset", 0);
+								drawOrders.Offset(orginalIndex, offsetValue);
+								//drawOrders[orginalIndex + offsetValue] = (uint)orginalIndex;
+
+							}
+						}
+
+						drawOrderTimelineModel->AddDrawOrderFrame(time);
+
+					}
+					drawOrderTimelineModel->Initialize();
+					animationModel->SetDrawOrderTimeLine(drawOrderTimelineModel);
 				}
 			}
 
 
 
-			const rapidjson::Value* triggerArray = i->value.GetMember("events");
+			const rapidjson::Value* triggerArray = i->value.GetMemberValue("events");
 			if (triggerArray != nullptr)
 			{
 				Share<TriggerTimelineModel> triggerTimelineModel = new TriggerTimelineModel(FileIdRef::Empty);
 				for (const auto& frame : *triggerArray)
 				{
-					float time = frame.Get("time", 0.f);
+					float time = frame.GetMember("time", 0.f);
 
-					const char* name = frame.GetString("name", nullptr);
+					const char* name = frame.GetMember("name", nullptr);
 					StringRef triggerName = name;
 					SkeletonTriggerModel* triggerModel = model->FindTrigger(triggerName);
 					TriggerEventArg eventArg;
 					eventArg.SetName(triggerName);
-					eventArg.SetInt(frame.Get("int", triggerModel->EventArg().Int()));
-					eventArg.SetFloat(frame.Get("float", triggerModel->EventArg().Float()));
-					eventArg.SetString(frame.GetString("string", triggerModel->EventArg().String().c_str()));
+					eventArg.SetInt(frame.GetMember("int", triggerModel->EventArg().Int()));
+					eventArg.SetFloat(frame.GetMember("float", triggerModel->EventArg().Float()));
+					eventArg.SetString(frame.GetMember("string", triggerModel->EventArg().String().c_str()));
 
 					triggerTimelineModel->AddItem(time, eventArg);
 				}
@@ -890,11 +892,11 @@ bool SpineSkeletonModel::CheckBlendFunc(bool& outIsAdditiveBlending) const
 	return true;
 }
 
-bool SpineSkeletonModel::ParseAttachmentType(SkeletonAttachmentType& outAttachmentType,const StringRef& val)
+bool SpineSkeletonModel::ParseAttachmentType(SkeletonAttachmentType& outAttachmentType, const StringRef& val)
 {
-	if (val.Compare("Region",true)==0)
+	if (val.Compare("Region", true) == 0)
 	{
-		outAttachmentType= SkeletonAttachmentType::Region;
+		outAttachmentType = SkeletonAttachmentType::Region;
 		return true;
 	}
 	else if (val.Compare("Mesh", true) == 0)
@@ -919,7 +921,7 @@ void SpineSkeletonModel::ParseCurve(const rapidjson::Value &frame, Math::TweenTy
 {
 	outTweenType = Math::TweenType::Linear;
 	outTweenArgs.Clear();
-	const rapidjson::Value* curve = frame.GetMember("curve");
+	const rapidjson::Value* curve = frame.GetMemberValue("curve");
 	RETURN_IF_NULL(curve);
 
 	if (curve->IsString())
@@ -932,14 +934,14 @@ void SpineSkeletonModel::ParseCurve(const rapidjson::Value &frame, Math::TweenTy
 	}
 	else if (curve->IsArray() && curve->Size() == 4)
 	{
-		outTweenType = Math::TweenType::BezierCurve3ZeroToOneWithPreCalculateArgs;
+		outTweenType = Math::TweenType::BezierCurve3ZeroToOneWithPrecomputeArgs;
 		float cx1 = (*curve)[0].GetFloat();
 		float cy1 = (*curve)[1].GetFloat();
 		float cx2 = (*curve)[2].GetFloat();
 		float cy2 = (*curve)[3].GetFloat();
 
 		outTweenArgs.ReserveSize(7);
-		Math::Tween::PreCalculateBezierCurve3ZeroToOne(cx1, cy1, cx2, cy2, 10, outTweenArgs.MutableItems());
+		Math::Tween::PrecomputeBezierCurve3ZeroToOne(cx1, cy1, cx2, cy2, 10, outTweenArgs.MutableItems());
 		outTweenArgs.ForceSetCount(7);
 	}
 }

@@ -17,7 +17,7 @@ public:
 	{
 		RETURN_FALSE_IF_FALSE(DefaultRunnable::Start());
 		bool result = OnAction();
-		this->ForceSetState(RunningState::Done);
+		this->Stop();
 		return result;
 	}
 protected:

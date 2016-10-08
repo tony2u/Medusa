@@ -57,6 +57,7 @@ public:
 
 	Sprite* CreateSprite(const FileIdRef& textureName, const Rect2F& textureRect = Rect2F::Zero);
 	Sprite* CreateSprite(const Share<ITexture>& texture, const Rect2F& textureRect = Rect2F::Zero);
+	Sprite* CreateSprite(const RenderingObject& renderingObject);
 
 	NineGridSprite* CreateNineGridSprite( const Size2F& targetSize, const FileIdRef& textureName, const ThicknessF& padding, const Rect2F& textureRect = Rect2F::Zero);
 	Sprite* CreatePODSprite(const FileIdRef& modelName);
@@ -73,13 +74,17 @@ public:
 	ILabel* CreateSingleLineLabel(const FontId& fontId, StringRef text, Alignment alignment = Alignment::LeftBottom, Size2F restrictSize = Size2F::Zero, bool isStatic = false);
 	ILabel* CreateSingleLineLabel(const FontId& fontId, WStringRef text, Alignment alignment = Alignment::LeftBottom, Size2F restrictSize = Size2F::Zero, bool isStatic = false);
 
-	ListBox* CreateStringListBox(const List<WHeapString>& strItems, bool isSingleLine = true);
-	ListBox* CreateEmptyListBox();
+	ListBox* CreateListBox();
+	TableBox* CreateTableBox();
+
 
 	IPanel* CreatePanel(PanelType panelType);
 
 	TextureButton* CreateTextureButton(const FileIdRef& normalTextureName, const FileIdRef& selectedTextureName = FileIdRef::Empty, const FileIdRef& disabledTextureName = FileIdRef::Empty, const FileIdRef& disabledSelectedTextureName = FileIdRef::Empty);
 	NodeButton* CreateNodeButton(const FileIdRef& normalTextureName, const FileIdRef& selectedTextureName = FileIdRef::Empty, const FileIdRef& disabledTextureName = FileIdRef::Empty, const FileIdRef& disabledSelectedTextureName = FileIdRef::Empty);
+	LabelButton* CreateLabelButton(const FontId& fontId, StringRef text, Alignment alignment = Alignment::LeftBottom, Size2F restrictSize = Size2F::Zero, bool isStatic = false);
+
+
 
 	TextureProgressBar* CreateTextureProgressBar(ProgressType progressType, const FileIdRef& textureName, float percent = 1.f);
 	TextureProgressBar* CreateTextureProgressBar(ProgressType progressType, const FileIdRef& textureName, const FileIdRef& backgroundTextureName, float percent = 1.f);
@@ -88,8 +93,8 @@ public:
 	SingleLineEditBox* CreateSingleLineEditBox(const Size2F& size, const FontId& fontId, WStringRef text = WStringRef::Empty, Alignment alignment = Alignment::LeftBottom);
 	MultipleLineEditBox* CreateMultipleLineEditBox(const Size2F& size, const FontId& fontId, WStringRef text = WStringRef::Empty, Alignment alignment = Alignment::LeftBottom);
 
-	SpineSkeleton* CreateSkeleton(const FileIdRef& skeletonfileId, const FileIdRef& atlasFileId, bool isPreCalculated = false);
-	SpineSkeleton* CreateSkeletonDefault(const FileIdRef& name, bool isPreCalculated = false);
+	SpineSkeleton* CreateSkeleton(const FileIdRef& skeletonfileId, const FileIdRef& atlasFileId, bool isPrecomputed = false);
+	SpineSkeleton* CreateSkeletonDefault(const FileIdRef& name, bool isPrecomputed = false);
 private:
 	Dictionary<StringRef, NodeInfo*> mClassDict;
 	Dictionary<FileIdRef, NodeInfo*> mEditorDict;

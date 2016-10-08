@@ -50,7 +50,7 @@ bool IFileLoadSavable::Save(const StringRef& path, uint format /*= (uint)-1*/)
 	}
 
 	auto realPath = System::Instance().GetWritablePath(path);
-	auto fs = File::OpenBinaryWriter(path);
+	auto fs = File::OpenBinaryWriter(realPath);
 	return OnSave(realPath, *fs.get(), format);
 }
 

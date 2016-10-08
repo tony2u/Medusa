@@ -18,12 +18,9 @@ public:
 	virtual ~SpeedAction(void) {}
 	virtual SpeedAction* Reverse()const override{ return new SpeedAction(this->mInnerAction,1.f/mSpeed); }
 
-	virtual RunningState State() const override { return mInnerAction->State(); }
-	virtual bool IsRunning()const override { return mInnerAction->IsRunning(); }
-	virtual bool IsDone()const override { return mInnerAction->IsDone(); }
 protected:
 	virtual float TransformUpdateDuration(float dt)const override { return dt*mSpeed; }
 private:
-	float mSpeed;
+	float mSpeed=1.f;
 };
 MEDUSA_END;

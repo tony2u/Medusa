@@ -8,6 +8,7 @@
 
 
 MEDUSA_BEGIN;
+
 class StaticConstructor
 {
 public:
@@ -22,7 +23,10 @@ public:
 	}
 };
 
-#define MEDUSA_DECLARE_STATIC_CONSTRUCTOR() private:const static StaticConstructor mStaticConstructor;
+#define MEDUSA_DECLARE_STATIC_CONSTRUCTOR() public:const static StaticConstructor mStaticConstructor;
 #define MEDUSA_IMPLEMENT_STATIC_CONSTRUCTOR(className,callback) const StaticConstructor className::mStaticConstructor(callback);
+
+//make compiler to invoke static construct
+#define MEDUSA_ENABLE_STATIC_CONSTRUCTOR(className) const static ::Medusa::StaticConstructor* MACRO_CONCAT(StaticConstructor_,__COUNTER__)= &className::mStaticConstructor;
 
 MEDUSA_END;

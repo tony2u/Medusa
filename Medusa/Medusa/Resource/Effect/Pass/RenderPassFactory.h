@@ -16,6 +16,8 @@ public:
 	RenderPassFactory();
 	~RenderPassFactory();
 public:
+	virtual StringRef Name()const override { return "RenderPassFactory"; }
+
 	virtual bool Initialize();
 	virtual bool Uninitialize();
 public:

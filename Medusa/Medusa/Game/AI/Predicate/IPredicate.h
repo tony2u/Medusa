@@ -35,7 +35,7 @@ protected:
 
 #define MEDUSA_DECLARE_PREDICATE(className,baseClassName)  													\
 		MEDUSA_RTTI(className,baseClassName);\
-private:																				\
+public:																				\
 	const static StaticConstructor mStaticConstructor;							
 
 #define MEDUSA_IMPLEMENT_PREDICATE(className) 																					 \

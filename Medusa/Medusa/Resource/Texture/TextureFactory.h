@@ -19,6 +19,8 @@ public:
 	TextureFactory();
 	~TextureFactory();
 public:
+	virtual StringRef Name()const override { return "TextureFactory"; }
+
 	virtual bool Initialize();
 	virtual bool Uninitialize();
 public:

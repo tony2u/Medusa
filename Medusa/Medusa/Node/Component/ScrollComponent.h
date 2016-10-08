@@ -4,11 +4,11 @@
 #pragma once
 #include "MedusaPreDeclares.h"
 #include "Core/Pattern/Component/IComponent.h"
-#include "Geometry/Scroll/StaticScrollMathModel.h"
+#include "Geometry/Scroll/IScrollMathModel.h"
 
 MEDUSA_BEGIN;
 
-class ScrollComponent :public IComponent,public StaticScrollMathModel
+class ScrollComponent :public IComponent
 {
 	MEDUSA_DECLARE_COMPONENT(ScrollComponent,IComponent);
 public:
@@ -21,12 +21,17 @@ public:
 	bool IsReverse() const { return mIsReverse; }
 	void EnableReverse(bool val) { mIsReverse = val; }
 
+	IScrollMathModel* ScrollModel() const { return mScrollModel; }
+	void SetScrollModel(IScrollMathModel* val);
 protected:
-	virtual void OnScroll() override;
+	virtual void OnScroll();
 protected:
 	bool mIsReverse;	//used to control window to move in opposite direction
+	IScrollMathModel* mScrollModel = nullptr;
+	
 };
 
+MEDUSA_ENABLE_STATIC_CONSTRUCTOR(ScrollComponent);
 
 //[PRE_DECLARE_BEGIN]
 typedef TScrollToAction<ScrollComponent> ScrollComponentScrollToAction;

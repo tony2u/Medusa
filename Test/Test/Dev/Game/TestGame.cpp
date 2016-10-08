@@ -27,7 +27,7 @@ TestGame::TestGame()
 
 	Application::Instance().SetExtension(new MedusaExtensionModule());
 	
-	//ApplicationSettings::Instance().SetDebugInfo(ApplicationDebugInfoFlags::All);
+	ApplicationSettings::Instance().SetDebugInfo(ApplicationDebugInfoFlags::Performance);
 	//ApplicationSettings::Instance().SetSettingsFile("ApplicationSettings.lua");
 	//ApplicationSettings::Instance().SetDebugWinSize(msize( 360, 640));
 }

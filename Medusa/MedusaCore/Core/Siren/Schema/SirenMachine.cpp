@@ -9,7 +9,8 @@
 MEDUSA_BEGIN;
 
 SirenMachine::SirenMachine()
-	:mBool("bool"),
+	:IModule("SirenMachine"),
+	mBool("bool"),
 	mInt8("char"),
 	mUInt8("byte"),
 	mInt16("short"),
@@ -58,7 +59,30 @@ SirenMachine::SirenMachine()
 
 SirenMachine::~SirenMachine(void)
 {
+	Uninitialize();
+}
+
+bool SirenMachine::Initialize()
+{
+	return true;
+}
+
+bool SirenMachine::Uninitialize()
+{
 	SAFE_DELETE_DICTIONARY_VALUE(mAssemblies);
+	return true;
+}
+
+bool SirenMachine::OnLoad(IEventArg& e /*= IEventArg::Empty*/)
+{
+	Initialize();
+	return true;
+}
+
+bool SirenMachine::OnUnload(IEventArg& e /*= IEventArg::Empty*/)
+{
+	Uninitialize();
+	return true;
 }
 
 SirenAssembly* SirenMachine::FindAssembly(const StringRef& name) const

@@ -185,7 +185,7 @@
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Lib>
-      <AdditionalDependencies>libEGL.lib;libGLESv2.lib;freetype_d.lib;jpeg_d.lib;ogg_d.lib;openal_d.lib;png_d.lib</AdditionalDependencies>
+      <AdditionalDependencies>libEGL.lib;libGLESv2.lib;freetype_d.lib;jpeg_d.lib;ogg_d.lib;openal_d.lib;png_d.lib;Box2D_d.lib</AdditionalDependencies>
     </Lib>
     <Lib>
       <AdditionalLibraryDirectories>$(ProjectDir)..\Lib\Bin\win\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -274,7 +274,7 @@ xcopy /Y /Q "$(ProjectDir)..\Lib\Bin\win\x86\*.pdb" "$(OutDir)"</Command>
 xcopy /Y /Q "$(ProjectDir)..\Lib\Bin\win\x64\*.pdb" "$(OutDir)"</Command>
     </PostBuildEvent>
     <Lib>
-      <AdditionalDependencies>libEGL.lib;libGLESv2.lib;freetype_d.lib;jpeg_d.lib;ogg_d.lib;openal_d.lib;png_d.lib</AdditionalDependencies>
+      <AdditionalDependencies>libEGL.lib;libGLESv2.lib;freetype_d.lib;jpeg_d.lib;ogg_d.lib;openal_d.lib;png_d.lib;Box2D_d.lib</AdditionalDependencies>
     </Lib>
     <Lib>
       <AdditionalLibraryDirectories>$(ProjectDir)..\Lib\Bin\win\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -345,7 +345,7 @@ xcopy /Y /Q "$(ProjectDir)..\Lib\Bin\win\x64\*.pdb" "$(OutDir)"</Command>
       <ProgramDataBaseFileName>$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
     </ClCompile>
     <Lib>
-      <AdditionalDependencies>libEGL.lib;libGLESv2.lib;freetype.lib;jpeg.lib;ogg.lib;openal.lib;png.lib</AdditionalDependencies>
+      <AdditionalDependencies>libEGL.lib;libGLESv2.lib;freetype.lib;jpeg.lib;ogg.lib;openal.lib;png.lib;Box2D.lib</AdditionalDependencies>
     </Lib>
     <Lib>
       <AdditionalLibraryDirectories>$(ProjectDir)..\Lib\Bin\win\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -402,7 +402,7 @@ xcopy /Y /Q "$(ProjectDir)..\Lib\Bin\win\x64\*.pdb" "$(OutDir)"</Command>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>libEGL.lib;libGLESv2.lib;freetype.lib;jpeg.lib;ogg.lib;openal.lib;png.lib</AdditionalDependencies>
+      <AdditionalDependencies>libEGL.lib;libGLESv2.lib;freetype.lib;jpeg.lib;ogg.lib;openal.lib;png.lib;Box2D.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(ProjectDir)..\Lib\Bin\win\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
     <PostBuildEvent>

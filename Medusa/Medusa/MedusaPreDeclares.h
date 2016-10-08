@@ -65,6 +65,10 @@ class OpenALDevice;
 
 class IGame;
 
+class GridWalkingActor;
+
+class WalkingActor;
+
 class BehaviorConfig;
 
 class BehaviorFactory;
@@ -210,9 +214,6 @@ template<typename T>
 class Quad;
 
 template<typename T>
-class Range;
-
-template<typename T>
 class Rect2;
 
 template<typename T>
@@ -254,14 +255,13 @@ class GraphNode;
 
 class GraphPath;
 
+class GridCell;
+
+class GridMap;
+
 class IKSolver2D;
 
 struct Bone;
-
-class GridCell;
-
-template<typename TCell, typename TCellCompare >
-class GridMap;
 
 class BoneMoveable;
 
@@ -273,14 +273,13 @@ class Mover;
 
 class SRTMoveable;
 
+class NavigationAlgorithm;
+
 class GuillotineBinPack;
 
 class SkylineBinPack;
 
 struct Skyline;
-
-template<typename TGraph, typename TNode, typename TUserData>
-class DijkstraPathFinder;
 
 class IScrollMathModel;
 
@@ -388,6 +387,8 @@ class INode;
 
 class NodeFactory;
 
+class NodeInstantiateInfo;
+
 class NodeSweeper;
 
 class AnimationManager;
@@ -442,6 +443,8 @@ class TScrollToPageAction;
 
 class ShowAction;
 
+class TypewriterEffect;
+
 class ColorTimeline;
 
 class ITimeline;
@@ -458,11 +461,26 @@ class RotationTimeline;
 
 class ScaleTimeline;
 
+template<typename T, class TCompare >
+class TConstantTimeline;
+
 class TextureFileIdTimeline;
 
 class TimelineFactory;
 
 class TranslateTimeline;
+
+class BaseListDataBinding;
+
+class IDataBinding;
+
+template<typename T>
+class TDataBinding;
+
+template<typename T, class TCompare >
+class TListDataBinding;
+
+class AnimatorComponent;
 
 class NodeScriptComponent;
 
@@ -471,6 +489,18 @@ class ParallaxComponent;
 class ParallaxScrollComponent;
 
 class ScrollComponent;
+
+class BaseMovementComponent;
+
+class LinearMovementComponent;
+
+class BaseGridMovementComponent;
+
+class GridDistanceWanderMovementComponent;
+
+class GridPathMovementComponent;
+
+class GridStraightMovementComponent;
 
 class IButton;
 
@@ -504,18 +534,9 @@ class ShapeProgressBar;
 
 class TextureProgressBar;
 
-class BaseMultipleListDataSource;
+class TableBox;
 
-class BaseSingleListDataSource;
-
-class IDataSource;
-
-class IListDataSource;
-
-class StringListDataSource;
-
-template<typename T>
-class UserDataSource;
+class TableBoxItem;
 
 class INodeEditor;
 
@@ -611,10 +632,6 @@ class SingleStrokeLibrary;
 
 class SingleStrokeTemplate;
 
-class IItemTemplate;
-
-class LabelItemTemplate;
-
 class ILayer;
 
 class NormalLayer;
@@ -686,6 +703,15 @@ class SpineSkeleton;
 class NineGridSprite;
 
 class Sprite;
+
+class LabelTemplate;
+
+class SpriteTemplate;
+
+template<typename TData>
+class TNodeTemplate;
+
+class PhysicsAlgorithm;
 
 struct IDrawable;
 
@@ -780,6 +806,16 @@ class WavAudio;
 class Camera;
 
 class CameraFactory;
+
+class DataSourceFactory;
+
+class IDataSource;
+
+template<typename T>
+class TDataSource;
+
+template<typename T, class TCompare >
+class TListDataSource;
 
 class EffectFactory;
 
@@ -883,7 +919,11 @@ class TiledImage;
 
 class TiledImageLayer;
 
+class TiledMap;
+
 class TiledMapFactory;
+
+class TiledMapInstantiateInfo;
 
 class TiledObject;
 
@@ -902,8 +942,6 @@ class TiledTileset;
 class TiledTilesetFactory;
 
 class TiledTilesetRef;
-
-class TmxTiledMap;
 
 class IMaterial;
 
@@ -1082,6 +1120,9 @@ class ScaleTimelineModel;
 
 class StringTimelineModel;
 
+template<typename T, class TCompare >
+class TConstantTimelineModel;
+
 class TextureFileIdTimelineModel;
 
 class TimelineModelFactory;
@@ -1135,10 +1176,6 @@ typedef Quad<Point2<float> > QuadVertex2;
 typedef Quad<TextureVertex> QuadTextureVertex;
 typedef Quad<TextureNormalVertex> QuadTextureNormalVertex;
 typedef Quad<ShapeVertex> QuadShapeVertex;
-typedef Range<int> RangeI;
-typedef Range<uint32> RangeU;
-typedef Range<size_t> RangeS;
-typedef Range<float> RangeF;
 typedef Rect2<int> Rect2I;
 typedef Rect2<uint> Rect2U;
 typedef Rect2<float> Rect2F;
@@ -1232,6 +1269,8 @@ typedef Delegate<void (INode* sender,TapGestureEventArg&)> TapDelegate;
 typedef Event<void (INode* sender,TapGestureEventArg&)> TapEvent;
 typedef Delegate<void(INode* sender)> TapFailedDelegate;
 typedef Event<void(INode* sender)> TapFailedEvent;
+typedef  TListDataSource<WHeapString, EqualCompare> WStringListDataSource;
+typedef  TListDataSource<FileId, EqualCompare> FileIdListDataSource;
 typedef Quad<FontCharVertex> FontCharQuad;
 #pragma endregion typedef
 MEDUSA_END;

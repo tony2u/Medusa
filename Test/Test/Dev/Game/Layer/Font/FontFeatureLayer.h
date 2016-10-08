@@ -13,3 +13,4 @@ public:
 	virtual ~FontFeatureLayer(void);
 };
 
+MEDUSA_ENABLE_STATIC_CONSTRUCTOR(FontFeatureLayer);

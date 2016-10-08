@@ -10,13 +10,12 @@ MEDUSA_BEGIN;
 
 
 IEntity::IEntity()
-	:mSender(nullptr)
 {
 }
 
 IEntity::~IEntity()
 {
-	StopAllComponents();
+	SAFE_DELETE_COLLECTION(mComponents);
 }
 
 void IEntity::ResetAllComponents()
@@ -33,62 +32,29 @@ void IEntity::ResumeAllComponents()
 	FOR_EACH_TO(mComponents, Resume());
 }
 
-
-
 void IEntity::PauseAllComponents()
 {
 	FOR_EACH_TO(mComponents, Pause());
 }
 
-
 void IEntity::StartAllComponents()
 {
-	RETURN_IF_EMPTY(mComponents);
-	List<size_t> completedIndices;
-	size_t count = mComponents.Count();
-	FOR_EACH_SIZE(i, count)
-	{
-		IComponent* component = mComponents[i];
-		MEDUSA_ASSERT_NOT_NULL(component, "");
-		component->Start();
-		if (component->IsDone())
-		{
-			completedIndices.Add(i);
-		}
-	}
-
-	Linq::DeleteIndexes(mComponents, completedIndices);
-	
+	FOR_EACH_TO(mComponents, Start());
 }
 
 void IEntity::StopAllComponents()
 {
-	RETURN_IF_EMPTY(mComponents);
-	for (auto item : mComponents)
-	{
-		item->Stop();
-		delete item;
-	}
-	mComponents.Clear();
+	FOR_EACH_TO(mComponents, Stop());
 }
 
 bool IEntity::AcceptComponentEvent(IEventArg& e)
 {
 	RETURN_TRUE_IF_EMPTY(mComponents);
-	List<size_t> completedIndices;
-	size_t count = mComponents.Count();
-	FOR_EACH_SIZE(i, count)
+	for (IComponent* component:mComponents)
 	{
-		IComponent* component = mComponents[i];
-		MEDUSA_ASSERT_NOT_NULL(component, "");
 		component->AcceptEvent(e);
-		if (component->IsDone())
-		{
-			completedIndices.Add(i);
-		}
 	}
 
-	Linq::DeleteIndexes(mComponents, completedIndices);
 	return true;
 }
 
@@ -141,20 +107,7 @@ bool IEntity::ResetComponentsLogic()
 bool IEntity::UpdateComponents(float dt)
 {
 	RETURN_TRUE_IF_EMPTY(mComponents);
-	List<size_t> completedIndices;
-	size_t count = mComponents.Count();
-	FOR_EACH_SIZE(i, count)
-	{
-		IComponent* component = mComponents[i];
-		MEDUSA_ASSERT_NOT_NULL(component, "");
-		component->Update(dt);
-		if (component->IsDone())
-		{
-			completedIndices.Add(i);
-		}
-	}
-
-	Linq::DeleteIndexes(mComponents, completedIndices);
+	FOR_EACH_TO(mComponents, Update(dt));
 
 	return true;
 }
@@ -188,12 +141,19 @@ IComponent* IEntity::RemoveComponent(const StringRef& name)
 	return nullptr;
 }
 
+bool IEntity::StartComponent(const StringRef& name)
+{
+	IComponent* val = FindComponent(name);
+	RETURN_FALSE_IF_NULL(val);
+	return val->Start();
+}
+
+
 bool IEntity::StopComponent(const StringRef& name)
 {
-	IComponent* val = RemoveComponent(name);
-	bool result = val != nullptr;
-	SAFE_DELETE(val);
-	return result;
+	IComponent* val = FindComponent(name);
+	RETURN_FALSE_IF_NULL(val);
+	return val->Stop();
 }
 
 bool IEntity::PauseComponent(const StringRef& name)

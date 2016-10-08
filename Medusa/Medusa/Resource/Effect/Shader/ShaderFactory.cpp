@@ -66,6 +66,7 @@ Share<IShader> ShaderFactory::CreateShader( const FileIdRef& fileId,const List<H
 		Log::FormatError("Cannot find:{}-{}", fileId.Name, fileId.Order);
 		return nullptr;
 	}
+
 	StringRef str(data.Cast<char>());
 	if(result->Initialize(str,defines))
 	{

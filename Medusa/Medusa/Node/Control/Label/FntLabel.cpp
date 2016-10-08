@@ -44,25 +44,9 @@ void FntLabel::UpdateMesh()
 {
 	if (mString.IsEmpty())
 	{
-		if (mFont->HasSinglePage() && mFont->IsFixed())
-		{
-			SetMesh(nullptr);
-			SetMaterial(nullptr);
-		}
-
-		if (!mManagedNodes.IsEmpty())
-		{
-			DeleteAllChilds(NodeRemoveFlags::OnlyManaged);
-		}
-		SetSize(Size2F::Zero);
-		mInternalMeshes.Clear();
+		ClearMeshData();
 		return;
 	}
-	else if (mRenderingObject.Mesh() ==nullptr)
-	{
-		CreateMesh();
-	}
-
 
 	Size2F outSize;
 
@@ -109,21 +93,16 @@ void FntLabel::UpdateMesh()
 void FntLabel::OnUpdateFont()
 {
 	DeleteAllChilds(NodeRemoveFlags::OnlyManaged);
+	mInternalPages.Clear();
+	mInternalPages.Clear();
+	SetMesh(nullptr);
+	SetMaterial(nullptr);
+	SetSize(Size3F::Zero);
 
-	if (mFont == nullptr)
-	{
-		SetMesh(nullptr);
-		SetSize(Size3F::Zero);
-		mInternalMeshes.Clear();
-		mInternalPages.Clear();
-		return;
-	}
-	else
+	if (mFont != nullptr)
 	{
 		CreateMesh();
 	}
-
-
 }
 
 Share<BaseFontMesh> FntLabel::CreateFontMesh(TextureAtlasPage* page, bool isStatic /*= false*/)
@@ -241,6 +220,18 @@ void FntLabel::CreateMesh()
 		}
 	}
 
+}
+
+void FntLabel::ClearMeshData()
+{
+	for (auto& mesh:mInternalMeshes)
+	{
+		FntTextMesh* fontMesh = (FntTextMesh*)mesh.Ptr();
+		fontMesh->Clear();
+	}
+
+	
+	SetSize(Size2F::Zero);
 }
 
 Share<IMaterial> FntLabel::CreateLabelMaterial(const Share<ITexture>& texture)

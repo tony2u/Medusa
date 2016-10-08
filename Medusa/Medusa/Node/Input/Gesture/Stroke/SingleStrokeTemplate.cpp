@@ -5,19 +5,21 @@
 //SIREN_BODY_INCLUDE_BEGIN
 #include "SingleStrokeTemplate.h"
 //SIREN_BODY_INCLUDE_END
+#include "Core/Log/Log.h"
 
 MEDUSA_BEGIN;
 
 SingleStrokeTemplate::SingleStrokeTemplate()
 {
 	//SIREN_BODY_CONSTRUCT_BEGIN
+	mBeginAngle = 0.f;
 	//SIREN_BODY_CONSTRUCT_END
 }
 
 SingleStrokeTemplate::~SingleStrokeTemplate()
 {
 	//SIREN_BODY_DESTRUCT_BEGIN
-	//SIREN_BODY_DESTRUCT_END
+//SIREN_BODY_DESTRUCT_END
 }
 
 
@@ -43,6 +45,11 @@ void SingleStrokeTemplate::BeginAdd(float fromX, float fromY)
 	mCurrentAddPoint.Y = fromY;
 }
 
+void SingleStrokeTemplate::BeginAdd(const Point2F& pos)
+{
+	mCurrentAddPoint = pos;
+}
+
 void SingleStrokeTemplate::AddTo(float toX, float toY, uint sampleCount)
 {
 	AddLine(mCurrentAddPoint, mpp(toX, toY), sampleCount);
@@ -50,11 +57,55 @@ void SingleStrokeTemplate::AddTo(float toX, float toY, uint sampleCount)
 	mCurrentAddPoint.Y = toY;
 }
 
+void SingleStrokeTemplate::AddTo(const Point2F& pos, uint sampleCount)
+{
+	AddLine(mCurrentAddPoint, pos, sampleCount);
+	mCurrentAddPoint = pos;
+}
+
 void SingleStrokeTemplate::Clear()
 {
 	mPath.Clear();
 	mStartUnitVector = Point2F::Zero;
 	mVectors.Clear();
+	mBeginAngle = 0.f;
+	mBeginScale = 0.f;
+}
+
+SingleStrokeTemplate* SingleStrokeTemplate::Clone() const
+{
+	SingleStrokeTemplate* copy = new SingleStrokeTemplate();
+	copy->SetName(mName);
+	copy->MutablePath() = mPath;
+	copy->SetStartUnitVector(mStartUnitVector);
+	copy->CalculateVectors();
+
+	copy->SetBeginAngle(mBeginAngle);
+	copy->SetBeginScale(mBeginScale);
+	return copy;
+}
+
+void SingleStrokeTemplate::Train(const SingleStrokeTemplate& val,float scale)
+{
+	//val is already normalized
+	//we just simplify average the two
+	auto count = mPath.Points().Count();
+	if (count==0)
+	{
+		mPath = val.mPath;
+		mStartUnitVector = val.mStartUnitVector;
+		CalculateVectors();
+		mBeginAngle = val.mBeginAngle;
+		mBeginScale = val.mBeginScale*scale;
+	}
+
+	Log::AssertFormat(count == val.Path().Points().Count(), "Should have the same point count");
+	FOR_EACH_SIZE(i, count)
+	{
+		auto& self = mPath.MutablePoints()[i];
+		const auto& other = val.Path().Points()[i];
+		self = (self + other) / 2.f;
+	}
 }
 
 void SingleStrokeTemplate::Normalize(size_t strokePointCount, float squareSize, bool ignoreRotation)
@@ -75,6 +126,7 @@ void SingleStrokeTemplate::Normalize(size_t strokePointCount, float squareSize, 
 	//  rotated the same
 	if (!ignoreRotation)
 	{
+		mBeginAngle = mPath.IndicativeAngle();
 		mPath.RotateToOrigin();
 	}
 	// Pretend all shapes are the same size. 
@@ -84,7 +136,7 @@ void SingleStrokeTemplate::Normalize(size_t strokePointCount, float squareSize, 
 	auto boudingBox = mPath.BoundingBox();
 	scale.X = squareSize / boudingBox.Size.Width;
 	scale.Y = squareSize / boudingBox.Size.Height;
-
+	mBeginScale = scale;
 	mPath.Scale(scale);
 	// Move the shape until its center is at 0,0 so that everyone
 	//  is in the same coordinate system
@@ -105,6 +157,8 @@ void SingleStrokeTemplate::CalculateVectors()
 SIREN_METADATA(SingleStrokeTemplate, 20);
 SIREN_FIELD_METADATA_STRUCT(0, SingleStrokeTemplate, Name, 4);
 SIREN_FIELD_METADATA_STRUCT(1, SingleStrokeTemplate, Path, 4);
+SIREN_FIELD_METADATA(2, SingleStrokeTemplate, BeginAngle, 10, 0.f, false);
+SIREN_FIELD_METADATA_STRUCT(3, SingleStrokeTemplate, BeginScale, 10);
 //SIREN_BODY_METADATA_END
 
 MEDUSA_END;

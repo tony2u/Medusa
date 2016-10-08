@@ -35,7 +35,7 @@ protected:
 
 
 #define MEDUSA_DECLARE_GAME() 													\
-private:																				\
+public:																				\
 	const static StaticConstructor mStaticConstructor;							
 
 #define MEDUSA_IMPLEMENT_GAME(className) 																					 \

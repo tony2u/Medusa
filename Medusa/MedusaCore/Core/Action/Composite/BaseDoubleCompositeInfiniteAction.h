@@ -15,6 +15,9 @@ public:
 		SAFE_DELETE(mTo);
 	}
 public:
+	virtual bool IsRunning()const override { return BaseInfiniteAction::IsRunning() &&(mFrom != nullptr && mFrom->IsRunning()) && (mTo != nullptr && mTo->IsRunning()); }
+	virtual bool IsDone()const override { return BaseInfiniteAction::IsDone()||(mFrom == nullptr || mFrom->IsDone()) && (mTo == nullptr || mTo->IsDone()); }
+
 	virtual bool Reset()override
 	{
 		RETURN_FALSE_IF_FALSE(BaseInfiniteAction::Reset());
@@ -71,7 +74,7 @@ public:
 	IAction* To() const { return mTo; }
 
 protected:
-	IAction* mFrom;
-	IAction* mTo;
+	IAction* mFrom=nullptr;
+	IAction* mTo=nullptr;
 };
 MEDUSA_END;

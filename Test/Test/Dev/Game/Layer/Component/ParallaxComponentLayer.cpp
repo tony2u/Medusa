@@ -39,12 +39,12 @@ bool ParallaxComponentLayer::Initialize()
 		mComponent->EnableParallax(child, ratio, child->Position());
 	}
 	
-	//ParallaxComponentMoveByAction* moveby = new ParallaxComponentMoveByAction(mppp(mChildCount*mMainSprite->Width(), 0.f, 0.f), 2.f);
-	//ParallaxComponentMoveByAction* moveback = moveby->Reverse();
-	//SequenceAction* seq = new SequenceAction(moveby, moveback);
-	//RepeatedForeverAction* rep = new RepeatedForeverAction(seq);
+	ParallaxComponentMoveByAction* moveby = new ParallaxComponentMoveByAction(mppp(mChildCount*mMainSprite->Width(), 0.f, 0.f), 2.f);
+	ParallaxComponentMoveByAction* moveback = moveby->Reverse();
+	SequenceAction* seq = new SequenceAction(moveby, moveback);
+	RepeatedForeverAction* rep = new RepeatedForeverAction(seq);
 
-	//mComponent->RunAction(rep);
+	mComponent->RunAction(rep);
 
 
 	return true;
@@ -52,7 +52,7 @@ bool ParallaxComponentLayer::Initialize()
 
 void ParallaxComponentLayer::OnRestart()
 {
-	//mComponent->RestartAllActions();
+	mComponent->RestartAllActions();
 
 	
 

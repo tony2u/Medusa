@@ -8,10 +8,20 @@ MEDUSA_BEGIN;
 
 
 /*
-None	=>	Running,Done
-Running	=>	Paused,Done,None
-Paused	=>	Running,Done,None
-Done	=>	None,Running
+None	->	(Start)	->	Running
+None	->	(Stop)	->	Done
+
+Running	->	(Reset)	->	None
+Running	->	(Pause)	->	Paused
+Running	->	(Stop)	->	Done
+
+Paused	->	(Reset)	->	None
+Paused	->	(Resume)	->	Running
+Paused	->	(Stop)	->	Done
+
+Done	->	(Reset)	->	None
+Done	->	(Reset,Stop)	->	Running
+
 */
 
 enum class RunningState

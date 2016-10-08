@@ -17,7 +17,8 @@ public:
 	void OnKeyDown(INode* sender, KeyDownEventArg& e);
 private:
 	ParallaxScrollComponent* mComponent;
-	const static uint mChildCount = 5;
+	const static uint mChildCount = 3;
 	
 };
 
+MEDUSA_ENABLE_STATIC_CONSTRUCTOR(ParallaxScrollComponentLayer);

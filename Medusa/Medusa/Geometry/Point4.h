@@ -132,7 +132,10 @@ public:
 
 	intp HashCode()const{return HashUtility::Hash(Buffer);}
 
-
+	bool IsNearlyZero(float tolerance = 1.e-4f)const
+	{
+		return Math::Abs(X) <= tolerance &&	Math::Abs(Y) <= tolerance &&Math::Abs(Z) <= tolerance&&Math::Abs(W) <= tolerance;
+	}
 	float Length()const{return Math::Sqrt((float)(X*X+Y*Y+Z*Z+W*W));}
 	T LengthSquared()const{return X*X+Y*Y+Z*Z+W*W;}
 

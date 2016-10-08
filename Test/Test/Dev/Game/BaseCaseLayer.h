@@ -16,3 +16,4 @@ public:
 
 };
 
+MEDUSA_ENABLE_STATIC_CONSTRUCTOR(BaseCaseLayer);

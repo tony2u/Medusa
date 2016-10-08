@@ -2,18 +2,17 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 #pragma once
-#include "Core/Action/BasefiniteAction.h"
+#include "Core/Action/Composite/BaseSingleCompositeFiniteAction.h"
 
 MEDUSA_BEGIN;
 
-class BaseTweenAction :public BaseFiniteAction
+class BaseTweenAction :public BaseSingleCompositeFiniteAction
 {
 public:
 	BaseTweenAction(BaseFiniteAction* innerAction)
-		:BaseFiniteAction(innerAction->Duration()), mInnerAction(innerAction)
+		:BaseSingleCompositeFiniteAction(innerAction,innerAction->Duration())
 	{
 	}
-	virtual ~BaseTweenAction(void) { SAFE_DELETE(mInnerAction); }
 public:
 	virtual bool Update(float dt, float blend = 1.f)override
 	{
@@ -29,67 +28,12 @@ public:
 
 		if (this->mElapsed > this->mDuration)
 		{
-			mInnerAction->ForceSetState(RunningState::Done);
+			mInnerAction->Stop();
 			return false;
 		}
 		return true;
 	}
-
-	virtual RunningState State() const override { return mInnerAction->State(); }
-	virtual bool IsRunning()const override { return mInnerAction->IsRunning(); }
-	virtual bool IsDone()const override { return mInnerAction->IsDone(); }
-
-	virtual bool Start()override
-	{
-		RETURN_FALSE_IF_FALSE(BaseFiniteAction::Start());
-		return mInnerAction->Start();
-	}
-	virtual bool Pause()override
-	{
-		RETURN_FALSE_IF_FALSE(BaseFiniteAction::Pause());
-		return mInnerAction->Pause();
-	}
-	virtual bool Resume()override
-	{
-		RETURN_FALSE_IF_FALSE(BaseFiniteAction::Resume());
-		return mInnerAction->Resume();
-	}
-	virtual bool Stop()override
-	{
-		RETURN_FALSE_IF_FALSE(BaseFiniteAction::Stop());
-		return mInnerAction->Stop();
-	}
-	virtual bool Reset()override
-	{
-		RETURN_FALSE_IF_FALSE(BaseFiniteAction::Reset());
-		return mInnerAction->Reset();
-	}
-
-	virtual bool Initialize(void* target)override
-	{
-		RETURN_FALSE_IF_FALSE(BaseFiniteAction::Initialize(target));
-		return mInnerAction->Initialize(target);
-	}
-
-	virtual IAction* FindActionByTagRecursively(int tag)const override
-	{
-		if (mInnerAction->Tag() == tag)
-		{
-			return mInnerAction;
-		}
-		return mInnerAction->FindActionByTagRecursively(tag);
-	}
-	virtual IAction* FindActionByNameRecursively(const StringRef& name) const override
-	{
-		if (mInnerAction->Name() == name)
-		{
-			return mInnerAction;
-		}
-		return mInnerAction->FindActionByNameRecursively(name);
-	}
 protected:
 	virtual float TransformUpdatePercent(float percent)const { return percent; }
-protected:
-	BaseFiniteAction* mInnerAction;
 };
 MEDUSA_END;

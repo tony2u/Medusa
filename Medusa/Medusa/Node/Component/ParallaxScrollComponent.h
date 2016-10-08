@@ -25,6 +25,7 @@ protected:
 	ParallaxComponent* mParallaxComponent;
 };
 
+MEDUSA_ENABLE_STATIC_CONSTRUCTOR(ParallaxScrollComponent);
 
 
 

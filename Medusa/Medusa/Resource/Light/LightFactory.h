@@ -47,6 +47,8 @@ public:
 	LightFactory();
 	~LightFactory();
 public:
+	virtual StringRef Name()const override { return "LightFactory"; }
+
 	virtual bool Initialize();
 	virtual bool Uninitialize();
 public:

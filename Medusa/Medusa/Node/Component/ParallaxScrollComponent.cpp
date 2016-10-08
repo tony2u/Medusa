@@ -27,7 +27,7 @@ ParallaxScrollComponent::~ParallaxScrollComponent(void)
 void ParallaxScrollComponent::OnScroll()
 {
 	ScrollComponent::OnScroll();
-	INode* node = mEntity->SenderAs<INode*>();
+	INode* node = (INode*)mEntity;
 	const Point3F& curPos = node->Position();
 	mParallaxComponent->SetPosition(curPos);
 }

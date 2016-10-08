@@ -82,7 +82,7 @@ Share<ShapeGeneralMesh> MeshFactory::CreateShapeCircleMesh(float radius, float p
 {
 	//material->SetDrawMode(GraphicsDrawMode::TriangleFan);
 	Share<ShapeGeneralMesh> mesh = new ShapeGeneralMesh();
-	uint count = Math::Ceil(Math::PI2 / precision);
+	uint count = (uint)Math::Ceil(Math::PI2 / precision);
 	Point3F center(radius, radius);
 	mesh->AppendVertex(center);
 	mesh->AppendIndex(0);

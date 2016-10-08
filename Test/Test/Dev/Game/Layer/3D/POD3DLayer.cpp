@@ -37,11 +37,11 @@ bool POD3DLayer::OnEnter()
 {
 	return true;
 
-	auto winSize = ResolutionAdapter::Instance().WinSize();
+	/*auto winSize = ResolutionAdapter::Instance().WinSize();
 	auto camera = CameraFactory::Instance().CreateFromModel("Camera01", "Scene.pod", winSize, false);
 	IScene* scene = SceneManager::Instance().Current();
 	scene->SetCamera(camera);
-	return true;
+	return true;*/
 }
 
 bool POD3DLayer::OnExit()

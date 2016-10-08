@@ -36,7 +36,7 @@ INode* JsonEditor::Create(const StringRef& className, const FileIdRef& editorFil
 
 INode* JsonEditor::NodeWithJsonRoot(const StringRef& className, const rapidjson::Value& root, NodeCreateFlags flags/* = NodeCreateFlags::None*/)
 {
-	StringRef type = root.GetString("Type", nullptr);
+	StringRef type = root.GetMember("Type", nullptr);
 	StringRef readerName = GetReaderName(type, root);
 	auto reader = ReaderFactory::Instance().Create(readerName);
 	RETURN_NULL_IF_NULL(reader);
@@ -51,11 +51,11 @@ INode* JsonEditor::NodeWithJsonRoot(const StringRef& className, const rapidjson:
 	const rapidjson::Value& nodeObjectData = nodeCentent["ObjectData"];
 	const rapidjson::Value& nodeSizeNode = nodeObjectData["Size"];
 	Size2F nodeSize;
-	nodeSize.Width = nodeSizeNode.Get("X", 0.f);
-	nodeSize.Height = nodeSizeNode.Get("Y", 0.f);
+	nodeSize.Width = nodeSizeNode.GetMember("X", 0.f);
+	nodeSize.Height = nodeSizeNode.GetMember("Y", 0.f);
 	node->SetSize(nodeSize);
 
-	const rapidjson::Value* childrenArray = nodeObjectData.GetMember("Children");
+	const rapidjson::Value* childrenArray = nodeObjectData.GetMemberValue("Children");
 	if (childrenArray != nullptr)
 	{
 		for (auto& subNodeTree : *childrenArray)
@@ -79,7 +79,7 @@ INode* JsonEditor::NodeWithJsonRoot(const StringRef& className, const rapidjson:
 
 INode* JsonEditor::NodeWithJson(const rapidjson::Value& jsonNode, NodeCreateFlags flags /*= NodeCreateFlags::None*/)
 {
-	StringRef type = jsonNode.GetString("ctype", nullptr);
+	StringRef type = jsonNode.GetMember("ctype", nullptr);
 	StringRef readerName = GetReaderName(type, jsonNode);
 	auto reader = ReaderFactory::Instance().Create(readerName);
 	if (reader == nullptr)
@@ -93,7 +93,7 @@ INode* JsonEditor::NodeWithJson(const rapidjson::Value& jsonNode, NodeCreateFlag
 
 	flags = GetChildrenCreateFlags(flags);
 
-	const rapidjson::Value* childrenArray = jsonNode.GetMember("Children");
+	const rapidjson::Value* childrenArray = jsonNode.GetMemberValue("Children");
 	if (childrenArray != nullptr)
 	{
 		for (auto& subNodeTree : *childrenArray)
@@ -134,7 +134,7 @@ StringRef JsonEditor::GetReaderName(const StringRef& name, const rapidjson::Valu
 	}
 	else if (name == "GameMapObjectData")
 	{
-		return "TmxMapReader";
+		return "TiledMapReader";
 	}
 
 

@@ -9,16 +9,35 @@ MEDUSA_BEGIN;
 
 
 IComponent::IComponent(const StringRef& name /*= StringRef::Empty*/, int priority /*= 0*/, void* userData /*= nullptr*/)
-	:mName(name), mPriority(priority), mUserData(userData), mEntity(nullptr)
+	:mName(name), mPriority(priority), mUserData(userData)
 {
-
+	
 }
 
+
+void IComponent::SetEntity(IEntity* val)
+{
+	RETURN_IF_EQUAL(mEntity, val);
+	if (mEntity!=nullptr)
+	{
+		OnDetached();
+	}
+	mEntity = val;
+
+	if (mEntity != nullptr)
+	{
+		if (mIsAutoActive)
+		{
+			Start();
+		}
+		OnAttached();
+	}
+}
 
 bool IComponent::Update(float dt)
 {
 	RETURN_FALSE_IF_FALSE(IsRunning());
-
+	BaseActionRunner::UpdateActions(dt);
 	return true;
 }
 

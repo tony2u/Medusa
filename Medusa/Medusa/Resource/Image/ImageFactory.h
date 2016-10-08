@@ -25,6 +25,8 @@ public:
 	ImageFactory();
 	~ImageFactory();
 public:
+	virtual StringRef Name()const override { return "ImageFactory"; }
+
 	virtual bool Initialize();
 	virtual bool Uninitialize();
 public:

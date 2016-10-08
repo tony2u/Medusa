@@ -36,7 +36,7 @@ protected:
 
 #define MEDUSA_DECLARE_BEHAVIOR(className,baseClassName)													\
 		MEDUSA_RTTI(className,baseClassName);\
-private:																				\
+public:																				\
 	const static StaticConstructor mStaticConstructor;							
 
 #define MEDUSA_IMPLEMENT_BEHAVIOR(className) 																					 \

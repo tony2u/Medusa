@@ -27,7 +27,7 @@ public:
 	const TiledTileRef& Tile(size_t index)const { return mTiles[index]; }
 	TiledTileRef& MutableTile(size_t index) { return mTiles[index]; }
 
-	virtual ILayer* Instantiate(InstantiateMode mode = InstantiateMode::None)const override;
+	virtual INode* Instantiate(NodeInstantiateInfo* instantiateInfo = nullptr)const override;
 
 protected:
 	void AnalyzeTiles();

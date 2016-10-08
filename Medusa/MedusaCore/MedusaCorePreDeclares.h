@@ -230,7 +230,7 @@ class ILinkedList;
 template<typename T>
 class IList;
 
-template<typename T,typename TCompare >
+template<typename T,typename TCompare>
 struct ISet;
 
 template<typename T>
@@ -241,7 +241,7 @@ struct KeyValuePair;
 
 class Linq;
 
-template<typename TKey,typename TValue,typename TSorter >
+template<typename TKey,typename TValue,typename TSorter>
 class SortedDictionary;
 
 struct STLMapLessPtr;
@@ -255,6 +255,10 @@ struct CustomCompare;
 struct DefaultCompareForPointer;
 
 struct CustomCompareForPointer;
+
+struct DefaultCompareForShare;
+
+struct CustomCompareForShare;
 
 struct InverseCompare;
 
@@ -287,7 +291,7 @@ struct NoDeleter;
 template<typename TObject>
 struct DefaultNewer;
 
-template<typename TId,typename TObject>
+template<typename TObject>
 struct DefaultNewerById;
 
 class CommandPool;
@@ -423,6 +427,8 @@ class ApplePropertyListReader;
 
 class FileMapNameItem;
 
+struct FileEntryRef;
+
 class FileMapOrderItem;
 
 class FileMapTagItem;
@@ -545,6 +551,9 @@ template<typename TDerived>
 class TLuaTable;
 
 class MathStrategy;
+
+template<typename T>
+class Range;
 
 class NormalDistribution;
 
@@ -695,9 +704,6 @@ template<typename TFunc>
 class ScopeGuard;
 
 template<typename T>
-class Share;
-
-template<typename T>
 class Singleton;
 
 class StaticConstructor;
@@ -778,6 +784,8 @@ template<typename TIndex, typename T, size_t TSize, typename TCompare >
 class PropertyUnit;
 
 class StringPropertySet;
+
+class VariantPropertySet;
 
 class RTTIClass;
 
@@ -1074,6 +1082,10 @@ typedef TLogMessage<char> LogMessage;
 typedef TLogMessage<wchar_t> WLogMessage;
 typedef TLogMessagePool<char> LogMessagePool;
 typedef TLogMessagePool<wchar_t> WLogMessagePool;
+typedef Range<int> RangeI;
+typedef Range<uint32> RangeU;
+typedef Range<size_t> RangeS;
+typedef Range<float> RangeF;
 typedef TMemoryData<short> MemoryShortData;
 typedef TMemoryData<byte> MemoryData;
 typedef TMemoryData<char> MemoryCharData;

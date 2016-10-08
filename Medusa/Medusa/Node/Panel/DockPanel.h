@@ -21,5 +21,6 @@ protected:
 };
 
 
+MEDUSA_ENABLE_STATIC_CONSTRUCTOR(DockPanel);
 
 MEDUSA_END;

@@ -13,3 +13,4 @@ public:
 	virtual ~ShaderFeatureLayer(void);
 };
 
+MEDUSA_ENABLE_STATIC_CONSTRUCTOR(ShaderFeatureLayer);

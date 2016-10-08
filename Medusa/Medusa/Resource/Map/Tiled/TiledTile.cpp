@@ -5,12 +5,13 @@
 #include "TiledTile.h"
 #include "TiledImage.h"
 #include "TiledObjectLayer.h"
-#include "TmxTiledMap.h"
+#include "TiledMap.h"
 #include "TiledTileset.h"
 #include "Resource/TextureAtlas/TextureAtlasPage.h"
 #include "Resource/TextureAtlas/TextureAtlas.h"
 #include "Resource/TextureAtlas/TextureAtlasRegion.h"
 #include "CoreLib/Common/pugixml/pugixml.hpp"
+#include "TiledDefines.h"
 
 
 MEDUSA_BEGIN;
@@ -38,7 +39,7 @@ bool TiledTile::Parse(const pugi::xml_node& node)
 	pugi::xml_node propertiesNode = node.child("properties");
 	if (!propertiesNode.empty())
 	{
-		TmxTiledMap::ParseProperties(propertiesNode, MutableProperties());
+		TiledMap::ParseProperties(propertiesNode, MutableProperties());
 	}
 
 	StringRef terrainStr = node.attribute("terrain").as_string();
@@ -81,13 +82,8 @@ bool TiledTile::Parse(const pugi::xml_node& node)
 		}
 	}
 
-
-	const StringRef str2 = "Collision";
-	HeapString* collisionStr = mProperties.TryGetByOtherKey(str2, str2.HashCode());
-	if (collisionStr != nullptr&&!collisionStr->IsEmpty())
-	{
-		mCollision = StringParser::StringTo<int>(*collisionStr);
-	}
+	mCapability= mProperties.GetOptionalT(TiledMapProperties::Capability, 0);
+	mDirectionCapability = (MoveDirection)mProperties.GetOptionalT(TiledMapProperties::DirectionCapability, (int)MoveDirection::All4);
 
 
 	return true;

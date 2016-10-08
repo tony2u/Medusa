@@ -19,7 +19,7 @@ public:
 		RETURN_FALSE_IF_FALSE(BaseInfiniteAction::Reset());
 		if (mInnerActions.IsEmpty())
 		{
-			this->ForceSetState(RunningState::Done);
+			this->Stop();
 			return true;
 		}
 

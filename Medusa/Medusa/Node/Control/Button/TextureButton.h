@@ -47,5 +47,6 @@ protected:
 	Size2F mTargetSize;
 	ThicknessF mTexturePadding;
 };
+MEDUSA_ENABLE_STATIC_CONSTRUCTOR(TextureButton);
 
 MEDUSA_END;

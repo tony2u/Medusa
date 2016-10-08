@@ -15,5 +15,6 @@ public:
 	MultipleLineEditBox(StringRef name, const Size2F& size, const FontId& fontId, WStringRef text = WStringRef::Empty, Alignment alignment = Alignment::LeftBottom);
 	virtual ~MultipleLineEditBox(void);
 };
+MEDUSA_ENABLE_STATIC_CONSTRUCTOR(MultipleLineEditBox);
 
 MEDUSA_END;

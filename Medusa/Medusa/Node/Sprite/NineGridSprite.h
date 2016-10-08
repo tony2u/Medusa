@@ -30,4 +30,7 @@ protected:
 	
 };
 
+MEDUSA_ENABLE_STATIC_CONSTRUCTOR(NineGridSprite);
+
+
 MEDUSA_END;

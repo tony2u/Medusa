@@ -4,11 +4,14 @@
 #pragma once
 #include "MedusaPreDeclares.h"
 #include "Geometry/Point2.h"
+#include "Core/Pattern/Delegate.h"
+#include "Geometry/GeometryDefines.h"
 
 MEDUSA_BEGIN;
 
 struct TiledTileRef
 {
+	using InstantiateDelegate = Delegate<INode*(const TiledTileRef&, const RenderingObject&)>;
 	const static uint FlippedHorizontallyFlag = 0x80000000;
 	const static uint FlippedVerticallyFlag = 0x40000000;
 	const static uint FlippedDiagonallyFlag = 0x20000000;
@@ -19,7 +22,7 @@ struct TiledTileRef
 
 	// Will take a gid and read the attributes from the first
 	// two bits of it.
-	void Initialize(const Point2I& position,uint globalId, const TiledTilesetRef* tilesetRef);
+	void Initialize(const Point2I& position, uint globalId, const TiledTilesetRef* tilesetRef);
 
 	uint TileId()const;
 	const TiledTile* Tile() const { return mTile; }
@@ -32,14 +35,17 @@ struct TiledTileRef
 	bool FlippedVertically() const { return (mTileGlobalId & FlippedVerticallyFlag) != 0; }
 	bool FlippedDiagonally() const { return (mTileGlobalId & FlippedDiagonallyFlag) != 0; }
 
-	INode* Instantiate()const;
-	int Collision() const;
+	INode* Instantiate(NodeInstantiateInfo* instantiateInfo = nullptr)const;
+	int Capability() const;
+	MoveDirection DirectionCapability() const;
 
+	TiledTileLayer* Layer() const { return mLayer; }
+	void SetLayer(TiledTileLayer* val) { mLayer = val; }
 protected:
 	Point2I mPosition;	//Y from down to top
-	const TiledTile* mTile;
+	const TiledTile* mTile = nullptr;
 	uint mTileGlobalId;
-
+	TiledTileLayer* mLayer=nullptr;
 	
 
 };

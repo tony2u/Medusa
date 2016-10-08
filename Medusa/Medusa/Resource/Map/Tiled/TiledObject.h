@@ -6,7 +6,7 @@
 #include "Core/String/HeapString.h"
 #include "Geometry/Point2.h"
 #include "Geometry/Size2.h"
-#include "Core/Pattern/Property/StringPropertySet.h"
+#include "Core/Pattern/Property/VariantPropertySet.h"
 
 
 MEDUSA_BEGIN;
@@ -39,9 +39,9 @@ public:
 	TiledTile* Tile() const { return mTile; }
 	void SetTile(TiledTile* val) { mTile = val; }
 
-	const StringPropertySet& Properties() const { return mProperties; }
-	StringPropertySet& MutableProperties() { return mProperties; }
-	void SetProperties(const StringPropertySet& val) { mProperties = val; }
+	const VariantPropertySet& Properties() const { return mProperties; }
+	VariantPropertySet& MutableProperties() { return mProperties; }
+	void SetProperties(const VariantPropertySet& val) { mProperties = val; }
 
 	EllipseI * Ellipse() const { return mEllipse; }
 	void SetEllipse(EllipseI * val) { mEllipse = val; }
@@ -51,6 +51,9 @@ public:
 
 	PolygonI* Polyline() const { return mPolyline; }
 	void SetPolyline(PolygonI* val) { mPolyline = val; }
+
+	TiledObjectLayer* Layer() const { return mLayer; }
+	void SetLayer(TiledObjectLayer* val) { mLayer = val; }
 private:
 	int mId;
 	HeapString mName;
@@ -61,12 +64,15 @@ private:
 	bool mIsVisible;
 	float mRotation;
 	
-	TiledTile* mTile;	//An reference to a tile (optional).
+	TiledTile* mTile=nullptr;	//An reference to a tile (optional).
 	
-	StringPropertySet mProperties;
-	EllipseI *mEllipse;
-	PolygonI* mPolygon;
-	PolygonI* mPolyline;
+	VariantPropertySet mProperties;
+	EllipseI* mEllipse=nullptr;
+	PolygonI* mPolygon=nullptr;
+	PolygonI* mPolyline=nullptr;
+
+	TiledObjectLayer* mLayer=nullptr;
+
 };
 
 MEDUSA_END;

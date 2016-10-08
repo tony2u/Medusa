@@ -21,7 +21,7 @@ public:
 		RETURN_FALSE_IF_FALSE(BaseFiniteAction::Update(dt, blend));
 		Point2F delta = mDelta*(dt / mDuration *blend);
 		T* node = (T*)mTarget;
-		node->ScrollByPage(delta);
+		node->ScrollModel()->ScrollByPage(delta);
 		return true;
 	}
 

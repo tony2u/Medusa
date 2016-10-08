@@ -18,6 +18,8 @@ public:
 	MaterialFactory();
 	~MaterialFactory();
 public:
+	virtual StringRef Name()const override { return "MaterialFactory"; }
+
 	virtual bool Initialize();
 	virtual bool Uninitialize();
 public:

@@ -8,7 +8,7 @@
 #include "Core/Collection/Stack.h"
 
 MEDUSA_BEGIN;
-template <typename TId, typename TObject, typename TObjectNewer = DefaultNewerById<TId, TObject>, typename THashCoder = DefaultHashCoder, typename TKeyCompare = DefaultCompare, typename TObjectCompare = DefaultCompare >
+template <typename TId, typename TObject, typename TObjectNewer = DefaultNewerById<TObject>, typename THashCoder = DefaultHashCoder, typename TKeyCompare = DefaultCompare, typename TObjectCompare = DefaultCompare >
 class IdSingleObjectPool
 {
 public:

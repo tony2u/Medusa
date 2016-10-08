@@ -15,6 +15,10 @@ IButton::IButton(StringRef name/*=StringRef::Empty*/, const IEventArg& e /*= IEv
 {
 	mRecognizer=MutableInput().AddTapGestureHandler(Bind(&IButton::OnTapCallback, this));
 	mRecognizer->StateChangedEvent+=Bind(&IButton::OnTapStateChanged,this);
+	MutableInput().EnableSwallow(true);
+	MutableInput().Enable(true);
+
+
 }
 
 IButton::~IButton( void )

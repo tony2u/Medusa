@@ -8,16 +8,22 @@ MEDUSA_BEGIN;
 class BaseSingleCompositeFiniteAction :public BaseFiniteAction
 {
 public:
-	BaseSingleCompositeFiniteAction(IAction* innerAction, float duration)
+	BaseSingleCompositeFiniteAction(IAction* innerAction, float duration)	//duration could be different from innerAction->Duration()
 		:BaseFiniteAction(duration), mInnerAction(innerAction)
 	{
 	}
 	virtual ~BaseSingleCompositeFiniteAction(void) { SAFE_DELETE(mInnerAction); }
 public:
+	virtual bool IsRunning()const override { return BaseFiniteAction::IsRunning() && mInnerAction != nullptr&&mInnerAction->IsRunning(); }
+	virtual bool IsDone()const override
+	{
+		return BaseFiniteAction::IsDone() || (mInnerAction == nullptr || mInnerAction->IsDone());
+	}
+
 	virtual bool Update(float dt, float blend = 1.f)override
 	{
 		RETURN_FALSE_IF_FALSE(BaseFiniteAction::Update(dt, blend));
-		if (!this->IsDone())
+		if (!BaseFiniteAction::IsDone())
 		{
 			float newDT = TransformUpdateDuration(dt);
 			return mInnerAction->Update(newDT, blend);
@@ -80,6 +86,6 @@ public:
 protected:
 	virtual float TransformUpdateDuration(float dt)const { return dt; }
 protected:
-	IAction* mInnerAction;
+	IAction* mInnerAction=nullptr;
 };
 MEDUSA_END;

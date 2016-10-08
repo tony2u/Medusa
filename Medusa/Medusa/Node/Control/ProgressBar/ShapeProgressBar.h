@@ -19,8 +19,10 @@ public:
 protected:
 	virtual void OnUpdateMesh(bool isProgressTypeChanged=false)override;
 protected:
-	Array<Point3F,4> mVertices; //initial vertext
+	Array<Point3F,4> mVertices; //initial vertex
 
 };
+
+MEDUSA_ENABLE_STATIC_CONSTRUCTOR(ShapeProgressBar);
 
 MEDUSA_END;

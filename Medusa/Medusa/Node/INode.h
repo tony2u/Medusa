@@ -48,8 +48,7 @@ public:																				\
 	static const FileIdRef& EditorFileNameStatic(){return FileIdRef::Empty;}									\
 	virtual const FileIdRef& ScriptFileName()const override{return FileIdRef::Empty;}									\
 	static const FileIdRef& ScriptFileNameStatic(){return FileIdRef::Empty;}	\
-private:\
-const static StaticConstructor mStaticConstructor;
+	const static StaticConstructor mStaticConstructor;
 
 
 #define MEDUSA_NODE_BIND(className,baseClassName,editorFile,scriptFile) 													\
@@ -59,10 +58,10 @@ public:																				\
 	static const FileIdRef& EditorFileNameStatic(){return mEditorFileName;}									\
 	virtual const FileIdRef& ScriptFileName()const override{return mScriptFileName;}									\
 	static const FileIdRef& ScriptFileNameStatic(){return mScriptFileName;}									\
-private:																				\
+	const static StaticConstructor mStaticConstructor;\
+private:\
 	constexpr static FileIdRef mEditorFileName{editorFile,StdString::StaticLength(editorFile),0};							\
-	constexpr static FileIdRef mScriptFileName{scriptFile,StdString::StaticLength(scriptFile),0};							\
-	const static StaticConstructor mStaticConstructor;		
+	constexpr static FileIdRef mScriptFileName{scriptFile,StdString::StaticLength(scriptFile),0};							
 
 #define MEDUSA_IMPLEMENT_NODE(className) 																					 \
 	const StaticConstructor className::mStaticConstructor([]{NodeFactory::Instance().Register<className>(#className,className::EditorFileNameStatic(),className::ScriptFileNameStatic());});					 
@@ -276,27 +275,37 @@ protected:
 #pragma region Event
 public:
 	//Event
+	const InputDispatcher& Input()const;
 	InputDispatcher& MutableInput();
-
-	bool IsInputEnabled() const { return mInputEnabled; }
-	void EnableInput(bool val) { mInputEnabled = val; }
-
-	bool IsInputPassingEnabled() const { return mInputEnabled&&mInputPassingEnabled; }
-	void EnableInputPassing();
-	void ResetInputPassing();
-
-	virtual bool IsModal()const { return false; }
-
 
 #pragma endregion Event
 
 #pragma region DataBind
 public:
-	const Share<IDataSource>& DataSource() const { return mDataSource; }
-	virtual void SetDataSource(const Share<IDataSource>& val);
-	void ReleaseDataSource();
-protected:
-	virtual void OnDataChanged(const IDataSource& dataSource);
+	const IDataBinding* Binding() const { return mBinding; }
+	IDataBinding* MutableBinding() { return mBinding; }
+	virtual bool SetBinding(IDataBinding* val);
+
+	template<typename TTemplate,typename T,  typename... TArgs>
+	TDataBinding<T>* BindTo(const Share<TDataSource<T>>& dataSource, TArgs&&... args)
+	{
+		TDataBinding<T>* binding = new TDataBinding<T>();
+		binding->SetDataSource(dataSource);
+		binding->AllocTemplate<TTemplate>(std::forward<TArgs>(args)...);
+		SetBinding(binding);
+		return binding;
+	}
+
+	template<typename TTemplate, typename T, typename... TArgs>
+	TListDataBinding<T,EqualCompare>* BindTo(const Share<TListDataSource<T, EqualCompare>>& dataSource, TArgs&&... args)
+	{
+		TListDataBinding<T, EqualCompare>* binding = new TListDataBinding<T, EqualCompare>();
+		binding->SetDataSource(dataSource);
+		binding->AllocTemplate<TTemplate>(std::forward<TArgs>(args)...);
+		SetBinding(binding);
+		return binding;
+	}
+
 #pragma endregion DataBind
 
 #pragma region Debug
@@ -334,12 +343,8 @@ protected:
 	INode* mParent = nullptr;
 	bool mIsManaged = false;
 
-	InputDispatcher* mInputDispatcher = nullptr;
-
-	bool mInputEnabled = true;	//just for self
-	bool mInputPassingEnabled = true;	//true means to need to check all children' input dispatcher recursively.
-
-	Share<IDataSource> mDataSource = nullptr;
+	mutable InputDispatcher* mInputDispatcher = nullptr;
+	IDataBinding* mBinding=nullptr;
 
 	//Debug
 	IShape* mDebugDrawShape = nullptr;

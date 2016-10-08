@@ -22,7 +22,7 @@ MEDUSA_COCOS_BEGIN;
 INode* ListViewReader::CreateNodeWithFlatBuffers(INodeEditor& editor, const flatbuffers::Table* nodeTree, const StringRef& className /*= StringRef::Empty*/, NodeCreateFlags flags /*= NodeCreateFlags::None*/)
 {
 	auto options = (flatbuffers::ListViewOptions*)nodeTree;
-	auto panel = (NodeFactory::Instance().CreatePanel(PanelType::Stack));
+	auto panel = NodeFactory::Instance().CreatePanel(PanelType::Stack);
 	bool clipEnabled = options->clipEnabled() != 0;
 	panel->EnableClipToBound(clipEnabled);
 

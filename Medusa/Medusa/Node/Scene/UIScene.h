@@ -16,5 +16,6 @@ public:
 	virtual bool Initialize() override;
 	virtual bool Is2D()const override {return true;}
 };
+MEDUSA_ENABLE_STATIC_CONSTRUCTOR(UIScene);
 
 MEDUSA_END;

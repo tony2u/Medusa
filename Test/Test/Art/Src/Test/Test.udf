@@ -28,16 +28,5 @@
         <LastRunType Value="Windows" />
       </Value>
     </Item>
-    <Item Key="TabsParamsKey">
-      <Value ctype="TabsInfo">
-        <OpenedDocuments>
-          <FilePathData Path="Poker.csi" />
-          <FilePathData Path="MainLayer.csd" />
-          <FilePathData Path="MainScene.csd" />
-          <FilePathData Path="LogoLayer.csd" />
-        </OpenedDocuments>
-        <ActiveDocument Path="MainLayer.csd" />
-      </Value>
-    </Item>
   </Properties>
 </UserData>

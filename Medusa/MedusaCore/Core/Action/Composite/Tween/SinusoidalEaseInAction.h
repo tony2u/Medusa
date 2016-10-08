@@ -13,7 +13,7 @@ public:
 public:
 	virtual SinusoidalEaseInAction* Clone()const override
 	{
-		return new SinusoidalEaseInAction(this->mInnerAction);
+		return new SinusoidalEaseInAction((BaseFiniteAction*)this->mInnerAction);
 	}
 	virtual SinusoidalEaseInAction* Reverse()const override
 	{

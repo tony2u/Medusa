@@ -230,16 +230,16 @@ bool ShaderUniformValue::Apply(BaseProgramRenderPass& pass)const
 	case 14:
 		switch (mDataType)
 		{
-		case Medusa::GraphicsUniformDataType::Int:
+		case GraphicsUniformDataType::Int:
 			uniform->SetArray1(mData.get<MemoryIntData>());
 			break;
-		case Medusa::GraphicsUniformDataType::IntVec2:
+		case GraphicsUniformDataType::IntVec2:
 			uniform->SetArray2(mData.get<MemoryIntData>());
 			break;
-		case Medusa::GraphicsUniformDataType::IntVec3:
+		case GraphicsUniformDataType::IntVec3:
 			uniform->SetArray3(mData.get<MemoryIntData>());
 			break;
-		case Medusa::GraphicsUniformDataType::IntVec4:
+		case GraphicsUniformDataType::IntVec4:
 			uniform->SetArray4(mData.get<MemoryIntData>());
 			break;
 		default:
@@ -251,25 +251,25 @@ bool ShaderUniformValue::Apply(BaseProgramRenderPass& pass)const
 	case 15:
 		switch (mDataType)
 		{
-		case Medusa::GraphicsUniformDataType::Float:
+		case GraphicsUniformDataType::Float:
 			uniform->SetArray1(mData.get<MemoryFloatData>());
 			break;
-		case Medusa::GraphicsUniformDataType::FloatVec2:
+		case GraphicsUniformDataType::FloatVec2:
 			uniform->SetArray2(mData.get<MemoryFloatData>());
 			break;
-		case Medusa::GraphicsUniformDataType::FloatVec3:
+		case GraphicsUniformDataType::FloatVec3:
 			uniform->SetArray3(mData.get<MemoryFloatData>());
 			break;
-		case Medusa::GraphicsUniformDataType::FloatVec4:
+		case GraphicsUniformDataType::FloatVec4:
 			uniform->SetArray4(mData.get<MemoryFloatData>());
 			break;
-		case Medusa::GraphicsUniformDataType::FloatMat2:
+		case GraphicsUniformDataType::FloatMat2:
 			uniform->SetMatrix2(mData.get<MemoryFloatData>(),mIsTransposed);
 			break;
-		case Medusa::GraphicsUniformDataType::FloatMat3:
+		case GraphicsUniformDataType::FloatMat3:
 			uniform->SetMatrix3(mData.get<MemoryFloatData>(), mIsTransposed);
 			break;
-		case Medusa::GraphicsUniformDataType::FloatMat4:
+		case GraphicsUniformDataType::FloatMat4:
 			uniform->SetMatrix4(mData.get<MemoryFloatData>(), mIsTransposed);
 			break;
 		default:

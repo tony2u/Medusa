@@ -15,14 +15,14 @@
 
 MEDUSA_BEGIN;
 
-class ITexture:public IResource
+class ITexture :public IResource
 {
 public:
 	ITexture(const FileIdRef& fileId, GraphicsTextureType textureType, StringRef samplerName = ShaderSamplerNames::Texture, GraphicsTextureUnits unit = GraphicsTextureUnits::Texture0);
 	virtual ~ITexture(void);
 public:
-	virtual ResourceType Type()const{return ResourceType::Texture;}
-	static ResourceType ClassGetResourceType(){return ResourceType::Texture;}
+	virtual ResourceType Type()const { return ResourceType::Texture; }
+	static ResourceType ClassGetResourceType() { return ResourceType::Texture; }
 
 	bool IsAvailable()const;
 
@@ -33,10 +33,10 @@ public:
 	virtual void Apply();
 	virtual void Restore();
 
-	virtual Share<IImage> Image() const=0;
-	virtual bool IsBlend()const=0;
-	virtual Size2U Size() const=0;
-	virtual void ResetDefaultParameters()=0;
+	virtual Share<IImage> Image() const = 0;
+	virtual bool IsBlend()const = 0;
+	virtual Size2U Size() const = 0;
+	virtual void ResetDefaultParameters() = 0;
 
 	StringRef SamplerName() const { return mSamplerName; }
 	void SetSamplerName(StringRef val) { mSamplerName = val; }
@@ -54,8 +54,9 @@ public:
 	void SetWrapT(GraphicsTextureWrapMode val) { mSamplerState->SetWrapT(val); }
 
 	bool IsLoaded() const { return mIsLoaded; }
+	void SetLoaded(bool val) { mIsLoaded = val; }
 protected:
-	virtual void Upload()=0;
+	virtual void Upload() = 0;
 protected:
 	HeapString mSamplerName;
 

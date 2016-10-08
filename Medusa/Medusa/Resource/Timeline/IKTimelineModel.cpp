@@ -29,10 +29,10 @@ void IKTimelineModel::AddData(float time, float mix, bool isBlendPositive, Math:
 
 float IKTimelineModel::GetMix(float time) const
 {
-	if (mIsPreCalculated)
+	if (mIsPrecomputed)
 	{
-		intp index = GetPreCalculatedIndex(time);
-		return mPreCalculatedMixes[index];
+		intp index = GetPrecomputedIndex(time);
+		return mPrecomputedMixes[index];
 	}
 
 	uint outPrevFrameIndex;
@@ -59,13 +59,13 @@ bool IKTimelineModel::IsBlendPositive(float time) const
 	return mBlendPositives[index];
 }
 
-void IKTimelineModel::OnPreCalculateBegin()
+void IKTimelineModel::OnPrecomputeBegin()
 {
-	mPreCalculatedMixes.Clear();
-	mPreCalculatedBlendPositives.Clear();
+	mPrecomputedMixes.Clear();
+	mPrecomputedBlendPositives.Clear();
 }
 
-void IKTimelineModel::AddPreCalcuatedItem(bool isFound, uint prevFrameIndex, uint nextFrameIndex, float percent)
+void IKTimelineModel::AddPrecomputedItem(bool isFound, uint prevFrameIndex, uint nextFrameIndex, float percent)
 {
 	float mix = 0.f;
 	if (isFound)
@@ -79,16 +79,16 @@ void IKTimelineModel::AddPreCalcuatedItem(bool isFound, uint prevFrameIndex, uin
 			mix = mMixes[nextFrameIndex];
 		}
 	}
-	mPreCalculatedMixes.Add(mix);
-	mPreCalculatedBlendPositives.Add(mBlendPositives[prevFrameIndex]);
+	mPrecomputedMixes.Add(mix);
+	mPrecomputedBlendPositives.Add(mBlendPositives[prevFrameIndex]);
 
 }
 
-void IKTimelineModel::RemovePreCalculated()
+void IKTimelineModel::RemovePrecomputed()
 {
-	ITimelineModel::RemovePreCalculated();
-	mPreCalculatedMixes.Clear();
-	mPreCalculatedBlendPositives.Clear();
+	ITimelineModel::RemovePrecomputed();
+	mPrecomputedMixes.Clear();
+	mPrecomputedBlendPositives.Clear();
 }
 
 MEDUSA_END;

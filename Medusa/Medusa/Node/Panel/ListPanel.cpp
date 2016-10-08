@@ -3,7 +3,6 @@
 // license that can be found in the LICENSE file.
 #include "MedusaPreCompiled.h"
 #include "ListPanel.h"
-#include "Node/DataSource/IListDataSource.h"
 #include "Geometry/Scroll/IScrollMathModel.h"
 #include "Core/Log/Log.h"
 #include "Node/NodeFactory.h"
@@ -130,14 +129,6 @@ bool ListPanel::RefreshItem(uint index)
 {
 	return true;
 }
-
-
-void ListPanel::SetDataSource(const Share<IDataSource>& dataSource)
-{
-	Log::AssertFailedFormat("ListPanel didn't support data source");
-}
-
-
 
 bool ListPanel::ArrangeChildren(const Rect2F& limitRect/*=Rect2F::Zero*/,NodeLayoutArrangeFlags arrangeFlags/*=NodeLayoutArrangeFlags::None*/)
 {

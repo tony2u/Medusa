@@ -1,3 +1,15 @@
+::Box2D
+"C:\Program Files (x86)\MSBuild\14.0\Bin\msbuild" Box2D\Box2D\Build\vs2015\Box2D.vcxproj /p:Configuration=Debug;Platform=Win32;OutDir=..\..\..\..\..\Medusa\Medusa\Lib\Bin\win\x86\
+"C:\Program Files (x86)\MSBuild\14.0\Bin\msbuild" Box2D\Box2D\Build\vs2015\Box2D.vcxproj /p:Configuration=Release;Platform=Win32;OutDir=..\..\..\..\..\Medusa\Medusa\Lib\Bin\win\x86\
+"C:\Program Files (x86)\MSBuild\14.0\Bin\msbuild" Box2D\Box2D\Build\vs2015\Box2D.vcxproj /p:Configuration=Debug;Platform=x64;OutDir=..\..\..\..\..\Medusa\Medusa\Lib\Bin\win\x64\
+"C:\Program Files (x86)\MSBuild\14.0\Bin\msbuild" Box2D\Box2D\Build\vs2015\Box2D.vcxproj /p:Configuration=Release;Platform=x64;OutDir=..\..\..\..\..\Medusa\Medusa\Lib\Bin\win\x64\
+pause
+rmdir /s /q Box2D\Box2D\Build\vs2015\Debug
+rmdir /s /q Box2D\Box2D\Build\vs2015\Release
+rmdir /s /q Box2D\Box2D\Build\vs2015\x64
+pause
+
+
 ::lua
 "C:\Program Files (x86)\MSBuild\14.0\Bin\msbuild" lua\win\lua.vcxproj /p:Configuration=Debug;Platform=Win32;OutDir=..\..\..\Medusa\MedusaCore\CoreLib\Bin\win\x86\
 "C:\Program Files (x86)\MSBuild\14.0\Bin\msbuild" lua\win\lua.vcxproj /p:Configuration=Release;Platform=Win32;OutDir=..\..\..\Medusa\MedusaCore\CoreLib\Bin\win\x86\

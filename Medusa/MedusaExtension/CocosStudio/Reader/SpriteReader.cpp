@@ -25,7 +25,7 @@ INode* SpriteReader::CreateNodeWithFlatBuffers(INodeEditor& editor, const flatbu
 INode* SpriteReader::CreateNodeWithJson(INodeEditor& editor, const rapidjson::Value& nodeTree, const StringRef& className /*= StringRef::Empty*/, NodeCreateFlags flags /*= NodeCreateFlags::None*/)
 {
 	const rapidjson::Value& fileDataNode = nodeTree["FileData"];
-	StringRef path = fileDataNode.GetString("Path", nullptr);
+	StringRef path = fileDataNode.GetMember("Path", nullptr);
 	Sprite* sprite = CreateSprite(path);
 	SetPropsWithJson(sprite, nodeTree);
 	return sprite;

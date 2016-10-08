@@ -95,6 +95,7 @@ enum class RenderableChangedFlags
 	None = 0,
 	RenderQueueChanged=1, 
 	BatchChanged=2,
+	RenderQueueAndBatchChanged= RenderQueueChanged| BatchChanged,
 	DataTotalChanged=4,
 	NewVertex=8, 
 	NewNormal=16,

@@ -2,6 +2,8 @@ class SingleStrokeTemplate[Embeded,SuppressCompare,SuppressCopy, Dir=Node/Input/
 {
     string Name;
 	PointPath2F Path;
+	float BeginAngle;	//for test
+	Scale2F BeginScale;
 };
 
 

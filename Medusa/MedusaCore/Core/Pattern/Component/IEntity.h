@@ -25,7 +25,7 @@ public:
 	{
 		for(IComponent* component: mComponents)
 		{
-			if (component->IsExactly<T>())
+			if (component->IsA<T>())
 			{
 				return (T*)component;
 			}
@@ -94,7 +94,7 @@ public:
 		FOR_EACH_SIZE(i, count)
 		{
 			IComponent* component = mComponents[i];
-			if (component->IsExactly<T>())
+			if (component->IsA<T>())
 			{
 				mComponents.RemoveAt(i);
 				component->SetEntity(nullptr);
@@ -106,33 +106,14 @@ public:
 		return nullptr;
 	}
 
-	IComponent* StartComponent(IComponent* component)
-	{
-		component->Start();
-		if (component->IsDone())
-		{
-			delete component;
-			return nullptr;
-		}
-
-		AddComponent(component);
-		return component;
-	}
-	IComponent* StartComponent(const StringRef& name, int priority = 0, void* userData = nullptr)
-	{
-		IComponent* component = ComponentFactory::Instance().Create(name, name, priority, userData);
-		RETURN_NULL_IF_NULL(component);
-		StartComponent(component);
-		return component;
-	}
+	bool StartComponent(const StringRef& name);
 
 	template<typename T>
-	T* StartComponent(int priority = 0, void* userData = nullptr)
+	bool StartComponent()
 	{
-		T* component = (T*)ComponentFactory::Instance().Create<T>(priority, userData);
-		RETURN_NULL_IF_NULL(component);
-		StartComponent(component);
-		return component;
+		T* val = FindComponent<T>();
+		RETURN_FALSE_IF_NULL(val);
+		return val->Start();
 	}
 
 	bool StopComponent(const StringRef& name);
@@ -140,10 +121,9 @@ public:
 	template<typename T>
 	bool StopComponent()
 	{
-		T* val = RemoveComponent<T>();
-		bool result = val != nullptr;
-		SAFE_DELETE(val);
-		return result;
+		T* val = FindComponent<T>();
+		RETURN_FALSE_IF_NULL(val);
+		return val->Stop();
 	}
 
 	bool PauseComponent(const StringRef& name);
@@ -191,12 +171,6 @@ public:
 	void StartAllComponents();
 	void StopAllComponents();
 
-	void* Sender() const { return mSender; }
-	void SetSender(void* val) { mSender = val; }
-
-	template<typename T>
-	T SenderAs() const { return (T)mSender; }
-
 public:
 	bool UpdateComponents(float dt);
 	bool AcceptComponentEvent(IEventArg& e);
@@ -208,7 +182,6 @@ public:
 
 protected:
 	ComponentList mComponents;
-	void* mSender;
 
 };
 

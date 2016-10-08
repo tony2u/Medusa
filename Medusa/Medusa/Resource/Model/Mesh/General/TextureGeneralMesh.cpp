@@ -52,7 +52,7 @@ void TextureGeneralMesh::AppendQuadIndex()
 void TextureGeneralMesh::AppendVertex(const Point3F& vertex, uint count/*=1*/)
 {
 	mVertices.Append(vertex, count);
-	OnVertexChanged();
+	OnVertexChanged(count);
 
 }
 
@@ -81,7 +81,7 @@ void TextureGeneralMesh::AppendQuad(const QuadTextureVertex& quad)
 	mVertices.Append(quad.RightBottom.Position);
 	mVertices.Append(quad.RightTop.Position);
 	mVertices.Append(quad.LeftTop.Position);
-	OnVertexChanged();
+	OnVertexChanged(4);
 
 	mTexcoords.Append(quad.LeftBottom.Texcoord);
 	mTexcoords.Append(quad.RightBottom.Texcoord);
@@ -122,7 +122,7 @@ void TextureGeneralMesh::AppendQuad(const QuadTextureVertex& quad)
 void TextureGeneralMesh::AppendVertices(const Point3F* vertices, size_t count)
 {
 	mVertices.AppendRange(vertices, count);
-	OnVertexChanged();
+	OnVertexChanged(count);
 
 
 }
@@ -163,7 +163,7 @@ void TextureGeneralMesh::AppendRawData2D(const float* vertices, const float* tex
 	}
 
 	OnTexcoordChanged();
-	OnVertexChanged();
+	OnVertexChanged(count);
 
 
 	mColors.Append(color, count);

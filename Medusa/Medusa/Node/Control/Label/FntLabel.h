@@ -25,11 +25,14 @@ protected:
 	virtual void OnUpdateFont() override;
 
 	void CreateMesh();
+	void ClearMeshData();
 	Share<IMaterial> CreateLabelMaterial(const Share<ITexture>& texture);
 protected:
 	List<Share<BaseFontMesh>> mInternalMeshes;
 	List<TextureAtlasPage*> mInternalPages;
 
 };
+
+MEDUSA_ENABLE_STATIC_CONSTRUCTOR(FntLabel);
 
 MEDUSA_END;

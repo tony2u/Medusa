@@ -15,15 +15,23 @@ namespace Cocos
 	
 	class LayerReader;
 	
+	class ListViewReader;
+	
 	class LoadingBarReader;
 	
 	class NodeReader;
+	
+	class PageViewReader;
+	
+	class PanelReader;
 	
 	class ProjectNodeReader;
 	
 	class ReaderFactory;
 	
 	class SceneReader;
+	
+	class ScrollViewReader;
 	
 	class SingleNodeReader;
 	
@@ -37,7 +45,7 @@ namespace Cocos
 	
 	class TextReader;
 	
-	class TmxMapReader;
+	class TiledMapReader;
 	
 }
 class MedusaExtensionModule;

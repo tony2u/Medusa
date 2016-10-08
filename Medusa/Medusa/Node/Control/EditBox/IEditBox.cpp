@@ -20,6 +20,7 @@
 #include "Node/Action/Basic/BlinkAction.h"
 #include "Core/Action/Composite/RepeatedForeverAction.h"
 #include "Resource/Model/Mesh/Font/FntTextMesh.h"
+#include "Node/Input/InputDispatcher.h"
 
 MEDUSA_BEGIN;
 
@@ -37,6 +38,9 @@ IEditBox::IEditBox(const StringRef& name /*= StringRef::Empty*/, const IEventArg
 	MutableInput().AddIMEHandler(Bind(&IEditBox::OnCharInput, this), Bind(&IEditBox::OnKeyDown, this), Bind(&IEditBox::OnKeyUp, this));
 	TapGestureRecognizer* tapGestureRecognizer = MutableInput().AddTapGestureHandler(Bind(&IEditBox::OnTap, this));
 	tapGestureRecognizer->OnTapFailed += Bind(&IEditBox::OnTapFailed, this);
+
+	MutableInput().Enable(true);
+
 }
 
 IEditBox::~IEditBox(void)

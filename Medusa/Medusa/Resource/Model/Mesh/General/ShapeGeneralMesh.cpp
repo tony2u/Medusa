@@ -46,7 +46,7 @@ void ShapeGeneralMesh::Initialize(const Point3F& p1, const Point3F& p2, const Po
 	mVertices.Add(p1);
 	mVertices.Add(p2);
 	mVertices.Add(p3);
-	OnVertexChanged();
+	OnVertexChanged(3);
 
 	uint indices[6] = { 0, 1, 2 };
 	mIndices.AppendRange(indices, 3);
@@ -82,7 +82,7 @@ void ShapeGeneralMesh::SetVertexByRect(const Rect2F& val)
 	mVertices.NewAdd() = val.RightBottom();
 	mVertices.NewAdd() = val.RightTop();
 	mVertices.NewAdd() = val.LeftTop();
-	OnVertexChanged();
+	OnVertexChanged(4);
 
 	mIndices.Clear();
 	const uint indices[6] = { 0, 1, 2, 2, 3, 0 };
@@ -123,8 +123,12 @@ void ShapeGeneralMesh::AppendQuadIndex()
 
 void ShapeGeneralMesh::AppendVertex(const Point3F& vertex, uint count/*=1*/)
 {
+	if (!IsValid())
+	{
+		OnRenderQueueChanged();
+	}
 	mVertices.Append(vertex, count);
-	OnVertexChanged();
+	OnVertexChanged(1);
 
 }
 
@@ -136,6 +140,15 @@ void ShapeGeneralMesh::AppendVertexAndIndex(const Point3F& vertex)
 		AppendIndex((uint)mVertices.Count() - 2);
 	}
 	AppendIndex((uint)mVertices.Count() - 1);
+}
+
+void ShapeGeneralMesh::AppendVerticesAndIndexs(const List<Point3F>& vertices)
+{
+	for (auto& i:vertices)
+	{
+		AppendVertexAndIndex(i);
+	}
+
 }
 
 void ShapeGeneralMesh::AppendColor(const Color4F& color, uint count/*=1*/)
@@ -155,7 +168,7 @@ void ShapeGeneralMesh::AppendQuad(const QuadShapeVertex& quad)
 	mVertices.Append(quad.RightBottom.Position);
 	mVertices.Append(quad.RightTop.Position);
 	mVertices.Append(quad.LeftTop.Position);
-	OnVertexChanged();
+	OnVertexChanged(4);
 
 	mColors.Append(quad.LeftBottom.Color);
 	if (!Math::IsEqual(quad.LeftBottom.Color.A, 1.f))
@@ -188,7 +201,7 @@ void ShapeGeneralMesh::AppendQuad(const QuadShapeVertex& quad)
 void ShapeGeneralMesh::AppendVertices(const Point3F* vertices, size_t count)
 {
 	mVertices.AppendRange(vertices, count);
-	OnVertexChanged();
+	OnVertexChanged(count);
 
 }
 

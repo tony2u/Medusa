@@ -30,6 +30,99 @@ ApplicationSettings::ApplicationSettings()
 	Retain();
 }
 
+bool ApplicationSettings::Initialize()
+{
+	if (!mSettingsFile.IsEmpty())
+	{
+		auto type = mSettingsFile.Type();
+		if (type == FileType::json)
+		{
+			rapidjson::Document root;
+			auto data = FileSystem::Instance().ReadAllData(mSettingsFile);
+			const char* beginDoc = (const char*)data.Data();
+
+			root.Parse<rapidjson::kParseStopWhenDoneFlag>(beginDoc);
+			if (root.HasParseError())
+			{
+				rapidjson::ParseErrorCode errorCode = root.GetParseError();
+				Log::AssertFailedFormat("Invalid json format:{}. ErrorCode:{}", mSettingsFile.Name.c_str(), errorCode);
+				return false;
+			}
+
+			IJsonSettings settings(&root);
+
+			mOrientation = (UIOrientation)settings.Optional("Orientation", (uint)UIOrientation::LandscapeLeft);
+			mDebugInfo = (ApplicationDebugInfoFlags)settings.Optional("DebugInfo", (uint)ApplicationDebugInfoFlags::None);
+			mTag.Version = (PublishVersions)settings.Optional("Version", PublishVersions::main.IntValue);
+			mTag.Language = (PublishLanguages)settings.Optional("Language", PublishLanguages::enus.IntValue);
+			mTag.Device = (PublishDevices)settings.Optional("Device", PublishDevices::hd.IntValue);
+			mFeatures = (EngineFeatures)settings.Optional("Features", (uint)EngineFeatures::None);
+			mIsDebug = settings.Optional("IsDebug", false);
+			StringRef nodeEditors = settings.Optional("NodeEditors", StringRef::Empty);
+			StringParser::Split(nodeEditors, ".", mNodeEditors);
+			for (auto& str : mNodeEditors)
+			{
+				str.Push('.');
+			}
+
+			auto debugWinSizeNode = settings.JsonValue()->FindMember("DebugWinSize");
+			if (debugWinSizeNode != settings.JsonValue()->MemberEnd())
+			{
+				mDebugWinSize.Width = debugWinSizeNode->value.GetMember("Width", 0.f);
+				mDebugWinSize.Height = debugWinSizeNode->value.GetMember("Height", 0.f);
+			}
+		}
+		else if (type == FileType::lua)
+		{
+#ifdef MEDUSA_LUA
+			ScriptObject settings = ScriptEngine::State()->DoFileWithReturn(mSettingsFile);
+
+			mOrientation = (UIOrientation)settings.Optional("Orientation", (uint)UIOrientation::LandscapeLeft);
+			mDebugInfo = (ApplicationDebugInfoFlags)settings.Optional("DebugInfo", (uint)ApplicationDebugInfoFlags::None);
+			mTag.Version = (PublishVersions)settings.Optional("Version", PublishVersions::main.IntValue);
+			mTag.Language = (PublishLanguages)settings.Optional("Language", PublishLanguages::enus.IntValue);
+			mTag.Device = (PublishDevices)settings.Optional("Device", PublishDevices::hd.IntValue);
+			mFeatures = (EngineFeatures)settings.Optional("Features", (uint)EngineFeatures::None);
+			mIsDebug = settings.Optional("IsDebug", false);
+			StringRef nodeEditors = settings.Optional("NodeEditors", StringRef::Empty);
+			StringParser::Split(nodeEditors, ".", mNodeEditors);
+			for (auto& str : mNodeEditors)
+			{
+				str.Push('.');
+			}
+
+			auto debugWinSizeNode = settings.Get("DebugWinSize");
+			if (debugWinSizeNode)
+			{
+				mDebugWinSize.Width = debugWinSizeNode.Optional("Width", 0.f);
+				mDebugWinSize.Height = debugWinSizeNode.Optional("Height", 0.f);
+			}
+#else
+			Log::AssertFailedFormat("Engine not enable lua feature for :{}", mSettingsFile.Name);
+			return false;
+#endif
+
+		}
+		else
+		{
+			Log::FormatError("Unsupport settings file:{}", mSettingsFile.Name);
+			return false;
+		}
+	}
+
+	Application::Instance().EnableModule("Core.ThreadCommandProcessor", MEDUSA_FLAG_HAS(mFeatures, EngineFeatures::SupportThreadEvent));
+	Application::Instance().EnableModule("Core.Message", MEDUSA_FLAG_HAS(mFeatures, EngineFeatures::SupportMessage));
+	Application::Instance().EnableModule("Core.FileUpdater", MEDUSA_FLAG_HAS(mFeatures, EngineFeatures::SupportFileUpdating));
+
+	Apply();
+	return true;
+}
+
+bool ApplicationSettings::Uninitialize()
+{
+	return true;
+}
+
 PublishTarget ApplicationSettings::ResultTag() const
 {
 #ifdef MEDUSA_WINDOWS
@@ -95,8 +188,9 @@ ApplicationDebugInfoFlags ApplicationSettings::ResultDebugInfo() const
 {
 #ifdef MEDUSA_DEBUG
 	return mDebugInfo;
-#endif
+#else
 	return ApplicationDebugInfoFlags::None;
+#endif
 }
 
 bool ApplicationSettings::HasScriptBinding() const
@@ -110,92 +204,8 @@ bool ApplicationSettings::HasScriptBinding() const
 
 bool ApplicationSettings::OnLoad(IEventArg& e /*= IEventArg::Empty*/)
 {
-	if (!mSettingsFile.IsEmpty())
-	{
-		auto type = mSettingsFile.Type();
-		if (type == FileType::json)
-		{
-			rapidjson::Document root;
-			auto data = FileSystem::Instance().ReadAllData(mSettingsFile);
-			const char* beginDoc = (const char*)data.Data();
-
-			root.Parse<rapidjson::kParseStopWhenDoneFlag>(beginDoc);
-			if (root.HasParseError())
-			{
-				rapidjson::ParseErrorCode errorCode = root.GetParseError();
-				Log::AssertFailedFormat("Invalid json format:{}. ErrorCode:{}", mSettingsFile.Name.c_str(), errorCode);
-				return false;
-			}
-
-			IJsonSettings settings(&root);
-
-			mOrientation = (UIOrientation)settings.Optional("Orientation", (uint)UIOrientation::LandscapeLeft);
-			mDebugInfo = (ApplicationDebugInfoFlags)settings.Optional("DebugInfo", (uint)ApplicationDebugInfoFlags::None);
-			mTag.Version = (PublishVersions)settings.Optional("Version", PublishVersions::main.IntValue);
-			mTag.Language = (PublishLanguages)settings.Optional("Language", PublishLanguages::enus.IntValue);
-			mTag.Device = (PublishDevices)settings.Optional("Device", PublishDevices::hd.IntValue);
-			mFeatures = (EngineFeatures)settings.Optional("Features", (uint)EngineFeatures::None);
-			mIsDebug = settings.Optional("IsDebug", false);
-			StringRef nodeEditors = settings.Optional("NodeEditors", StringRef::Empty);
-			StringParser::Split(nodeEditors, ".", mNodeEditors);
-			for (auto& str : mNodeEditors)
-			{
-				str.Push('.');
-			}
-
-			auto debugWinSizeNode = settings.JsonValue()->FindMember("DebugWinSize");
-			if (debugWinSizeNode != settings.JsonValue()->MemberEnd())
-			{
-				mDebugWinSize.Width = debugWinSizeNode->value.Get("Width", 0.f);
-				mDebugWinSize.Height = debugWinSizeNode->value.Get("Height", 0.f);
-			}
-		}
-		else if (type == FileType::lua)
-		{
-#ifdef MEDUSA_LUA
-			ScriptObject settings = ScriptEngine::State()->DoFileWithReturn(mSettingsFile);
-
-			mOrientation = (UIOrientation)settings.Optional("Orientation", (uint)UIOrientation::LandscapeLeft);
-			mDebugInfo = (ApplicationDebugInfoFlags)settings.Optional("DebugInfo", (uint)ApplicationDebugInfoFlags::None);
-			mTag.Version = (PublishVersions)settings.Optional("Version", PublishVersions::main.IntValue);
-			mTag.Language = (PublishLanguages)settings.Optional("Language", PublishLanguages::enus.IntValue);
-			mTag.Device = (PublishDevices)settings.Optional("Device", PublishDevices::hd.IntValue);
-			mFeatures = (EngineFeatures)settings.Optional("Features", (uint)EngineFeatures::None);
-			mIsDebug = settings.Optional("IsDebug", false);
-			StringRef nodeEditors = settings.Optional("NodeEditors", StringRef::Empty);
-			StringParser::Split(nodeEditors, ".", mNodeEditors);
-			for (auto& str : mNodeEditors)
-			{
-				str.Push('.');
-			}
-
-			auto debugWinSizeNode= settings.Get("DebugWinSize");
-			if (debugWinSizeNode)
-			{
-				mDebugWinSize.Width = debugWinSizeNode.Optional("Width", 0.f);
-				mDebugWinSize.Height = debugWinSizeNode.Optional("Height", 0.f);
-			}
-#else
-			Log::AssertFailedFormat("Engine not enable lua feature for :{}", mSettingsFile.Name);
-			return false;
-#endif
-
-		}
-		else
-		{
-			Log::FormatError("Unsupport settings file:{}", mSettingsFile.Name);
-			return false;
-		}
-	}
-
-	Application::Instance().EnableModule("Core.ThreadCommandProcessor", MEDUSA_FLAG_HAS(mFeatures, EngineFeatures::SupportThreadEvent));
-	Application::Instance().EnableModule("Core.Message", MEDUSA_FLAG_HAS(mFeatures, EngineFeatures::SupportMessage));
-	Application::Instance().EnableModule("Core.FileUpdater", MEDUSA_FLAG_HAS(mFeatures, EngineFeatures::SupportFileUpdating));
-
-	Apply();
-	return true;
+	return Initialize();
 }
-
 
 
 void ApplicationSettings::Apply() const

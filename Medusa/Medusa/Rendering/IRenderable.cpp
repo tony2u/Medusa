@@ -11,13 +11,15 @@
 #include "Graphics/State/Tree/RenderStateTreeLeafNode.h"
 #include "Core/Log/Log.h"
 #include "Rendering/Batch/IRenderBatch.h"
+#include "Rendering/RenderingObjectFactory.h"
 
 MEDUSA_BEGIN;
 
 IRenderable::IRenderable(const StringRef& name /*= StringRef::Empty*/)
 	:mName(name),
 	mColor(Color4F::White),
-	mWorldColor(Color4F::White)
+	mWorldColor(Color4F::White),
+	mChangedFlag(RenderableChangedFlags::None)
 {
 	mId = AutoIncreaseId<IRenderable>::New();
 
@@ -180,6 +182,12 @@ void IRenderable::SetRenderingObject(const RenderingObject& val)
 {
 	SetMesh(val.Mesh());
 	SetMaterial(val.Material());
+}
+
+void IRenderable::SetRenderingObjectFile(const FileIdRef& val)
+{
+	auto renderingObject= RenderingObjectFactory::Instance().CreateFromTexture(val);
+	SetRenderingObject(renderingObject);
 }
 
 void IRenderable::OnUpdateWorldColor(Color4F& outColor, int32 dirtyFlag)

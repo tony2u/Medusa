@@ -27,35 +27,35 @@ void TextureFileIdTimelineModel::AddFileId(float time, const FileIdRef& fileId)
 
 FileIdRef TextureFileIdTimelineModel::GetFileId(float time)const
 {
-	if (mIsPreCalculated)
+	if (mIsPrecomputed)
 	{
-		intp index = GetPreCalculatedIndex(time);
-		return mPreCalculatedFileIds[index].ToRef();
+		intp index = GetPrecomputedIndex(time);
+		return mPrecomputedFileIds[index].ToRef();
 	}
 	intp index = GetSteppedFrameIndex(time);
 	return mFileIds[index].ToRef();
 }
 
-void TextureFileIdTimelineModel::RemovePreCalculated()
+void TextureFileIdTimelineModel::RemovePrecomputed()
 {
-	ITimelineModel::RemovePreCalculated();
-	mPreCalculatedFileIds.Clear();
+	ITimelineModel::RemovePrecomputed();
+	mPrecomputedFileIds.Clear();
 }
 
-void TextureFileIdTimelineModel::OnPreCalculateBegin()
+void TextureFileIdTimelineModel::OnPrecomputeBegin()
 {
-	mPreCalculatedFileIds.Clear();
+	mPrecomputedFileIds.Clear();
 }
 
-void TextureFileIdTimelineModel::AddPreCalcuatedItem(bool isFound, uint prevFrameIndex, uint nextFrameIndex, float percent)
+void TextureFileIdTimelineModel::AddPrecomputedItem(bool isFound, uint prevFrameIndex, uint nextFrameIndex, float percent)
 {
 	if (isFound)
 	{
-		mPreCalculatedFileIds.Add(mFileIds[prevFrameIndex]);
+		mPrecomputedFileIds.Add(mFileIds[prevFrameIndex]);
 	}
 	else
 	{
-		mPreCalculatedFileIds.Add(FileId::Empty);
+		mPrecomputedFileIds.Add(FileId::Empty);
 	}
 
 }

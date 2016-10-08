@@ -36,7 +36,7 @@ public:
 		RETURN_FALSE_IF_FALSE(BaseFiniteAction::Update(dt, blend));
 		if (this->mInnerActions.IsEmpty())
 		{
-			this->ForceSetState(RunningState::Done);
+			this->Stop();
 			return true;
 		}
 
@@ -84,7 +84,7 @@ public:
 		mCurrentIndex = 0;
 		if (this->mInnerActions.IsEmpty())
 		{
-			this->ForceSetState(RunningState::Done);
+			this->Stop();
 			return true;
 		}
 		IAction* currentAction = this->mInnerActions[mCurrentIndex];
@@ -99,7 +99,7 @@ public:
 		RETURN_FALSE_IF_FALSE(BaseFiniteAction::Pause());
 		if (this->mInnerActions.IsEmpty())
 		{
-			this->ForceSetState(RunningState::Done);
+			this->Stop();
 			return true;
 		}
 		IAction* currentAction = this->mInnerActions[mCurrentIndex];
@@ -110,7 +110,7 @@ public:
 		RETURN_FALSE_IF_FALSE(BaseFiniteAction::Resume());
 		if (this->mInnerActions.IsEmpty())
 		{
-			this->ForceSetState(RunningState::Done);
+			this->Stop();
 			return true;
 		}
 		IAction* currentAction = this->mInnerActions[mCurrentIndex];
@@ -121,7 +121,8 @@ public:
 		RETURN_FALSE_IF_FALSE(BaseFiniteAction::Stop());
 		if (this->mInnerActions.IsEmpty())
 		{
-			this->ForceSetState(RunningState::Done);
+			this->mState = RunningState::Done;
+			this->OnStop();
 			return true;
 		}
 

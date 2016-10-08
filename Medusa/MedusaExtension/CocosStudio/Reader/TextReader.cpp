@@ -43,26 +43,26 @@ INode* TextReader::CreateNodeWithFlatBuffers(INodeEditor& editor, const flatbuff
 
 INode* TextReader::CreateNodeWithJson(INodeEditor& editor, const rapidjson::Value& nodeTree, const StringRef& className /*= StringRef::Empty*/, NodeCreateFlags flags /*= NodeCreateFlags::None*/)
 {
-	const rapidjson::Value* fontResourceNode = nodeTree.GetMember("FontResource");
-	StringRef path = fontResourceNode != nullptr ? fontResourceNode->GetString("Path", nullptr) : StringRef::Empty;
+	const rapidjson::Value* fontResourceNode = nodeTree.GetMemberValue("FontResource");
+	StringRef path = fontResourceNode != nullptr ? fontResourceNode->GetMember("Path", nullptr) : StringRef::Empty;
 
 	FontId fontId;
 	fontId.Name = FontFactory::Instance().ExistsOrDefault(path);	//如果没有字体则切换为默认字体
-	fontId.SetSize(nodeTree.Get("FontSize", 0));
-	StringRef hAlignment = nodeTree.GetString("HorizontalAlignmentType", "");
-	StringRef vAlignment = nodeTree.GetString("VerticalAlignmentType", "");
+	fontId.SetSize(nodeTree.GetMember("FontSize", 0));
+	StringRef hAlignment = nodeTree.GetMember("HorizontalAlignmentType", "");
+	StringRef vAlignment = nodeTree.GetMember("VerticalAlignmentType", "");
 	Alignment align= GetAlignment(hAlignment, vAlignment);
 	
-	Color4F color = ToColor(nodeTree.GetMember("CColor"));
+	Color4F color = ToColor(nodeTree.GetMemberValue("CColor"));
 	fontId.SetColor(color);
 
-	bool outlineEnabled = nodeTree.Get("OutlineEnabled", false);
+	bool outlineEnabled = nodeTree.GetMember("OutlineEnabled", false);
 	if (outlineEnabled)
 	{
 		fontId.SetOutlineType(FontOutlineType::Outer);
-		fontId.SetOutlineThickness(nodeTree.Get("OutlineSize", 0));
+		fontId.SetOutlineThickness(nodeTree.GetMember("OutlineSize", 0));
 
-		Color4F outlineColor = ToColor(nodeTree.GetMember("OutlineColor"));
+		Color4F outlineColor = ToColor(nodeTree.GetMemberValue("OutlineColor"));
 		fontId.SetOutlineColor(outlineColor);
 	}
 
@@ -79,7 +79,7 @@ INode* TextReader::CreateNodeWithJson(INodeEditor& editor, const rapidjson::Valu
 	}
 	*/
 
-	StringRef text = nodeTree.GetString("LabelText", "");
+	StringRef text = nodeTree.GetMember("LabelText", "");
 	ILabel* label = NodeFactory::Instance().CreateSingleLineLabel(fontId, StringParser::ToW(text));
 	label->SetAlignment(align);
 	

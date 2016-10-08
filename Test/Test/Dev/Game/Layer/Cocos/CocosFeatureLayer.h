@@ -13,3 +13,4 @@ public:
 	virtual ~CocosFeatureLayer(void);
 };
 
+MEDUSA_ENABLE_STATIC_CONSTRUCTOR(CocosFeatureLayer);

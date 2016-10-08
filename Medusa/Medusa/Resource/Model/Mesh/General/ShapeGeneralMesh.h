@@ -49,6 +49,7 @@ public:
 
 	void AppendVertex(const Point3F& vertex, uint count = 1);
 	void AppendVertexAndIndex(const Point3F& vertex);
+	void AppendVerticesAndIndexs(const List<Point3F>& vertices);
 
 
 	void AppendVertices(const Point3F* vertices, size_t count);

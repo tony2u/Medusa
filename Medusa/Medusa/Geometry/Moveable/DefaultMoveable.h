@@ -22,6 +22,7 @@ public:
 	virtual ~DefaultMoveable(void);
 	void SetMoveable(const DefaultMoveable& val);
 
+	Size2F Size2D() const { return mSize.To2D(); }
 	const Size3F& Size() const { return mSize; }
 	void SetSize(const Size3F& val);
 	void SetSize(float width, float height, float depth = 0.f) { SetSize(Size3F(width, height, depth)); }
@@ -31,17 +32,23 @@ public:
 	float Height()const { return mSize.Height; }
 	float Depth()const { return mSize.Depth; }
 
-	Size3F LocalSize()const;
+	Size3F LocalSize()const;	//like bound size
+	Size2F LocalSize2D()const;	//like bound size
+
 	void SetLocalSize(const Size3F& val);
 	void SetLocalSize(float width, float height, float depth = 0.f) { SetLocalSize(Size3F(width, height, depth)); }
 
 	Size3F WorldSize()const;
+	Size2F WorldSize2D()const;
+
 
 	float X()const { return mPosition.X; }
 	float Y()const { return mPosition.Y; }
 	float Z()const { return mPosition.Z; }
 
 	const Point3F& Position() const { return mPosition; }
+	Point2F Position2D() const { return mPosition.To2D(); }
+
 	void SetPosition(const Point3F& val);
 	void SetPosition(const Point2F& val) { SetPosition(Point3F(val.X, val.Y, mPosition.Z)); }
 	void SetPosition(float x, float y, float z = 0.f) { SetPosition(Point3F(x, y, z)); }
@@ -60,10 +67,14 @@ public:
 
 
 	Point3F LocalPosition()const;	//left bottom, without anchor
+	Point2F LocalPosition2D()const;	//left bottom, without anchor
+
 	void SetLocalPosition(const Point3F& val);
 	void SetLocalPosition(float x, float y, float z = 0.f) { SetLocalPosition(Point3F(x, y, z)); }
 
 	Point3F WorldPosition()const;
+	Point2F WorldPosition2D()const;
+
 
 	bool IsFlipX()const { return MEDUSA_FLAG_HAS(mFlip,FlipMask::X); }
 	bool IsFlipY()const { return MEDUSA_FLAG_HAS(mFlip, FlipMask::Y); }
@@ -75,6 +86,7 @@ public:
 	FlipMask Flip() const { return mFlip; }
 	void SetFlip(FlipMask val);
 
+	const Point2F& Anchor2D() const { return mAnchor.To2D(); }
 	const Point3F& Anchor() const { return mAnchor; }
 	void SetAnchor(const Point3F& val);
 	void SetAnchor(float x, float y, float z = 0.f) { SetAnchor(Point3F(x, y, z)); }
@@ -93,6 +105,7 @@ public:
 	float RotationX()const { return mRotation.X; }
 	float RotationY()const { return mRotation.Y; }
 	float RotationZ()const { return mRotation.Z; }
+	float Rotation2D() const { return mRotation.Z; }
 
 	const Rotation3F& Rotation() const { return mRotation; }
 	void SetRotation(const Rotation3F& val);
@@ -116,6 +129,7 @@ public:
 	float ScaleY()const { return mScale.Y; }
 	float ScaleZ()const { return mScale.Z; }
 
+	Scale2F Scale2D() const { return mScale.To2D(); }
 	const Scale3F& Scale() const { return mScale; }
 	void SetScale(const Scale3F& val);
 	void SetScale(float x, float y, float z = 1.f) { SetScale(Scale3F(x, y, z)); }
@@ -154,6 +168,7 @@ public:
 
 	bool HitTestWorld(const Point2F& worldPos)const;
 	virtual bool HitTestLocal(const Point2F& localPos)const;
+	bool HitTestParent(const Point2F& parentPos)const;
 
 
 protected:
@@ -164,13 +179,14 @@ protected:
 
 private:
 	void OnUpdateMatrix(Matrix4& transform, int32 dirtyFlag);
+	void OnUpdateInverseMatrix(Matrix4& transform, int32 dirtyFlag);
 	void OnUpdateWorldMatrix(Matrix4& transform, int32 dirtyFlag);
 	void OnUpdateWorldInverseMatrix(Matrix4& transform, int32 dirtyFlag);
 	void OnUpdateBoundingBox(BoundingBox& outVal, int32 dirtyFlag);
 	void OnUpdateWorldBoundingBox(BoundingBox& outVal, int32 dirtyFlag);
 
 protected:
-	DefaultMoveable* mParentMoveable;
+	DefaultMoveable* mParentMoveable=nullptr;
 
 	Size3F mSize;
 
@@ -184,6 +200,7 @@ protected:
 
 
 	LazyMatrix4 mMatrix;
+	LazyMatrix4 mInverseMatrix;
 	LazyMatrix4 mWorldMatrix;
 	LazyMatrix4 mWorldInverseMatrix;
 

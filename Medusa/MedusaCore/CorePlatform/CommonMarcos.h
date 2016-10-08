@@ -4,6 +4,7 @@
 #pragma once
 
 #include "CorePlatform/CorePlatformDefines.h"
+//[IGNORE_PRE_DECLARE_FILE]
 
 namespace Medusa
 {
@@ -256,21 +257,21 @@ namespace Medusa
 
 
 #define FOR_EACH_APPLY(items,func) {for(auto z:items){func(z);}}
-#define FOR_EACH_TO(items,func) {for(auto z:items){Medusa::Private::ToPtr(z)->func;}}
+#define FOR_EACH_TO(items,func) {for(auto z:items){::Medusa::Private::ToPtr(z)->func;}}
 
 #define FOR_EACH_ITEM_CLEAR(items,func) {for(auto z:items){func(z);}(items).Clear();}
-#define FOR_EACH_TO_CLEAR(items,func) {for(auto z:items){Medusa::Private::ToPtr(z)->func;}(items).Clear();}
+#define FOR_EACH_TO_CLEAR(items,func) {for(auto z:items){::Medusa::Private::ToPtr(z)->func;}(items).Clear();}
 
 
 #define FOR_EACH_DICTIONARY_KEY(items,func) {for(auto z:items) {func(z.Key);}}
-#define FOR_EACH_DICTIONARY_KEY_TO(items,func) {for(auto z:items){Medusa::Private::ToPtr(z.Key)->func;}}
+#define FOR_EACH_DICTIONARY_KEY_TO(items,func) {for(auto z:items){::Medusa::Private::ToPtr(z.Key)->func;}}
 #define FOR_EACH_DICTIONARY_KEY_CLEAR(items,func) {for(auto z:items) {func(z.Key);}(items).Clear();}
-#define FOR_EACH_DICTIONARY_KEY_TO_CLEAR(items,func) {for(auto z:items){Medusa::Private::ToPtr(z.Key)->func;}(items).Clear();}
+#define FOR_EACH_DICTIONARY_KEY_TO_CLEAR(items,func) {for(auto z:items){::Medusa::Private::ToPtr(z.Key)->func;}(items).Clear();}
 
 #define FOR_EACH_DICTIONARY_VALUE(items,func) {for(auto z:items) {func(z.Value);}}
-#define FOR_EACH_DICTIONARY_VALUE_TO(items,func) {for(auto z:items){Medusa::Private::ToPtr(z.Value)->func;}}
+#define FOR_EACH_DICTIONARY_VALUE_TO(items,func) {for(auto z:items){::Medusa::Private::ToPtr(z.Value)->func;}}
 #define FOR_EACH_DICTIONARY_VALUE_CLEAR(items,func) {for(auto z:items) {func(z.Value);}(items).Clear();}
-#define FOR_EACH_DICTIONARY_VALUE_TO_CLEAR(items,func) {for(auto z:items){Medusa::Private::ToPtr(z.Value)->func;}(items).Clear();}
+#define FOR_EACH_DICTIONARY_VALUE_TO_CLEAR(items,func) {for(auto z:items){::Medusa::Private::ToPtr(z.Value)->func;}(items).Clear();}
 
 
 #define MEDUSA_LOW_SHORT(x)     ((int16)(((int32)(x)) & 0xffff))
@@ -301,6 +302,7 @@ namespace Medusa
 
 #define MEDUSA_FLAG_RETURN_ENABLE(flags,val,cond) (cond)?(MEDUSA_FLAG_AND(flags,val)):(MEDUSA_FLAG_AND_NOT(flags,val))
 
+#define MEDUSA_FLAG_INTERSECT(flags,val) ((uint&)flags &= (uint)val)
 #define MEDUSA_FLAG_ADD(flags,val) ((uint&)flags |= (uint)val)
 #define MEDUSA_FLAG_REMOVE(flags,val) ((uint&)flags &= ~(uint)val)
 #define MEDUSA_FLAG_ENABLE(flags,val,cond) if(cond){MEDUSA_FLAG_ADD(flags,val);}else{MEDUSA_FLAG_REMOVE(flags,val);}

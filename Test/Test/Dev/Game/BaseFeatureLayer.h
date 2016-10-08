@@ -35,3 +35,4 @@ protected:
 	BaseCaseLayer* mCurrentLayer;
 };
 
+MEDUSA_ENABLE_STATIC_CONSTRUCTOR(BaseFeatureLayer);

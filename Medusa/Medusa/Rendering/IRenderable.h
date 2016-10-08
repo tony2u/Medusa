@@ -31,6 +31,8 @@ public:
 	const RenderingObject& GetRenderingObject() const { return mRenderingObject; }
 	RenderingObject& MutableRenderingObject() { return mRenderingObject; }
 	void SetRenderingObject(const RenderingObject& val);
+	void SetRenderingObjectFile(const FileIdRef& val);
+
 
 	const Share<IMesh>& Mesh()const { return mRenderingObject.Mesh(); }
 	void SetMesh(const Share<IMesh>& val);

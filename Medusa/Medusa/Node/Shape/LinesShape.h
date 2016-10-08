@@ -15,8 +15,11 @@ public:
 	virtual bool Initialize()override;
 
 public:
+	void AppendPoints(const List<Point3F>& val);
 	void AppendPoint(const Point3F& val);
 	void ClearPoints();
+
+	void AddLine(const Point3F& from, const Point3F& to);
 protected:
 	Share<ShapeGeneralMesh> mMesh;
 

@@ -1294,7 +1294,7 @@ namespace Math
 		}
 
 
-		void PreCalculateBezierCurve3ZeroToOne(float cx1, float cy1, float cx2, float cy2, int steps, float* outArgs)
+		void PrecomputeBezierCurve3ZeroToOne(float cx1, float cy1, float cx2, float cy2, int steps, float* outArgs)
 		{
 			float subdiv_step = 1.f / steps;
 			float subdiv_step2 = subdiv_step*subdiv_step;
@@ -1324,7 +1324,7 @@ namespace Math
 		}
 
 
-		float BezierCurve3ZeroToOneWithPreCalculateArgs(float time, float dfx, float dfy, float ddfx, float ddfy, float dddfx, float dddfy, int steps)
+		float BezierCurve3ZeroToOneWithPrecomputeArgs(float time, float dfx, float dfy, float ddfx, float ddfy, float dddfx, float dddfy, int steps)
 		{
 			time = Math::Clamp(time, 0.f, 1.f);
 			if (Math::IsEqual(time, 0.f))
@@ -1410,7 +1410,7 @@ namespace Math
 			case TweenType::BezierCurve3:return BezierCurve3(time, args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], (int)args[8]);
 			case TweenType::BezierCurve3ZeroToOneWithStep10:return BezierCurve3ZeroToOneWithStep10(time, args[0], args[1], args[2], args[3]);
 			case TweenType::BezierCurve3ZeroToOne:return BezierCurve3ZeroToOne(time, args[0], args[1], args[2], args[3], (int)args[4]);
-			case TweenType::BezierCurve3ZeroToOneWithPreCalculateArgs:return BezierCurve3ZeroToOneWithPreCalculateArgs(time, args[0], args[1], args[2], args[3], args[4], args[5], (int)args[6]);
+			case TweenType::BezierCurve3ZeroToOneWithPrecomputeArgs:return BezierCurve3ZeroToOneWithPrecomputeArgs(time, args[0], args[1], args[2], args[3], args[4], args[5], (int)args[6]);
 			default:
 				break;
 			}

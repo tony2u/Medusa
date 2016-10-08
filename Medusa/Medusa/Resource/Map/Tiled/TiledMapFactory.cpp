@@ -27,15 +27,15 @@ bool TiledMapFactory::Uninitialize()
 	return true;
 }
 
-Share<TmxTiledMap> TiledMapFactory::Create(const FileIdRef& fileId, ResourceShareType shareType /*= ResourceShareType::Share*/)
+Share<TiledMap> TiledMapFactory::Create(const FileIdRef& fileId, ResourceShareType shareType /*= ResourceShareType::Share*/)
 {
 	if (shareType != ResourceShareType::None)
 	{
-		Share<TmxTiledMap> val = (Share<TmxTiledMap>)Find(fileId);
+		Share<TiledMap> val = (Share<TiledMap>)Find(fileId);
 		RETURN_SELF_IF_NOT_NULL(val);
 	}
 
-	Share<TmxTiledMap> model = new TmxTiledMap(fileId);
+	Share<TiledMap> model = new TiledMap(fileId);
 	RETURN_NULL_IF_NULL(model);
 	if (model->LoadFromFileSystem(fileId))
 	{

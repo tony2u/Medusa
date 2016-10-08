@@ -7,15 +7,15 @@
 
 MEDUSA_BEGIN;
 
-class IEventArg:public RTTIObject
+class IEventArg :public RTTIObject
 {
 	MEDUSA_RTTI_ROOT(IEventArg);
 public:
-	IEventArg():Handled(false){}
-	virtual ~IEventArg(void){}
+	IEventArg() = default;
+	virtual ~IEventArg(void) = default;
 public:
 	static IEventArg Empty;
-	volatile bool Handled;
+	volatile bool Handled = false;
 };
 
 

@@ -8,6 +8,7 @@
 #include "Core/Collection/Linq.h"
 
 MEDUSA_BEGIN;
+
 template<typename TTarget>
 class BaseActionRunner :public IActionRunnable
 {
@@ -15,6 +16,7 @@ public:
 	typedef List<ActionItemType*> ActionListType;
 	virtual ~BaseActionRunner()
 	{
+		//delete all including keep alive
 		SAFE_DELETE_COLLECTION(mActions);
 	}
 
@@ -29,21 +31,30 @@ public:
 			MEDUSA_ASSERT_NOT_NULL(action, "");
 			if (action->ForceGetState() == RunningState::None)
 			{
-				if (!action->Start() || action->IsDone())
+				if (!action->Start() || action->IsDead())
 				{
 					mCompletedActionIndices.Add(i);
 					continue;
 				}
-
 			}
+			else if (action->ForceGetState() == RunningState::Paused)
+			{
+				//maybe paused
+				continue;
+			}
+			else if (action->IsDead())
+			{
+				mCompletedActionIndices.Add(i);
+				continue;
+			}
+
 			bool isContinue = action->Update(dt);
-			if (action->IsDone())
+			if (action->IsDead())
 			{
 				mCompletedActionIndices.Add(i);
 			}
 			BREAK_IF_FALSE(isContinue);
 		}
-
 		Linq::DeleteIndexes(mActions, mCompletedActionIndices);
 		mCompletedActionIndices.Clear();
 
@@ -59,7 +70,7 @@ public:
 		{
 			ActionItemType* action = mActions[i];
 			CONTINUE_IF(action->IsRunning());
-			if (!action->Start() || action->IsDone())
+			if (!action->Start() || action->IsDead())
 			{
 				mCompletedActionIndices.Add(i);
 				continue;
@@ -78,7 +89,7 @@ public:
 		//have to use TTarget to convert ptr, or target ptr will be interrupted 
 		if (action->Initialize((TTarget*)this) && action->Start())
 		{
-			if (!action->IsDone())	//instant action
+			if (!action->IsDead())	//instant action
 			{
 				mActions.Append(action);
 				return action;
@@ -107,7 +118,7 @@ public:
 
 	virtual ActionItemType* FindActionByTag(int tag)const override
 	{
-		for(auto action: mActions)
+		for (auto action : mActions)
 		{
 			if (action->Tag() == tag)
 			{
@@ -291,7 +302,7 @@ public:
 	virtual bool PauseAction(ActionItemType* action) override
 	{
 		RETURN_FALSE_IF_NULL(action);
-		action->Resume();
+		action->Pause();
 		return true;
 	}
 	virtual bool ResumeAction(ActionItemType* action)override

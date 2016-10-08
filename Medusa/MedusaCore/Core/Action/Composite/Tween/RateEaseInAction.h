@@ -14,7 +14,7 @@ public:
 public:
 	virtual RateEaseInAction* Clone()const override
 	{
-		return new RateEaseInAction(this->mInnerAction, mRate);
+		return new RateEaseInAction((BaseFiniteAction*)this->mInnerAction, mRate);
 	}
 	virtual RateEaseInAction* Reverse()const override
 	{

@@ -447,7 +447,8 @@ xcopy /Y /Q "$(ProjectDir)..\CoreLib\Bin\win\x64\*.pdb" "$(OutDir)"</Command>
       <AdditionalLibraryDirectories>..\CoreLib\Bin\win\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
     <PostBuildEvent>
-      <Command>xcopy /Y /Q "$(ProjectDir)..\CoreLib\Bin\win\x64\*.dll" "$(OutDir)"</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

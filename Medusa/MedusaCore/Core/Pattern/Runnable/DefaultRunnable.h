@@ -4,6 +4,8 @@
 #pragma  once
 #include "MedusaCorePreDeclares.h"
 #include "IRunnable.h"
+#include "Core/Pattern/Event.h"
+
 MEDUSA_BEGIN;
 
 
@@ -25,8 +27,13 @@ public:
 	bool ForceIsRunning()const { return mState == RunningState::Running; }
 	bool ForceIsDone()const { return mState == RunningState::Done; }
 	RunningState ForceGetState() const { return mState; }
-	void ForceSetState(RunningState val);
+	bool SetState(RunningState val);
 
+	Event<void()> OnStart;
+	Event<void()> OnPause;
+	Event<void()> OnResume;
+	Event<void()> OnStop;
+	Event<void()> OnReset;
 protected:
 	RunningState mState = RunningState::None;
 };

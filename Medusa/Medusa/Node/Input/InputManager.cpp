@@ -44,7 +44,7 @@ void InputManager::BecomeFirstResponder(INode* node)
 
 void InputManager::CancelFirstResponder(INode* node)
 {
-	if (mFirstResponder==node)
+	if (mFirstResponder == node)
 	{
 		mFirstResponder = nullptr;
 	}
@@ -74,11 +74,11 @@ void InputManager::UpdateInputPassingRecursively()
 {
 	RETURN_IF_FALSE(mIsDirty);
 	IScene* scene = SceneManager::Instance().Current();
-	scene->ResetInputPassing();
+	scene->MutableInput().ResetPassing();
 
-	for(auto node: mDispatchers)
+	for (auto node : mDispatchers)
 	{
-		node->EnableInputPassing();
+		node->MutableInput().EnablePassing();
 	}
 
 	mIsDirty = false;
@@ -135,7 +135,7 @@ bool InputManager::HideKeyboard(INode* node)
 
 void InputManager::TouchesBegan(TouchEventArg& e)
 {
-	if (mFirstResponder!=nullptr)
+	if (mFirstResponder != nullptr)
 	{
 		InputDispatcher& dispatcher = mFirstResponder->MutableInput();
 		if (dispatcher.HasHandler())
@@ -151,7 +151,7 @@ void InputManager::TouchesBegan(TouchEventArg& e)
 		RETURN_IF_NULL(scene);
 		TouchesBeganHelper(scene, e);
 	}
-	
+
 	SyncCommandExecutor::Instance().WaitForComplete();
 
 }
@@ -174,7 +174,7 @@ void InputManager::TouchesMoved(TouchEventArg& e)
 		RETURN_IF_NULL(scene);
 		TouchesMovedHelper(scene, e);
 	}
-	
+
 	SyncCommandExecutor::Instance().WaitForComplete();
 
 }
@@ -188,6 +188,11 @@ void InputManager::TouchesEnded(TouchEventArg& e)
 		{
 			e.UpdateValidActiveTouches(mFirstResponder);
 			dispatcher.TouchesEnded(e);
+
+			if (dispatcher.IsSwallow())
+			{
+				CancelFirstResponder(mFirstResponder);
+			}
 		}
 	}
 	else
@@ -225,7 +230,7 @@ void InputManager::TouchesCancelled(TouchEventArg& e)
 		TouchesCancelledHelper(scene, e);
 		Reset();
 	}
-	
+
 	SyncCommandExecutor::Instance().WaitForComplete();
 
 }
@@ -268,7 +273,7 @@ void InputManager::KeyUp(KeyUpEventArg& e)
 		RETURN_IF_NULL(scene);
 		KeyUpHelper(scene, e);
 	}
-	
+
 	SyncCommandExecutor::Instance().WaitForComplete();
 }
 
@@ -289,7 +294,7 @@ void InputManager::CharInput(CharInputEventArg& e)
 		RETURN_IF_NULL(scene);
 		CharInputHelper(scene, e);
 	}
-	
+
 	SyncCommandExecutor::Instance().WaitForComplete();
 }
 
@@ -311,7 +316,7 @@ void InputManager::Scroll(ScrollEventArg& e)
 		ScrollHelper(scene, e);
 	}
 
-	
+
 	SyncCommandExecutor::Instance().WaitForComplete();
 }
 
@@ -329,7 +334,7 @@ void InputManager::TouchesBeganHelper(INode* node, TouchEventArg& e)
 
 		BREAK_IF(child->Depth() < 0);
 
-		if (child->IsInputPassingEnabled())
+		if (child->Input().IsPassingEnabled())
 		{
 			//Log::LogInfoFormat("{} Touch Began {}:{} %x",i,child->Depth(),child->GetName().c_str(),child);
 
@@ -340,7 +345,7 @@ void InputManager::TouchesBeganHelper(INode* node, TouchEventArg& e)
 		{
 			//Log::LogInfoFormat("{} Touch Ignore {}:{} %x",i,child->Depth(),child->GetName().c_str(),child);
 		}
-		if (child->IsModal())
+		if (child->Input().IsModal())
 		{
 			e.Handled = true;
 			return;
@@ -353,10 +358,16 @@ void InputManager::TouchesBeganHelper(INode* node, TouchEventArg& e)
 		{
 			e.UpdateValidActiveTouches(node);
 			dispatcher.TouchesBegan(e);
+			if (e.IsValid() && dispatcher.IsSwallow())
+			{
+				BecomeFirstResponder(node);
+				e.Handled = true;
+			}
+
 			RETURN_IF_TRUE(e.Handled);
 		}
 
-		if (node->IsModal())
+		if (node->Input().IsModal())
 		{
 			e.Handled = true;
 			return;
@@ -368,7 +379,7 @@ void InputManager::TouchesBeganHelper(INode* node, TouchEventArg& e)
 	{
 		INode* child = nodeList[i];
 
-		if (child->IsInputPassingEnabled())
+		if (child->Input().IsPassingEnabled())
 		{
 			//Log::LogInfoFormat("{} Touch Began Child<=0:{}",i,child->GetName().c_str());
 			TouchesBeganHelper(child, e);
@@ -379,7 +390,7 @@ void InputManager::TouchesBeganHelper(INode* node, TouchEventArg& e)
 			//Log::LogInfoFormat("{} Touch Ignore Child<=0:{}",i,child->GetName().c_str());
 		}
 
-		if (child->IsModal())
+		if (child->Input().IsModal())
 		{
 			e.Handled = true;
 			return;
@@ -398,12 +409,12 @@ void InputManager::TouchesMovedHelper(INode* node, TouchEventArg& e)
 		INode* child = nodeList[i];
 		BREAK_IF(child->Depth() < 0);
 
-		if (child->IsInputPassingEnabled())
+		if (child->Input().IsPassingEnabled())
 		{
 			TouchesMovedHelper(child, e);
 			RETURN_IF_TRUE(e.Handled);
 		}
-		if (child->IsModal())
+		if (child->Input().IsModal())
 		{
 			e.Handled = true;
 			return;
@@ -419,7 +430,7 @@ void InputManager::TouchesMovedHelper(INode* node, TouchEventArg& e)
 			RETURN_IF_TRUE(e.Handled);
 		}
 
-		if (node->IsModal())
+		if (node->Input().IsModal())
 		{
 			e.Handled = true;
 			return;
@@ -430,12 +441,12 @@ void InputManager::TouchesMovedHelper(INode* node, TouchEventArg& e)
 	for (; i >= 0; --i)
 	{
 		INode* child = nodeList[i];
-		if (child->IsInputPassingEnabled())
+		if (child->Input().IsPassingEnabled())
 		{
 			TouchesMovedHelper(child, e);
 			RETURN_IF_TRUE(e.Handled);
 		}
-		if (child->IsModal())
+		if (child->Input().IsModal())
 		{
 			e.Handled = true;
 			return;
@@ -454,7 +465,7 @@ void InputManager::TouchesEndedHelper(INode* node, TouchEventArg& e)
 		INode* child = nodeList[i];
 		BREAK_IF(child->Depth() < 0);
 
-		if (child->IsInputPassingEnabled())
+		if (child->Input().IsPassingEnabled())
 		{
 			TouchesEndedHelper(child, e);
 			RETURN_IF_TRUE(e.Handled);
@@ -462,7 +473,7 @@ void InputManager::TouchesEndedHelper(INode* node, TouchEventArg& e)
 		else
 		{
 		}
-		if (child->IsModal())
+		if (child->Input().IsModal())
 		{
 			e.Handled = true;
 			return;
@@ -477,7 +488,7 @@ void InputManager::TouchesEndedHelper(INode* node, TouchEventArg& e)
 			dispatcher.TouchesEnded(e);
 			RETURN_IF_TRUE(e.Handled);
 		}
-		if (node->IsModal())
+		if (node->Input().IsModal())
 		{
 			e.Handled = true;
 			return;
@@ -487,7 +498,7 @@ void InputManager::TouchesEndedHelper(INode* node, TouchEventArg& e)
 	for (; i >= 0; --i)
 	{
 		INode* child = nodeList[i];
-		if (child->IsInputPassingEnabled())
+		if (child->Input().IsPassingEnabled())
 		{
 			TouchesEndedHelper(child, e);
 			RETURN_IF_TRUE(e.Handled);
@@ -495,7 +506,7 @@ void InputManager::TouchesEndedHelper(INode* node, TouchEventArg& e)
 		else
 		{
 		}
-		if (child->IsModal())
+		if (child->Input().IsModal())
 		{
 			e.Handled = true;
 			return;
@@ -514,12 +525,12 @@ void InputManager::MockTouchHelper(INode* node, TouchEventArg& e)
 		INode* child = nodeList[i];
 		BREAK_IF(child->Depth() < 0);
 
-		if (child->IsInputPassingEnabled())
+		if (child->Input().IsPassingEnabled())
 		{
 			MockTouchHelper(child, e);
 			RETURN_IF_TRUE(e.Handled);
 		}
-		if (child->IsModal())
+		if (child->Input().IsModal())
 		{
 			e.Handled = true;
 			return;
@@ -535,7 +546,7 @@ void InputManager::MockTouchHelper(INode* node, TouchEventArg& e)
 			RETURN_IF_TRUE(e.Handled);
 		}
 
-		if (node->IsModal())
+		if (node->Input().IsModal())
 		{
 			e.Handled = true;
 			return;
@@ -545,12 +556,12 @@ void InputManager::MockTouchHelper(INode* node, TouchEventArg& e)
 	for (; i >= 0; --i)
 	{
 		INode* child = nodeList[i];
-		if (child->IsInputPassingEnabled())
+		if (child->Input().IsPassingEnabled())
 		{
 			MockTouchHelper(child, e);
 			RETURN_IF_TRUE(e.Handled);
 		}
-		if (child->IsModal())
+		if (child->Input().IsModal())
 		{
 			e.Handled = true;
 			return;
@@ -568,12 +579,12 @@ void InputManager::TouchesCancelledHelper(INode* node, TouchEventArg& e)
 		INode* child = nodeList[i];
 		BREAK_IF(child->Depth() < 0);
 
-		if (child->IsInputPassingEnabled())
+		if (child->Input().IsPassingEnabled())
 		{
 			TouchesCancelledHelper(child, e);
 			RETURN_IF_TRUE(e.Handled);
 		}
-		if (child->IsModal())
+		if (child->Input().IsModal())
 		{
 			e.Handled = true;
 			return;
@@ -588,7 +599,7 @@ void InputManager::TouchesCancelledHelper(INode* node, TouchEventArg& e)
 			dispatcher.TouchesCancelled(e);
 			RETURN_IF_TRUE(e.Handled);
 		}
-		if (node->IsModal())
+		if (node->Input().IsModal())
 		{
 			e.Handled = true;
 			return;
@@ -599,12 +610,12 @@ void InputManager::TouchesCancelledHelper(INode* node, TouchEventArg& e)
 	for (; i >= 0; --i)
 	{
 		INode* child = nodeList[i];
-		if (child->IsInputPassingEnabled())
+		if (child->Input().IsPassingEnabled())
 		{
 			TouchesCancelledHelper(child, e);
 			RETURN_IF_TRUE(e.Handled);
 		}
-		if (child->IsModal())
+		if (child->Input().IsModal())
 		{
 			e.Handled = true;
 			return;
@@ -622,13 +633,13 @@ void InputManager::KeyDownHelper(INode* node, KeyDownEventArg& e)
 		INode* child = nodeList[i];
 		BREAK_IF(child->Depth() < 0);
 
-		if (child->IsInputPassingEnabled())
+		if (child->Input().IsPassingEnabled())
 		{
 			KeyDownHelper(child, e);
 			RETURN_IF_TRUE(e.Handled);
 		}
 
-		if (child->IsModal())
+		if (child->Input().IsModal())
 		{
 			e.Handled = true;
 			return;
@@ -643,7 +654,7 @@ void InputManager::KeyDownHelper(INode* node, KeyDownEventArg& e)
 			RETURN_IF_TRUE(e.Handled);
 		}
 
-		if (node->IsModal())
+		if (node->Input().IsModal())
 		{
 			e.Handled = true;
 			return;
@@ -653,13 +664,13 @@ void InputManager::KeyDownHelper(INode* node, KeyDownEventArg& e)
 	for (; i >= 0; --i)
 	{
 		INode* child = nodeList[i];
-		if (child->IsInputPassingEnabled())
+		if (child->Input().IsPassingEnabled())
 		{
 			KeyDownHelper(child, e);
 			RETURN_IF_TRUE(e.Handled);
 		}
 
-		if (child->IsModal())
+		if (child->Input().IsModal())
 		{
 			e.Handled = true;
 			return;
@@ -677,12 +688,12 @@ void InputManager::KeyUpHelper(INode* node, KeyUpEventArg& e)
 		INode* child = nodeList[i];
 		BREAK_IF(child->Depth() < 0);
 
-		if (child->IsInputPassingEnabled())
+		if (child->Input().IsPassingEnabled())
 		{
 			KeyUpHelper(child, e);
 			RETURN_IF_TRUE(e.Handled);
 		}
-		if (child->IsModal())
+		if (child->Input().IsModal())
 		{
 			e.Handled = true;
 			return;
@@ -697,7 +708,7 @@ void InputManager::KeyUpHelper(INode* node, KeyUpEventArg& e)
 			RETURN_IF_TRUE(e.Handled);
 		}
 
-		if (node->IsModal())
+		if (node->Input().IsModal())
 		{
 			e.Handled = true;
 			return;
@@ -707,12 +718,12 @@ void InputManager::KeyUpHelper(INode* node, KeyUpEventArg& e)
 	for (; i >= 0; --i)
 	{
 		INode* child = nodeList[i];
-		if (child->IsInputPassingEnabled())
+		if (child->Input().IsPassingEnabled())
 		{
 			KeyUpHelper(child, e);
 			RETURN_IF_TRUE(e.Handled);
 		}
-		if (child->IsModal())
+		if (child->Input().IsModal())
 		{
 			e.Handled = true;
 			return;
@@ -730,12 +741,12 @@ void InputManager::CharInputHelper(INode* node, CharInputEventArg& e)
 		INode* child = nodeList[i];
 		BREAK_IF(child->Depth() < 0);
 
-		if (child->IsInputPassingEnabled())
+		if (child->Input().IsPassingEnabled())
 		{
 			CharInputHelper(child, e);
 			RETURN_IF_TRUE(e.Handled);
 		}
-		if (child->IsModal())
+		if (child->Input().IsModal())
 		{
 			e.Handled = true;
 			return;
@@ -749,7 +760,7 @@ void InputManager::CharInputHelper(INode* node, CharInputEventArg& e)
 			dispatcher.CharInput(e);
 			RETURN_IF_TRUE(e.Handled);
 		}
-		if (node->IsModal())
+		if (node->Input().IsModal())
 		{
 			e.Handled = true;
 			return;
@@ -760,12 +771,12 @@ void InputManager::CharInputHelper(INode* node, CharInputEventArg& e)
 	for (; i >= 0; --i)
 	{
 		INode* child = nodeList[i];
-		if (child->IsInputPassingEnabled())
+		if (child->Input().IsPassingEnabled())
 		{
 			CharInputHelper(child, e);
 			RETURN_IF_TRUE(e.Handled);
 		}
-		if (child->IsModal())
+		if (child->Input().IsModal())
 		{
 			e.Handled = true;
 			return;
@@ -783,12 +794,12 @@ void InputManager::ScrollHelper(INode* node, ScrollEventArg& e)
 		INode* child = nodeList[i];
 		BREAK_IF(child->Depth() < 0);
 
-		if (child->IsInputPassingEnabled())
+		if (child->Input().IsPassingEnabled())
 		{
 			ScrollHelper(child, e);
 			RETURN_IF_TRUE(e.Handled);
 		}
-		if (child->IsModal())
+		if (child->Input().IsModal())
 		{
 			e.Handled = true;
 			return;
@@ -802,7 +813,7 @@ void InputManager::ScrollHelper(INode* node, ScrollEventArg& e)
 			dispatcher.Scroll(e);
 			RETURN_IF_TRUE(e.Handled);
 		}
-		if (node->IsModal())
+		if (node->Input().IsModal())
 		{
 			e.Handled = true;
 			return;
@@ -813,12 +824,12 @@ void InputManager::ScrollHelper(INode* node, ScrollEventArg& e)
 	for (; i >= 0; --i)
 	{
 		INode* child = nodeList[i];
-		if (child->IsInputPassingEnabled())
+		if (child->Input().IsPassingEnabled())
 		{
 			ScrollHelper(child, e);
 			RETURN_IF_TRUE(e.Handled);
 		}
-		if (child->IsModal())
+		if (child->Input().IsModal())
 		{
 			e.Handled = true;
 			return;
@@ -836,12 +847,12 @@ void InputManager::KeyboardWillShowHelper(INode* node, KeyboardEventArg& e)
 		INode* child = nodeList[i];
 		BREAK_IF(child->Depth() < 0);
 
-		if (child->IsInputPassingEnabled())
+		if (child->Input().IsPassingEnabled())
 		{
 			KeyboardWillShowHelper(child, e);
 			RETURN_IF_TRUE(e.Handled);
 		}
-		if (child->IsModal())
+		if (child->Input().IsModal())
 		{
 			e.Handled = true;
 			return;
@@ -855,7 +866,7 @@ void InputManager::KeyboardWillShowHelper(INode* node, KeyboardEventArg& e)
 			dispatcher.KeyboardWillShow(e);
 			RETURN_IF_TRUE(e.Handled);
 		}
-		if (node->IsModal())
+		if (node->Input().IsModal())
 		{
 			e.Handled = true;
 			return;
@@ -866,12 +877,12 @@ void InputManager::KeyboardWillShowHelper(INode* node, KeyboardEventArg& e)
 	for (; i >= 0; --i)
 	{
 		INode* child = nodeList[i];
-		if (child->IsInputPassingEnabled())
+		if (child->Input().IsPassingEnabled())
 		{
 			KeyboardWillShowHelper(child, e);
 			RETURN_IF_TRUE(e.Handled);
 		}
-		if (child->IsModal())
+		if (child->Input().IsModal())
 		{
 			e.Handled = true;
 			return;
@@ -889,12 +900,12 @@ void InputManager::KeyboardShowedHelper(INode* node, KeyboardEventArg& e)
 		INode* child = nodeList[i];
 		BREAK_IF(child->Depth() < 0);
 
-		if (child->IsInputPassingEnabled())
+		if (child->Input().IsPassingEnabled())
 		{
 			KeyboardShowedHelper(child, e);
 			RETURN_IF_TRUE(e.Handled);
 		}
-		if (child->IsModal())
+		if (child->Input().IsModal())
 		{
 			e.Handled = true;
 			return;
@@ -908,7 +919,7 @@ void InputManager::KeyboardShowedHelper(INode* node, KeyboardEventArg& e)
 			dispatcher.KeyboardShowed(e);
 			RETURN_IF_TRUE(e.Handled);
 		}
-		if (node->IsModal())
+		if (node->Input().IsModal())
 		{
 			e.Handled = true;
 			return;
@@ -919,12 +930,12 @@ void InputManager::KeyboardShowedHelper(INode* node, KeyboardEventArg& e)
 	for (; i >= 0; --i)
 	{
 		INode* child = nodeList[i];
-		if (child->IsInputPassingEnabled())
+		if (child->Input().IsPassingEnabled())
 		{
 			KeyboardShowedHelper(child, e);
 			RETURN_IF_TRUE(e.Handled);
 		}
-		if (child->IsModal())
+		if (child->Input().IsModal())
 		{
 			e.Handled = true;
 			return;
@@ -942,12 +953,12 @@ void InputManager::KeyboardWillHideHelper(INode* node, KeyboardEventArg& e)
 		INode* child = nodeList[i];
 		BREAK_IF(child->Depth() < 0);
 
-		if (child->IsInputPassingEnabled())
+		if (child->Input().IsPassingEnabled())
 		{
 			KeyboardWillHideHelper(child, e);
 			RETURN_IF_TRUE(e.Handled);
 		}
-		if (child->IsModal())
+		if (child->Input().IsModal())
 		{
 			e.Handled = true;
 			return;
@@ -961,7 +972,7 @@ void InputManager::KeyboardWillHideHelper(INode* node, KeyboardEventArg& e)
 			dispatcher.KeyboardWillHide(e);
 			RETURN_IF_TRUE(e.Handled);
 		}
-		if (node->IsModal())
+		if (node->Input().IsModal())
 		{
 			e.Handled = true;
 			return;
@@ -972,12 +983,12 @@ void InputManager::KeyboardWillHideHelper(INode* node, KeyboardEventArg& e)
 	for (; i >= 0; --i)
 	{
 		INode* child = nodeList[i];
-		if (child->IsInputPassingEnabled())
+		if (child->Input().IsPassingEnabled())
 		{
 			KeyboardWillHideHelper(child, e);
 			RETURN_IF_TRUE(e.Handled);
 		}
-		if (child->IsModal())
+		if (child->Input().IsModal())
 		{
 			e.Handled = true;
 			return;
@@ -995,12 +1006,12 @@ void InputManager::KeyboardHidedHelper(INode* node, KeyboardEventArg& e)
 		INode* child = nodeList[i];
 		BREAK_IF(child->Depth() < 0);
 
-		if (child->IsInputPassingEnabled())
+		if (child->Input().IsPassingEnabled())
 		{
 			KeyboardHidedHelper(child, e);
 			RETURN_IF_TRUE(e.Handled);
 		}
-		if (child->IsModal())
+		if (child->Input().IsModal())
 		{
 			e.Handled = true;
 			return;
@@ -1014,7 +1025,7 @@ void InputManager::KeyboardHidedHelper(INode* node, KeyboardEventArg& e)
 			dispatcher.KeyboardHided(e);
 			RETURN_IF_TRUE(e.Handled);
 		}
-		if (node->IsModal())
+		if (node->Input().IsModal())
 		{
 			e.Handled = true;
 			return;
@@ -1025,12 +1036,12 @@ void InputManager::KeyboardHidedHelper(INode* node, KeyboardEventArg& e)
 	for (; i >= 0; --i)
 	{
 		INode* child = nodeList[i];
-		if (child->IsInputPassingEnabled())
+		if (child->Input().IsPassingEnabled())
 		{
 			KeyboardHidedHelper(child, e);
 			RETURN_IF_TRUE(e.Handled);
 		}
-		if (child->IsModal())
+		if (child->Input().IsModal())
 		{
 			e.Handled = true;
 			return;

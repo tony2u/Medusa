@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 #include "MedusaPreCompiled.h"
 #include "TiledTerrain.h"
-#include "TmxTiledMap.h"
+#include "TiledMap.h"
 #include "CoreLib/Common/pugixml/pugixml.hpp"
 
 MEDUSA_BEGIN;
@@ -24,7 +24,7 @@ bool TiledTerrain::Parse(const pugi::xml_node& node)
 	pugi::xml_node propertiesNode = node.child("properties");
 	if (!propertiesNode.empty())
 	{
-		TmxTiledMap::ParseProperties(propertiesNode, MutableProperties());
+		TiledMap::ParseProperties(propertiesNode, MutableProperties());
 	}
 
 	return true;

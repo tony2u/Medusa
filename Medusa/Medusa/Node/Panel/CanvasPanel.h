@@ -20,6 +20,7 @@ protected:
 
 };
 
+MEDUSA_ENABLE_STATIC_CONSTRUCTOR(CanvasPanel);
 
 
 MEDUSA_END;

@@ -21,7 +21,14 @@ void NodeSweeper::OnAddFailed(INode* item)const
 
 void NodeSweeper::OnRelease(INode* item)const
 {
-	item->DeleteFromParent();
+	if (item->Parent()!=nullptr)
+	{
+		item->DeleteFromParent();
+	}
+	else
+	{
+		delete item;
+	}
 }
 
 

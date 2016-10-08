@@ -17,5 +17,6 @@ public:
 	virtual int Evaluate(void* p)const override;
 };
 
+MEDUSA_ENABLE_STATIC_CONSTRUCTOR(XorPredicate);
 
 MEDUSA_END;

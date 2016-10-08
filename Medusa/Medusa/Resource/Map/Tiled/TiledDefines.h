@@ -3,6 +3,7 @@
 // license that can be found in the LICENSE file.
 #pragma once
 #include "MedusaPreDeclares.h"
+#include "Core/String/StringRef.h"
 
 MEDUSA_BEGIN;
 
@@ -63,6 +64,35 @@ enum class TiledLayerType
 	Image = 0X04
 };
 
+
+namespace TiledMapProperties
+{
+	//layer:
+	const extern StringRef EnableCollision;	//bool
+	const extern StringRef EnableInput;	//bool
+
+	const extern StringRef InstantiateLayer;	//string
+	const extern StringRef ScriptFile;	//string
+
+	//tile:
+	const extern StringRef Capability;	//int collision capability
+	const extern StringRef DirectionCapability;	//int direction capability
+
+	//all
+	const extern StringRef InstantiateMode;	//string enum:Mesh,Sprite
+	const extern StringRef State;	//string enum: Done,Running,Paused
+
+}
+
+namespace TiledMapPropertyValues
+{
+	const extern StringRef Mesh;	//Instantiate enum
+	const extern StringRef Sprite;	//Instantiate enum
+	const extern StringRef Done;	//State enum
+	const extern StringRef Running;	//State enum
+	const extern StringRef Paused;	//State enum
+
+}
 
 
 MEDUSA_END;

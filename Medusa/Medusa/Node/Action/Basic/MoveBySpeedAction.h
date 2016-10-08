@@ -18,7 +18,7 @@ public:
 	{
 		RETURN_FALSE_IF_FALSE(BaseInfiniteAction::Update(dt, blend));
 		T* node = (T*)mTarget;
-		node->Move(mSpeed*dt);
+		node->SetPosition(node->Position() + mSpeed*dt);
 		return true;
 	}
 

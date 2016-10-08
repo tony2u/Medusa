@@ -14,6 +14,7 @@ public:
 	AndPredicate(const IPredicate* left = nullptr, const IPredicate* right = nullptr);
 	virtual int Evaluate(void* p)const override;
 };
+MEDUSA_ENABLE_STATIC_CONSTRUCTOR(AndPredicate);
 
 
 MEDUSA_END;

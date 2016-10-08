@@ -15,6 +15,8 @@ public:
 	EffectFactory();
 	~EffectFactory();
 public:
+	virtual StringRef Name()const override { return "EffectFactory"; }
+
 	virtual bool Initialize();
 	virtual bool Uninitialize();
 public:

@@ -105,6 +105,18 @@ public:
 
 	virtual ~HashSet()
 	{
+		//destroy all valid objects
+		uint index = 0;
+		while (index < mAddedCount)
+		{
+			if (mEntries[index].HashCode >= 0)
+			{
+				Memory::Destory(&(mEntries[index].Value));
+			}
+			index++;
+		}
+
+
 		SAFE_FREE(mEntries);
 		SAFE_FREE(mBuckets);
 		mAddedCount = 0;

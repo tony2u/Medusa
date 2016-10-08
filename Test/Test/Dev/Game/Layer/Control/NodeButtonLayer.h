@@ -17,3 +17,4 @@ private:
 
 };
 
+MEDUSA_ENABLE_STATIC_CONSTRUCTOR(NodeButtonLayer);

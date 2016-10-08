@@ -46,7 +46,7 @@ void SwipeGestureRecognizer::TouchesBegan(TouchEventArg& e)
 	case InputState::None:
 		if (e.IsValid())
 		{
-			mBeginPos = e.GetActiveMiddlePoint();
+			mBeginPos = e.GetValidActiveMiddlePoint();
 			mPrevPos = mBeginPos;
 			mCurrentPos = mBeginPos;
 			mBeginTimeStamp = StopWatch::ClockType::now();
@@ -80,7 +80,7 @@ void SwipeGestureRecognizer::TouchesMoved(TouchEventArg& e)
 		mPrevPos = mCurrentPos;
 
 		mEndTimeStamp = StopWatch::ClockType::now();
-		mCurrentPos = e.GetActiveMiddlePoint();
+		mCurrentPos = e.GetValidActiveMiddlePoint();
 
 		if (!IsMovementValid())
 		{
@@ -108,7 +108,7 @@ void SwipeGestureRecognizer::TouchesMoved(TouchEventArg& e)
 		mPrevTimeStamp = mEndTimeStamp;
 
 		mEndTimeStamp = StopWatch::ClockType::now();
-		mCurrentPos = e.GetActiveMiddlePoint();
+		mCurrentPos = e.GetValidActiveMiddlePoint();
 
 		SwipeMovedGestureEventArg e2(this);
 		OnSwipeMoved(mNode, e2);
@@ -130,21 +130,32 @@ void SwipeGestureRecognizer::TouchesEnded(TouchEventArg& e)
 	case InputState::None:
 	case InputState::Begin:
 	{
-		SetState(InputState::Failed);
+		mPrevPos = mCurrentPos;
+		mPrevTimeStamp = mEndTimeStamp;
+
+		mCurrentPos = e.GetValidActiveMiddlePoint();
+		mEndTimeStamp = StopWatch::ClockType::now();
+
+		if (e.IsValid())
+		{
+			SetState(InputState::End);
+		}
+		else
+		{
+			SetState(InputState::Failed);
+		}
+
 		SwipeFailedGestureEventArg e2(this);
 		OnSwipeFailed(mNode, e2);
 	}
 	break;
 	case InputState::Valid:
 	{
-
-		//////////////////////////////////////////////////////////////////////////TODO: If have to add this?
 		mPrevPos = mCurrentPos;
 		mPrevTimeStamp = mEndTimeStamp;
 
-		mCurrentPos = e.GetActiveMiddlePoint();
+		mCurrentPos = e.GetValidActiveMiddlePoint();
 		mEndTimeStamp = StopWatch::ClockType::now();
-		//////////////////////////////////////////////////////////////////////////
 
 		Point2F totalMovement = TotalMovement();
 		Point2F velocity = VelocityAverage();

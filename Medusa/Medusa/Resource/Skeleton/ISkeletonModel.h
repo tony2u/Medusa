@@ -64,8 +64,8 @@ public:
 	ISkeletonAttachmentModel* FindAttachment(const StringRef& slotName, const StringRef attachmentName, const StringRef& avatarName = StringRef::Empty)const;
 	ISkeletonAttachmentModel* FindAttachment(const StringRef attachmentName)const;
 
-	void PreCalculate(float fps);
-	void RemovePreCalculated();
+	void Precompute(float fps);
+	void RemovePrecomputed();
 protected:
 	Size2F mBoundingSize;
 	Share<TextureAtlas> mAtlas=nullptr;

@@ -45,6 +45,34 @@ InputDispatcher::~InputDispatcher()
 }
 
 
+void InputDispatcher::ResetPassing()
+{
+	mPassingEnabled = false;
+	RETURN_IF_NULL(mNode);
+
+	for (auto node : mNode->Children())
+	{
+		if (!node->Input().IsPassingEnabled())
+		{
+			node->MutableInput().ResetPassing();
+		}
+	}
+}
+
+
+void InputDispatcher::EnablePassing()
+{
+	mPassingEnabled = true;
+	RETURN_IF_NULL(mNode);
+	auto parent= mNode->Parent();
+
+	if (parent != nullptr && !parent->Input().IsPassingEnabled())
+	{
+		parent->MutableInput().EnablePassing();
+	}
+}
+
+
 IInputHandler* InputDispatcher::FindFocusHandler() const
 {
 	for (auto handler : mHandlers)

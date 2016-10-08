@@ -17,5 +17,6 @@ public:
 	SingleLineEditBox(StringRef name, const Size2F& size, const FontId& fontId, WStringRef text = WStringRef::Empty, Alignment alignment = Alignment::LeftBottom);
 	virtual ~SingleLineEditBox(void);
 };
+MEDUSA_ENABLE_STATIC_CONSTRUCTOR(SingleLineEditBox);
 
 MEDUSA_END;

@@ -503,6 +503,11 @@ void IScrollMathModel::OnScrollingEnd()
 
 
 
+void IScrollMathModel::OnScroll()
+{
+	OnScrollEvent();
+}
+
 bool IScrollMathModel::UpdateModel(float dt)
 {
 	switch (mState)

@@ -18,5 +18,6 @@ public:
 	
 
 };
+MEDUSA_ENABLE_STATIC_CONSTRUCTOR(SpineSkeleton);
 
 MEDUSA_END;

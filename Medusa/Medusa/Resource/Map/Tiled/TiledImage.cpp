@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 #include "MedusaPreCompiled.h"
 #include "TiledImage.h"
-#include "TmxTiledMap.h"
+#include "TiledMap.h"
 #include "Core/Coder/Crypt/Base64Decoder.h"
 #include "Resource/TextureAtlas/TextureAtlasFactory.h"
 #include "Resource/TextureAtlas/TextureAtlas.h"
@@ -42,7 +42,7 @@ bool TiledImage::Parse(const pugi::xml_node& node)
 	mSize.Height = node.attribute("height").as_int(0);
 
 	const char* transparentColorStr = node.attribute("trans").as_string(nullptr);
-	mTransparentColor = TmxTiledMap::ParseColor(transparentColorStr);
+	mTransparentColor = TiledMap::ParseColor(transparentColorStr);
 
 
 	StringRef formatStr = node.attribute("format").as_string(nullptr);

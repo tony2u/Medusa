@@ -499,7 +499,7 @@ namespace Math
 		BezierCurve3,
 		BezierCurve3ZeroToOneWithStep10,
 		BezierCurve3ZeroToOne,
-		BezierCurve3ZeroToOneWithPreCalculateArgs,
+		BezierCurve3ZeroToOneWithPrecomputeArgs,
 
 
 
@@ -580,8 +580,8 @@ namespace Math
 		float BezierCurve3ZeroToOneWithStep10(float time, float cx1, float cy1, float cx2, float cy2);
 		float BezierCurve3ZeroToOne(float time, float cx1, float cy1, float cx2, float cy2, int steps);
 
-		void PreCalculateBezierCurve3ZeroToOne(float cx1, float cy1, float cx2, float cy2, int steps, float* outArgs);
-		float BezierCurve3ZeroToOneWithPreCalculateArgs(float time, float dfx, float dfy, float ddfx, float ddfy, float dddfx, float dddfy, int steps);
+		void PrecomputeBezierCurve3ZeroToOne(float cx1, float cy1, float cx2, float cy2, int steps, float* outArgs);
+		float BezierCurve3ZeroToOneWithPrecomputeArgs(float time, float dfx, float dfy, float ddfx, float ddfy, float dddfx, float dddfy, int steps);
 
 
 

@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 #pragma once
 #include "MedusaPreDeclares.h"
-#include "Core/Pattern/Property/StringPropertySet.h"
+#include "Core/Pattern/Property/VariantPropertySet.h"
 #include "Core/String/HeapString.h"
 
 MEDUSA_BEGIN;
@@ -20,16 +20,16 @@ public:
 	int TileId() const { return mTileId; }
 	void SetTileId(int val) { mTileId = val; }
 
-	const StringPropertySet& Properties() const { return mProperties; }
-	StringPropertySet& MutableProperties() { return mProperties; }
+	const VariantPropertySet& Properties() const { return mProperties; }
+	VariantPropertySet& MutableProperties() { return mProperties; }
 
-	void SetProperties(const StringPropertySet& val) { mProperties = val; }
+	void SetProperties(const VariantPropertySet& val) { mProperties = val; }
 	bool Parse(const pugi::xml_node& node);
 
 private:
 	HeapString mName;
 	int mTileId;
-	StringPropertySet mProperties;
+	VariantPropertySet mProperties;
 
 };
 

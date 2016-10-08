@@ -20,3 +20,4 @@ private:
 	const static uint mChildCount = 5;
 };
 
+MEDUSA_ENABLE_STATIC_CONSTRUCTOR(ParallaxComponentLayer);

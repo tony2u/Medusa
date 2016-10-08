@@ -19,6 +19,7 @@ protected:
 
 };
 
+MEDUSA_ENABLE_STATIC_CONSTRUCTOR(RelativePanel);
 
 
 MEDUSA_END;

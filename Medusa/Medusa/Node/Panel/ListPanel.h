@@ -38,9 +38,6 @@ public:
 
 	virtual bool RefreshAll();
 	virtual bool RefreshItem(uint index);
-public:
-	virtual void SetDataSource(const Share<IDataSource>& dataSource) override;
-
 protected:
 	virtual bool ArrangeChildren(const Rect2F& limitRect=Rect2F::Zero,NodeLayoutArrangeFlags arrangeFlags=NodeLayoutArrangeFlags::None)override;
 	virtual void OnUpdateTargetBoundingBox();
@@ -49,5 +46,6 @@ protected:
 protected:
 	List<INode*> mItems;
 };
+MEDUSA_ENABLE_STATIC_CONSTRUCTOR(ListPanel);
 
 MEDUSA_END;

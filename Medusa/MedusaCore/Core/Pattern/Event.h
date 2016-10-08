@@ -23,7 +23,8 @@ public:
 	Event& operator=(Event&& other)
 	{
 		assert(this != &other);
-		mItems = std::move(other.mItems); return*this;
+		mItems = std::move(other.mItems);
+		return*this;
 	}
 
 	bool operator==(const Event& val) const noexcept
@@ -106,6 +107,25 @@ public:
 	{
 		Remove(func);
 		return *this;
+	}
+
+	void UnbindObject(void* objectPtr)
+	{
+		//unbind all object members
+		size_t count = mItems.Count();
+		RETURN_IF_ZERO(count);
+		List<size_t> indices;
+		FOR_EACH_SIZE(i, count)
+		{
+			const DelegateType& item = mItems[i];
+			if (item.ObjectPtr()== objectPtr)
+			{
+				indices.Add(i);
+				Memory::Delete(item);
+			}
+		}
+		mItems.RemoveIndexes(indices);
+
 	}
 private:
 	ContainerType mItems;

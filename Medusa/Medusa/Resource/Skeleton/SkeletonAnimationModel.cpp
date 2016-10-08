@@ -116,36 +116,36 @@ void SkeletonAnimationModel::UpdateTimelineDuration()
 	}
 }
 
-void SkeletonAnimationModel::PreCalculate(float fps)
+void SkeletonAnimationModel::Precompute(float fps)
 {
-	FOR_EACH_DICTIONARY_VALUE_TO(mColorTimelineDict, PreCalculate(fps));
-	FOR_EACH_DICTIONARY_VALUE_TO(mTextureTimelineDict, PreCalculate(fps));
-	FOR_EACH_DICTIONARY_VALUE_TO(mRotationTimelineDcit, PreCalculate(fps));
-	FOR_EACH_DICTIONARY_VALUE_TO(mScaleTimelineDcit, PreCalculate(fps));
-	FOR_EACH_DICTIONARY_VALUE_TO(mTranslateTimelineDcit, PreCalculate(fps));
-	FOR_EACH_DICTIONARY_VALUE_TO(mVertexTimelineDcit, PreCalculate(fps));
-	FOR_EACH_DICTIONARY_VALUE_TO(mIKTimelineDcit, PreCalculate(fps));
+	FOR_EACH_DICTIONARY_VALUE_TO(mColorTimelineDict, Precompute(fps));
+	FOR_EACH_DICTIONARY_VALUE_TO(mTextureTimelineDict, Precompute(fps));
+	FOR_EACH_DICTIONARY_VALUE_TO(mRotationTimelineDcit, Precompute(fps));
+	FOR_EACH_DICTIONARY_VALUE_TO(mScaleTimelineDcit, Precompute(fps));
+	FOR_EACH_DICTIONARY_VALUE_TO(mTranslateTimelineDcit, Precompute(fps));
+	FOR_EACH_DICTIONARY_VALUE_TO(mVertexTimelineDcit, Precompute(fps));
+	FOR_EACH_DICTIONARY_VALUE_TO(mIKTimelineDcit, Precompute(fps));
 
 	if (mTriggerTimeline != nullptr)
 	{
-		mTriggerTimeline->PreCalculate(fps);
+		mTriggerTimeline->Precompute(fps);
 	}
 	
 }
 
-void SkeletonAnimationModel::RemovePreCalculated()
+void SkeletonAnimationModel::RemovePrecomputed()
 {
-	FOR_EACH_DICTIONARY_VALUE_TO(mColorTimelineDict, RemovePreCalculated());
-	FOR_EACH_DICTIONARY_VALUE_TO(mTextureTimelineDict, RemovePreCalculated());
-	FOR_EACH_DICTIONARY_VALUE_TO(mRotationTimelineDcit, RemovePreCalculated());
-	FOR_EACH_DICTIONARY_VALUE_TO(mScaleTimelineDcit, RemovePreCalculated());
-	FOR_EACH_DICTIONARY_VALUE_TO(mTranslateTimelineDcit, RemovePreCalculated());
-	FOR_EACH_DICTIONARY_VALUE_TO(mVertexTimelineDcit, RemovePreCalculated());
-	FOR_EACH_DICTIONARY_VALUE_TO(mIKTimelineDcit, RemovePreCalculated());
+	FOR_EACH_DICTIONARY_VALUE_TO(mColorTimelineDict, RemovePrecomputed());
+	FOR_EACH_DICTIONARY_VALUE_TO(mTextureTimelineDict, RemovePrecomputed());
+	FOR_EACH_DICTIONARY_VALUE_TO(mRotationTimelineDcit, RemovePrecomputed());
+	FOR_EACH_DICTIONARY_VALUE_TO(mScaleTimelineDcit, RemovePrecomputed());
+	FOR_EACH_DICTIONARY_VALUE_TO(mTranslateTimelineDcit, RemovePrecomputed());
+	FOR_EACH_DICTIONARY_VALUE_TO(mVertexTimelineDcit, RemovePrecomputed());
+	FOR_EACH_DICTIONARY_VALUE_TO(mIKTimelineDcit, RemovePrecomputed());
 
 	if (mTriggerTimeline != nullptr)
 	{
-		mTriggerTimeline->RemovePreCalculated();
+		mTriggerTimeline->RemovePrecomputed();
 	}
 }
 

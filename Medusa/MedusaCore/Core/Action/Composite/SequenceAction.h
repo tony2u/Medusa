@@ -38,7 +38,7 @@ public:
 		RETURN_FALSE_IF_FALSE(BaseInfiniteAction::Update(dt, blend));
 		if (this->mInnerActions.IsEmpty())
 		{
-			this->ForceSetState(RunningState::Done);
+			this->Stop();
 			return true;
 		}
 
@@ -76,7 +76,7 @@ public:
 			}
 		}
 
-		this->ForceSetState(RunningState::Done);
+		this->Stop();
 		return true;
 	}
 
@@ -86,7 +86,7 @@ public:
 		mCurrentIndex = 0;
 		if (this->mInnerActions.IsEmpty())
 		{
-			this->ForceSetState(RunningState::Done);
+			this->Stop();
 			return true;
 		}
 
@@ -104,7 +104,7 @@ public:
 			}
 		}
 
-		this->ForceSetState(RunningState::Done);
+		this->Stop();
 		return true;
 	}
 
@@ -114,7 +114,7 @@ public:
 		RETURN_FALSE_IF_FALSE(BaseInfiniteAction::Pause());
 		if (this->mInnerActions.IsEmpty())
 		{
-			this->ForceSetState(RunningState::Done);
+			this->Stop();
 			return true;
 		}
 		IAction* currentAction = this->mInnerActions[mCurrentIndex];
@@ -125,7 +125,7 @@ public:
 		RETURN_FALSE_IF_FALSE(BaseInfiniteAction::Resume());
 		if (this->mInnerActions.IsEmpty())
 		{
-			this->ForceSetState(RunningState::Done);
+			this->Stop();
 			return true;
 		}
 		IAction* currentAction = this->mInnerActions[mCurrentIndex];
@@ -136,12 +136,17 @@ public:
 		RETURN_FALSE_IF_FALSE(BaseInfiniteAction::Stop());
 		if (this->mInnerActions.IsEmpty())
 		{
-			this->ForceSetState(RunningState::Done);
+			this->mState = RunningState::Done;
+			this->OnStop();
 			return true;
 		}
 
-		IAction* currentAction = this->mInnerActions[mCurrentIndex];
-		return currentAction->Stop();
+		if (mCurrentIndex<this->mInnerActions.Count())
+		{
+			IAction* currentAction = this->mInnerActions[mCurrentIndex];
+			return currentAction->Stop();
+		}
+		return true;
 	}
 
 	virtual bool Reset()override

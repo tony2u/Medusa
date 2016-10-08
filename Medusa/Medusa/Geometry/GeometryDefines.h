@@ -86,6 +86,30 @@ enum class Orientation
 	Up,
 };
 
+enum class MoveDirection
+{
+	None = 0,
+	Left = 1,
+	Right = 2,
+	Down = 4,
+	Up = 8,
+	LeftUp = 16,
+	RightUp = 32,
+	LeftDown = 64,
+	RightDown = 128,
+	All4 = Left | Right | Down | Up,	//15
+	NotLeft = 14,
+	NotRight = 13,
+	NotDown = 11,
+	NotUp = 7,
+	LeftAndUp = 9,
+	LeftAndDown = 5,
+	RightAndUp = 10,
+	RightAndDown = 6,
+	AllDiagonal = LeftUp | RightUp | LeftDown | RightDown,
+	All8 = All4 | AllDiagonal,
+};
+
 //     Describes how content is resized to fill its allocated space.
 enum class Stretch
 {
@@ -135,14 +159,6 @@ enum class MatrixOrder
 	Prepend
 };
 
-enum class MatrixFlags
-{
-	None = 0,
-	Affine = 1,
-	Is2D = 2,
-};
-
-
 
 //** Determines whether clip space Z ranges from -1 to 1 (OpenGL) or from 0 to 1 (DirectX)
 enum class GraphicsSDK
@@ -151,37 +167,6 @@ enum class GraphicsSDK
 	DirectX
 };
 
-enum class MatrixMultiplyOperation
-{
-	Matrix4_Matrix4 = 0,
-	Matrix4_Matrix43 = 1,
-	Matrix4_Matrix3 = 2,
-	Matrix4_Matrix2 = 3,
-
-	Matrix43_Matrix4 = (1 << 8) + 0,
-	Matrix43_Matrix43 = (1 << 8) + 1,
-	Matrix43_Matrix3 = (1 << 8) + 2,
-	Matrix43_Matrix2 = (1 << 8) + 3,
-
-	Matrix3_Matrix4 = (2 << 8) + 0,
-	Matrix3_Matrix43 = (2 << 8) + 1,
-	Matrix3_Matrix3 = (2 << 8) + 2,
-	Matrix3_Matrix2 = (2 << 8) + 3,
-
-	Matrix2_Matrix4 = (3 << 8) + 0,
-	Matrix2_Matrix43 = (3 << 8) + 1,
-	Matrix2_Matrix3 = (3 << 8) + 2,
-	Matrix2_Matrix2 = (3 << 8) + 3,
-
-};
-
-enum class MatrixType
-{
-	Matrix4 = 0,
-	Matrix43 = 1,
-	Matrix3 = 2,
-	Matrix2 = 3,
-};
 
 //x,y,z
 enum class RotationType

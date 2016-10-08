@@ -16,7 +16,7 @@
 
 MEDUSA_BEGIN;
 
-Medusa::DirectoryPackage::DirectoryPackage(const StringRef& path, PackagePriority priority /*= PackagePriority::Downloaded*/, uint version /*= 0*/,
+DirectoryPackage::DirectoryPackage(const StringRef& path, PackagePriority priority /*= PackagePriority::Downloaded*/, uint version /*= 0*/,
 	bool isRecursively /*= true*/, const StringRef& searchPattern /*= StringRef::Empty*/)
 	:IPackage(path, priority, version),
 	mIsRecursively(isRecursively),

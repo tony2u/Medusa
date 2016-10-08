@@ -27,7 +27,7 @@ void SkeletonBoundingBoxAttachmentModel::AddVertex(const Point2F& pos)
 bool SkeletonBoundingBoxAttachmentModel::Initialize()
 {
 	mPolygon.EnableRange(true);
-	mPolygon.EnablePreCalculated(true);
+	mPolygon.EnablePrecomputed(true);
 
 	return true;
 }

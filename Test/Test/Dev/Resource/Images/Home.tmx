@@ -1,42 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="100" height="100" tilewidth="32" tileheight="32" backgroundcolor="#000000" nextobjectid="1">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="32" tileheight="32" backgroundcolor="#000000" nextobjectid="19">
+ <properties>
+  <property name="InstantiateLayer" value="VaultMainLayer"/>
+ </properties>
  <tileset firstgid="1" source="Device.tsx"/>
  <tileset firstgid="1025" source="Room.tsx"/>
- <tileset firstgid="2049" source="Environment.tsx"/>
- <tileset firstgid="3073" source="Actor1.tsx"/>
- <layer name="Background" width="100" height="100">
+ <layer name="Background" width="50" height="50">
+  <properties>
+   <property name="EnableCollision" value="false"/>
+   <property name="InstantiateLayer" value="VaultBackgroundLayer"/>
+   <property name="RunningState" value="Done"/>
+  </properties>
   <data encoding="base64" compression="zlib">
-   eJztxtdRVQEAANH3aR0mDKDUgIpZqcGEWWswC6YaFHOswYxgKIm9PdwfZ86Z2ZmdTAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPifbd40mWyprbWtttdU7aidtat213TN1J7a60f/odmaq321vw7UfB2sQ3W4jtTROlbH60Sd9KP/0EKdqtN1ps7WuVqs83WhLtalulxX6mpd86P/0PW6UTfrVt2uO3W37tX9WqrlelAP61E99qP/0JN6Ws9qpZ7Xi3pZr+p1vam39a7e14f66Ef/oU/1ub7U1/pW3+tH/azV+lVrtV6/60/99aP/0L/aABr0OGQ=
+   eJztyiEBAAAIA7ALktA/JBUQ4Da9BAAAAACAC10/FwAAAICdAVxLAE0=
   </data>
  </layer>
- <layer name="RoomBack" width="100" height="100">
+ <objectgroup name="Ref">
+  <object id="16" type="Ref" x="0" y="1280" width="320" height="320">
+   <properties>
+    <property name="Ref" value="Room-1.tmx"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <layer name="Role" width="50" height="50">
+  <properties>
+   <property name="EnableCollision" value="false"/>
+   <property name="InstantiateLayer" value="VaultRoleLayer"/>
+  </properties>
   <data encoding="base64" compression="zlib">
-   eJzt0UEJACAAwEAfNrN/JzP4EKbcwRJsDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB+sObdOONHix8tfrT40eJHix8tfrT40eJHix8tfrT4AQDASzbhElaJ
+   eJztwQENAAAAwqD3T20ON6AAAAAAAAAAAADg3wAnEAAB
   </data>
  </layer>
- <layer name="OutWall" width="100" height="100">
+ <layer name="Foreground" width="50" height="50">
+  <properties>
+   <property name="EnableCollision" value="false"/>
+   <property name="InstantiateLayer" value="VaultForegroundLayer"/>
+  </properties>
   <data encoding="base64" compression="zlib">
-   eJzt2MEJgEAMRcEIa2Oyndh/D3sSPCqs+oUZSAHJu6UKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA4L6lVe0Pz9q+3vI/+gu32vS4TI8semTRI4seWfTIokcWPbLokUWPLHpk0SNLP/39DrP/iXoAADDTAOvvGcc=
-  </data>
- </layer>
- <layer name="InWall" width="100" height="100">
-  <data encoding="base64" compression="zlib">
-   eJzt1cEJgDAMBdAeCuIoTuL+G3kqSFQooiXKe9BDk95+SkoBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA4O+Weq/HO+SRizxykUcu8shFHuPN9Xhafb2on/Vif1+Dr4pz3O5Tx/zHN7HvfzynZz/YIePIIxd55CIPAAAy2gA1FAYS
-  </data>
- </layer>
- <layer name="Device" width="100" height="100">
-  <data encoding="base64" compression="zlib">
-   eJzt1EsKwjAUBdAORF2I+BfdhII/dBMKLsVd+5QUSgcFa1Gw58AlSZuEO0qWAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPAP+mnsRoaRaWQWmafvvdL+W2Heqbh3GVk1UbBlxqX1LrKPHNJ6VPp/L8wHFfeeIufPqsHfeb55+dvH+yY1ziwab0FuW+PMsfEWAMC3rSObX5fg5Rq5pBEAAGi3B6LUBv8=
-  </data>
- </layer>
- <layer name="Role" width="100" height="100">
-  <data encoding="base64" compression="zlib">
-   eJztwTEBAAAAwqD1T+1lC6AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAbnEAAAQ==
-  </data>
- </layer>
- <layer name="Foreground" width="100" height="100">
-  <data encoding="base64" compression="zlib">
-   eJztwTEBAAAAwqD1T+1lC6AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAbnEAAAQ==
+   eJztwQENAAAAwqD3T20ON6AAAAAAAAAAAADg3wAnEAAB
   </data>
  </layer>
 </map>

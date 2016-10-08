@@ -27,5 +27,6 @@ protected:
 };
 
 
+MEDUSA_ENABLE_STATIC_CONSTRUCTOR(ViewPanel);
 
 MEDUSA_END;

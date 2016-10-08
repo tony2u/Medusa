@@ -27,9 +27,9 @@ void RotationTimelineModel::AddRotation(float time, const Rotation3F& rotation, 
 
 Rotation3F RotationTimelineModel::GetRotation(float time) const
 {
-	if (mIsPreCalculated)
+	if (mIsPrecomputed)
 	{
-		intp index = GetPreCalculatedIndex(time);
+		intp index = GetPrecomputedIndex(time);
 		return mPreCalcualtedRotations[index];
 	}
 	uint outPrevFrameIndex;
@@ -52,18 +52,18 @@ Rotation3F RotationTimelineModel::GetRotation(float time) const
 	return Rotation3F::Zero;
 }
 
-void RotationTimelineModel::RemovePreCalculated()
+void RotationTimelineModel::RemovePrecomputed()
 {
-	ITimelineModel::RemovePreCalculated();
+	ITimelineModel::RemovePrecomputed();
 	mPreCalcualtedRotations.Clear();
 }
 
-void RotationTimelineModel::OnPreCalculateBegin()
+void RotationTimelineModel::OnPrecomputeBegin()
 {
 	mPreCalcualtedRotations.Clear();
 }
 
-void RotationTimelineModel::AddPreCalcuatedItem(bool isFound, uint prevFrameIndex, uint nextFrameIndex, float percent)
+void RotationTimelineModel::AddPrecomputedItem(bool isFound, uint prevFrameIndex, uint nextFrameIndex, float percent)
 {
 	Rotation3F rotation = Rotation3F::Zero;
 	if (nextFrameIndex != prevFrameIndex)

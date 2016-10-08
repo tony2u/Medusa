@@ -13,3 +13,4 @@ public:
 	virtual ~ParticleFeatureLayer(void);
 };
 
+MEDUSA_ENABLE_STATIC_CONSTRUCTOR(ParticleFeatureLayer);

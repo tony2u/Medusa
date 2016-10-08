@@ -34,6 +34,11 @@ public:
 		return Update(dt);
 	}
 
+	bool IsDead()const { return !mKeepAlive && IsDone(); }
+	bool IsAlive()const { return mKeepAlive || !IsDone(); }
+	bool IsKeepAlive()const {return mKeepAlive;}
+	void KeepAlive(bool val = true) { mKeepAlive = val; }
+
 	void* Target() const { return mTarget; }
 	void SetTarget(void* val) { mTarget = val; }
 
@@ -56,9 +61,18 @@ public:
 	virtual float ElapsedExceed()const { return 0.f; }
 
 protected:
+	virtual void BuildClone(IAction& obj) override
+	{
+		obj.mTarget = mTarget;
+		obj.mTag = mTag;
+		obj.mName = mName;
+		obj.mKeepAlive = mKeepAlive;
+	}
+protected:
 	void* mTarget = nullptr;
 	int mTag = 0;
 	HeapString mName;
+	bool mKeepAlive = false;	//won't be deleted after done
 
 };
 MEDUSA_END;

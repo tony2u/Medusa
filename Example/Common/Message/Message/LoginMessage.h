@@ -22,3 +22,4 @@ public:
 	virtual bool OnResponse(MessageSocketConnection& connection) override;
 };
 
+MEDUSA_ENABLE_STATIC_CONSTRUCTOR(LoginMessage);

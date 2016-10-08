@@ -63,6 +63,8 @@ public:
 	const static FileIdRef Empty;
 };
 
+#define mf(name,id) FileIdRef((const StringRef&)(name),(uint)(id))
+
 MEDUSA_END;
 
 

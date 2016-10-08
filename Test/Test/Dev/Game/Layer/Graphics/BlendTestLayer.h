@@ -68,3 +68,4 @@ protected:
 	GraphicsBlendDestFuncHelper mDestFunc;
 };
 
+MEDUSA_ENABLE_STATIC_CONSTRUCTOR(BlendTestLayer);

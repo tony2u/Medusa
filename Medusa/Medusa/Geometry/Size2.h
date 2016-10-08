@@ -110,7 +110,10 @@ public:
 	T Area()const{return Width*Height;}
 	intp HashCode()const{return HashUtility::Hash(Buffer);}
 	bool IsEmpty()const{return Math::IsZero(Width)||Math::IsZero(Height);}
-
+	bool IsNearlyZero(float tolerance = 1.e-4f)const
+	{
+		return Math::Abs(Width) <= tolerance &&	Math::Abs(Height) <= tolerance;
+	}
 	static Size2 LinearInterpolate(const Size2& begin,const Size2& end,float blend)
 	{
 		return Size2(Math::LinearInterpolate(begin.Width,end.Width,blend),Math::LinearInterpolate(begin.Height,end.Height,blend));

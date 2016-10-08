@@ -14,7 +14,7 @@ public:
 public:
 	virtual QuadraticEaseInOutAction* Clone()const override
 	{
-		return new QuadraticEaseInOutAction(this->mInnerAction);
+		return new QuadraticEaseInOutAction((BaseFiniteAction*)this->mInnerAction);
 	}
 	virtual QuadraticEaseInOutAction* Reverse()const override
 	{

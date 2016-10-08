@@ -19,6 +19,7 @@ protected:
 	virtual bool ArrangeChildren(const Rect2F& limitRect = Rect2F::Zero, NodeLayoutArrangeFlags arrangeFlags = NodeLayoutArrangeFlags::None)override;
 
 };
+MEDUSA_ENABLE_STATIC_CONSTRUCTOR(GridPanel);
 
 
 

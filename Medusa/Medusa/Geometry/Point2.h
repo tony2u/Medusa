@@ -117,6 +117,11 @@ public:
 	template<typename T1>
 	friend  Point2 operator*(T1 delta, const Point2<T>& point) { return Point2(delta*point.X, delta*point.Y); }
 
+	bool IsNearlyZero(float tolerance = 1.e-4f)const
+	{
+		return Math::Abs(X) <= tolerance &&	Math::Abs(Y) <= tolerance;
+	}
+
 	float Length()const { return Math::Sqrt((float)(X*X + Y*Y)); }
 	T LengthSquared()const { return X*X + Y*Y; }
 	float Radian()const
@@ -318,8 +323,8 @@ typedef Point2F Vector2F;
 //[PRE_DECLARE_END]
 
 
-#define mppi(x,y) Point2I(x,y)
-#define mpp(x,y) Point2F(x,y)
+#define mppi(x,y) Point2I((int)(x),(int)(y))
+#define mpp(x,y) Point2F((float)(x),(float)(y))
 
 
 namespace Siren

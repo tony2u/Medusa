@@ -39,7 +39,9 @@ public:
 	bool IsIgnoreRotation()const { return mIgnoreRotation; }
 	void EnableIgnoreRotation(bool val) { mIgnoreRotation = val; }
 
+	SingleStrokeTemplate* Find(const StringRef& name)const;
 	void Add(SingleStrokeTemplate* val);
+	void Clear();
 public:
 	const SingleStrokeTemplate* Recognize(float& outScore, SingleStrokeTemplate& val, SingleStrokeRecognizeAlgorithm algorithm = SingleStrokeRecognizeAlgorithm::Protractor)const;
 protected:
@@ -52,12 +54,12 @@ protected:
 	//SIREN_HEADER_METHOD_BEGIN
 public:
 	SIREN_METHOD_LIST(SingleStrokeTemplate*, Templates);
-	//SIREN_HEADER_METHOD_END
+//SIREN_HEADER_METHOD_END
 protected:
 	//SIREN_HEADER_FIELD_BEGIN
 protected:
 	List<SingleStrokeTemplate*> mTemplates;
-	//SIREN_HEADER_FIELD_END
+//SIREN_HEADER_FIELD_END
 
 	// Before matching, we rotate the symbol the user drew so that the 
 	//  start point is at degree 0 (right side of symbol). That's how 
@@ -73,7 +75,7 @@ protected:
 struct SingleStrokeLibrary::Schema
 {
 	SIREN_FIELD_LIST(0, 0, Required, SingleStrokeLibrary, SingleStrokeTemplate*, mTemplates);
-	SIREN_FIELDS_1(void, SingleStrokeLibrary);
+	SIREN_FIELDS_1(void,SingleStrokeLibrary);
 };
 //SIREN_HEADER_SCHEMA_END
 

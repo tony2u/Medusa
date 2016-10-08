@@ -19,13 +19,13 @@ MEDUSA_BEGIN;
 
 PredicateFactory::PredicateFactory()
 {
-	Register<AndPredicate>("AndPredicate");
+	/*Register<AndPredicate>("AndPredicate");
 	Register<OrPredicate>("OrPredicate");
 	Register<XorPredicate>("XorPredicate");
 	Register<NotPredicate>("NotPredicate");
 
 	Register<TruePredicate>("TruePredicate");
-	Register<FalsePredicate>("FalsePredicate");
+	Register<FalsePredicate>("FalsePredicate");*/
 }
 
 IPredicate* PredicateFactory::SmartCreate(StringRef name)

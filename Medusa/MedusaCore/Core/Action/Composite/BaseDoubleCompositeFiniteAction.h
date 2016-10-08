@@ -9,7 +9,7 @@ class BaseDoubleCompositeFiniteAction :public BaseFiniteAction
 {
 public:
 	BaseDoubleCompositeFiniteAction(BaseFiniteAction* from, BaseFiniteAction* to, float duration)
-		:BaseFiniteAction(duration),mFrom(from), mTo(to)
+		:BaseFiniteAction(duration), mFrom(from), mTo(to)
 	{
 	}
 	virtual ~BaseDoubleCompositeFiniteAction(void)
@@ -18,6 +18,9 @@ public:
 		SAFE_DELETE(mTo);
 	}
 public:
+	virtual bool IsRunning()const override { return BaseFiniteAction::IsRunning() && (mFrom != nullptr && mFrom->IsRunning()) && (mTo != nullptr && mTo->IsRunning()); }
+	virtual bool IsDone()const override { return BaseFiniteAction::IsDone() || (mFrom == nullptr || mFrom->IsDone()) && (mTo == nullptr || mTo->IsDone()); }
+
 	virtual bool Reset()override
 	{
 		RETURN_FALSE_IF_FALSE(BaseFiniteAction::Reset());
@@ -45,7 +48,7 @@ public:
 			return mFrom;
 		}
 
-		if (mTo->Tag()==tag)
+		if (mTo->Tag() == tag)
 		{
 			return mTo;
 		}
@@ -74,7 +77,7 @@ public:
 	BaseFiniteAction* To() const { return mTo; }
 
 protected:
-	BaseFiniteAction* mFrom;
-	BaseFiniteAction* mTo;
+	BaseFiniteAction* mFrom = nullptr;
+	BaseFiniteAction* mTo = nullptr;
 };
 MEDUSA_END;

@@ -26,6 +26,7 @@ bool BaseCaseLayer::Initialize()
 	label->SetDock(DockPoint::MiddleTop);
 	label->SetAnchorPoint(AnchorPoint::MiddleTop);
 	label->SetDepth(9999);
+	label->MutableInput().Enable(false);
 	AddChild(label);
 
 

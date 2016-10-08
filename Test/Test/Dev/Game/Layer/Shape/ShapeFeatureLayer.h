@@ -13,3 +13,4 @@ public:
 	virtual ~ShapeFeatureLayer(void);
 };
 
+MEDUSA_ENABLE_STATIC_CONSTRUCTOR(ShapeFeatureLayer);

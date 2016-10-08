@@ -21,7 +21,7 @@
 #include "Core/Action/Composite/SpeedAction.h"
 #include "Core/Action/Composite/CountDownAction.h"
 
-#include "Geometry/Range.h"
+#include "Core/Math/Range.h"
 #include "Node/NodeFactory.h"
 
 MEDUSA_BEGIN;

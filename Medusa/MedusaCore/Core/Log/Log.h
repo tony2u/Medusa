@@ -217,7 +217,7 @@ private:
 		MEDUSA_FLAG_ADD(level, withHeader);
 
 		Share<LogMessageType> logMessage(new LogMessageType(level));
-		logMessage->AddHeader();
+		logMessage->ApplyHeader();
 		logMessage->FormatLine(format, std::forward<TArgs>(args)...);
 
 		if (MEDUSA_FLAG_HAS(level, LogLevel::Assert))
@@ -245,7 +245,7 @@ private:
 		MEDUSA_FLAG_ADD(level, withHeader);
 
 		Share<LogMessageType> logMessage(new LogMessageType(level));
-		logMessage->AddHeader();
+		logMessage->ApplyHeader();
 		if (newLine)
 		{
 			logMessage->AppendLine(message);

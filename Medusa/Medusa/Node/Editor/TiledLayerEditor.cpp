@@ -5,6 +5,7 @@
 #include "TiledLayerEditor.h"
 #include "Resource/Map/Tiled/TiledMapFactory.h"
 #include "Node/Layer/ILayer.h"
+#include "Resource/Map/Tiled/TiledMapInstantiateInfo.h"
 
 MEDUSA_BEGIN;
 TiledLayerEditor::TiledLayerEditor()
@@ -26,8 +27,9 @@ INode* TiledLayerEditor::Create(const StringRef& className, const FileIdRef& edi
 		Log::FormatError("Cannot create layer:{}", editorFile.Name);
 		return nullptr;
 	}
-
-	INode* layer = map->Instantiate(className);
+	TiledMapInstantiateInfo info;
+	info.NodeClassName = className;
+	INode* layer = map->Instantiate(&info);
 	if (layer == nullptr)
 	{
 		Log::FormatError("Cannot create layer:{}", editorFile.Name);

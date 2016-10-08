@@ -59,8 +59,8 @@ public:
 
 	void UpdateTimelineDuration();
 
-	void PreCalculate(float fps);
-	void RemovePreCalculated();
+	void Precompute(float fps);
+	void RemovePrecomputed();
 protected:
 	HeapString mName;
 	float mDuration;

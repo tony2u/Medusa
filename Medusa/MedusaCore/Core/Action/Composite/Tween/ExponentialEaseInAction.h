@@ -14,7 +14,7 @@ public:
 public:
 	virtual ExponentialEaseInAction* Clone()const override
 	{
-		return new ExponentialEaseInAction(this->mInnerAction);
+		return new ExponentialEaseInAction((BaseFiniteAction*)this->mInnerAction);
 	}
 	virtual ExponentialEaseInAction* Reverse()const override
 	{

@@ -26,6 +26,10 @@
 #define MEDUSA_OGG
 #endif
 
+#ifndef MEDUSA_DISABLE_BOX2D
+#define MEDUSA_BOX2D
+#endif
+
 
 #ifndef MEDUSA_DISABLE_GL
 #define MEDUSA_GL

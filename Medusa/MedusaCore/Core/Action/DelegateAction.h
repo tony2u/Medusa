@@ -27,6 +27,12 @@ protected:
 		}
 		return true;
 	}
+	virtual void BuildClone(IAction& obj) override
+	{
+		BaseInstantAction::BuildClone(obj);
+		auto& t = (DelegateAction&)obj;
+		t.mDelegate = mDelegate;
+	}
 protected:
 	DelegateType mDelegate;
 

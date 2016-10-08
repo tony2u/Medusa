@@ -16,5 +16,6 @@ public:
 	virtual bool Initialize()override;
 	virtual bool Is2D()const override {return false;}
 };
+MEDUSA_ENABLE_STATIC_CONSTRUCTOR(Base3DScene);
 
 MEDUSA_END;

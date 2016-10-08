@@ -21,6 +21,9 @@ class ApplicationSettings :public Singleton<ApplicationSettings>, public IModule
 	virtual ~ApplicationSettings() = default;
 	friend class Singleton<ApplicationSettings>;
 public:
+	virtual bool Initialize() override;
+	virtual bool Uninitialize()override;
+
 	void SetSettingsFile(FileIdRef val) { mSettingsFile = val; }
 
 	PublishTarget Tag()const { return mTag; }

@@ -15,6 +15,7 @@
 #include "Core/IO/Path.h"
 #include "Node/Input/InputDispatcher.h"
 #include "Resource/Font/FontFactory.h"
+#include "Node/Input/InputDispatcher.h"
 
 MEDUSA_COCOS_BEGIN;
 
@@ -92,7 +93,7 @@ INode* ButtonReader::CreateNodeWithFlatBuffers(INodeEditor& editor, const flatbu
 	}
 
 	auto widgetOptions= options->widgetOptions();
-	button->EnableInput(widgetOptions->touchEnabled() != 0);
+	button->MutableInput().Enable(widgetOptions->touchEnabled() != 0);
 
 	StringRef callBackName = widgetOptions->callBackName()->c_str();
 	StringRef callbackType = widgetOptions->callBackType()->c_str();
@@ -106,11 +107,11 @@ INode* ButtonReader::CreateNodeWithFlatBuffers(INodeEditor& editor, const flatbu
 INode* ButtonReader::CreateNodeWithJson(INodeEditor& editor, const rapidjson::Value& nodeTree, const StringRef& className /*= StringRef::Empty*/, NodeCreateFlags flags /*= NodeCreateFlags::None*/)
 {
 	const rapidjson::Value& normalFileDataNode = nodeTree["NormalFileData"];
-	StringRef normalPath = StringRef(normalFileDataNode.GetString("Path", nullptr));
+	StringRef normalPath = StringRef(normalFileDataNode.GetMember("Path", nullptr));
 	const rapidjson::Value& selectedFileDataNode = nodeTree["PressedFileData"];
-	StringRef selectedPath = StringRef( selectedFileDataNode.GetString("Path", nullptr));
+	StringRef selectedPath = StringRef( selectedFileDataNode.GetMember("Path", nullptr));
 	const rapidjson::Value& disabledFileDataNode = nodeTree["DisabledFileData"];
-	StringRef disabledPath = StringRef( disabledFileDataNode.GetString("Path", nullptr));
+	StringRef disabledPath = StringRef( disabledFileDataNode.GetMember("Path", nullptr));
 	if (normalPath == "Default/Button_Normal.png")
 	{
 		normalPath = StringRef::Empty;
@@ -130,18 +131,18 @@ INode* ButtonReader::CreateNodeWithJson(INodeEditor& editor, const rapidjson::Va
 
 
 	ILabel* label = nullptr;
-	StringRef buttonText = nodeTree.GetString("ButtonText", nullptr);
+	StringRef buttonText = nodeTree.GetMember("ButtonText", nullptr);
 	if (!buttonText.IsEmpty())
 	{
-		int fontSize = nodeTree.Get("FontSize", 0);
+		int fontSize = nodeTree.GetMember("FontSize", 0);
 	
-		const rapidjson::Value* fontResourceNode = nodeTree.GetMember("FontResource");
-		StringRef fontName = fontResourceNode != nullptr ? fontResourceNode->GetString("Path", nullptr) : StringRef::Empty;
+		const rapidjson::Value* fontResourceNode = nodeTree.GetMemberValue("FontResource");
+		StringRef fontName = fontResourceNode != nullptr ? fontResourceNode->GetMember("Path", nullptr) : StringRef::Empty;
 		fontName = FontFactory::Instance().ExistsOrDefault(fontName);
 		FontId fontId(fontName);
 		fontId.SetSize(fontSize);
 
-		Color4F textColor = ToColor(nodeTree.GetMember("TextColor"));
+		Color4F textColor = ToColor(nodeTree.GetMemberValue("TextColor"));
 
 		label = NodeFactory::Instance().CreateSingleLineLabel(fontId, StringParser::ToW(buttonText), Alignment::MiddleCenter);
 		label->SetColor(textColor);
@@ -153,17 +154,17 @@ INode* ButtonReader::CreateNodeWithJson(INodeEditor& editor, const rapidjson::Va
 	IButton* button = nullptr;
 	if (!normalPathFileId.IsEmpty() || !selectedPathFileId.IsEmpty() || !disabledPathFileId.IsEmpty())
 	{
-		bool isEnableNineGrid = nodeTree.Get("Scale9Enable", false);
+		bool isEnableNineGrid = nodeTree.GetMember("Scale9Enable", false);
 		Size2F size = Size2F::Zero;
 		ThicknessF padding = ThicknessF::Zero;
 		if (isEnableNineGrid)
 		{
 			const rapidjson::Value& jsonSize = nodeTree["Size"];
-			size = Size2F(jsonSize.Get("X",0.f), jsonSize.Get("Y", 0.f));
-			auto originX = nodeTree.Get("Scale9OriginX", 0);
-			auto originY = nodeTree.Get("Scale9OriginY", 0);
-			auto nineWidth = nodeTree.Get("Scale9Width", 0);
-			auto nineHeight = nodeTree.Get("Scale9Height", 0);
+			size = Size2F(jsonSize.GetMember("X",0.f), jsonSize.GetMember("Y", 0.f));
+			auto originX = nodeTree.GetMember("Scale9OriginX", 0.f);
+			auto originY = nodeTree.GetMember("Scale9OriginY", 0.f);
+			auto nineWidth = nodeTree.GetMember("Scale9Width", 0.f);
+			auto nineHeight = nodeTree.GetMember("Scale9Height", 0.f);
 			padding = ThicknessF(originX,  size.Width -  nineWidth - originX, size.Height -  nineHeight - originY, originY);
 		}
 		auto textureButton = NodeFactory::Instance().CreateTextureButton(normalPathFileId, selectedPathFileId, disabledPathFileId);
@@ -184,14 +185,14 @@ INode* ButtonReader::CreateNodeWithJson(INodeEditor& editor, const rapidjson::Va
 		Log::Error("NO button");
 	}
 
-	bool inputEnabled = nodeTree.Get("TouchEnable", true);
-	button->EnableInput(inputEnabled);
+	bool inputEnabled = nodeTree.GetMember("TouchEnable", true);
+	button->MutableInput().Enable(inputEnabled);
 
-	bool isButtonEnabled = nodeTree.Get("DisplayState", true);
+	bool isButtonEnabled = nodeTree.GetMember("DisplayState", true);
 	button->SetButtonState(isButtonEnabled ? ButtonState::Normal : ButtonState::Disabled);
 
-	StringRef callBackName = nodeTree.GetString("CallBackName", nullptr);
-	StringRef callbackType = nodeTree.GetString("CallBackType", nullptr);
+	StringRef callBackName = nodeTree.GetMember("CallBackName", nullptr);
+	StringRef callbackType = nodeTree.GetMember("CallBackType", nullptr);
 	SetButtonEvent(button, callbackType, callBackName);
 	
 	SetPropsWithJson(button, nodeTree,flags);

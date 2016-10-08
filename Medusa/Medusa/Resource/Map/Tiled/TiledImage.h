@@ -39,7 +39,8 @@ public:
 	Share<ITexture> LoadSeparateTexture()const;
 
 	TextureAtlasPage* TexturePage() const { return mTexturePage; }
-
+	TiledImageLayer* Layer() const { return mLayer; }
+	void SetLayer(TiledImageLayer* val) { mLayer = val; }
 private:
 	FileId mSource;
 	Size2I mSize;
@@ -50,6 +51,9 @@ private:
 	
 	TextureAtlasPage* mTexturePage=nullptr;
 	Share<TextureAtlas> mTextureAtlas;
+
+	TiledImageLayer* mLayer = nullptr;
+	
 };
 
 MEDUSA_END;

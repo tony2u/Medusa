@@ -122,7 +122,7 @@ public:
 		if (!this->mIsFieldWaiting)
 		{
 			uint8_t raw;
-			raw = this->mStream.ReadChar();
+			raw = (uint8_t)this->mStream.ReadChar();
 			this->mCurrentFieldType = static_cast<uint>(raw & 0x1f);
 			this->mCurrentFieldId = static_cast<uint16_t>(raw & (0x07 << 5));
 
@@ -132,7 +132,7 @@ public:
 			}
 			else if (this->mCurrentFieldId == (0x06 << 5))
 			{
-				this->mCurrentFieldId = this->mStream.ReadChar();
+				this->mCurrentFieldId = (ushort)this->mStream.ReadChar();
 			}
 			else
 			{
@@ -198,7 +198,7 @@ protected:
 	bool SkipField()
 	{
 		uint8_t raw;
-		raw = this->mStream.ReadChar();
+		raw = (uint8_t)this->mStream.ReadChar();
 		byte currentFieldType = static_cast<byte>(raw & 0x1f);
 		ushort currentFieldId = static_cast<uint16_t>(raw & (0x07 << 5));
 

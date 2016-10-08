@@ -13,3 +13,4 @@ public:
 	virtual ~ThreeDFeatureLayer(void);
 };
 
+MEDUSA_ENABLE_STATIC_CONSTRUCTOR(ThreeDFeatureLayer);

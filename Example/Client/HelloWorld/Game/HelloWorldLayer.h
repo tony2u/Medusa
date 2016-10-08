@@ -17,3 +17,4 @@ public:
 private:
 };
 
+MEDUSA_ENABLE_STATIC_CONSTRUCTOR(HelloWorldLayer);

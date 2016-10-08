@@ -21,3 +21,4 @@ protected:
 
 };
 
+MEDUSA_ENABLE_STATIC_CONSTRUCTOR(MaskLayer);

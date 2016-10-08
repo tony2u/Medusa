@@ -14,7 +14,7 @@ public:
 public:
 	virtual CircularEaseOutAction* Clone()const override
 	{
-		return new CircularEaseOutAction(this->mInnerAction);
+		return new CircularEaseOutAction((BaseFiniteAction*)this->mInnerAction);
 	}
 	virtual CircularEaseOutAction* Reverse()const override
 	{

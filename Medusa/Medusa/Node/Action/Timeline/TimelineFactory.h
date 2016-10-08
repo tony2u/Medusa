@@ -21,7 +21,7 @@ public:
 public:
 	RenderingObjectTimeline* CreateRenderingObjectTimelineFromTextures(const StringRef& modelName, const StringRef& textureNamePattern, float fps = 24.f, bool isRepeatForever = false);
 
-	RenderingObjectTimeline* CreateRenderingObjectTimelineFromSingleTexture(const StringRef& modelName, const FileIdRef& textureName, uint coloumn, uint row = 1, float fps = 24.f, bool isRepeatForever = false);
+	RenderingObjectTimeline* CreateRenderingObjectTimelineFromSingleTexture(const StringRef& modelName, const FileIdRef& textureName, uint coloumn, uint row = 1, uint startIndex = 0, uint endIndex = Math::UIntMaxValue, float fps = 24.f, bool isRepeatForever = false);
 	RenderingObjectTimeline* CreateRenderingObjectTimelineFromTextureAtlas(const FileIdRef& atlasFileId,const StringRef& regionPattern,TextureAtlasType fileFormat = TextureAtlasType::None, const Color4F& color = Color4F::White, float fps = 24.f, bool isRepeatForever = false);
 
 

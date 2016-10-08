@@ -14,6 +14,7 @@ DefaultMoveable::DefaultMoveable()
 	mMatrix(Matrix4::Identity), mWorldMatrix(Matrix4::Identity)
 {
 	mMatrix.SetUpdateDelegate(Bind(&DefaultMoveable::OnUpdateMatrix, this));
+	mInverseMatrix.SetUpdateDelegate(Bind(&DefaultMoveable::OnUpdateInverseMatrix, this));
 	mWorldMatrix.SetUpdateDelegate(Bind(&DefaultMoveable::OnUpdateWorldMatrix, this));
 	mWorldInverseMatrix.SetUpdateDelegate(Bind(&DefaultMoveable::OnUpdateWorldInverseMatrix, this));
 	mBoundingBox.SetUpdateDelegate(Bind(&DefaultMoveable::OnUpdateBoundingBox, this));
@@ -36,6 +37,7 @@ void DefaultMoveable::SetMoveable(const DefaultMoveable& val)
 	mScale = val.mScale;
 	mFlip = val.mFlip;
 	mMatrix = val.mMatrix;
+	mInverseMatrix = val.mInverseMatrix;
 	mWorldMatrix = val.mWorldMatrix;
 	mWorldInverseMatrix = val.mWorldInverseMatrix;
 	mBoundingBox = val.mBoundingBox;
@@ -69,6 +71,12 @@ void DefaultMoveable::OnUpdateWorldInverseMatrix(Matrix4& transform, int32 dirty
 	transform.Inverse();
 }
 
+void DefaultMoveable::OnUpdateInverseMatrix(Matrix4& transform, int32 dirtyFlag)
+{
+	transform = mMatrix.Value();
+	transform.Inverse();
+}
+
 
 void DefaultMoveable::OnUpdateBoundingBox(BoundingBox& outVal, int32 dirtyFlag)
 {
@@ -91,6 +99,7 @@ void DefaultMoveable::OnUpdateWorldBoundingBox(BoundingBox& outVal, int32 dirtyF
 void DefaultMoveable::ForceSetMatrix(const Matrix4& val)
 {
 	mMatrix.SetValue(val);
+	mInverseMatrix.SetDirty();
 	mWorldMatrix.SetDirty();
 	mWorldInverseMatrix.SetDirty();
 	mBoundingBox.SetDirty();
@@ -103,6 +112,7 @@ void DefaultMoveable::SetSRTFromMatrix(const Matrix4& val)
 {
 	mMatrix.SetValue(val);
 	val.DecomposeXYZ(mScale, mRotation, mPosition);
+	mInverseMatrix.SetDirty();
 	mWorldMatrix.SetDirty();
 	mWorldInverseMatrix.SetDirty();
 	mBoundingBox.SetDirty();
@@ -167,10 +177,23 @@ Point3F DefaultMoveable::WorldPosition() const
 	return mPosition;
 }
 
+Point2F DefaultMoveable::WorldPosition2D() const
+{
+	if (mParentMoveable != nullptr)
+	{
+		return mParentMoveable->WorldMatrix().Transform(mPosition.To2D());
+	}
+	return mPosition.To2D();
+}
 
 Point3F DefaultMoveable::LocalPosition() const
 {
 	return LocalMatrix().Translation();
+}
+
+Point2F DefaultMoveable::LocalPosition2D() const
+{
+	return LocalMatrix().Translation().To2D();
 }
 
 Size3F DefaultMoveable::LocalSize() const
@@ -178,11 +201,19 @@ Size3F DefaultMoveable::LocalSize() const
 	return GetBoundingBox().Size;
 }
 
+Size2F DefaultMoveable::LocalSize2D() const
+{
+	return GetBoundingBox().Size.To2D();
+}
+
 Size3F DefaultMoveable::WorldSize() const
 {
 	return WorldBoundingBox().Size;
 }
-
+Size2F DefaultMoveable::WorldSize2D() const
+{
+	return WorldBoundingBox().Size.To2D();
+}
 
 void DefaultMoveable::SetSize(const Size3F& val)
 {
@@ -191,6 +222,7 @@ void DefaultMoveable::SetSize(const Size3F& val)
 	if (mAnchor != Point3F::Zero || mFlip!=FlipMask::None)
 	{
 		mMatrix.SetDirty();
+		mInverseMatrix.SetDirty();
 		mWorldMatrix.SetDirty();
 		mWorldInverseMatrix.SetDirty();
 	}
@@ -225,6 +257,7 @@ void DefaultMoveable::SetPosition(const Point3F& val)
 
 	mPosition = val;
 	mMatrix.SetDirty();
+	mInverseMatrix.SetDirty();
 	mWorldMatrix.SetDirty();
 	mWorldInverseMatrix.SetDirty();
 	mBoundingBox.SetDirty();
@@ -246,6 +279,7 @@ void DefaultMoveable::SetRotation(const Rotation3F& val)
 
 	mRotation = val;
 	mMatrix.SetDirty();
+	mInverseMatrix.SetDirty();
 	mWorldMatrix.SetDirty();
 	mWorldInverseMatrix.SetDirty();
 	mBoundingBox.SetDirty();
@@ -259,6 +293,7 @@ void DefaultMoveable::SetSkewXY(const Rotation2F& val)
 	RETURN_IF_EQUAL(mSkewXY, val);
 	mSkewXY = val;
 	mMatrix.SetDirty();
+	mInverseMatrix.SetDirty();
 	mWorldMatrix.SetDirty();
 	mWorldInverseMatrix.SetDirty();
 	mBoundingBox.SetDirty();
@@ -272,6 +307,7 @@ void DefaultMoveable::SetScale(const Scale3F& val)
 
 	mScale = val;
 	mMatrix.SetDirty();
+	mInverseMatrix.SetDirty();
 	mWorldMatrix.SetDirty();
 	mWorldInverseMatrix.SetDirty();
 	mBoundingBox.SetDirty();
@@ -288,6 +324,7 @@ void DefaultMoveable::SetAnchor(const Point3F& val)
 	if (mSize != Size3F::Zero)
 	{
 		mMatrix.SetDirty();
+		mInverseMatrix.SetDirty();
 		mWorldMatrix.SetDirty();
 		mWorldInverseMatrix.SetDirty();
 	}
@@ -366,6 +403,7 @@ void DefaultMoveable::SetFlipX(bool val)
 	if (mSize != Size3F::Zero)
 	{
 		mMatrix.SetDirty();
+		mInverseMatrix.SetDirty();
 		mWorldMatrix.SetDirty();
 		mWorldInverseMatrix.SetDirty();
 	}
@@ -380,6 +418,7 @@ void DefaultMoveable::SetFlipY(bool val)
 	if (mSize != Size3F::Zero)
 	{
 		mMatrix.SetDirty();
+		mInverseMatrix.SetDirty();
 		mWorldMatrix.SetDirty();
 		mWorldInverseMatrix.SetDirty();
 	}
@@ -393,6 +432,7 @@ void DefaultMoveable::SetFlipZ(bool val)
 	if (mSize != Size3F::Zero)
 	{
 		mMatrix.SetDirty();
+		mInverseMatrix.SetDirty();
 		mWorldMatrix.SetDirty();
 		mWorldInverseMatrix.SetDirty();
 	}
@@ -406,6 +446,7 @@ void DefaultMoveable::SetFlip(FlipMask val)
 	if (mSize != Size3F::Zero)
 	{
 		mMatrix.SetDirty();
+		mInverseMatrix.SetDirty();
 		mWorldMatrix.SetDirty();
 		mWorldInverseMatrix.SetDirty();
 	}
@@ -462,6 +503,12 @@ bool DefaultMoveable::HitTestLocal(const Point2F& localPos) const
 	return (localPos.X >= 0.f&&localPos.X <= mSize.Width) && (localPos.Y >= 0.f&&localPos.Y <= mSize.Height);
 }
 
+bool DefaultMoveable::HitTestParent(const Point2F& parentPos) const
+{
+	auto localPos = mInverseMatrix.Value().Transform(parentPos);
+	return HitTestLocal(localPos);
+}
+
 void DefaultMoveable::SetParentMoveable(DefaultMoveable* val)
 {
 	if (mParentMoveable != val)
@@ -469,6 +516,7 @@ void DefaultMoveable::SetParentMoveable(DefaultMoveable* val)
 		mParentMoveable = val;
 
 		mWorldMatrix.SetDirty();
+		mInverseMatrix.SetDirty();
 		mWorldInverseMatrix.SetDirty();
 		mWorldBoundingBox.SetDirty();
 	}

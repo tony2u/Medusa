@@ -184,7 +184,7 @@ void Log::PrintStackTrace(HeapString& str)
 
 
 bool Log::mEnabled = true;
-LogLevel Log::mLogLevel = (LogLevel)MEDUSA_FLAG_AND(LogLevel::Info,LogLevel::WithHeader);
+LogLevel Log::mLogLevel = (LogLevel)MEDUSA_FLAG_OR(LogLevel::Info,LogLevel::WithHeader);
 List<ILogger*> Log::mLoggers;
 
 

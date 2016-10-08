@@ -17,6 +17,8 @@ public:
 	TiledTilesetFactory();
 	~TiledTilesetFactory();
 public:
+	virtual StringRef Name()const override { return "TiledTilesetFactory"; }
+
 	virtual bool Initialize()override;
 	virtual bool Uninitialize()override;
 public:

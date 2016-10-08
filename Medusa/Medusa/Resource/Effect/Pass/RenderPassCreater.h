@@ -28,7 +28,7 @@ public:
 
 
 #define MEDUSA_DECLARE_RENDER_PASS_CREATER() 				   \
-private:													   \
+public:													   \
 	const static StaticConstructor mStaticConstructor;		   \
 	static void RegisterShader();
 

@@ -10,12 +10,9 @@ class SpeedToAction :public BaseSingleCompositeInfiniteAction
 public:
 	SpeedToAction(BaseFiniteAction* innerAction, float newDuration) :BaseSingleCompositeInfiniteAction(innerAction), mSpeed(newDuration / innerAction->Duration()) {}
 	virtual ~SpeedToAction(void) {}
-	virtual RunningState GetState() const { return mInnerAction->State(); }
-	virtual bool IsRunning()const { return mInnerAction->IsRunning(); }
-	virtual bool IsDone()const { return mInnerAction->IsDone(); }
 protected:
 	virtual float TransformUpdateDuration(float dt)const { return dt*mSpeed; }
 private:
-	float mSpeed;
+	float mSpeed=1.f;
 };
 MEDUSA_END;

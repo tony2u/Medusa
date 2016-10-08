@@ -103,7 +103,7 @@ byte GraphicsContext::StencilBufferSize() const
 
 
 
-GraphicsRenderBufferInternalFormat Medusa::GraphicsContext::CombineDepthStencilFormat(GraphicsRenderBufferInternalFormat depthFormat, GraphicsRenderBufferInternalFormat stencilFormat)
+GraphicsRenderBufferInternalFormat GraphicsContext::CombineDepthStencilFormat(GraphicsRenderBufferInternalFormat depthFormat, GraphicsRenderBufferInternalFormat stencilFormat)
 {
 	switch (stencilFormat)
 	{

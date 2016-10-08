@@ -72,7 +72,7 @@ void RenderingObject::SetMaterial(const Share<IMaterial>& val)
 
 bool RenderingObject::IsValid() const
 {
-	return mMesh != nullptr&&mMesh->VertexCount()!=0&&mMaterial != nullptr&&mMaterial->Effect() != nullptr;
+	return mMesh != nullptr&&mMesh->IsValid()&&mMaterial != nullptr&&mMaterial->Effect() != nullptr;
 }
 
 bool RenderingObject::IsBlend() const

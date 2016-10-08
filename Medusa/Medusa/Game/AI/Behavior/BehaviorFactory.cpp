@@ -12,8 +12,8 @@ MEDUSA_BEGIN;
 
 BehaviorFactory::BehaviorFactory()
 {
-	Register<SwitchBehavior>("SwitchBehavior");
-	Register<IfBehavior>("IfBehavior");
+	/*Register<SwitchBehavior>("SwitchBehavior");
+	Register<IfBehavior>("IfBehavior");*/
 }
 
 IBehavior* BehaviorFactory::SmartCreate(StringRef name)

@@ -19,7 +19,7 @@ bool TextureAtlasFrameAnimationLayer::Initialize()
 	RETURN_FALSE_IF_FALSE(BaseCaseLayer::Initialize());
 
 	{
-		ITimeline* timeline = TimelineFactory::Instance().CreateRenderingObjectTimelineFromTextureAtlas("MeteorFall.atlas", "MeteorFall", TextureAtlasType::Spine, Color4F::White, 24.f, true);
+		ITimeline* timeline = TimelineFactory::Instance().CreateRenderingObjectTimelineFromTextureAtlas("MeteorFallAni.atlas", "MeteorFall", TextureAtlasType::Spine, Color4F::White, 24.f, true);
 		Sprite* sprite = new Sprite("MeteorFall");
 		sprite->SetSize(512.f, 512.f);
 		sprite->SetDock(DockPoint::Percent);

@@ -13,3 +13,4 @@ public:
 	virtual ~ControlFeatureLayer(void);
 };
 
+MEDUSA_ENABLE_STATIC_CONSTRUCTOR(ControlFeatureLayer);

@@ -14,14 +14,18 @@ struct SingletonModule :public IModule
 protected:
 	virtual bool OnLoad(IEventArg& e = IEventArg::Empty)override
 	{
-		return T::Instance().Initialize();
+		return T::Instance().Load(e);
 	}
 
 	virtual bool OnUnload(IEventArg& e = IEventArg::Empty)override
 	{
-		return T::Instance().Uninitialize();
+		return T::Instance().Unload(e);
 	}
 
+	virtual bool OnReload(IEventArg& e = IEventArg::Empty)override
+	{
+		return T::Instance().Reload(e);
+	}
 };
 
 

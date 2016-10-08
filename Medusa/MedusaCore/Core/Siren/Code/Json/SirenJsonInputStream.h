@@ -18,7 +18,7 @@ public:
 
 	char Peek()
 	{
-		return mStream.PeekChar();
+		return (char)mStream.PeekChar();
 	}
 
 	uintp Tell() const
@@ -28,7 +28,7 @@ public:
 
 	char Take()
 	{
-		return mStream.ReadChar();
+		return (char)mStream.ReadChar();
 	}
 
 	// not implemented for read only stream

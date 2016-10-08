@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="8" height="8" tilewidth="32" tileheight="32" backgroundcolor="#000000" nextobjectid="33">
+ <properties>
+  <property name="DoorType" value="String"/>
+ </properties>
+ <tileset firstgid="1" source="Room.tsx"/>
+ <tileset firstgid="1025" source="Device.tsx"/>
+ <layer name="Floor" width="8" height="8">
+  <data encoding="base64" compression="zlib">
+   eJxTYmBgUBrBGABSPAiB
+  </data>
+ </layer>
+ <layer name="Role" width="8" height="8">
+  <data encoding="base64" compression="zlib">
+   eJxjYWHAC1QIyCMDNaBaNhYIPVQAAGyMAI8=
+  </data>
+ </layer>
+ <layer name="Wall" width="8" height="8">
+  <data encoding="base64" compression="zlib">
+   eJxjZGBgYIJiGIDxmYFYkQE3UCZCnlJAqf2OQOwExTAA4zsDMQCxqAKp
+  </data>
+ </layer>
+ <objectgroup name="Object"/>
+</map>

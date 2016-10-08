@@ -40,6 +40,7 @@ protected:
 
 };
 
+MEDUSA_ENABLE_STATIC_CONSTRUCTOR(NodeScriptComponent);
 
 MEDUSA_END;
 

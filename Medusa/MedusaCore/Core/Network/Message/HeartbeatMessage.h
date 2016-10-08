@@ -21,5 +21,5 @@ public:
 	virtual bool OnRequest(MessageSocketConnection& connection)override;
 
 };
-
+MEDUSA_ENABLE_STATIC_CONSTRUCTOR(HeartbeatMessage);
 MEDUSA_END;

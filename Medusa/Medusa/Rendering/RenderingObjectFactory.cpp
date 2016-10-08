@@ -41,6 +41,8 @@ bool RenderingObjectFactory::Uninitialize()
 RenderingObject RenderingObjectFactory::CreateFromTexture(const FileIdRef& textureName, const Rect2F& textureRect /*= Rect2F::Zero*/, const Color4F& color /*= Color4F::White*/)
 {
 	auto* orderItem = FileSystem::Instance().FindOrderItem(textureName);
+	RETURN_NULL_IF_NULL(orderItem);
+
 	if (orderItem->Region() != nullptr)
 	{
 		return CreateFromTextureAtlasRegion((TextureAtlasRegion*)orderItem->Region());

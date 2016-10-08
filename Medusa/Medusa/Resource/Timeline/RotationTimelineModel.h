@@ -16,10 +16,10 @@ public:
 	void AddRotation(float time, const Rotation3F& rotation, Math::TweenType tweenType, const List<float>& args);
 
 	Rotation3F GetRotation(float time)const;
-	virtual void RemovePreCalculated()override;
+	virtual void RemovePrecomputed()override;
 protected:
-	virtual void OnPreCalculateBegin()override;
-	virtual void AddPreCalcuatedItem(bool isFound, uint prevFrameIndex, uint nextFrameIndex, float percent) override;
+	virtual void OnPrecomputeBegin()override;
+	virtual void AddPrecomputedItem(bool isFound, uint prevFrameIndex, uint nextFrameIndex, float percent) override;
 protected:
 	List<Rotation3F> mRotations;
 	List<Rotation3F> mPreCalcualtedRotations;

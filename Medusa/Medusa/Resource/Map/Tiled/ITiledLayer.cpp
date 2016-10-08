@@ -3,9 +3,10 @@
 // license that can be found in the LICENSE file.
 #include "MedusaPreCompiled.h"
 #include "ITiledLayer.h"
-#include "TmxTiledMap.h"
+#include "TiledMap.h"
 #include "Node/Layer/NormalLayer.h"
 #include "CoreLib/Common/pugixml/pugixml.hpp"
+#include "TiledDefines.h"
 
 MEDUSA_BEGIN;
 
@@ -16,7 +17,7 @@ ITiledLayer::ITiledLayer()
 	mIsVisible(true),
 	mZOrder(0),
 	mInstantiateMode(InstantiateMode::Sprite),
-	mRunningState(RunningState::Running)
+	mRunningState(RunningState::None)
 {
 	mInstantiateLayer = NormalLayer::ClassNameStatic();
 }
@@ -44,67 +45,45 @@ bool ITiledLayer::Parse(const pugi::xml_node& node)
 	float opacity = node.attribute("opacity").as_float(1.f);
 	SetOpacity(opacity);
 
-	bool isVisible = node.attribute("visible").as_int(1)!=0;
+	bool isVisible = node.attribute("visible").as_int(1) != 0;
 	SetVisible(isVisible);
 
 	pugi::xml_node propertiesNode = node.child("properties");
 	if (!propertiesNode.empty())
 	{
-		TmxTiledMap::ParseProperties(propertiesNode, MutableProperties());
+		TiledMap::ParseProperties(propertiesNode, MutableProperties());
 	}
 
-	const StringRef str1 = "Instantiate";
-	HeapString* renderingModeStr=mProperties.TryGetByOtherKey(str1, str1.HashCode());
-	if (renderingModeStr!=nullptr)
+
+	StringRef renderingModeStr = mProperties.GetString(TiledMapProperties::InstantiateMode);
+	if (renderingModeStr == TiledMapPropertyValues::Mesh)
 	{
-		if (*renderingModeStr=="Mesh")
-		{
-			mInstantiateMode = InstantiateMode::Mesh;
-		}
-		else if (*renderingModeStr == "Sprite")
-		{
-			mInstantiateMode = InstantiateMode::Sprite;
-		}
+		mInstantiateMode = InstantiateMode::Mesh;
+	}
+	else if (renderingModeStr == TiledMapPropertyValues::Sprite)
+	{
+		mInstantiateMode = InstantiateMode::Sprite;
 	}
 
-	const StringRef str2 = "Running";
-	HeapString* runningModeStr = mProperties.TryGetByOtherKey(str2, str2.HashCode());
-	if (runningModeStr != nullptr)
+	StringRef runningModeStr = mProperties.GetString(TiledMapProperties::State);
+	if (runningModeStr == TiledMapPropertyValues::Done)
 	{
-		if (*runningModeStr == "Done")
-		{
-			mRunningState = RunningState::Done;
-		}
-		else if (*runningModeStr == "Running")
-		{
-			mRunningState = RunningState::Running;
-		}
-		else if (*runningModeStr == "Paused")
-		{
-			mRunningState = RunningState::Paused;
-		}
+		mRunningState = RunningState::Done;
 	}
+	else if (runningModeStr == TiledMapPropertyValues::Running)
+	{
+		mRunningState = RunningState::Running;
+	}
+	else if (runningModeStr == TiledMapPropertyValues::Paused)
+	{
+		mRunningState = RunningState::Paused;
+	}
+	
+	mInstantiateLayer = mProperties.GetString(TiledMapProperties::InstantiateLayer);
+	mCollisionEnabled = mProperties.GetOptionalT(TiledMapProperties::EnableCollision, true);
+	mInputEnabled = mProperties.GetOptionalT(TiledMapProperties::EnableInput, false);
 
-	const StringRef str3 = "InstantiateLayer";
-	HeapString* instantiateLayerStr = mProperties.TryGetByOtherKey(str3, str3.HashCode());
-	if (instantiateLayerStr != nullptr&&!instantiateLayerStr->IsEmpty())
-	{
-		mInstantiateLayer = *instantiateLayerStr;
-	}
-
-	const StringRef str4 = "EnableCollision";
-	HeapString* enableCollisionStr = mProperties.TryGetByOtherKey(str4, str4.HashCode());
-	if (enableCollisionStr != nullptr&&!enableCollisionStr->IsEmpty())
-	{
-		mCollisionEnabled = StringParser::StringTo<bool>(*enableCollisionStr);
-	}
-
-	const StringRef str5 = "ScriptFile";
-	HeapString* scriptFileStr = mProperties.TryGetByOtherKey(str5, str5.HashCode());
-	if (scriptFileStr != nullptr && !scriptFileStr->IsEmpty())
-	{
-		mScriptFile = *scriptFileStr;
-	}
+	mScriptFile = mProperties.GetString(TiledMapProperties::ScriptFile);
 
 	return true;
 }

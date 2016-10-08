@@ -16,6 +16,8 @@ public:
 	ShaderFactory();
 	~ShaderFactory();
 public:
+	virtual StringRef Name()const override { return "ShaderFactory"; }
+
 	virtual bool Initialize();
 	virtual bool Uninitialize();
 public:

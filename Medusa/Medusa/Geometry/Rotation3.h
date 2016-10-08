@@ -106,6 +106,11 @@ public:
 	friend  Rotation3 operator*(T1 delta,const Rotation3<T>& rotation){return Rotation3(delta*rotation.X,delta*rotation.Y,delta*rotation.Z);}
 	Rotation3 operator-()const { return Point3<T>(-X, -Y,-Z); }
 
+	bool IsNearlyZero(float tolerance = 1.e-4f)const
+	{
+		return Math::Abs(X) <= tolerance &&	Math::Abs(Y) <= tolerance &&Math::Abs(Z) <= tolerance;
+	}
+
 	Rotation2<T> To2D()const{return Rotation2<T>(X,Y);}
 	Rotation3 ToDegree()const{return Rotation3(Math::ToDegree(X),Math::ToDegree(Y),Math::ToDegree(Z));}
 	Rotation3 ToRadian()const{return Rotation3(Math::ToRadian(X),Math::ToRadian(Y),Math::ToRadian(Z));}

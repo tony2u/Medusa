@@ -44,6 +44,7 @@ public:
 	virtual size_t VertexCount()const = 0;
 	virtual size_t IndexCount()const = 0;
 	virtual bool HasNormal()const { return false; }
+	bool IsValid()const { return VertexCount()>0; }
 
 	virtual void Clear();
 	virtual INode* CreateCloneInstance()const = 0;
@@ -60,12 +61,13 @@ public:
 	virtual void Apply() {}
 	virtual void Restore() {}
 
-	virtual void OnVertexChanged();
+	virtual void OnVertexChanged(int vertexCount=0);
 	virtual void OnNormalChanged();
 	virtual void OnTexcoordChanged();
 	virtual void OnColorChanged();
 	virtual void OnIndexChanged();
 	virtual void OnAllComponentChanged();
+	virtual void OnRenderQueueChanged();
 
 protected:
 	bool TryUpdateVertex(VertexGraphicsBuffer& bufferObject, size_t vertexIndex, const ICollection<Point3F>& vertices, const Matrix4& matrix) const;

@@ -574,7 +574,7 @@ TextureAtlasRegion* TTFFont::AddGlyphImage(wchar_t c, PixelType destPixelType, c
 			region->SetId(c);
 			region->SetTextureRect(outRect);
 			page->AddRegion(region);
-
+			page->GetTexture()->SetLoaded(false);	//re upload texture
 			return region;
 		}
 	}
@@ -599,6 +599,7 @@ TextureAtlasRegion* TTFFont::AddGlyphImage(wchar_t c, PixelType destPixelType, c
 		region->SetId(c);
 		region->SetTextureRect(outRect);
 		page->AddRegion(region);
+		texture->SetLoaded(false);	//re upload texture
 
 		return region;
 	}

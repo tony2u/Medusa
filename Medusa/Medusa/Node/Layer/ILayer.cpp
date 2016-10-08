@@ -6,15 +6,18 @@
 #include "Core/Event/EventArg/IEventArg.h"
 #include "Graphics/ResolutionAdapter.h"
 #include "Node/NodeFactory.h"
+#include "Node/Input/InputDispatcher.h"
 
 MEDUSA_BEGIN;
 
 ILayer::ILayer(StringRef name/*=StringRef::Empty*/, const IEventArg& e/*=IEventArg::Empty*/) :INode(name)
 {
 	mSize = ResolutionAdapter::Instance().WinSize();
-	SetStretch(ResolutionAdapter::Instance().GetStretch());
+	//SetStretch(ResolutionAdapter::Instance().GetStretch());
 	//SetSizeToContent(SizeToContent::WidthAndHeight);
 	Start();
+	MutableInput().Enable(true);	//default enable input
+
 }
 
 

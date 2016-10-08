@@ -361,8 +361,8 @@ HeapString FileSystem::ReadAllText(const FileIdRef& fileId) const
 
 
 	auto data = ReadAllData(fileId);
-	data.ForceRetain();	//avoid to release after transfer to str
-	HeapString str(data.Cast<char>());
+	HeapString str= HeapString::Take(data);
+	data.ForceSetDataAndSize(nullptr, 0);
 	return str;
 }
 
@@ -370,16 +370,16 @@ HeapString FileSystem::ReadAllText(const FileIdRef& fileId) const
 HeapString FileSystem::ReadAllText(const FileEntry& fileEntry) const
 {
 	auto data = ReadAllData(fileEntry);
-	data.ForceRetain();	//avoid to release after transfer to str
-	HeapString str(data.Cast<char>());
+	HeapString str = HeapString::Take(data);
+	data.ForceSetDataAndSize(nullptr, 0);
 	return str;
 }
 
 HeapString FileSystem::ReadAllText(const FileMapOrderItem& orderItem) const
 {
 	auto data = ReadAllData(orderItem);
-	data.ForceRetain();	//avoid to release after transfer to str
-	HeapString str(data.Cast<char>());
+	HeapString str = HeapString::Take(data);
+	data.ForceSetDataAndSize(nullptr, 0);
 	return str;
 }
 

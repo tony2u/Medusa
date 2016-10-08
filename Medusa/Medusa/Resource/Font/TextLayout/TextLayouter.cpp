@@ -58,7 +58,8 @@ bool TextLayouter::LayoutMultipleLineText(List<Share<BaseFontMesh>>& outMeshes, 
 	outSize.Height = static_cast<float>(outLineWidths.Count()*font.LineHeight());
 	ReserveMesh(outMeshes, text);
 
-	LayoutMultipleLineMesh(outMeshes,outPages, font, outSize, outLineWidths, outLines, alignment, restrictSize, label);
+	auto maxOrigin= LayoutMultipleLineMesh(outMeshes,outPages, font, outSize, outLineWidths, outLines, alignment, restrictSize, label);
+	outSize = GetBoundingSize(restrictSize.Width,outSize.Height,maxOrigin, alignment, restrictSize);
 
 	ShrinkMesh(outMeshes);
 	return true;
@@ -83,7 +84,8 @@ bool TextLayouter::LayoutSingleLineText(List<Share<BaseFontMesh>>& outMeshes, Li
 
 	ReserveMesh(outMeshes, text);
 
-	LayoutSingleLineMesh(outMeshes,outPages, font, outSize, outSize.Width, outString, alignment, restrictSize, label);
+	auto maxOrigin= LayoutSingleLineMesh(outMeshes,outPages, font, outSize, outSize.Width, outString, alignment, restrictSize, label);
+	outSize = GetBoundingSize(restrictSize.Width,(float)font.LineHeight(),maxOrigin, alignment, restrictSize);
 	ShrinkMesh(outMeshes);
 	return true;
 }
@@ -322,7 +324,7 @@ bool TextLayouter::WordWrap(List<WHeapString>& outLines, List<float>& outLineWid
 	return !outLines.IsEmpty();
 }
 
-void TextLayouter::LayoutMultipleLineMesh(List<Share<BaseFontMesh>>& outMeshes, List<TextureAtlasPage*>& outPages,
+Point2F TextLayouter::LayoutMultipleLineMesh(List<Share<BaseFontMesh>>& outMeshes, List<TextureAtlasPage*>& outPages,
 										  IFont& font,
 										  const Size2F& imageSize,
 										  const List<float>& lineWidths,
@@ -418,11 +420,14 @@ void TextLayouter::LayoutMultipleLineMesh(List<Share<BaseFontMesh>>& outMeshes, 
 			}
 		}
 	}
+
+	origin.Y += (float)font.LineHeight()*lineCount;
+	return origin.To2D();
 }
 
 
 
-void TextLayouter::LayoutSingleLineMesh(List<Share<BaseFontMesh>>& outMeshes, List<TextureAtlasPage*>& outPages,
+Point2F TextLayouter::LayoutSingleLineMesh(List<Share<BaseFontMesh>>& outMeshes, List<TextureAtlasPage*>& outPages,
 										IFont& font,
 										const Size2F& imageSize,
 										float lineWidth,
@@ -479,7 +484,6 @@ void TextLayouter::LayoutSingleLineMesh(List<Share<BaseFontMesh>>& outMeshes, Li
 	{
 		uint lineLength = static_cast<uint>(line.Length());
 		origin = GetPenOrigin(0, 1, lineWidth, (float)font.LineHeight(), alignment, validRestrictSize);
-
 		FOR_EACH_SIZE(j, lineLength)
 		{
 			wchar_t c = line[j];
@@ -490,6 +494,9 @@ void TextLayouter::LayoutSingleLineMesh(List<Share<BaseFontMesh>>& outMeshes, Li
 			origin.X += fontChar->HAdvance;
 		}
 	}
+
+	origin.Y += (float)font.LineHeight();
+	return origin.To2D();
 }
 
 
@@ -798,6 +805,42 @@ bool TextLayouter::ShrinkMesh(List<Share<BaseFontMesh>>& outMeshes)
 	}
 
 	return true;
+}
+
+Size2F TextLayouter::GetBoundingSize(float lineWidth, float lineHeight, Point2F maxOrigin, Alignment alignment, Size2F restrictSize)
+{
+	if (restrictSize.Width<lineWidth)
+	{
+		restrictSize.Width = lineWidth;
+	}
+
+	if (restrictSize.Height < lineHeight)
+	{
+		restrictSize.Height = lineHeight;
+	}
+
+	switch (alignment)
+	{
+	case Alignment::LeftBottom:
+		return Size2F(maxOrigin.X, maxOrigin.Y);
+	case Alignment::LeftCenter:
+	case Alignment::LeftTop:
+		return Size2F(maxOrigin.X, restrictSize.Height);
+	case Alignment::MiddleBottom:
+		return Size2F(restrictSize.Width, maxOrigin.Y);
+	case Alignment::MiddleCenter:
+	case Alignment::MiddleTop:
+		return restrictSize;
+	case Alignment::RightBottom:
+		return Size2F(restrictSize.Width, maxOrigin.Y);
+	case Alignment::RightCenter:
+	case Alignment::RightTop:
+		return restrictSize;
+	default:
+		break;
+	}
+
+	return Size2F::Zero;
 }
 
 Size2F TextLayouter::GetSingleLineSize(IFont& font, const WStringRef& text)

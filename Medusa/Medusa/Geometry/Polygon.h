@@ -4,7 +4,7 @@
 #pragma once
 #include "Geometry/Point2.h"
 #include "Geometry/Rect2.h"
-#include "Geometry/Range.h"
+#include "Core/Math/Range.h"
 #include "Core/Collection/List.h"
 #include "Core/Math/Math.h"
 #include "Geometry/GeometryAlgorithm.h"
@@ -16,29 +16,29 @@ template<typename T>
 class Polygon
 {
 public:
-	bool IsPreCalculatedEnabled() const { return mPreCalculatedEnabled; }
-	void EnablePreCalculated(bool val)
+	bool IsPrecomputedEnabled() const { return mPrecomputedEnabled; }
+	void EnablePrecomputed(bool val)
 	{
-		RETURN_IF_EQUAL(mPreCalculatedEnabled, val);
-		mPreCalculatedEnabled = val;
-		UpdatePreCalculates();
+		RETURN_IF_EQUAL(mPrecomputedEnabled, val);
+		mPrecomputedEnabled = val;
+		UpdatePrecomputes();
 	}
 
-	void UpdatePreCalculates()
+	void UpdatePrecomputes()
 	{
-		mPreCalculatedConstants.Clear();
-		mPreCalculatedConstants.ReleaseExtraSize();
-		mPreCalculatedMultiples.Clear();
-		mPreCalculatedMultiples.ReleaseExtraSize();
+		mPrecomputedConstants.Clear();
+		mPrecomputedConstants.ReleaseExtraSize();
+		mPrecomputedMultiples.Clear();
+		mPrecomputedMultiples.ReleaseExtraSize();
 
-		if (mPreCalculatedEnabled)
+		if (mPrecomputedEnabled)
 		{
-			mPreCalculatedConstants.ReserveSize(mVertices.Count());
-			mPreCalculatedMultiples.ReserveSize(mVertices.Count());
+			mPrecomputedConstants.ReserveSize(mVertices.Count());
+			mPrecomputedMultiples.ReserveSize(mVertices.Count());
 
-			GeometryAlgorithm::PreCalculatePolygonTest2((const float*)mVertices.Items(), (float*)mPreCalculatedConstants.MutableItems(), (float*)mPreCalculatedMultiples.MutableItems(), mVertices.Count());
-			mPreCalculatedConstants.ForceSetCount(mVertices.Count());
-			mPreCalculatedMultiples.ForceSetCount(mVertices.Count());
+			GeometryAlgorithm::PrecomputePolygonTest2((const float*)mVertices.Items(), (float*)mPrecomputedConstants.MutableItems(), (float*)mPrecomputedMultiples.MutableItems(), mVertices.Count());
+			mPrecomputedConstants.ForceSetCount(mVertices.Count());
+			mPrecomputedMultiples.ForceSetCount(mVertices.Count());
 		}
 	}
 
@@ -62,10 +62,10 @@ public:
 	void Update()
 	{
 		UpdateRange();
-		UpdatePreCalculates();
+		UpdatePrecomputes();
 	}
 public:
-	Polygon(void) :mPreCalculatedEnabled(false) {}
+	Polygon(void) :mPrecomputedEnabled(false) {}
 
 	template<typename T1>
 	Polygon(const Polygon<T1>& polygon) : mVertices(polygon.mVertices) {}
@@ -106,9 +106,9 @@ public:
 			}
 		}
 
-		if (mPreCalculatedEnabled && !mPreCalculatedConstants.IsEmpty() && !mPreCalculatedMultiples.IsEmpty())
+		if (mPrecomputedEnabled && !mPrecomputedConstants.IsEmpty() && !mPrecomputedMultiples.IsEmpty())
 		{
-			return GeometryAlgorithm::IsInPolygonWithPreCalculate2((const float*)mVertices.Items(), (const float*)mPreCalculatedConstants.Items(), (const float*)mPreCalculatedMultiples.Items(), mVertices.Count(), pos.X, pos.Y);
+			return GeometryAlgorithm::IsInPolygonWithPrecompute2((const float*)mVertices.Items(), (const float*)mPrecomputedConstants.Items(), (const float*)mPrecomputedMultiples.Items(), mVertices.Count(), pos.X, pos.Y);
 		}
 		else
 		{
@@ -147,9 +147,9 @@ public:
 	Rect2<T> BoundingBox()const { return Rect2<T>(mRangeX.Min, mRangeY.Min, mRangeX.Length(), mRangeY.Length()); }
 protected:
 	List<Point2<T> > mVertices;
-	List<float> mPreCalculatedConstants;
-	List<float> mPreCalculatedMultiples;
-	bool mPreCalculatedEnabled = false;
+	List<float> mPrecomputedConstants;
+	List<float> mPrecomputedMultiples;
+	bool mPrecomputedEnabled = false;
 
 	Range<T> mRangeX;
 	Range<T> mRangeY;

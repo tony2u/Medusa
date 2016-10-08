@@ -80,7 +80,7 @@ bool SqlPreparedStatement::Prepare()
 }
 
 
-void Medusa::SqlPreparedStatement::RefetchTruncatedColumns(NoCompareList<MYSQL_BIND>& resultBinds)const
+void SqlPreparedStatement::RefetchTruncatedColumns(NoCompareList<MYSQL_BIND>& resultBinds)const
 {
 	// Find which buffers were too small, expand them and refetch
 	

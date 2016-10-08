@@ -101,10 +101,11 @@ MemoryStream MemoryStream::Create(size_t capacity /*= 0*/, bool isExpandable /*=
 
 size_t MemoryStream::ReleaseToString(HeapString& outString)
 {
-	mData.ForceRetain();
 	outString.ForceSetBuffer((char*)mData.MutableData());
 	outString.ForceSetBufferSize(mData.ByteSize());
 	outString.ForceSetLength(mPos);
+
+	mData.ForceSetData(nullptr);
 	return mPos;
 }
 

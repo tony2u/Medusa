@@ -24,11 +24,12 @@ enum class ResourceType
 	RenderTarget,
 	TextureAtlas,
 	Skeleton,
-	Map,
+	TiledMap,
 	Tileset,
+	DataSource,
 
 
-	Count = 17
+	Count = 18
 };
 
 enum class ResourceShareType

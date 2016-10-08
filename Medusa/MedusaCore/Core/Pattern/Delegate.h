@@ -17,7 +17,7 @@ class Delegate<R(A...)>
 {
 	using WrapperPtr = R(*)(void *, A&&...);
 	using GlobalFunctionPtr = R(*)(A&&...);
-	using ObjectFactoryPtr = size_t(*)(void*const, const void*);
+	using ObjectFactoryPtr = size_t(*)(void*const, const void*, bool);
 	template <class C>
 	using MemberPair = ::std::pair<C* const, R(C::* const)(A...)>;
 
@@ -31,14 +31,15 @@ public:
 	Delegate(void) = default;
 	Delegate(::std::nullptr_t const) noexcept { }
 	Delegate(const Delegate& other)
-		:mWrapper(other.mWrapper),mObjectFactory(other.mObjectFactory)
+		:mWrapper(other.mWrapper),
+		mObjectFactory(other.mObjectFactory)
 	{
 		if (mObjectFactory != nullptr)
 		{
 			//copy functor
-			size_t size = mObjectFactory(nullptr, nullptr);
+			size_t size = mObjectFactory(nullptr, nullptr, false);
 			mObject = malloc(size);
-			mObjectFactory(mObject, other.mObject);
+			mObjectFactory(mObject, other.mObject, false);
 		}
 	}
 
@@ -48,32 +49,32 @@ public:
 		if (mObjectFactory != nullptr)
 		{
 			//destruct self
-			mObjectFactory(mObject, nullptr);
-			size_t selfSize = mObjectFactory(nullptr, nullptr);
-			size_t otherSize = other.mObjectFactory(nullptr, nullptr);
+			mObjectFactory(mObject, nullptr, false);
+			size_t selfSize = mObjectFactory(nullptr, nullptr, false);
+			size_t otherSize = other.mObjectFactory(nullptr, nullptr, false);
 			if (otherSize != selfSize)
 			{
 				mObject = realloc(mObject, otherSize);
 			}
 			mObjectFactory = other.mObjectFactory;
 			//copy construct
-			mObjectFactory(mObject, other.mObject);
+			mObjectFactory(mObject, other.mObject, false);
 
 		}
 		else
 		{
 			mObjectFactory = other.mObjectFactory;
-			if (mObjectFactory!=nullptr)
+			if (mObjectFactory != nullptr)
 			{
-				size_t size = mObjectFactory(nullptr, nullptr);
+				size_t size = mObjectFactory(nullptr, nullptr, false);
 				mObject = malloc(size);
-				mObjectFactory(mObject, other.mObject);
+				mObjectFactory(mObject, other.mObject, false);
 			}
 			else
 			{
 				mObject = other.mObject;
 			}
-			
+
 		}
 		return *this;
 	}
@@ -93,7 +94,7 @@ public:
 		mWrapper = other.mWrapper;
 		if (mObjectFactory != nullptr)
 		{
-			mObjectFactory(mObject, nullptr);
+			mObjectFactory(mObject, nullptr, false);
 			free(mObject);
 		}
 		mObjectFactory = other.mObjectFactory;
@@ -119,7 +120,7 @@ public:
 	{
 		if (mObjectFactory != nullptr)
 		{
-			mObjectFactory(mObject, nullptr);
+			mObjectFactory(mObject, nullptr, false);
 			free(mObject);
 			mObject = nullptr;
 			mObjectFactory = nullptr;
@@ -188,8 +189,8 @@ public:
 		using functorType = typename ::std::decay<T>::type;
 		if (mObjectFactory != nullptr)
 		{
-			size_t functorSize = mObjectFactory(nullptr, nullptr);
-			mObjectFactory(mObject, nullptr);
+			size_t functorSize = mObjectFactory(nullptr, nullptr, false);
+			mObjectFactory(mObject, nullptr, false);
 
 			if ((sizeof(functorType) > functorSize))
 			{
@@ -218,7 +219,7 @@ public:
 	{
 		if (mObjectFactory != nullptr)
 		{
-			mObjectFactory(mObject, nullptr);
+			mObjectFactory(mObject, nullptr, false);
 			free(mObject);
 			mObject = nullptr;
 			mObjectFactory = nullptr;
@@ -248,7 +249,7 @@ public:
 		// comparison between functor and non-functor is left as undefined at the moment.
 		if (mObjectFactory && rhs.mObjectFactory) // both functors
 		{
-			return mObjectFactory == rhs.mObjectFactory && mWrapper == rhs.mWrapper && (::memcmp(mObject, rhs.mObject, mObjectFactory(nullptr, nullptr)) == 0);
+			return mObjectFactory == rhs.mObjectFactory && mWrapper == rhs.mWrapper && (::memcmp(mObject, rhs.mObject, mObjectFactory(nullptr, nullptr, false)) == 0);
 		}
 		return (mObject == rhs.mObject) && (mWrapper == rhs.mWrapper);
 	}
@@ -265,7 +266,7 @@ public:
 		{
 			return r;
 		}
-		return ::memcmp(mObject, rhs.mObject, mObjectFactory(nullptr, nullptr));
+		return ::memcmp(mObject, rhs.mObject, mObjectFactory(nullptr, nullptr, false));
 	}
 
 	bool operator!=(Delegate const & rhs) const noexcept { return !operator==(rhs); }
@@ -274,16 +275,24 @@ public:
 	bool operator>(Delegate const & rhs) const noexcept { return Compare(rhs) > 0; }
 	bool operator>=(Delegate const & rhs) const noexcept { return Compare(rhs) >= 0; }
 
-	bool operator==(::std::nullptr_t const) const noexcept { return mWrapper==nullptr; }
-	bool operator!=(::std::nullptr_t const) const noexcept { return mWrapper!=nullptr; }
+	bool operator==(::std::nullptr_t const) const noexcept { return mWrapper == nullptr; }
+	bool operator!=(::std::nullptr_t const) const noexcept { return mWrapper != nullptr; }
 
-	friend bool operator==(::std::nullptr_t, const Delegate& other) noexcept { return other.mWrapper==nullptr; }
-	friend bool operator!=(::std::nullptr_t, const Delegate& other) noexcept { return other.mWrapper!=nullptr; }
+	friend bool operator==(::std::nullptr_t, const Delegate& other) noexcept { return other.mWrapper == nullptr; }
+	friend bool operator!=(::std::nullptr_t, const Delegate& other) noexcept { return other.mWrapper != nullptr; }
 
-	explicit operator bool() const noexcept { return mWrapper!=nullptr; }
+	explicit operator bool() const noexcept { return mWrapper != nullptr; }
 	int HashCode()const
 	{
 		return mObjectFactory^mWrapper ^ (mObject);
+	}
+	void* ObjectPtr()const
+	{
+		if (mObjectFactory != nullptr)
+		{
+			return reinterpret_cast<void*>(mObjectFactory(nullptr, nullptr, true));
+		}
+		return nullptr;
 	}
 public:
 	template <R(*const functionPtr)(A...)>
@@ -307,13 +316,13 @@ public:
 	template <class C, R(C::* const methodPtr)(A...)>
 	static Delegate Bind(C& object) noexcept
 	{
-		return{MemberFunctionTemplateWrapper<C, methodPtr>, &object };
+		return{ MemberFunctionTemplateWrapper<C, methodPtr>, &object };
 	}
 
 	template <class C, R(C::* const methodPtr)(A...) const>
 	static Delegate Bind(const C& object) noexcept
 	{
-		return{  ConstMemberFunctionTemplateWrapper<C, methodPtr>,const_cast<C*>(&object) };
+		return{ ConstMemberFunctionTemplateWrapper<C, methodPtr>,const_cast<C*>(&object) };
 	}
 
 	template <typename T>
@@ -342,7 +351,7 @@ public:
 	template <class C>
 	static Delegate Bind(C & object, R(C::* const methodPtr)(A...))
 	{
-		return Delegate( methodPtr, object);
+		return Delegate(methodPtr, object);
 	}
 
 	template <class C>
@@ -359,10 +368,16 @@ private:
 	}
 
 	template <class T>
-	static size_t ObjectFactoryWrapper(void*const objectPtr, const void* val = nullptr)
+	static size_t ObjectFactoryWrapper(void*const objectPtr, const void* val = nullptr, bool returnObjectPtr = false)
 	{
 		if (objectPtr != nullptr)
 		{
+			if (returnObjectPtr)
+			{
+				//std::pair, first is object ptr
+				return size_t(*(intptr_t*)objectPtr);
+			}
+
 			if (val != nullptr)
 			{
 				//construct
@@ -377,6 +392,7 @@ private:
 				static_cast<T *>(objectPtr)->~T();
 			}
 		}
+		
 		return sizeof(T);
 	}
 
@@ -476,9 +492,9 @@ namespace placeholder
 	extern const TPlaceHolder<19> _19;
 	extern const TPlaceHolder<20> _20;
 #endif
-	
 
-	
+
+
 }
 
 namespace BindDetail
@@ -537,13 +553,13 @@ namespace BindDetail
 		}
 
 		template <typename F, typename P1, typename... TArgs2>
-		inline typename std::enable_if<std::is_member_function_pointer<F>::value &&!std::is_pointer<typename std::decay<P1>::type>::value && !Compile::IsReferenceWrapper<P1>::value, ResultType>::type Invoke(P1&& this_obj, TArgs2&&... args)const
+		inline typename std::enable_if<std::is_member_function_pointer<F>::value && !std::is_pointer<typename std::decay<P1>::type>::value && !Compile::IsReferenceWrapper<P1>::value, ResultType>::type Invoke(P1&& this_obj, TArgs2&&... args)const
 		{
 			return (std::forward<P1>(this_obj).*mFunctor)(std::forward<TArgs2>(args)...);
 		}
 
 		template <typename F, typename P1, typename... TArgs2>
-		inline typename std::enable_if<std::is_member_function_pointer<F>::value &&!std::is_pointer<typename std::decay<P1>::type>::value && Compile::IsReferenceWrapper<P1>::value, ResultType>::type Invoke(P1&& this_wrp, TArgs2&&... args)const
+		inline typename std::enable_if<std::is_member_function_pointer<F>::value && !std::is_pointer<typename std::decay<P1>::type>::value && Compile::IsReferenceWrapper<P1>::value, ResultType>::type Invoke(P1&& this_wrp, TArgs2&&... args)const
 		{
 			typedef typename std::remove_reference<P1>::type wrapper_t;
 			typedef typename wrapper_t::type this_t;
@@ -606,7 +622,7 @@ static Delegate<typename Compile::FunctionTraits<T>::type> Bind(T&& f) noexcept
 
 template <typename TFunc, typename TArg1, typename... TArgs,
 	typename Tlimit = typename std::enable_if<
-	(std::is_member_function_pointer<TFunc>::value&&((!std::is_same<typename std::decay<TArg1>::type, typename Compile::FunctionTraits<TFunc>::ClassType>::value)||sizeof...(TArgs)>0)) //accept >0 args for member function
+	(std::is_member_function_pointer<TFunc>::value && ((!std::is_same<typename std::decay<TArg1>::type, typename Compile::FunctionTraits<TFunc>::ClassType>::value) || sizeof...(TArgs) > 0)) //accept >0 args for member function
 	|| (!std::is_pointer<TFunc>::value),	//is functor
 	void>::type>
 	inline BindDetail::Binder<TFunc&&, TArg1&&, TArgs&&...> Bind(TFunc&& f, TArg1&& arg1, TArgs&&... args)

@@ -163,8 +163,8 @@ bool SpringScrollMathModel::UpdateModel(float dt)
 
 			if (!NeedSpringOnSpring())
 			{
-				OnScrollingEnd();
 				mState = ScrollState::End;
+				OnScrollingEnd();
 			}
 		}
 		break;
@@ -275,8 +275,9 @@ void SpringScrollMathModel::OnScrollingEnd()
 		case IScrollMathModel::ScrollState::StaticScroll:
 		case IScrollMathModel::ScrollState::End:
 		default:
-			mCurrentWindow.Origin.X = mStaticLimitX.Clamp(mCurrentWindow.Origin.X);
-			mCurrentWindow.Origin.Y = mStaticLimitY.Clamp(mCurrentWindow.Origin.Y);
+			//align to closer edge
+			mCurrentWindow.Origin.X = mStaticLimitX.Align(mCurrentWindow.Origin.X);
+			mCurrentWindow.Origin.Y = mStaticLimitY.Align(mCurrentWindow.Origin.Y);
 			break;
 
 	}

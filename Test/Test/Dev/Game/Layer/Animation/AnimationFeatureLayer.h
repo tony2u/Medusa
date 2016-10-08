@@ -13,3 +13,4 @@ public:
 	virtual ~AnimationFeatureLayer(void);
 };
 
+MEDUSA_ENABLE_STATIC_CONSTRUCTOR(AnimationFeatureLayer);

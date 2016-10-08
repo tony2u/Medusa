@@ -117,94 +117,94 @@ void INodeReader::SetPropsWithFlatBuffers(INode* node, const flatbuffers::Table*
 
 void INodeReader::SetPropsWithJson(INode* node, const rapidjson::Value& nodeTree, NodeCreateFlags flags /*= NodeCreateFlags::None*/)
 {
-	StringRef name = nodeTree.GetString("Name", nullptr);
+	StringRef name = nodeTree.GetMember("Name", nullptr);
 	node->SetName(name);
 
-	int tag = nodeTree.Get("Tag", 0);
+	int tag = nodeTree.GetMember("Tag", 0);
 	node->SetTag(tag);
 
-	bool isVisible = nodeTree.Get("VisibleForFrame", true);
+	bool isVisible = nodeTree.GetMember("VisibleForFrame", true);
 	node->SetVisible(isVisible);
 
 	//int actionTag = jsonNode.Get("ActionTag", 0);
 
-	const rapidjson::Value* blendNode = nodeTree.GetMember("BlendFunc");
+	const rapidjson::Value* blendNode = nodeTree.GetMemberValue("BlendFunc");
 	if (blendNode != nullptr)
 	{
-		GraphicsBlendSrcFunc srcFunc = (GraphicsBlendSrcFunc)blendNode->Get("Src", (int)GraphicsBlendSrcFunc::SrcAlpha);
-		GraphicsBlendDestFunc destFunc = (GraphicsBlendDestFunc)blendNode->Get("Dst", (int)GraphicsBlendDestFunc::OneMinusSrcAlpha);
+		GraphicsBlendSrcFunc srcFunc = (GraphicsBlendSrcFunc)blendNode->GetMember("Src", (int)GraphicsBlendSrcFunc::SrcAlpha);
+		GraphicsBlendDestFunc destFunc = (GraphicsBlendDestFunc)blendNode->GetMember("Dst", (int)GraphicsBlendDestFunc::OneMinusSrcAlpha);
 		if (srcFunc != GraphicsBlendSrcFunc::SrcAlpha&&destFunc != GraphicsBlendDestFunc::OneMinusSrcAlpha)
 		{
 			//not default
 			node->MutableRenderState().SetBlendFunc(srcFunc, destFunc);
 		}
 	}
-	const rapidjson::Value* sizeNode = nodeTree.GetMember("Size");
+	const rapidjson::Value* sizeNode = nodeTree.GetMemberValue("Size");
 	if (sizeNode != nullptr)
 	{
 		Size2F size;
-		size.Width = sizeNode->Get("X", 0.f);
-		size.Height = sizeNode->Get("Y", 0.f);
+		size.Width = sizeNode->GetMember("X", 0.f);
+		size.Height = sizeNode->GetMember("Y", 0.f);
 		node->SetSize(size);
 	}
 
-	const rapidjson::Value* anchorPointNode = nodeTree.GetMember("AnchorPoint");
+	const rapidjson::Value* anchorPointNode = nodeTree.GetMemberValue("AnchorPoint");
 	if (anchorPointNode != nullptr)
 	{
 		Point2F anchorPoint;
-		anchorPoint.X = anchorPointNode->Get("ScaleX", 0.f);
-		anchorPoint.Y = anchorPointNode->Get("ScaleY", 0.f);
+		anchorPoint.X = anchorPointNode->GetMember("ScaleX", 0.f);
+		anchorPoint.Y = anchorPointNode->GetMember("ScaleY", 0.f);
 		node->SetAnchor(anchorPoint);
 	}
 
-	const rapidjson::Value* positionNode = nodeTree.GetMember("Position");
+	const rapidjson::Value* positionNode = nodeTree.GetMemberValue("Position");
 	if (positionNode != nullptr)
 	{
 		Point2F pos;
-		pos.X = positionNode->Get("X", 0.f);
-		pos.Y = positionNode->Get("Y", 0.f);
+		pos.X = positionNode->GetMember("X", 0.f);
+		pos.Y = positionNode->GetMember("Y", 0.f);
 		node->SetPosition(pos);
 	}
 
-	const rapidjson::Value* scaleNode = nodeTree.GetMember("Scale");
+	const rapidjson::Value* scaleNode = nodeTree.GetMemberValue("Scale");
 	if (scaleNode != nullptr)
 	{
 		Scale2F scale;
-		scale.X = scaleNode->Get("ScaleX", 0.f);
-		scale.Y = scaleNode->Get("ScaleY", 0.f);
+		scale.X = scaleNode->GetMember("ScaleX", 0.f);
+		scale.Y = scaleNode->GetMember("ScaleY", 0.f);
 		node->SetScale(scale);
 	}
 
-	float rotationSkewX = nodeTree.Get("RotationSkewX", 0.f);
-	float rotationSkewY = nodeTree.Get("RotationSkewY", 0.f);
+	float rotationSkewX = nodeTree.GetMember("RotationSkewX", 0.f);
+	float rotationSkewY = nodeTree.GetMember("RotationSkewY", 0.f);
 	SetRotatioSkewXY(node, rotationSkewX, rotationSkewY);
 
-	bool flipX = nodeTree.Get("FlipX", false);
-	bool flipY = nodeTree.Get("FlipY", false);
+	bool flipX = nodeTree.GetMember("FlipX", false);
+	bool flipY = nodeTree.GetMember("FlipY", false);
 	node->SetFlipX(flipX);
 	node->SetFlipY(flipY);
 
-	Color4F color = ToColor(nodeTree.GetMember("CColor"));
+	Color4F color = ToColor(nodeTree.GetMemberValue("CColor"));
 	node->SetColor(color);
-	float opacity = nodeTree.Get("Alpha", 255) / 255.f;
+	float opacity = nodeTree.GetMember("Alpha", 255) / 255.f;
 	node->SetOpacity(opacity);
 
-	bool positionPercentXEnabled = nodeTree.Get("PositionPercentXEnabled", false);
-	bool positionPercentYEnabled = nodeTree.Get("PositionPercentYEnabled", false);
+	bool positionPercentXEnabled = nodeTree.GetMember("PositionPercentXEnabled", false);
+	bool positionPercentYEnabled = nodeTree.GetMember("PositionPercentYEnabled", false);
 	if (positionPercentXEnabled || positionPercentYEnabled)
 	{
 		node->SetDock(DockPoint::Percent);
-		const rapidjson::Value* prePositionNode = nodeTree.GetMember("PrePosition");
+		const rapidjson::Value* prePositionNode = nodeTree.GetMemberValue("PrePosition");
 		if (prePositionNode != nullptr)
 		{
 			Point2F pos;
-			pos.X = prePositionNode->Get("X", 0.f);
-			pos.Y = prePositionNode->Get("Y", 0.f);
+			pos.X = prePositionNode->GetMember("X", 0.f);
+			pos.Y = prePositionNode->GetMember("Y", 0.f);
 			node->SetRelativePosition(pos);
 		}
 	}
-	bool stretchWidthEnable = nodeTree.Get("StretchWidthEnable", false);
-	bool stretchHeightEnable = nodeTree.Get("StretchHeightEnable", false);
+	bool stretchWidthEnable = nodeTree.GetMember("StretchWidthEnable", false);
+	bool stretchHeightEnable = nodeTree.GetMember("StretchHeightEnable", false);
 	if (stretchWidthEnable)
 	{
 		if (stretchHeightEnable)
@@ -224,23 +224,23 @@ void INodeReader::SetPropsWithJson(INode* node, const rapidjson::Value& nodeTree
 		}
 	}
 
-	bool percentWidthEnable = nodeTree.Get("PercentWidthEnable", false) || nodeTree.Get("PercentWidthEnabled", false);
-	bool percentHeightEnable = nodeTree.Get("PercentHeightEnable", false) || nodeTree.Get("PercentHeightEnabled", false);
+	bool percentWidthEnable = nodeTree.GetMember("PercentWidthEnable", false) || nodeTree.GetMember("PercentWidthEnabled", false);
+	bool percentHeightEnable = nodeTree.GetMember("PercentHeightEnable", false) || nodeTree.GetMember("PercentHeightEnabled", false);
 	if (percentWidthEnable || percentHeightEnable)
 	{
 		node->SetStretch(Stretch::Percent);
-		const rapidjson::Value* preSizeNode = nodeTree.GetMember("PreSize");
+		const rapidjson::Value* preSizeNode = nodeTree.GetMemberValue("PreSize");
 		if (preSizeNode != nullptr)
 		{
 			Scale2F sizePercent;
-			sizePercent.X = preSizeNode->Get("X", 0.f);
-			sizePercent.Y = preSizeNode->Get("Y", 0.f);
+			sizePercent.X = preSizeNode->GetMember("X", 0.f);
+			sizePercent.Y = preSizeNode->GetMember("Y", 0.f);
 			node->SetStretchPercent(sizePercent);
 		}
 	}
 
-	StringRef hEdge = nodeTree.GetString("HorizontalEdge", nullptr);
-	StringRef vEdge = nodeTree.GetString("VerticalEdge", nullptr);
+	StringRef hEdge = nodeTree.GetMember("HorizontalEdge", nullptr);
+	StringRef vEdge = nodeTree.GetMember("VerticalEdge", nullptr);
 	MarginEdges marginEdges = MarginEdges::None;
 	auto hMargin = GetHorizontalMarginEdge(hEdge);
 	MEDUSA_FLAG_ADD(marginEdges, hMargin);
@@ -248,20 +248,20 @@ void INodeReader::SetPropsWithJson(INode* node, const rapidjson::Value& nodeTree
 	MEDUSA_FLAG_ADD(marginEdges, vMargin);
 
 	ThicknessF margin = ThicknessF::Zero;
-	margin.Left = nodeTree.Get("LeftMargin", 0.f);
-	margin.Right = -nodeTree.Get("RightMargin", 0.f);
-	margin.Bottom = nodeTree.Get("BottomMargin", 0.f);
-	margin.Top = -nodeTree.Get("TopMargin", 0.f);
+	margin.Left = nodeTree.GetMember("LeftMargin", 0.f);
+	margin.Right = -nodeTree.GetMember("RightMargin", 0.f);
+	margin.Bottom = nodeTree.GetMember("BottomMargin", 0.f);
+	margin.Top = -nodeTree.GetMember("TopMargin", 0.f);
 	node->SetMargin(margin);
 	node->SetMarginEdge(marginEdges);
 
-	StringRef userData = nodeTree.GetString("UserData", nullptr);
+	StringRef userData = nodeTree.GetMember("UserData", nullptr);
 	if (!userData.IsEmpty())
 	{
 		node->MutableProperties().Parse(userData);
 	}
 
-	StringRef frameEvent = nodeTree.GetString("FrameEvent", nullptr);
+	StringRef frameEvent = nodeTree.GetMember("FrameEvent", nullptr);
 	if (!frameEvent.IsEmpty())
 	{
 		node->MutableProperties().Add(NodeProperties::FrameEvent, frameEvent);
@@ -350,10 +350,10 @@ Color4F INodeReader::ToColor(const rapidjson::Value* jsonNode)
 	if (jsonNode != nullptr)
 	{
 		Color4B color;
-		color.R = jsonNode->Get("R", 255);
-		color.G = jsonNode->Get("G", 255);
-		color.B = jsonNode->Get("B", 255);
-		color.A = jsonNode->Get("A", 255);
+		color.R = (byte)jsonNode->GetMember("R", 255);
+		color.G = (byte)jsonNode->GetMember("G", 255);
+		color.B = (byte)jsonNode->GetMember("B", 255);
+		color.A = (byte)jsonNode->GetMember("A", 255);
 		return color.To4F();
 	}
 

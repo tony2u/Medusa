@@ -22,7 +22,7 @@ bool RepeatedAction::Update(float dt, float blend /*= 1.f*/)
 			--mCount;
 			if (mCount <= 0)
 			{
-				this->ForceSetState(RunningState::Done);
+				this->Stop();
 			}
 
 			break;
@@ -35,7 +35,7 @@ bool RepeatedAction::Update(float dt, float blend /*= 1.f*/)
 				--mCount;
 				if (mCount <= 0)
 				{
-					this->ForceSetState(RunningState::Done);
+					this->Stop();
 				}
 				else
 				{
