@@ -197,8 +197,10 @@ struct LuaInvokeMemberMethod <TClass, TIsProxy, FN, void, P...>
 
 };
 
-template <typename FN, bool TIsProxy, typename... RP, typename... P>	//return std::tuple,used for multiple return values
-struct LuaInvokeMemberMethod <FN, TIsProxy, std::tuple<RP...>, P...>
+//template <typename FN, bool TIsProxy, typename... RP, typename... P>	//return std::tuple,used for multiple return values
+//struct LuaInvokeMemberMethod <FN, TIsProxy, std::tuple<RP...>, P...>
+template <typename FN, bool TIsProxy, typename... RP, template <typename...> class TRP, typename... P, template <typename...> class TP>
+struct LuaInvokeMemberMethod <FN, TIsProxy, TRP<RP...>&, TP<P...>&>
 {
 	static int Push(lua_State* L, const FN& func, std::tuple<P...>& args)
 	{
