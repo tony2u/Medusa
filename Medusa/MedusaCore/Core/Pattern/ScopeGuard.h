@@ -41,7 +41,7 @@ protected:
 enum class ScopeGuardOnExit {};
 
 template <typename FunctionType>
-ScopeGuard<typename std::decay<FunctionType>::type> operator+(detail::ScopeGuardOnExit, FunctionType&& fn)
+ScopeGuard<typename std::decay<FunctionType>::type> operator+(Medusa::ScopeGuardOnExit, FunctionType&& fn)
 {
 	return ScopeGuard<typename std::decay<FunctionType>::type>(std::forward<FunctionType>(fn));
 }
