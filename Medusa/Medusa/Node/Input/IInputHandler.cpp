@@ -93,14 +93,14 @@ void IInputHandler::Enable(bool val)
 
 bool IInputHandler::RaiseEvent(InputEventType type, IEventArg* e/*=nullptr*/) const
 {
-	if (!MEDUSA_FLAG_HAS(mBehaviors, InputBehaviors::DisableEventBinding))
+	if (mNode && !MEDUSA_FLAG_HAS(mBehaviors, InputBehaviors::DisableEventBinding))
 	{
 		//switch type
 		mDispatcher->FireEvent(type, mNode, e);
 	}
 
 #ifdef MEDUSA_SCRIPT
-	if (ApplicationSettings::Instance().HasScriptBinding()&& !MEDUSA_FLAG_HAS(mBehaviors, InputBehaviors::DisableScriptBinding))
+	if (mNode && ApplicationSettings::Instance().HasScriptBinding() && !MEDUSA_FLAG_HAS(mBehaviors, InputBehaviors::DisableScriptBinding))
 	{
 		mDispatcher->FireScriptBinding(type, mNode, e);
 	}
