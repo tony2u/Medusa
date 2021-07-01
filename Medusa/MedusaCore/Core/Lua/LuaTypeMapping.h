@@ -357,7 +357,6 @@ struct LuaTypeMapping <lua_CFunction>
 	}
 };
 
-
 template <typename T>
 struct LuaTypeMapping <T*>
 {
