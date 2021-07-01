@@ -17,6 +17,22 @@
 #include "Node/Input/EventArg/KeyboardEventArg.h"
 #include "Node/Input/EventArg/KeyDownEventArg.h"
 #include "Node/Input/EventArg/KeyUpEventArg.h"
+#include "Node/Input/Gesture/EventArg/SwipeSuccessGestureEventArg.h"
+#include "Node/Input/Gesture/EventArg/SwipeFailedGestureEventArg.h"
+#include "Node/Input/Gesture/EventArg/SwipeMovedGestureEventArg.h"
+#include "Node/Input/Gesture/EventArg/SwipeBeginGestureEventArg.h"
+#include "Node/Input/Gesture/EventArg/PinchGestureEventArg.h"
+#include "Node/Input/Gesture/EventArg/PanGestureEventArg.h"
+#include "Node/Input/Gesture/EventArg/PanEndGestureEventArg.h"
+#include "Node/Input/Gesture/EventArg/PanBeginGestureEventArg.h"
+#include "Node/Input/Gesture/EventArg/LongPressFailedGestureEventArg.h"
+#include "Node/Input/Gesture/EventArg/LongPressBeganGestureEventArg.h"
+#include "Node/Input/Gesture/EventArg/DragingGestureEventArg.h"
+#include "Node/Input/Gesture/EventArg/DragFailedGestureEventArg.h"
+#include "Node/Input/Gesture/EventArg/DragEndGestureEventArg.h"
+#include "Node/Input/Gesture/EventArg/DragBeganGestureEventArg.h"
+#include "Node/Input/Gesture/EventArg/DoubleTapGestureEventArg.h"
+#include "Node/Input/Gesture/EventArg/TapGestureEventArg.h"
 
 MEDUSA_BEGIN;
 
