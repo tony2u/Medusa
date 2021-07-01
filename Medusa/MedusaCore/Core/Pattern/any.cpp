@@ -6,6 +6,6 @@
 
 MEDUSA_BEGIN;
 
-const any any::Empty;
+const any any::Empty = nullptr;
 
 MEDUSA_END;
